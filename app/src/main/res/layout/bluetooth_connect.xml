@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.mikehelland.omgtechnogauntlet.SlidingFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/bt_status"
+            android:textColor="#4fa5d5"
+            android:gravity="center"
+            android:textSize="28sp"
+            android:layout_marginTop="10dip"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:text="Bluetooth is OFF"
+            />
+
+
+        <LinearLayout
+            android:id="@+id/available_remotes"
+            android:layout_below="@id/bt_status"
+            android:layout_width="fill_parent"
+            android:layout_height="200dip">
+
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:drawableTop="@drawable/device"
+                android:text="none"
+                android:id="@+id/bt_device_1"
+                android:enabled="false"
+                />
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:drawableTop="@drawable/device"
+                android:text="none"
+                android:id="@+id/bt_device_2"
+                android:enabled="false"
+                />
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:drawableTop="@drawable/device"
+                android:text="none"
+                android:id="@+id/bt_device_3"
+                android:enabled="false"
+                />
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:drawableTop="@drawable/device"
+                android:text="none"
+                android:id="@+id/bt_device_4"
+                android:enabled="false"
+                />
+            <Button
+                android:layout_weight="1.0"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:drawableTop="@drawable/device"
+                android:text="none"
+                android:id="@+id/bt_device_5"
+                android:enabled="false"
+                />
+
+        </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#4fa5d5"
+        android:gravity="center"
+        android:textSize="28sp"
+        android:layout_marginTop="10dip"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:text="How to connect!"
+        android:layout_below="@id/available_remotes"
+        android:id="@+id/how_to_connect"
+        />
+
+    <TextView
+            android:layout_below="@id/how_to_connect"
+            android:textSize="22sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step 1. "
+            android:id="@+id/bt_step_1"
+            />
+
+    <TextView
+        android:textSize="18sp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Pair another device with this one"
+        android:id="@+id/bt_step_1_detail"
+        android:layout_toRightOf="@id/bt_step_1"
+        android:layout_below="@id/how_to_connect"
+
+        />
+
+
+    <TextView
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/bt_step_1_detail"
+        android:textSize="22sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text='Step 2. '
+        android:id="@+id/bt_step_2"
+        />
+    <TextView
+        android:layout_below="@id/bt_step_1_detail"
+        android:layout_toRightOf="@id/bt_step_2"
+        android:id="@+id/bt_step_2_detail"
+        android:textSize="18sp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text='Press "Be a Bluetooth Remote" on the other device'
+        />
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Looking for Paired devices with OMG Bananas in Remote Mode..."
+            android:id="@+id/bluetooth_log"
+            android:layout_below="@id/bt_step_2_detail"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="28dp"
+
+            />
+
+
+    <Button
+        android:visibility="invisible"
+        android:id="@+id/bt_try_again"
+        android:drawableLeft="@android:drawable/ic_menu_rotate"
+        android:text="Try Again"
+        android:layout_alignParentBottom="true"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+</com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>

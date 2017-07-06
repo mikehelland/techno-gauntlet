@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.mikehelland.omgtechnogauntlet.SlidingFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+    <Button android:text="Be a Bluetooth Remote"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:drawableRight="@drawable/bluetooth"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/bt_remote"></Button>
+
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/loading_info"
+        android:layout_alignParentTop="true"
+        >
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/loading_progress"
+            />
+<!--        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:text="(Loading...)"/>-->
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/bt_remote"
+        android:layout_alignParentTop="true"
+        android:id="@+id/goback"
+        android:visibility="gone">
+
+        <Button android:text="Return to OMG Bananas"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:drawableRight="@android:drawable/ic_media_ff"
+            android:id="@+id/return_to_omg_bananas"
+            android:layout_alignParentTop="true"></Button>
+
+        <TextView android:text="@string/cap_source_code"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/source_link"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            />
+        <TextView android:text="@string/cap_suggestions"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/issues_link"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_below="@id/source_link"
+            android:layout_marginTop="10dp"
+            />
+        <TextView android:text="@string/exit_text"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/txt_press_back"
+            android:textSize="22sp"
+            android:layout_above="@id/source_link"
+            android:autoLink="web"
+            android:gravity="center"
+            android:layout_marginBottom="30dp"
+            />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/bt_remote"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:id="@+id/welcome_info">
+
+        <TextView android:text="OpenMusicGallery.net"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/omg_presents_1"
+            android:textSize="28sp"
+            android:gravity="center"
+            android:visibility="invisible"
+            />
+
+        <TextView android:text="presents"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/omg_presents_2"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:visibility="invisible"
+            />
+
+        <TextView android:text="OMG Bananas!"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/omg_bananas"
+            android:textSize="56sp"
+            android:gravity="center"
+            android:visibility="invisible"
+            />
+
+        <ImageView
+            android:id="@+id/img_press_banana"
+            android:visibility="invisible"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/banana48"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:visibility="invisible"
+            android:text="Press to Save"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:id="@+id/txt_press_banana"
+            android:textSize="22sp"
+            android:gravity="center"
+            />
+        <ImageView
+            android:id="@+id/img_press_monkey"
+            android:visibility="invisible"
+            android:layout_marginTop="40dip"
+            android:src="@drawable/icon48"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:visibility="invisible"
+            android:text="Press to Change"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_below="@id/txt_press_banana"
+            android:textSize="22sp"
+            android:id="@+id/txt_press_monkey"
+            android:gravity="center"
+            />
+
+    </LinearLayout>
+</com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+
+              >
+
+
+    <TextView android:text="Add Tags"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:id="@+id/add_tags_header"
+        android:textSize="32sp"
+        android:padding="12dip"
+        android:background="@drawable/back_bottom"
+        />
+
+    <TextView android:text="Tags make it possible to find what you want in the Open Music Gallery."
+              android:layout_alignParentRight="true"
+              android:layout_alignParentLeft="true"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:id="@+id/why_tags"
+              android:textSize="18sp"
+            android:layout_below="@id/add_tags_header"
+        android:layout_marginTop="18dp"
+            />
+
+
+
+    <EditText android:layout_marginTop="8dp"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:id="@+id/add_tags_text"
+             android:layout_below="@id/why_tags"
+             android:textSize="20sp"
+            android:hint="(Separate tags with spaces)">
+        <requestFocus/>
+    </EditText>
+
+
+    <TextView android:text="Popular Tags"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:id="@+id/common_tags_caption"
+        android:textSize="18sp"
+        android:layout_below="@id/add_tags_text"
+        android:layout_marginTop="18dp"
+
+
+        />
+
+    <LinearLayout
+        android:layout_below="@id/common_tags_caption"
+        android:id="@+id/popular_tags_1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/popular_tag_button_1"
+            android:singleLine="true"
+            android:text="funky"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <Button
+            android:id="@+id/popular_tag_button_2"
+            android:singleLine="true"
+            android:text="jazzy"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/popular_tag_button_3"
+            android:singleLine="true"
+            android:text="eery"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/popular_tag_button_4"
+            android:singleLine="true"
+            android:text="bouncey"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_below="@id/popular_tags_1"
+        android:id="@+id/popular_tags_2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/popular_tag_button_5"
+            android:singleLine="true"
+            android:text="rockin"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+
+        <Button
+            android:id="@+id/popular_tag_button_6"
+            android:singleLine="true"
+            android:text="dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/popular_tag_button_7"
+            android:singleLine="true"
+            android:text="chaotic"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/popular_tag_button_8"
+            android:singleLine="true"
+            android:text="happy"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="#303030"
+        android:paddingLeft="4.0dip"
+        android:paddingTop="5.0dip"
+        android:paddingRight="4.0dip"
+        android:paddingBottom="1.0dip"
+
+        android:layout_alignParentBottom="true"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        >
+
+
+        <Button android:text="Finish"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/finish"
+            />
+
+
+        <Button android:text="Finish and Share"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/finish_and_share"
+            />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

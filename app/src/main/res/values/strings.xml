@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OMG Techno Gauntlet</string>
+    <string name="hi_make_music">Let\'s make music!</string>
+    <string name="gettags">Descriptive hash tags</string>
+    <string name="tags_dialog_title">Add #tags</string>
+    <string name="tags_hint">List #tags here</string>
+    <string name="tags_explain">Add tags like \"funky\" or \"soothing\".
+
+        \n\n
+        Tags make it easier to mix and mash music on the Open Music Gallery (OMG)
+
+    </string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit_to_draw">Edit</string>
+    <string name="saved_list_title">Saved</string>
+    <string name="exit_text">Press Back again to Exit</string>
+    <string name="cap_source_code">&lt;a href="https://github.com/MazeHatter/OMGBananas">Source Code&lt;/a></string>
+
+    <string name="cap_suggestions">&lt;a href="mailto:maze@sketchatune.com">Make a suggestion&lt;/a></string>
+
+    <string name="default_fretboard_json">{\"maps\": [
+        {\"frets\": [[0,1,2,3,4],[4,5,6,7,8]]},
+        {\"scale\": \"0,3,5,6,7,10\", \"frets\": [[-1,0,1,2,3],[2,4,5,6,7]]}]}</string>
+
+    <string name="other_major_fretboard_json">{\"maps\": [
+        {\"frets\": [[-1,0,3,4,5],[2,5,6,7,8]]},
+        {\"scale\": \"0,3,5,6,7,10\", \"frets\": [[-1,0,1,2,3],[2,4,5,6,7]]}]}</string>
+
+</resources>

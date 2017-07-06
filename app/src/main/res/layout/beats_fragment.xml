@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.mikehelland.omgtechnogauntlet.SlidingFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="center">
+
+
+    <TextView android:text="4 / 4"
+              android:layout_alignParentRight="true"
+              android:layout_alignParentLeft="true"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:id="@+id/timesig"
+              android:textSize="28sp"
+              android:gravity="center"
+            />
+    <TextView android:text="2 measures"
+              android:layout_alignParentRight="true"
+              android:layout_alignParentLeft="true"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:layout_below="@id/timesig"
+              android:textSize="28sp"
+              android:id="@+id/measures"
+              android:gravity="center"
+            />
+
+    <TextView android:text="XXX bpm"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:id="@+id/bpm_caption"
+              android:textSize="72sp"
+              android:layout_below="@id/measures"
+              android:gravity="center"
+              android:padding="8dip"
+            />
+
+    <SeekBar
+            android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:id="@+id/bpm_seekbar"
+             android:layout_below="@id/bpm_caption"/>
+
+    <!--<Button android:text="Tap Tempo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dip"
+            android:id="@+id/tap_tempo"
+            android:layout_below="@id/bpm_seekbar"
+            />-->
+
+
+
+</com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>
