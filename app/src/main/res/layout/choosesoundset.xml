@@ -16,12 +16,39 @@
             android:layout_width="wrap_content"
             android:text="Choose a Sound Set:"
             android:textSize="24sp"
+            android:padding="4dip"
+            />
+
+
+        <EditText
+            android:text="http://openmusic.gallery/data/41"
+            android:id="@+id/custom_url_edittext"
+            android:hint="Paste URL Here"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:singleLine="true"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Load Custom URL"
+            android:id="@+id/custom_url_button"
+            android:imeOptions="actionDone"/>
+
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Or Choose From The Presets:"
+            android:textSize="24sp"
             android:padding="4dip"/>
 
         <ListView android:id="@+id/soundset_list"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:choiceMode="singleChoice"
+            android:listSelector="#6666FF"
             />
 
 

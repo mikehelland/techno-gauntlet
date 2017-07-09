@@ -1,11 +1,19 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.util.ArrayList;
 
 public abstract class Channel {
+
+    private boolean wasSetup = false;
 
     public static int STATE_LIVEPLAY = 0;
     public static int STATE_PLAYBACK = 1;
@@ -33,6 +41,7 @@ public abstract class Channel {
 
     protected int[] ids;
     protected int[] rids;
+    protected String[] captions;
 
     protected int playingId = -1;
 
@@ -61,7 +70,8 @@ public abstract class Channel {
     private String mMainSound;
 
     public Channel(Context context, Jam jam, OMGSoundPool pool, String type, String sound) {
-        mPool = pool;
+        //mPool = pool;
+        mPool = pool; new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
         this.context = context;
         mJam = jam;
 
@@ -183,6 +193,7 @@ public abstract class Channel {
     }
 
     public int loadPool() {
+
         ids = new int[rids.length];
         for (int i = 0; i < rids.length; i++) {
 
@@ -192,6 +203,8 @@ public abstract class Channel {
                 return -1;
 
         }
+
+
         return ids.length;
     }
 
@@ -365,4 +378,73 @@ public abstract class Channel {
     public String getMainSound() {
         return mMainSound;
     }
+
+    public boolean loadSoundSet(String json, long id) {
+
+        //if (wasSetup)
+        //    mPool = new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
+        //else
+        //    wasSetup = true;
+
+
+        String path = context.getFilesDir() + "/" + Long.toString(id) + "/";
+
+        try {
+            JSONObject soundset = new JSONObject(json);
+
+            String type = soundset.getString("type");
+            if (!"SOUNDSET".equals(type)) {
+                Log.d("MGH", "soundset not type=SOUNDSET");
+                return false;
+            }
+
+            JSONArray data = soundset.getJSONArray("data");
+
+            String url;
+            JSONObject sound;
+            int preset_id;
+
+            ids = new int[data.length()];
+            captions = new String[data.length()];
+            for (int i = 0; i < data.length(); i++) {
+                sound = data.getJSONObject(i);
+
+                captions[i] = sound.getString("caption");
+                if (sound.has("preset_id")) {
+                    preset_id = sound.getInt("preset_id");
+
+                    ids[i] = mPool.load(context, preset_id, 1);
+                }
+                else if (sound.has("url")) {
+                    //url = sound.getString("url");
+                    //String extension = url.substring(url.lastIndexOf("."), url.length());
+
+                    File file = new File(path);
+                    Log.d("MGH file list", Integer.toString(file.list().length));
+                    Log.d("MGH file list", path);
+                    if (file.list().length > 0)
+                        Log.d("MGH file list", file.list()[0]);
+                    Log.d("MGH file", file.exists() ? "File exists!" : "File does NOT exist");
+                    Log.d("MGH file", file.canRead() ? "can be read" : "cannnot be read");
+                    Log.d("MGH loading path", path + Integer.toString(i) + ".ogg");
+
+                    ids[i] = mPool.load(path + Integer.toString(i), 1);
+                }
+            }
+
+        }
+        catch (JSONException exp) {
+            Log.d("MGH", exp.getMessage());
+            return false;
+        }
+
+
+        return true;
+    }
+
+    public String[] getCaptions() {
+        return captions;
+    }
+
+
 }

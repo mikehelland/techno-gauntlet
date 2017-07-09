@@ -1,9 +1,9 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.os.Bundle;
-import android.os.Handler;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.os.Bundle;
+import android.os.Handler;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -179,44 +179,6 @@ public class WelcomeFragment extends OMGFragment {
             public void onClick(View view) {
                 MainFragment mainFragment = new MainFragment();
                 showFragment(mainFragment);
-            }
-        });
-
-
-        mView.findViewById(R.id.bt_remote).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!mJam.isSoundPoolInitialized()) {
-                            mPool.cancelLoading();
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        BluetoothRemoteFragment f = new BluetoothRemoteFragment();
-
-                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        ft.setCustomAnimations(R.anim.slide_in_up,
-                                R.anim.slide_out_up,
-                                R.anim.slide_in_down,
-                                R.anim.slide_out_down
-                        );
-                        ft.add(R.id.main_layout, f);
-                        ft.remove(WelcomeFragment.this);
-                        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                        ft.addToBackStack(null);
-                        ft.commit();
-
-                    }
-                }).start();
-
-
             }
         });
 

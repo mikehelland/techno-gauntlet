@@ -43,9 +43,9 @@ public class ChordsFragment extends OMGFragment {
         String[] chords = getResources().getStringArray(R.array.chord_progressions);
 
         ListView chordsList = (ListView)mView.findViewById(R.id.chords_list);
-        ChordsAdapter chordsAdapter = new ChordsAdapter(getActivity(), R.layout.chordoption,
+        ChordsAdapter soundSetsAdapter = new ChordsAdapter(getActivity(), R.layout.chordoption,
                                             chords, mJam.getScale());
-        chordsList.setAdapter(chordsAdapter);
+        chordsList.setAdapter(soundSetsAdapter);
 
         //chordsList.setItemChecked(mJam.getScaleIndex(), true);
 

@@ -25,7 +25,7 @@ public class BluetoothDrumChannel extends DrumChannel {
                 "PRESET_ROCK_TOM_ML",
                 "PRESET_ROCK_TOM_L"};
 
-        mCaptions = new String[] {"kick", "snare", "hi-hat", "open hi-hat",
+        captions = new String[] {"kick", "snare", "hi-hat", "open hi-hat",
                 "crash", "h tom", "m tom", "l tom"};
 
         kitName = "PRESET_ROCKKIT";

@@ -15,12 +15,13 @@ public class KeyboardSamplerChannel extends Channel {
         lowNote = 33;
 
         volume = 0.2f;
-        rids = new int[61];
+        //rids = new int[61];
+        rids = new int[1];
 
         int i= 0;
 
         rids[i++] = R.raw.kb1_a1;
-        rids[i++] = R.raw.kb1_bf1;
+        /*rids[i++] = R.raw.kb1_bf1;
         rids[i++] = R.raw.kb1_b1;
         rids[i++] = R.raw.kb1_c2;
         rids[i++] = R.raw.kb1_cs2;
@@ -79,7 +80,7 @@ public class KeyboardSamplerChannel extends Channel {
         rids[i++] = R.raw.kb1_fs6;
         rids[i++] = R.raw.kb1_g6;
         rids[i++] = R.raw.kb1_gs6;
-        rids[i++] = R.raw.kb1_a6;
+        rids[i++] = R.raw.kb1_a6;*/
 
     }
 }

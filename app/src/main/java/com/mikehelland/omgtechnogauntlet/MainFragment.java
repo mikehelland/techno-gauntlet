@@ -1,9 +1,9 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.graphics.Color;
-import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.graphics.Color;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +82,8 @@ public class MainFragment extends OMGFragment {
 
         drumControls = mView.findViewById(R.id.drums);
 
-        ((Button)drumControls.findViewById(R.id.track_button)).setText("Drums");
+        Button button = ((Button)drumControls.findViewById(R.id.track_button));
+        button.setText("Drums");
 
         drumMuteButton = (Button)drumControls.findViewById(R.id.mute_button);
         drumMuteButton.setOnClickListener(new View.OnClickListener() {
@@ -112,7 +113,7 @@ public class MainFragment extends OMGFragment {
             }
         });
 
-        drumControls.findViewById(R.id.track_button).setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -121,6 +122,18 @@ public class MainFragment extends OMGFragment {
                 showFragmentRight(f);
             }
         });
+
+        button.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                SoundSetFragment f = new SoundSetFragment();
+                f.setJam(mJam, mJam.getDrumChannel());
+                showFragmentRight(f);
+
+                return false;
+            }
+        });
+
 
 
     }
@@ -426,12 +439,7 @@ public class MainFragment extends OMGFragment {
                 R.animator.slide_out_left,
                 R.animator.slide_in_left,
                 R.animator.slide_out_right
-                //R.anim.slide_in_right,
-                //R.anim.slide_out_left,
-                //R.anim.slide_in_left,
-                //R.anim.slide_out_right
         );
-        //ft.remove(MainFragment.this);
         ft.replace(R.id.main_layout, f);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.addToBackStack(null);
@@ -553,7 +561,9 @@ public class MainFragment extends OMGFragment {
         pointsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showFragmentUp(new SavedListFragment(MainFragment.this, mJam));
+                SavedListFragment f = new SavedListFragment();
+                f.setJam(MainFragment.this, mJam);
+                showFragmentUp(f);
             }
         });
 
@@ -577,7 +587,9 @@ public class MainFragment extends OMGFragment {
         tagsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showFragmentUp(new AddTagsFragment(mOMGHelper));
+                AddTagsFragment f = new AddTagsFragment();
+                f.setOMGHelper(mOMGHelper);
+                showFragmentUp(f);
             }
         });
 

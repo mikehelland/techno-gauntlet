@@ -137,15 +137,17 @@ public class DrumView extends View {
 
                 if (i == 0) {
 
-                    if (captionWidths[j].length == 1) {
-                        canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
-                                j * boxHeight + boxHeight / 2 + 6, blackPaint);
-                    }
-                    else {
-                        canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
-                                j * boxHeight + boxHeight / 2 - adjustUp, blackPaint);
-                        canvas.drawText(captions[j][1], boxWidth / 2 - captionWidths[j][1] / 2,
-                                j * boxHeight + boxHeight / 2 + adjustDown, blackPaint);
+                    if (j < captions.length) {
+                        if (captionWidths[j].length == 1) {
+                            canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
+                                    j * boxHeight + boxHeight / 2 + 6, blackPaint);
+                        }
+                        else {
+                            canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
+                                    j * boxHeight + boxHeight / 2 - adjustUp, blackPaint);
+                            canvas.drawText(captions[j][1], boxWidth / 2 - captionWidths[j][1] / 2,
+                                    j * boxHeight + boxHeight / 2 + adjustDown, blackPaint);
+                        }
                     }
                 }
                 else {
@@ -230,9 +232,10 @@ public class DrumView extends View {
 
     public void setCaptions() {
 
-        captionWidths = new float[8][];
-        captions = new String[8][];
         String[] caps = mChannel.getCaptions();
+        captionWidths = new float[caps.length][];
+        captions = new String[caps.length][];
+
         for (int i = 0; i < caps.length; i++) {
 
             captions[i] = caps[i].split(" ");

@@ -12,19 +12,6 @@ public class HipDrumChannel extends DrumChannel {
         lowNote = 0;
         rids = new int[8];
 
-        int i= 0;
-
-        rids[i++] = R.raw.hh_kick;
-        rids[i++] = R.raw.hh_clap;
-        rids[i++] = R.raw.rock_hithat_closed;
-        rids[i++] = R.raw.hh_hihat;
-        rids[i++] = R.raw.hh_tamb;
-        rids[i++] = R.raw.hh_tom_mh;
-        rids[i++] = R.raw.hh_tom_ml;
-        rids[i++] = R.raw.hh_tom_l;
-
-
-
         presetNames = new String[] {
                 "PRESET_HH_KICK",
                 "PRESET_HH_CLAP",
@@ -36,10 +23,58 @@ public class HipDrumChannel extends DrumChannel {
                 "PRESET_HH_TOM_L",
         };
 
-        mCaptions = new String[] {"kick", "clap", "closed hi-hat", "open hi-hat",
-            "tambourine", "h tom", "m tom", "l tom"};
-
         kitName = "PRESET_HIPKIT";
+    }
+
+    public int loadPool() {
+
+        String defaultSounds = getDefaultSoundSetJson();
+        loadSoundSet(defaultSounds, 0);
+        return 1;
+    }
+
+
+    public static String getDefaultSoundSetJson() {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": false, \"name\": \"");
+        sb.append("Hip Hop Drum Kit\", \"omg_id\": \"PRESET_HIPKIT\", \"data\": [");
+
+        sb.append("{\"caption\": \"kick\", \"preset_id\": ");
+        sb.append(R.raw.hh_kick);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"clap\", \"preset_id\": ");
+        sb.append(R.raw.hh_clap);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"closed hi-hat\", \"preset_id\": ");
+        sb.append(R.raw.rock_hithat_closed);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"open hi-hat\", \"preset_id\": ");
+        sb.append(R.raw.hh_hihat);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"tambourine\", \"preset_id\": ");
+        sb.append(R.raw.hh_tamb);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"h tom\", \"preset_id\": ");
+        sb.append(R.raw.hh_tom_mh);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"m tom\", \"preset_id\": ");
+        sb.append(R.raw.hh_tom_ml);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"l tom\", \"preset_id\": ");
+        sb.append(R.raw.hh_tom_l);
+        sb.append("} ");
+
+        sb.append("]}");
+
+        return sb.toString();
     }
 
 }

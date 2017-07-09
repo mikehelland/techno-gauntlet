@@ -19,12 +19,13 @@ public class ElectricSamplerChannel extends Channel {
         lowNote = 40;
 
         volume = 0.10f;
-        rids = new int[46];
+        //rids = new int[46];
+        rids = new int[1];
 
         int i= 0;
 
         rids[i++] = R.raw.electric_e;
-        rids[i++] = R.raw.electric_f;
+        /*rids[i++] = R.raw.electric_f;
         rids[i++] = R.raw.electric_fs;
         rids[i++] = R.raw.electric_g;
         rids[i++] = R.raw.electric_gs;
@@ -68,7 +69,7 @@ public class ElectricSamplerChannel extends Channel {
         rids[i++] = R.raw.electric_bf4;
         rids[i++] = R.raw.electric_b4;
         rids[i++] = R.raw.electric_c4;
-        rids[i++] = R.raw.electric_cs4;
+        rids[i++] = R.raw.electric_cs4;*/
 
     }
 

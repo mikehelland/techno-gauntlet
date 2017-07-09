@@ -5,13 +5,6 @@
     android:layout_height="wrap_content"
     >
 
-    <Button android:text="Be a Bluetooth Remote"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:drawableRight="@drawable/bluetooth"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/bt_remote"></Button>
-
 
 
     <LinearLayout
@@ -37,10 +30,11 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@id/bt_remote"
-        android:layout_alignParentTop="true"
         android:id="@+id/goback"
         android:visibility="gone">
+
+        <!--android:layout_above="@id/bt_remote"
+android:layout_alignParentTop="true"-->
 
         <Button android:text="Return to OMG Bananas"
             android:layout_width="fill_parent"
@@ -89,13 +83,14 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@id/bt_remote"
-        android:layout_alignParentTop="true"
         android:gravity="center"
         android:orientation="vertical"
         android:id="@+id/welcome_info">
 
-        <TextView android:text="OpenMusicGallery.net"
+<!--        android:layout_above="@id/bt_remote"
+        android:layout_alignParentTop="true" -->
+
+        <TextView android:text="OpenMusic.Gallery"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"
             android:layout_height="wrap_content"

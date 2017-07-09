@@ -1,9 +1,9 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.ListFragment;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +17,7 @@ public class SavedListFragment extends ListFragment
 {
     private Cursor cursor;
     private int page;
-    private boolean noMoreToDownload = false;
+    //private boolean noMoreToDownload = false;
 
     private TextView foot;
     private TextView head;
@@ -32,7 +32,7 @@ public class SavedListFragment extends ListFragment
 
     private MainFragment mMainFragment;
 
-    public SavedListFragment(MainFragment mainFragment, Jam jam) {
+    public void setJam(MainFragment mainFragment, Jam jam) {
         mJam = jam;
         mMainFragment = mainFragment;
     }

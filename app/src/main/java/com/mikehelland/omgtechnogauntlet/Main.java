@@ -1,13 +1,14 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.media.AudioManager;
-import android.os.Bundle;
-//import android.support.v4.app.FragmentActivity;
-//import android.support.v4.app.FragmentTransaction;
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.media.AudioManager;
+import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+
+//import android.support.v4.app.FragmentActivity;
+//import android.support.v4.app.FragmentTransaction;
 
 public class Main extends Activity {//FragmentActivity {
 
@@ -21,6 +22,10 @@ public class Main extends Activity {//FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //TODO have such a good database I don't need to blow it away every time
+        deleteDatabase("OMG_TECHNO_GAUNTLET");
+
 
         mBtf = new BluetoothFactory(this);
 

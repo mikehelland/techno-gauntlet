@@ -19,23 +19,58 @@ public class RockDrumChannel extends DrumChannel {
                 "PRESET_ROCK_TOM_MH",
                 "PRESET_ROCK_TOM_ML",
                 "PRESET_ROCK_TOM_L"};
-
-        mCaptions = new String[] {"kick", "snare", "hi-hat", "open hi-hat",
-                "crash", "h tom", "m tom", "l tom"};
-
         kitName = "PRESET_ROCKKIT";
-        rids = new int[8];
 
-        int i= 0;
+    }
 
-        rids[i++] = R.raw.rock_kick;
-        rids[i++] = R.raw.rock_snare;
-        rids[i++] = R.raw.rock_hithat_med;
-        rids[i++] = R.raw.rock_hihat_open;
-        rids[i++] = R.raw.rock_crash;
-        rids[i++] = R.raw.rock_tom_mh;
-        rids[i++] = R.raw.rock_tom_ml;
-        rids[i++] = R.raw.rock_tom_l;
+    public int loadPool() {
+
+        String defaultSounds = getDefaultSoundSetJson();
+        loadSoundSet(defaultSounds, 0);
+        return 1;
+    }
+
+    public static String getDefaultSoundSetJson() {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": false, \"name\": \"");
+        sb.append("Rock Drum Kit\", \"omg_id\": \"PRESET_ROCKKIT\", \"data\": [");
+
+        sb.append("{\"caption\": \"kick\", \"preset_id\": ");
+        sb.append(R.raw.rock_kick);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"snare\", \"preset_id\": ");
+        sb.append(R.raw.rock_snare);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"hi-hat\", \"preset_id\": ");
+        sb.append(R.raw.rock_hithat_med);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"open hi-hat\", \"preset_id\": ");
+        sb.append(R.raw.rock_hihat_open);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"crash\", \"preset_id\": ");
+        sb.append(R.raw.rock_crash);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"h tom\", \"preset_id\": ");
+        sb.append(R.raw.rock_tom_mh);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"m tom\", \"preset_id\": ");
+        sb.append(R.raw.rock_tom_ml);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"l tom\", \"preset_id\": ");
+        sb.append(R.raw.rock_tom_l);
+        sb.append("} ");
+
+        sb.append("]}");
+
+        return sb.toString();
     }
 
 }

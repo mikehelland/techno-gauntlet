@@ -14,7 +14,7 @@ import java.util.Random;
 public abstract class DrumChannel extends Channel {
 
 
-    protected String[] mCaptions;
+//    protected String[] mCaptions;
     protected String[] presetNames;
 
     protected boolean[][] pattern;
@@ -37,9 +37,6 @@ public abstract class DrumChannel extends Channel {
 
         volume = 1.0f;
 
-        mCaptions = new String[] {
-
-        };
 
         beats = jam.getBeats();
         subbeats = jam.getSubbeats();
@@ -50,15 +47,13 @@ public abstract class DrumChannel extends Channel {
         if (enabled) {
             for (int i = 0; i < pattern.length; i++) {
                 if (pattern[i][subbeat]) {
-                    playingId = mPool.play(ids[i], volume, volume, 10, 0, 1);
+
+                    if (i < ids.length)
+                        playingId = mPool.play(ids[i], volume, volume, 10, 0, 1);
                 }
             }
         }
 
-    }
-
-    public String[] getCaptions() {
-        return mCaptions;
     }
 
 
@@ -327,7 +322,7 @@ public abstract class DrumChannel extends Channel {
 
         for (int p = 0; p < pattern.length; p++) {
             sb.append("{\"name\": \"");
-            sb.append(mCaptions[p]);
+            sb.append(captions[p]);
             sb.append("\", \"sound\": \"");
             sb.append(presetNames[p]);
             sb.append("\", \"data\": [");

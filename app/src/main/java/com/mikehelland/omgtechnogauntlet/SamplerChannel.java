@@ -11,26 +11,63 @@ public class SamplerChannel extends DrumChannel {
         highNote = 7;
         lowNote = 0;
 
-        mCaptions = new String[] {
-                "bongo l", "bongo h", "click l", "click h", "shhk", "scrape", "woop", "chimes"
-        };
         presetNames = new String[] {
                 "PRESET_bongol", "PRESET_bongoh", "PRESET_clickl", "PRESET_clickh",
                 "PRESET_shhk", "PRESET_scrape", "PRESET_woop", "PRESET_chimes"
         };
         rids = new int[8];
 
-        kitName = "PRESET_PERCUSSION_SAMPLER";
-    
-        rids[0] = R.raw.sampler_8_bongol;
-        rids[1] = R.raw.sampler_7_bongoh;
-        rids[2] = R.raw.sampler_1_click;
-        rids[3] = R.raw.sampler_2_click;
-        rids[4] = R.raw.sampler_6_shhk;
-        rids[5] = R.raw.sampler_4_scrape;
-        rids[6] = R.raw.sampler_5_whoop;
-        rids[7] = R.raw.sampler_3_chimes;
+    }
 
+    public int loadPool() {
+
+        String defaultSounds = getDefaultSoundSetJson();
+        loadSoundSet(defaultSounds, 0);
+        return 1;
+    }
+
+
+    public static String getDefaultSoundSetJson() {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": false, \"name\": \"");
+        sb.append("Percussion Sampler\", \"omg_id\": \"PRESET_PERCUSSION_SAMPLER\", \"data\": [");
+
+        sb.append("{\"caption\": \"bongo l\", \"preset_id\": ");
+        sb.append(R.raw.sampler_8_bongol);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"bongo l\", \"preset_id\": ");
+        sb.append(R.raw.sampler_7_bongoh);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"click l\", \"preset_id\": ");
+        sb.append(R.raw.sampler_1_click);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"click h\", \"preset_id\": ");
+        sb.append(R.raw.sampler_2_click);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"shhk\", \"preset_id\": ");
+        sb.append(R.raw.sampler_6_shhk);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"scrape\", \"preset_id\": ");
+        sb.append(R.raw.sampler_4_scrape);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"whoop\", \"preset_id\": ");
+        sb.append(R.raw.sampler_5_whoop);
+        sb.append("}, ");
+
+        sb.append("{\"caption\": \"chimes\", \"preset_id\": ");
+        sb.append(R.raw.sampler_3_chimes);
+        sb.append("} ");
+
+        sb.append("]}");
+
+        return sb.toString();
     }
 
     public void makeFill() {
