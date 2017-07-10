@@ -25,7 +25,8 @@ public class Jam {
 
     private Channel keyboardChannel;
     private Channel guitarChannel;
-    private SamplerChannel samplerChannel;
+    //private SamplerChannel samplerChannel;
+    private DrumChannel samplerChannel;
 
     private DialpadChannel dialpadChannel;
 
@@ -83,7 +84,9 @@ public class Jam {
 
         guitarChannel = new ElectricSamplerChannel(mContext, this, pool,
                 "MELODY", "PRESET_GUITAR1");
-        samplerChannel = new SamplerChannel(mContext, this, pool);
+
+        samplerChannel = new DrumChannel(mContext, this, pool);
+
         keyboardChannel = new KeyboardSamplerChannel(mContext, this, pool,
                 "MELODY", "PRESET_SYNTH1");
 
@@ -125,6 +128,11 @@ public class Jam {
                 progressBar.setMax(5);
         }
 
+        if (!samplerChannel.loadSoundSet(PreferenceHelper.getDefaultSamplerId(mContext)))
+            return;
+        if (updatePB)
+            progressBar.incrementProgressBy(1);
+
         if (drumChannel.loadPool() == -1) return;
         if (updatePB) progressBar.incrementProgressBy(1);
 
@@ -132,9 +140,6 @@ public class Jam {
         if (updatePB) progressBar.incrementProgressBy(1);
 
         if (guitarChannel.loadPool() == -1) return;
-        if (updatePB) progressBar.incrementProgressBy(1);
-
-        if (samplerChannel.loadPool() == -1) return;
         if (updatePB) progressBar.incrementProgressBy(1);
 
         if (keyboardChannel.loadPool() == -1) return;
@@ -475,7 +480,7 @@ public class Jam {
             dialpadChannel.disable();
         }
 
-        samplerChannel.makeFill();
+        samplerChannel.makePercussionFill();
         if (rand.nextInt(3) == 0) {
             samplerChannel.disable();
         }
@@ -614,8 +619,10 @@ public class Jam {
 
         sb.append("{\"type\" : \"");
         sb.append(channel.getType());
-        sb.append("\", \"sound\": \"");
-        sb.append(channel.getSoundName());
+        sb.append("\", \"soundsetName\": \"");
+        sb.append(channel.getSoundSetName());
+        sb.append("\", \"soundsetURL\": \"");
+        sb.append(channel.getSoundSetURL());
         sb.append("\", \"scale\": \"");
         sb.append(mm.getScale());
         sb.append("\", \"rootNote\": ");
@@ -676,7 +683,7 @@ public class Jam {
     }
 
     public void monkeyWithSampler() {
-        samplerChannel.makeFill();
+        samplerChannel.makePercussionFill();
     }
 
     public void monkeyWithDrums() {

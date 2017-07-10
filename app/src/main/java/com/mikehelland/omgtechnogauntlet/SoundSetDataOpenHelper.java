@@ -12,6 +12,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     //private Context mContext;
     SoundSetDataOpenHelper(Context context) {
         super(context, "OMG_TECHNO_GAUNTLET", null, 1);
+        Log.d("MGH", "datahelper constructor");
         //mContext = context;
     }
 
@@ -19,7 +20,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         Log.d("MGH", "onCreate soundsets table");
         db.execSQL("CREATE TABLE soundsets (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "name TEXT, data TEXT, time INTEGER, omg_id TEXT)");
+                "name TEXT, data TEXT, url TEXT, time INTEGER, omg_id TEXT)");
         setupDefaultSoundSets(db);
     }
 
@@ -41,6 +42,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
         ContentValues data = new ContentValues();
         data.put("name", "Percussion Sampler");
+        data.put("url", "PRESET_PERCUSSION_SAMPLER");
         data.put("omg_id", "PRESET_PERCUSSION_SAMPLER");
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
@@ -53,6 +55,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
         ContentValues data = new ContentValues();
         data.put("name", "Rock Drum Kit");
+        data.put("url", "PRESET_ROCKKIT");
         data.put("omg_id", "PRESET_ROCKKIT");
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
@@ -65,6 +68,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
         ContentValues data = new ContentValues();
         data.put("name", "Hip Hop Drum Kit");
+        data.put("url", "PRESET_HIPKIT");
         data.put("omg_id", "PRESET_HIPKIT");
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
@@ -103,6 +107,21 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         id = db.insert("soundsets", null, data);
         db.close();
         return id;
+    }
+
+    SoundSet getSoundSetById(long id) {
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM soundsets WHERE _id = " + Long.toString(id), null);
+        if (cursor.getCount() == 0) {
+            return null;
+        }
+
+        cursor.moveToFirst();
+        SoundSet soundset = new SoundSet(cursor);
+
+        db.close();
+        return soundset;
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.Random;
  * Date: 11/15/13
  * Time: 1:56 PM
  */
-public class DrumChannel extends Channel {
+public abstract class DynamicDrumChannel extends DynamicChannel {
 
 
 //    protected String[] mCaptions;
@@ -26,8 +26,8 @@ public class DrumChannel extends Channel {
 
     protected String kitName = "";
 
-    public DrumChannel(Context context, Jam jam, OMGSoundPool pool) {
-        super(context, jam, pool, "DRUMBEAT", "DRUMBEAT");
+    public DynamicDrumChannel(Context context, Jam jam, OMGSoundPool pool) {
+        super(context, jam, pool);
 
         rand = jam.getRand();
 
@@ -41,7 +41,6 @@ public class DrumChannel extends Channel {
         beats = jam.getBeats();
         subbeats = jam.getSubbeats();
         pattern = new boolean[8][beats * subbeats];
-        rids = new int[8];
     }
 
     public void playBeat(int subbeat) {
@@ -307,39 +306,12 @@ public class DrumChannel extends Channel {
 
     }
 
-    public void makePercussionFill() {
-
-        clearPattern();
-
-        int fillLevel = rand.nextInt(4);
-
-        if (fillLevel == 0)
-            return;
-
-        boolean[][] toms = new boolean[][] {pattern[0], pattern[1], pattern[2],
-                pattern[3], pattern[4]};
-        boolean on;
-        int tom;
-        for (int i = 0; i < 16; i++) {
-
-            on = (fillLevel == 1 && (rand.nextBoolean() && rand.nextBoolean())) ||
-                    (fillLevel == 2 && rand.nextBoolean()) ||
-                    (fillLevel == 3 && (rand.nextBoolean() || rand.nextBoolean()));
-            tom = rand.nextInt(5);
-
-            toms[tom][i] = on;
-            toms[tom][i + 16] = on;
-        }
-
-    }
 
     public void getData(StringBuilder sb) {
 
         int totalBeats = beats * subbeats;
-        sb.append("{\"type\" : \"DRUMBEAT\", \"soundsetName\": \"");
-        sb.append(mSoundSet.getName());
-        sb.append("\", \"soundsetURL\" : \"");
-        sb.append(mSoundSet.getURL());
+        sb.append("{\"type\" : \"DRUMBEAT\", \"kit\": \"");
+        sb.append(kitName);
 
         sb.append("\", \"volume\": ");
         sb.append(volume);
@@ -348,13 +320,11 @@ public class DrumChannel extends Channel {
 
         sb.append(", \"tracks\": [");
 
-        ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();
-        for (int p = 0; p < sounds.size(); p++) {
-
+        for (int p = 0; p < pattern.length; p++) {
             sb.append("{\"name\": \"");
-            sb.append(sounds.get(p).getName());
+            sb.append(captions[p]);
             sb.append("\", \"sound\": \"");
-            sb.append(sounds.get(p).getURL());
+            sb.append(presetNames[p]);
             sb.append("\", \"data\": [");
             for (int i = 0; i < totalBeats; i++) {
                 sb.append(pattern[p][i] ?1:0) ;
@@ -363,7 +333,7 @@ public class DrumChannel extends Channel {
             }
             sb.append("]}");
 
-            if (p < sounds.size() - 1)
+            if (p < pattern.length - 1)
                 sb.append(",");
 
         }
@@ -389,7 +359,5 @@ public class DrumChannel extends Channel {
     public void clearNotes() {
         clearPattern();
     }
-
-
 }
 

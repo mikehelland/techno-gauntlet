@@ -13,8 +13,7 @@ public class HipDrumChannel extends DrumChannel {
         rids = new int[8];
 
         presetNames = new String[] {
-                "PRESET_HH_KICK",
-                "PRESET_HH_CLAP",
+                "PRESET_HH_KICK", "PRESET_HH_CLAP",
                 "PRESET_ROCK_HIHAT_CLOSED",
                 "PRESET_HH_HIHAT",
                 "PRESET_HH_TAMB",
@@ -28,8 +27,7 @@ public class HipDrumChannel extends DrumChannel {
 
     public int loadPool() {
 
-        String defaultSounds = getDefaultSoundSetJson();
-        loadSoundSet(defaultSounds, 0);
+        loadSoundSet(2);
         return 1;
     }
 
@@ -38,37 +36,37 @@ public class HipDrumChannel extends DrumChannel {
 
         StringBuilder sb = new StringBuilder();
         sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": false, \"name\": \"");
-        sb.append("Hip Hop Drum Kit\", \"omg_id\": \"PRESET_HIPKIT\", \"data\": [");
+        sb.append("Hip Hop Drum Kit\", \"url\": \"PRESET_HIPKIT\", \"data\": [");
 
-        sb.append("{\"caption\": \"kick\", \"preset_id\": ");
+        sb.append("{\"url\": \"PRESET_HH_KICK\", \"name\": \"kick\", \"preset_id\": ");
         sb.append(R.raw.hh_kick);
         sb.append("}, ");
 
-        sb.append("{\"caption\": \"clap\", \"preset_id\": ");
+        sb.append("{\"url\": \"PRESET_HH_CLAP\", \"name\": \"clap\", \"preset_id\": ");
         sb.append(R.raw.hh_clap);
         sb.append("}, ");
 
-        sb.append("{\"caption\": \"closed hi-hat\", \"preset_id\": ");
+        sb.append("{\"url\": \"PRESET_ROCK_HIHAT_CLOSED\", \"name\": \"closed hi-hat\", \"preset_id\": ");
         sb.append(R.raw.rock_hithat_closed);
         sb.append("}, ");
 
-        sb.append("{\"caption\": \"open hi-hat\", \"preset_id\": ");
+        sb.append("{\"url\": \"PRESET_HH_HIHAT\", \"name\": \"open hi-hat\", \"preset_id\": ");
         sb.append(R.raw.hh_hihat);
         sb.append("}, ");
 
-        sb.append("{\"caption\": \"tambourine\", \"preset_id\": ");
+        sb.append("{\"url\": \"PRESET_HH_TAMB\", \"name\": \"tambourine\", \"preset_id\": ");
         sb.append(R.raw.hh_tamb);
         sb.append("}, ");
 
-        sb.append("{\"caption\": \"h tom\", \"preset_id\": ");
+        sb.append("{\"url\": \"PRESET_HH_TOM_MH\", \"name\": \"h tom\", \"preset_id\": ");
         sb.append(R.raw.hh_tom_mh);
         sb.append("}, ");
 
-        sb.append("{\"caption\": \"m tom\", \"preset_id\": ");
+        sb.append("{\"url\": \"PRESET_HH_TOM_ML\", \"name\": \"m tom\", \"preset_id\": ");
         sb.append(R.raw.hh_tom_ml);
         sb.append("}, ");
 
-        sb.append("{\"caption\": \"l tom\", \"preset_id\": ");
+        sb.append("{\"url\": \"PRESET_HH_TOM_L\", \"name\": \"l tom\", \"preset_id\": ");
         sb.append(R.raw.hh_tom_l);
         sb.append("} ");
 

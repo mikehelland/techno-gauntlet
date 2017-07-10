@@ -85,7 +85,7 @@ public class SoundSetFragment extends OMGFragment {
 
                 String json = cursor.getString(cursor.getColumnIndex("data"));
 
-                if (mChannel.loadSoundSet(json, l)) {
+                if (mChannel.loadSoundSet(new SoundSet(cursor))) {
                     Log.d("MGH", "sound set loaded");
                 }
                 else {

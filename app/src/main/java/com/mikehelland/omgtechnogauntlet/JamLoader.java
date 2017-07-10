@@ -6,15 +6,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class JamLoader {
+class JamLoader {
 
     private Jam mJam;
 
-    public JamLoader(Jam jam) {
+    JamLoader(Jam jam) {
         mJam = jam;
     }
 
-    public boolean loadData(String data) {
+    boolean loadData(String data) {
 
         boolean good = false;
         try {
@@ -45,33 +45,38 @@ public class JamLoader {
                 JSONObject part = parts.getJSONObject(ip);
                 String type = part.getString("type");
 
-                if ("DRUMBEAT".equals(type)) {
-
-                    if ("PRESET_PERCUSSION_SAMPLER".equals(part.getString("kit"))) {
-                        loadDrums(mJam.getSamplerChannel(), part);
-                    } else {
-                        loadDrums(mJam.getDrumChannel(), part);
-
-                    }
-                } else if ("MELODY".equals(type)) {
-                    if ("PRESET_SYNTH1".equals(part.getString("sound"))) {
-                        loadMelody(mJam.getSynthChannel(), part);
-                    } else if ("PRESET_GUITAR1".equals(part.getString("sound"))) {
-                        loadMelody(mJam.getGuitarChannel(), part);
-                    }
-                    else if ("DIALPAD_SINE_DELAY".equals(part.getString(("sound")))) {
-                        loadMelody(mJam.getDialpadChannel(), part);
-                    }
-                } else if ("BASSLINE".equals(type)) {
-                    loadMelody(mJam.getBassChannel(), part);
-
-                } else if ("CHORDPROGRESSION".equals(type)) {
+                if ("CHORDPROGRESSION".equals(type)) {
                     JSONArray chordsData = part.getJSONArray("data");
                     int[] newChords = new int[chordsData.length()];
                     for (int ic = 0; ic < chordsData.length(); ic++) {
                         newChords[ic] = chordsData.getInt(ic);
                     }
                     mJam.setChordProgression(newChords);
+                    continue;
+                }
+
+
+                Log.d("MGH loadData()", part.toString(4));
+                String soundsetURL = part.getString("soundsetURL");
+                if ("DRUMBEAT".equals(type)) {
+
+                    if ("PRESET_PERCUSSION_SAMPLER".equals(soundsetURL)) {
+                        loadDrums(mJam.getSamplerChannel(), part);
+                    } else {
+                        loadDrums(mJam.getDrumChannel(), part);
+
+                    }
+                } else if ("MELODY".equals(type)) {
+                    if ("PRESET_SYNTH1".equals(soundsetURL)) {
+                        loadMelody(mJam.getSynthChannel(), part);
+                    } else if ("PRESET_GUITAR1".equals(soundsetURL)) {
+                        loadMelody(mJam.getGuitarChannel(), part);
+                    }
+                    else if ("DIALPAD_SINE_DELAY".equals(soundsetURL)) {
+                        loadMelody(mJam.getDialpadChannel(), part);
+                    }
+                } else if ("BASSLINE".equals(type)) {
+                    loadMelody(mJam.getBassChannel(), part);
 
                 }
 
@@ -93,15 +98,11 @@ public class JamLoader {
 
         //todo    drumset = jsonData.getInt("kit");
 
+        String soundsetName = part.getString("soundsetName");
+        String soundsetURL = part.getString("soundsetURL");
 
-        JSONArray tracks;
-        if (part.has("tracks")) {
-            tracks = part.getJSONArray("tracks");
-        }
-        else {
-            //backwards compat
-            tracks = part.getJSONArray("data");
-        }
+        JSONArray tracks = part.getJSONArray("tracks");
+
         JSONObject track;
         JSONArray trackData;
 

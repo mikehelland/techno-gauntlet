@@ -1,11 +1,12 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.util.Log;
 
 import java.util.ArrayList;
 
-public class Channel {
+public abstract class DynamicChannel {
 
     private boolean wasSetup = false;
 
@@ -35,7 +36,7 @@ public class Channel {
 
     protected int[] ids;
     protected int[] rids;
-    //protected String[] captions;
+    protected String[] captions;
 
     protected int playingId = -1;
 
@@ -60,23 +61,17 @@ public class Channel {
     ArrayList<DebugTouch> debugTouchData = new ArrayList<DebugTouch>();
 
     private String mType;
-    protected SoundSet mSoundSet;
+    private String mSoundSetName;
+    private String mSoundSetURL;
     private String mMainSound;
 
-    public Channel(Context context, Jam jam, OMGSoundPool pool, String type, String sound) {
+    private SoundSet mSoundSet;
 
-        mSoundSet = new SoundSet();
-        mSoundSet.setName(type);
-        mSoundSet.setURL(sound);
-
-
-        mPool = pool; //new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
+    public DynamicChannel(Context context, Jam jam, OMGSoundPool pool) {
+        //mPool = pool;
+        mPool = pool; new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
         this.context = context;
         mJam = jam;
-
-        mType = type;
-        mMainSound = sound;
-        //mSoundSetName = sound;
 
         subbeats = mJam.getSubbeats();
         mainbeats = mJam.getBeats();
@@ -368,10 +363,10 @@ public class Channel {
     }
 
     public String getSoundSetName() {
-        return mSoundSet.getName();
+        return mSoundSetName;
     }
     public String getSoundSetURL() {
-        return mSoundSet.getURL();
+        return mSoundSetURL;
     }
 
     public String getType() {
@@ -382,21 +377,19 @@ public class Channel {
         return mMainSound;
     }
 
-    public boolean loadSoundSet(SoundSet soundset) {
 
-        mSoundSet = soundset;
+    public boolean loadSoundSet(long id) {
 
-        String path = context.getFilesDir() + "/" + Long.toString(mSoundSet.getID()) + "/";
+        SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(context);
+        mSoundSet = dataHelper.getSoundSetById(id);
+
+        String path = context.getFilesDir() + "/" + Long.toString(id) + "/";
 
         int preset_id;
-        ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();
-
-        ids = new int[sounds.size()];
-
-        for (int i = 0; i < sounds.size(); i++) {
+        for (int i = 0; i < mSoundSet.getSounds().size(); i++) {
             SoundSet.Sound sound = mSoundSet.getSounds().get(i);
 
-            //captions[i] = sound.getName();
+            captions[i] = sound.getName();
 
             if (sound.isPreset()) {
                 preset_id = sound.getPresetId();
@@ -412,24 +405,9 @@ public class Channel {
         return true;
     }
 
-    public boolean loadSoundSet(long id) {
-
-        SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(context);
-        SoundSet soundset = dataHelper.getSoundSetById(id);
-        if (soundset == null) {
-            return false;
-        }
-
-        return loadSoundSet(soundset);
+    public String[] getCaptions() {
+        return captions;
     }
-
-    public SoundSet getSoundSet() {
-        return mSoundSet;
-    }
-
-    //public String[] getCaptions() {
-    //    return captions;
-    //}
 
 
 }

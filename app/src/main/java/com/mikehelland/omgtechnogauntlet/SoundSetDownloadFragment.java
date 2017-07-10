@@ -36,7 +36,7 @@ public class SoundSetDownloadFragment extends OMGFragment {
     View mView;
     ProgressDialog mProgressDialog;
 
-    String soundsetUrl;
+    String soundsetURL;
     boolean isSetup = false;
 
     @Override
@@ -56,8 +56,8 @@ public class SoundSetDownloadFragment extends OMGFragment {
 
         isSetup = true;
 
-        if (soundsetUrl != null) {
-            downloadSoundSet(soundsetUrl);
+        if (soundsetURL != null) {
+            downloadSoundSet(soundsetURL);
         }
 
         return mView;
@@ -71,7 +71,7 @@ public class SoundSetDownloadFragment extends OMGFragment {
             downloadTask.execute(url);
         }
         else {
-            soundsetUrl = url;
+            soundsetURL = url;
         }
     }
 

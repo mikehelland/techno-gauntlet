@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+
 /**
  * User: m
  * Date: 11/15/13
@@ -232,13 +234,13 @@ public class DrumView extends View {
 
     public void setCaptions() {
 
-        String[] caps = mChannel.getCaptions();
-        captionWidths = new float[caps.length][];
-        captions = new String[caps.length][];
+        ArrayList<SoundSet.Sound> sounds = mChannel.getSoundSet().getSounds();
+        captionWidths = new float[sounds.size()][];
+        captions = new String[sounds.size()][];
 
-        for (int i = 0; i < caps.length; i++) {
+        for (int i = 0; i < sounds.size(); i++) {
 
-            captions[i] = caps[i].split(" ");
+            captions[i] = sounds.get(i).getName().split(" ");
             captionWidths[i] = new float[captions[i].length];
             for (int j = 0; j < captions[i].length; j++) {
                 captionWidths[i][j] = blackPaint.measureText(captions[i][j]) ;
