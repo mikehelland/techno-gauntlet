@@ -1,8 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.os.Bundle;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +12,12 @@ public class MixerFragment extends OMGFragment {
     private View drumControls;
 
     private View bassControls;
-
     private View keyboardControls;
-
     private View guitarControls;
 
     private View samplerControls;
+
+    private View oscControls;
 
 
     @Override
@@ -36,6 +34,7 @@ public class MixerFragment extends OMGFragment {
         setupGuitarPanel();
         setupKeyboardPanel();
         setupSamplerPanel();
+        setupOscPanel();
 
         return mView;
     }
@@ -55,6 +54,16 @@ public class MixerFragment extends OMGFragment {
 
         ((MixerView)bassControls.findViewById(R.id.mixer_view)).
                 setJam(mJam, mJam.getBassChannel(), "Bass");
+
+
+    }
+
+    public void setupOscPanel() {
+
+        oscControls = mView.findViewById(R.id.osc_mixer);
+
+        ((MixerView)oscControls.findViewById(R.id.mixer_view)).
+                setJam(mJam, mJam.getDialpadChannel(), "Oscillator");
 
 
     }

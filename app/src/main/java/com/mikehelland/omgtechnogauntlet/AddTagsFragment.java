@@ -98,7 +98,7 @@ public class AddTagsFragment extends OMGFragment {
     public void setOMGHelper(OMGHelper omgHelper) {
         mOMGHelper = omgHelper;
 
-        if (!isSetup)
+        if (isSetup)
             setup();
     }
 

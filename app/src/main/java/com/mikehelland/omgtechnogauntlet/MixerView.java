@@ -39,7 +39,7 @@ public class MixerView extends View {
     private String channelName = "";
     private float channelNameWidth2;
 
-    private int labelTextSize = 24;
+    private int labelTextSize = 48;
 
     private float volume = 0.5f;
     private float pan = 0.0f;
@@ -101,10 +101,10 @@ public class MixerView extends View {
         canvas.drawLine(2 + width2, height2, width - 2,
                 height2, paint);
 
-        canvas.drawText("L", width2 + 15,
+        canvas.drawText("L", width2 + 25,
                 height - 5, paintText);
 
-        canvas.drawText("R", width - 25,
+        canvas.drawText("R", width - 35,
                 height - 5, paintText);
 
         canvas.drawText("Volume", 10,
@@ -112,14 +112,27 @@ public class MixerView extends View {
 
         canvas.drawText(channelName, width2 - channelNameWidth2, labelTextSize, paintText);
 
-        canvas.drawRect(width2 * volume - 5, height / 3,
-                        width2 * volume + 5, height / 3 * 2,
+        canvas.drawRect(width2 * volume - 5, 0,
+                        width2 * volume + 5, height,
                 topPanelPaint);
 
-        canvas.drawRect(width2 * pan / 2 + width / 4 * 3 - 5, height / 4,
-                        width2 * pan / 2 + width / 4 * 3 + 5, height / 4 * 3,
+        canvas.drawRect(0, 0, width2 * volume, height,
+                paintRed);
+
+
+        canvas.drawRect(width2 * pan / 2 + width / 4 * 3 - 5, 0,
+                        width2 * pan / 2 + width / 4 * 3 + 5, height,
                 topPanelPaint);
 
+        if (pan < 0) {
+            canvas.drawRect(width2 * pan / 2 + width / 4 * 3, 0, width / 4 * 3, height,
+                    paintGreen);
+        }
+        else {
+            canvas.drawRect(width / 4 + width2, 0, width2 * pan / 2 + width / 4 + width2, height,
+                    paintGreen);
+
+        }
     }
 
     public boolean onTouchEvent(MotionEvent event) {

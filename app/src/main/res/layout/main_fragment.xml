@@ -7,45 +7,50 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <ImageView
-        android:src="@drawable/bluetooth"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:id="@+id/bt_button"
-        >
 
-    </ImageView>
+    <ImageView
+        android:id="@+id/main_banana"
+        android:src="@drawable/banana48"
+        android:layout_width="wrap_content"
+        android:layout_height="48dip"
+        android:layout_alignParentRight="true"
+
+        />
+
 
     <Button android:id="@+id/points_button"
         android:layout_width="48dip"
         android:layout_height="wrap_content"
         android:text="0"
-        android:layout_toRightOf="@id/bt_button"
+        android:layout_toLeftOf="@id/main_banana"
         />
 
-    <ImageView
-            android:id="@+id/main_banana"
-            android:src="@drawable/banana48"
-            android:layout_width="wrap_content"
-            android:layout_height="48dip"
-            android:layout_toRightOf="@id/points_button"
-            />
+    <Button android:id="@+id/play_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play"
+        android:layout_toLeftOf="@id/points_button"
+        />
 
 
     <Button android:id="@+id/mixer_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Mixer"
-        android:layout_alignParentRight="true"
+        android:layout_toLeftOf="@id/play_button"
         />
 
-    <Button android:id="@+id/play_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Play"
-            android:layout_toLeftOf="@id/mixer_button"
-            />
+
+    <ImageView
+        android:src="@drawable/bluetooth"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_toLeftOf="@id/mixer_button"
+        android:id="@+id/bt_button"
+        >
+
+    </ImageView>
+
 
 
     <ImageView
@@ -53,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:id="@+id/libeniz_head"
-            android:layout_toLeftOf="@id/play_button">
+            android:layout_alignParentLeft="true">
             </ImageView>
 
 
@@ -118,20 +123,16 @@
                   android:orientation="vertical">
 
         <include layout="@layout/main_panel"
-                 android:id="@+id/sampler"
-                />
-
-        <include layout="@layout/main_panel"
                  android:id="@+id/guitar"
                 />
-
-        <include layout="@layout/main_panel"
-            android:id="@+id/dsp_controls"
-                />
-
         <include layout="@layout/main_panel"
                  android:id="@+id/rhythm_controls"
                 />
+
+
+        <include layout="@layout/main_panel"
+            android:id="@+id/dsp_controls"
+            />
 
         <include layout="@layout/main_panel"
                  android:id="@+id/bass_controls"
@@ -141,6 +142,9 @@
         <include layout="@layout/main_panel"
                  android:id="@+id/drums"
                 />
+        <include layout="@layout/main_panel"
+            android:id="@+id/sampler"
+            />
 
 
     </LinearLayout>

@@ -10,7 +10,7 @@ import android.util.Log;
 public class SavedDataOpenHelper extends SQLiteOpenHelper {
 
     SavedDataOpenHelper(Context context) {
-        super(context, "OMG_BANANAS", null, 5);
+        super(context, "OMG_SAVES", null, 5);
     }
 
     @Override

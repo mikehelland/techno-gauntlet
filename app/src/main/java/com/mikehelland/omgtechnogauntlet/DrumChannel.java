@@ -54,7 +54,6 @@ public class DrumChannel extends Channel {
                 }
             }
         }
-
     }
 
 
@@ -333,6 +332,7 @@ public class DrumChannel extends Channel {
 
     }
 
+    @Override
     public void getData(StringBuilder sb) {
 
         int totalBeats = beats * subbeats;

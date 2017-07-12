@@ -25,12 +25,6 @@ public class HipDrumChannel extends DrumChannel {
         kitName = "PRESET_HIPKIT";
     }
 
-    public int loadPool() {
-
-        loadSoundSet(2);
-        return 1;
-    }
-
 
     public static String getDefaultSoundSetJson() {
 

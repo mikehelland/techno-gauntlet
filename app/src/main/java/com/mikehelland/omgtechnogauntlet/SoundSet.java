@@ -20,6 +20,12 @@ public class SoundSet {
     private long mID;
     private ArrayList<Sound> mSounds = new ArrayList<Sound>();
 
+    private boolean mChromatic = false;
+    private int mHighNote;
+    private int mLowNote;
+
+    private boolean mIsValid = false;
+
     public SoundSet() {}
 
     public SoundSet(Cursor cursor) {
@@ -27,7 +33,11 @@ public class SoundSet {
         mURL = cursor.getString(cursor.getColumnIndex("url"));
         mID = cursor.getLong(cursor.getColumnIndex("_id"));
 
-        loadFromJSON(cursor.getString(cursor.getColumnIndex("data")));
+        mIsValid = loadFromJSON(cursor.getString(cursor.getColumnIndex("data")));
+    }
+
+    boolean isValid() {
+        return mIsValid;
     }
 
     public boolean loadFromJSON(String json) {
@@ -36,11 +46,17 @@ public class SoundSet {
 
             String type = soundset.getString("type");
             if (!"SOUNDSET".equals(type)) {
-                Log.d("MGH", "soundset not type=SOUNDSET");
+                Log.e("MGH", "soundset not type=SOUNDSET");
+                mIsValid = false;
                 return false;
             }
 
             mName = soundset.getString("name");
+            mChromatic = soundset.has("chromatic") && soundset.getBoolean("chromatic");
+            if (soundset.has("highNote") && soundset.has("lowNote")) {
+                mHighNote = soundset.getInt("highNote");
+                mLowNote = soundset.getInt("lowNote");
+            }
 
             JSONArray data = soundset.getJSONArray("data");
 
@@ -51,7 +67,10 @@ public class SoundSet {
                 sound = new Sound();
                 soundJSON = data.getJSONObject(i);
 
-                sound.setName(soundJSON.getString("name"));
+                if (soundJSON.has("name")) {
+                    sound.setName(soundJSON.getString("name"));
+                }
+
                 sound.setURL(soundJSON.getString("url"));
 
                 if (soundJSON.has("preset_id")) {
@@ -64,12 +83,22 @@ public class SoundSet {
         }
         catch (JSONException exp) {
             Log.d("MGH", exp.getMessage());
+            mIsValid = false;
             return false;
         }
 
         return true;
     }
 
+    public boolean isChromatic() {
+        return mChromatic;
+    }
+    public int getHighNote() {
+        return mHighNote;
+    }
+    public int getLowNote() {
+        return mLowNote;
+    }
 
     public String getName() {
         return mName;

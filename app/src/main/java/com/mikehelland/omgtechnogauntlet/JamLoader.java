@@ -22,11 +22,7 @@ class JamLoader {
             JSONObject jsonData = new JSONObject(data);
 
             JSONArray parts;
-            if (jsonData.has("parts")) {
-                parts = jsonData.getJSONArray("parts");
-            } else {
-                parts = jsonData.getJSONArray("data");
-            }
+            parts = jsonData.getJSONArray("parts");
 
             if (jsonData.has("subbeatMillis")) {
                 mJam.setSubbeatLength(jsonData.getInt("subbeatMillis"));
@@ -41,6 +37,7 @@ class JamLoader {
             }
 
 
+            Channel channel;
             for (int ip = 0; ip < parts.length(); ip++) {
                 JSONObject part = parts.getJSONObject(ip);
                 String type = part.getString("type");
@@ -55,18 +52,10 @@ class JamLoader {
                     continue;
                 }
 
-
                 Log.d("MGH loadData()", part.toString(4));
                 String soundsetURL = part.getString("soundsetURL");
-                if ("DRUMBEAT".equals(type)) {
 
-                    if ("PRESET_PERCUSSION_SAMPLER".equals(soundsetURL)) {
-                        loadDrums(mJam.getSamplerChannel(), part);
-                    } else {
-                        loadDrums(mJam.getDrumChannel(), part);
-
-                    }
-                } else if ("MELODY".equals(type)) {
+                if ("MELODY".equals(type)) {
                     if ("PRESET_SYNTH1".equals(soundsetURL)) {
                         loadMelody(mJam.getSynthChannel(), part);
                     } else if ("PRESET_GUITAR1".equals(soundsetURL)) {
@@ -75,9 +64,21 @@ class JamLoader {
                     else if ("DIALPAD_SINE_DELAY".equals(soundsetURL)) {
                         loadMelody(mJam.getDialpadChannel(), part);
                     }
+                    continue;
                 } else if ("BASSLINE".equals(type)) {
                     loadMelody(mJam.getBassChannel(), part);
+                    continue;
+                }
 
+
+                if ("DRUMBEAT".equals(type)) {
+
+                    if ("PRESET_PERCUSSION_SAMPLER".equals(soundsetURL)) {
+                        loadDrums(mJam.getSamplerChannel(), part);
+                    } else {
+                        loadDrums(mJam.getDrumChannel(), part);
+
+                    }
                 }
 
             }
@@ -95,8 +96,6 @@ class JamLoader {
     }
 
     private void loadDrums(DrumChannel jamChannel, JSONObject part) throws JSONException {
-
-        //todo    drumset = jsonData.getInt("kit");
 
         String soundsetName = part.getString("soundsetName");
         String soundsetURL = part.getString("soundsetURL");

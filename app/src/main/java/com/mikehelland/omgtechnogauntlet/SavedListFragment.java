@@ -80,7 +80,15 @@ public class SavedListFragment extends ListFragment
         cursor.moveToPosition(position - headerOffset);
         String json = cursor.getString(cursor.getColumnIndex("data"));
 
-        new JamLoader(mJam).loadData(json);
+        Jam jam = new Jam(getActivity(), mMainFragment.mPool);
+        jam.load(json);
+
+        //new JamLoader(jam).loadData(json);
+        mJam.finish();
+        mJam = jam;
+
+        ((Main)getActivity()).mJam = jam;
+
 
         if (!mJam.isPlaying())
             mJam.kickIt();

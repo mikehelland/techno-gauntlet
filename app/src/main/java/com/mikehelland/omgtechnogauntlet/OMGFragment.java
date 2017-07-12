@@ -17,5 +17,14 @@ public class OMGFragment extends Fragment{
         mBtf = main.mBtf;
     }
 
+    protected Jam getJam() {
+        return ((Main)getActivity()).mJam;
+    }
+
+    protected void setJam(Jam jam) {
+        ((Main)getActivity()).mJam = jam;
+    }
+
+
 
 }

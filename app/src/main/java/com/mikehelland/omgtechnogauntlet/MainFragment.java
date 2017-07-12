@@ -342,7 +342,7 @@ public class MainFragment extends OMGFragment {
     public void setupDspPanel() {
 
         View controls = mView.findViewById(R.id.dsp_controls);
-        ((Button)(controls.findViewById(R.id.track_button))).setText("Dialpad");
+        ((Button)(controls.findViewById(R.id.track_button))).setText("Oscillator");
 
 
         dspMuteButton = (Button) controls.findViewById(R.id.mute_button);

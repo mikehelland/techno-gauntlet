@@ -7,6 +7,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,14 +23,16 @@ public class Jam {
     private int totalsubbeats = subbeats * beats;
     private int subbeatLength = 125; //70 + rand.nextInt(125); // 125;
 
+    private ArrayList<Channel> mChannels = new ArrayList<>();
+
+
     private DrumChannel drumChannel;
+    private DrumChannel samplerChannel;
 
     private Channel basslineChannel;
 
     private Channel keyboardChannel;
     private Channel guitarChannel;
-    //private SamplerChannel samplerChannel;
-    private DrumChannel samplerChannel;
 
     private DialpadChannel dialpadChannel;
 
@@ -78,25 +84,33 @@ public class Jam {
         boolean usingListener = false;
         boolean updatePB = false;
 
-        drumChannel = new HipDrumChannel(mContext, this, pool);
-        basslineChannel = new BassSamplerChannel(mContext, this, pool,
-                "BASSLINE", "PRESET_BASS");
+        //basslineChannel = new BassSamplerChannel(mContext, this, pool, "BASSLINE", "PRESET_BASS");
 
-        guitarChannel = new ElectricSamplerChannel(mContext, this, pool,
-                "MELODY", "PRESET_GUITAR1");
+        guitarChannel = new ElectricSamplerChannel(mContext, this, pool, "MELODY", "PRESET_GUITAR1");
+        keyboardChannel = new KeyboardSamplerChannel(mContext, this, pool, "MELODY", "PRESET_SYNTH1");
+        dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY", new DialpadChannelSettings());
 
-        samplerChannel = new DrumChannel(mContext, this, pool);
+        soundsToLoad = 0;
 
-        keyboardChannel = new KeyboardSamplerChannel(mContext, this, pool,
-                "MELODY", "PRESET_SYNTH1");
+        basslineChannel = new Channel(mContext, this, pool);
+        soundsToLoad = basslineChannel.prepareSoundSet(4);
 
-        dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY",
-                new DialpadChannelSettings());
+        //todo make this a list of urls instead of database _ids? decide
+        String[] channelConfig = PreferenceHelper.getLastChannelConfiguration(mContext).split(",");
+        for (String sId : channelConfig) {
+            DrumChannel channel = new DrumChannel(mContext, this, pool);
+            soundsToLoad += channel.prepareSoundSet(sId);
+            mChannels.add(channel);
+        }
 
-        soundsToLoad = drumChannel.getSoundCount() +
-                basslineChannel.getSoundCount() +
+        samplerChannel = (DrumChannel)mChannels.get(0);
+        drumChannel = (DrumChannel)mChannels.get(1);
+
+
+        //TODO instead of load a soundset, prepare it to get the precount
+        soundsToLoad +=
+                //basslineChannel.getSoundCount() +
                 guitarChannel.getSoundCount() +
-                samplerChannel.getSoundCount() +
                 keyboardChannel.getSoundCount();
 
         if (Build.VERSION.SDK_INT >= 11 && progressBar != null) {
@@ -128,17 +142,26 @@ public class Jam {
                 progressBar.setMax(5);
         }
 
-        if (!samplerChannel.loadSoundSet(PreferenceHelper.getDefaultSamplerId(mContext)))
+        Log.d("MGH", "load sampler");
+        if (!samplerChannel.loadSoundSet())
             return;
         if (updatePB)
             progressBar.incrementProgressBy(1);
 
-        if (drumChannel.loadPool() == -1) return;
+        Log.d("MGH", "drum sampler");
+        if (!drumChannel.loadSoundSet())
+            return;
         if (updatePB) progressBar.incrementProgressBy(1);
 
-        if (basslineChannel.loadPool() == -1) return;
+        Log.d("MGH", "bass sampler");
+        //if (basslineChannel.loadPool() == -1) return;
+        if (!basslineChannel.loadSoundSet()) {
+            Log.e("MGH", "DIDN'T LOAD BASSLINE CHANNEL");
+            return;
+        }
         if (updatePB) progressBar.incrementProgressBy(1);
 
+        Log.d("MGH", "oethers");
         if (guitarChannel.loadPool() == -1) return;
         if (updatePB) progressBar.incrementProgressBy(1);
 
@@ -165,16 +188,19 @@ public class Jam {
 
         }
 
+        for (Channel channel : mChannels) {
+            channel.playBeat(subbeat);
+        }
+        //samplerChannel.playBeat(subbeat);
+
         drumChannel.playBeat(subbeat);
-        samplerChannel.playBeat(subbeat);
 
         double beat = subbeat / (double)subbeats;
+
+        basslineChannel.playBeat(subbeat);
         playChannelBeat(basslineChannel, beat);
-
         playChannelBeat(guitarChannel, beat);
-
         playChannelBeat(keyboardChannel, beat);
-
         playChannelBeat(dialpadChannel, beat);
 
     }
@@ -280,6 +306,93 @@ public class Jam {
         return subbeatLength;
     }
 
+    public boolean load(String json) {
+
+        boolean good = false;
+        try {
+
+            JSONObject jsonData = new JSONObject(json);
+
+            JSONArray parts;
+            parts = jsonData.getJSONArray("parts");
+
+            if (jsonData.has("subbeatMillis")) {
+                setSubbeatLength(jsonData.getInt("subbeatMillis"));
+            }
+
+            if (jsonData.has("rootNote")) {
+                setKey(jsonData.getInt("rootNote") % 12);
+            }
+
+            if (jsonData.has("scale")) {
+                setScale(jsonData.getString("scale"));
+            }
+
+            basslineChannel = new BassSamplerChannel(mContext, this, pool, "BASSLINE", "PRESET_BASS");
+            guitarChannel = new ElectricSamplerChannel(mContext, this, pool, "MELODY", "PRESET_GUITAR1");
+            keyboardChannel = new KeyboardSamplerChannel(mContext, this, pool, "MELODY", "PRESET_SYNTH1");
+            dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY", new DialpadChannelSettings());
+            basslineChannel.loadPool();
+            guitarChannel.loadPool();
+            keyboardChannel.loadPool();
+
+            Channel channel;
+
+            for (int ip = 0; ip < parts.length(); ip++) {
+                JSONObject part = parts.getJSONObject(ip);
+                String type = part.getString("type");
+
+                if ("CHORDPROGRESSION".equals(type)) {
+                    JSONArray chordsData = part.getJSONArray("data");
+                    int[] newChords = new int[chordsData.length()];
+                    for (int ic = 0; ic < chordsData.length(); ic++) {
+                        newChords[ic] = chordsData.getInt(ic);
+                    }
+                    setChordProgression(newChords);
+                    continue;
+                }
+
+                //Log.d("MGH loadData()", part.toString());
+                String soundsetURL = part.getString("soundsetURL");
+
+                if ("MELODY".equals(type)) {
+                    if ("PRESET_SYNTH1".equals(soundsetURL)) {
+                        loadMelody(getSynthChannel(), part);
+                    } else if ("PRESET_GUITAR1".equals(soundsetURL)) {
+                        loadMelody(getGuitarChannel(), part);
+                    }
+                    else if ("DIALPAD_SINE_DELAY".equals(soundsetURL)) {
+                        loadMelody(getDialpadChannel(), part);
+                    }
+                    continue;
+                } else if ("BASSLINE".equals(type)) {
+                    loadMelody(getBassChannel(), part);
+                    continue;
+                }
+
+                if ("DRUMBEAT".equals(type)) {
+                    channel = new DrumChannel(mContext, this, pool);
+                    loadDrums((DrumChannel)channel, part);
+                    mChannels.add(channel);
+                }
+            }
+
+            samplerChannel = (DrumChannel)mChannels.get(0);
+            drumChannel = (DrumChannel)mChannels.get(1);
+
+            onNewLoop();
+
+            good = true;
+
+        } catch (JSONException e) {
+            Log.d("MGH loaddata exception", e.getMessage());
+            e.printStackTrace();
+        }
+
+        return good;
+
+    }
+
 
     class PlaybackThread extends Thread {
 
@@ -379,10 +492,16 @@ public class Jam {
 
     public void finish() {
         cancel = true;
+
+        for (Channel channel : mChannels) {
+            channel.mute();
+        }
+        //samplerChannel.mute();
+
         keyboardChannel.mute();
         basslineChannel.mute();
         guitarChannel.mute();
-        samplerChannel.mute();
+
 
         dialpadChannel.mute();
 
@@ -582,13 +701,15 @@ public class Jam {
 
         sb.append(", \"parts\" : [");
 
-        drumChannel.getData(sb);
+        for (Channel channel : mChannels) {
+            channel.getData(sb);
+            sb.append(", ");
+        }
 
-        sb.append(", ");
-
-        samplerChannel.getData(sb);
-
-        sb.append(", ");
+        //samplerChannel.getData(sb);
+        //sb.append(", ");
+        //drumChannel.getData(sb);
+        //sb.append(", ");
 
         getChannelData(basslineChannel, sb);
 
@@ -865,5 +986,81 @@ public class Jam {
 
     public int getScaledNoteNumber(int basicNote) {
         return mm.scaleNote(basicNote, 0);
+    }
+
+
+    private void loadMelody(Channel channel, JSONObject part) throws JSONException {
+
+        NoteList notes = channel.getNotes();
+        notes.clear();
+
+        if (part.has("volume")) {
+            channel.volume = (float)part.getDouble("volume");
+        }
+        if (part.has("mute") && part.getBoolean("mute"))
+            channel.disable();
+        else
+            channel.enable();
+
+        JSONArray notesData = part.getJSONArray("notes");
+
+        Note newNote;
+        JSONObject noteData;
+
+        for (int i = 0; i < notesData.length(); i++) {
+            noteData = notesData.getJSONObject(i);
+
+            newNote = new Note();
+            newNote.setBeats(noteData.getDouble("beats"));
+
+            newNote.setRest(noteData.getBoolean("rest"));
+
+            if (!newNote.isRest()) {
+                newNote.setBasicNote(noteData.getInt("note"));
+
+            }
+            notes.add(newNote);
+        }
+
+    }
+
+    private void loadDrums(DrumChannel jamChannel, JSONObject part) throws JSONException {
+
+        String soundsetName = part.getString("soundsetName");
+        String soundsetURL = part.getString("soundsetURL");
+
+        jamChannel.prepareSoundSet(soundsetURL);
+        jamChannel.loadSoundSet();
+
+        JSONArray tracks = part.getJSONArray("tracks");
+
+        JSONObject track;
+        JSONArray trackData;
+
+        boolean[][] pattern = jamChannel.pattern;
+
+        if (part.has("volume")) {
+            jamChannel.volume = (float)part.getDouble("volume");
+        }
+        if (part.has("mute") && part.getBoolean("mute"))
+            jamChannel.disable();
+        else
+            jamChannel.enable();
+
+        //underrun overrun?
+        //match the right channels?
+        // this assumes things are in the right order
+
+        for (int i = 0; i < tracks.length(); i++) {
+            track = tracks.getJSONObject(i);
+
+            trackData = track.getJSONArray("data");
+
+            for (int j = 0; j < trackData.length(); j++) {
+                pattern[i][j] = trackData.getInt(j) == 1;
+            }
+
+        }
+
     }
 }

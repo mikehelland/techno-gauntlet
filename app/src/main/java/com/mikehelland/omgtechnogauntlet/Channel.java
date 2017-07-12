@@ -2,6 +2,7 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -41,7 +42,7 @@ public class Channel {
 
     protected Context context;
 
-    protected float volume;
+    protected float volume = 0.5f;
 
     protected int octave = 3;
 
@@ -63,6 +64,14 @@ public class Channel {
     protected SoundSet mSoundSet;
     private String mMainSound;
 
+    public Channel(Context context, Jam jam, OMGSoundPool pool) {
+        mPool = pool; //new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
+        this.context = context;
+        mJam = jam;
+
+        setup();
+    }
+
     public Channel(Context context, Jam jam, OMGSoundPool pool, String type, String sound) {
 
         mSoundSet = new SoundSet();
@@ -78,6 +87,10 @@ public class Channel {
         mMainSound = sound;
         //mSoundSetName = sound;
 
+        setup();
+    }
+
+    private void setup() {
         subbeats = mJam.getSubbeats();
         mainbeats = mJam.getBeats();
         totalsubbeats = subbeats * mainbeats;
@@ -340,6 +353,7 @@ public class Channel {
             nowSubbeat = recordingStartedAtSubbeat + 2;
         }
 
+        Log.d("MGH dsubbeats", Double.toString(dsubbeats));
         double beats = (nowSubbeat - recordingStartedAtSubbeat) / dsubbeats;
         double startBeat = recordingStartedAtSubbeat / dsubbeats;
 
@@ -382,11 +396,45 @@ public class Channel {
         return mMainSound;
     }
 
-    public boolean loadSoundSet(SoundSet soundset) {
 
+    int prepareSoundSet(long id) {
+        SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(context);
+        SoundSet soundset = dataHelper.getSoundSetById(id);
+        if (soundset == null) {
+            Toast.makeText(context, dataHelper.getLastErrorMessage(), Toast.LENGTH_SHORT).show();
+            return 0;
+        }
+
+        return prepareSoundSet(soundset);
+    }
+
+    int prepareSoundSet(String url) {
+        SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(context);
+        SoundSet soundset = dataHelper.getSoundSetByURL(url);
+        if (soundset == null) {
+            return 0;
+        }
+
+        return prepareSoundSet(soundset);
+    }
+
+
+    int prepareSoundSet(SoundSet soundset) {
+        mSoundSet = soundset;
+        return soundset.getSounds().size();
+    }
+
+    boolean loadSoundSet(SoundSet soundset) {
         mSoundSet = soundset;
 
+        return loadSoundSet();
+    }
+    boolean loadSoundSet() {
+
         String path = context.getFilesDir() + "/" + Long.toString(mSoundSet.getID()) + "/";
+        isAScale = mSoundSet.isChromatic();
+        highNote = mSoundSet.getHighNote();
+        lowNote = mSoundSet.getLowNote();
 
         int preset_id;
         ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();
@@ -396,12 +444,11 @@ public class Channel {
         for (int i = 0; i < sounds.size(); i++) {
             SoundSet.Sound sound = mSoundSet.getSounds().get(i);
 
-            //captions[i] = sound.getName();
-
             if (sound.isPreset()) {
                 preset_id = sound.getPresetId();
 
                 ids[i] = mPool.load(context, preset_id, 1);
+                Log.d("MGH loading sounds", Integer.toString(preset_id));
             }
             else {
 
@@ -412,24 +459,32 @@ public class Channel {
         return true;
     }
 
-    public boolean loadSoundSet(long id) {
-
-        SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(context);
-        SoundSet soundset = dataHelper.getSoundSetById(id);
-        if (soundset == null) {
-            return false;
-        }
-
-        return loadSoundSet(soundset);
-    }
 
     public SoundSet getSoundSet() {
         return mSoundSet;
     }
 
-    //public String[] getCaptions() {
-    //    return captions;
-    //}
+    public void getData(StringBuilder sb) {
+    }
 
 
+    public void playBeat(int subbeat) {
+        if (getState() != Channel.STATE_PLAYBACK)
+            return;
+
+        int i = getI();
+        if (i <  getNotes().size()) {
+            if (getNextBeat() == subbeat / mJam.getBeats()) {
+                Note note = getNotes().get(i);
+
+                playRecordedNote(note);
+                finishCurrentNoteAt(System.currentTimeMillis() +
+                        (long)(note.getBeats() * 4 * mJam.getSubbeatLength()) - 50);
+
+                setNextBeat(getNextBeat() +  note.getBeats());
+
+            }
+        }
+
+    }
 }
