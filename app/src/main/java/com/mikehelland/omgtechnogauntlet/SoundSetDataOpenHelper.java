@@ -23,7 +23,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         Log.d("MGH", "onCreate soundsets table");
         db.execSQL("CREATE TABLE soundsets (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "name TEXT, data TEXT, url TEXT, type TEXT, time INTEGER, omg_id TEXT)");
+                "name TEXT, data TEXT, url TEXT, type TEXT, chromatic BOOLEAN, time INTEGER, omg_id TEXT)");
         setupDefaultSoundSets(db);
     }
 
@@ -38,6 +38,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         setupHipHopDrumsSoundSet(db);
         setupRockDrumsSoundSet(db);
         setupBassSoundSet(db);
+        setupKeyboardSoundSet(db);
 
     }
 
@@ -49,6 +50,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("url", "PRESET_PERCUSSION_SAMPLER");
         data.put("omg_id", "PRESET_PERCUSSION_SAMPLER");
         data.put("type", "DRUMBEAT");
+        data.put("chromatic", false);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("soundsets", null, data);
@@ -63,6 +65,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("url", "PRESET_ROCKKIT");
         data.put("omg_id", "PRESET_ROCKKIT");
         data.put("type", "DRUMBEAT");
+        data.put("chromatic", false);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("soundsets", null, data);
@@ -77,6 +80,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("url", "PRESET_HIPKIT");
         data.put("omg_id", "PRESET_HIPKIT");
         data.put("type", "DRUMBEAT");
+        data.put("chromatic", false);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("soundsets", null, data);
@@ -90,6 +94,22 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("url", "PRESET_BASS");
         data.put("omg_id", "PRESET_BASS");
         data.put("type", "BASSLINE");
+        data.put("chromatic", true);
+        data.put("data", json);
+        data.put("time", System.currentTimeMillis() / 1000);
+        db.insert("soundsets", null, data);
+
+    }
+
+    private void setupKeyboardSoundSet(SQLiteDatabase db) {
+        String json = KeyboardSamplerChannel.getDefaultSoundSetJSON(mContext);
+
+        ContentValues data = new ContentValues();
+        data.put("name", "Keyboard");
+        data.put("url", "PRESET_KEYBOARD");
+        data.put("omg_id", "PRESET_KEYBOARD");
+        data.put("type", "MELODY");
+        data.put("chromatic", true);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("soundsets", null, data);

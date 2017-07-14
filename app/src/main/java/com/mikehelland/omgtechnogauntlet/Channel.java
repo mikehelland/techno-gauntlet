@@ -42,7 +42,7 @@ public class Channel {
 
     protected Context context;
 
-    protected float volume = 0.5f;
+    protected float volume = 0.75f;
 
     protected int octave = 3;
 
@@ -64,10 +64,14 @@ public class Channel {
     protected SoundSet mSoundSet;
     private String mMainSound;
 
+    protected boolean[][] pattern;
+
     public Channel(Context context, Jam jam, OMGSoundPool pool) {
         mPool = pool; //new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
         this.context = context;
         mJam = jam;
+
+        pattern = new boolean[8][mJam.getSubbeats() * mJam.getBeats()];
 
         setup();
     }
@@ -77,11 +81,15 @@ public class Channel {
         mSoundSet = new SoundSet();
         mSoundSet.setName(type);
         mSoundSet.setURL(sound);
+        mSoundSet.setChromatic(true);
 
 
         mPool = pool; //new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
         this.context = context;
         mJam = jam;
+
+        pattern = new boolean[8][mJam.getSubbeats() * mJam.getBeats()];
+
 
         mType = type;
         mMainSound = sound;
@@ -168,13 +176,14 @@ public class Channel {
         mPool.stop(handle);
     }
 
-    public void toggleEnabled() {
+    public boolean toggleEnabled() {
         if (enabled) {
             disable();
         }
         else {
             enable();
         }
+        return enabled;
     }
 
     public void disable() {
@@ -303,6 +312,10 @@ public class Channel {
     public void clearNotes() {
         mNoteList.clear();
         state = STATE_LIVEPLAY;
+
+        if (!mSoundSet.isChromatic()) {
+            clearPattern();
+        }
     }
 
     public int getSoundCount() {
@@ -447,12 +460,11 @@ public class Channel {
             if (sound.isPreset()) {
                 preset_id = sound.getPresetId();
 
-                ids[i] = mPool.load(context, preset_id, 1);
-                Log.d("MGH loading sounds", Integer.toString(preset_id));
+                ids[i] = mPool.load(sound.getURL(), context, preset_id, 1);
             }
             else {
 
-                ids[i] = mPool.load(path + Integer.toString(i), 1);
+                ids[i] = mPool.load(sound.getURL(), path + Integer.toString(i), 1);
             }
         }
 
@@ -465,16 +477,26 @@ public class Channel {
     }
 
     public void getData(StringBuilder sb) {
+        if (!mSoundSet.isChromatic()) {
+            getDrumData(sb);
+        }
     }
 
 
     public void playBeat(int subbeat) {
+
+        if (!mSoundSet.isChromatic()) {
+            playDrumBeat(subbeat);
+            return;
+        }
+
         if (getState() != Channel.STATE_PLAYBACK)
             return;
 
         int i = getI();
         if (i <  getNotes().size()) {
-            if (getNextBeat() == subbeat / mJam.getBeats()) {
+            Log.d("MGH next beat", Double.toString(subbeat / mJam.getBeats()));
+            if (getNextBeat() == subbeat / (double)subbeats) {
                 Note note = getNotes().get(i);
 
                 playRecordedNote(note);
@@ -487,4 +509,79 @@ public class Channel {
         }
 
     }
+
+    public void playDrumBeat(int subbeat) {
+        if (enabled) {
+            for (int i = 0; i < pattern.length; i++) {
+                if (pattern[i][subbeat]) {
+
+                    if (i < ids.length)
+                        playingId = mPool.play(ids[i], volume, volume, 10, 0, 1);
+                }
+            }
+        }
+    }
+
+
+    private void getDrumData(StringBuilder sb) {
+
+        int beats = mJam.getBeats();
+        int totalBeats = beats * subbeats;
+        sb.append("{\"type\" : \"DRUMBEAT\", \"soundsetName\": \"");
+        sb.append(mSoundSet.getName());
+        sb.append("\", \"soundsetURL\" : \"");
+        sb.append(mSoundSet.getURL());
+
+        sb.append("\", \"volume\": ");
+        sb.append(volume);
+        if (!enabled)
+            sb.append(", \"mute\": true");
+
+        sb.append(", \"tracks\": [");
+
+        ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();
+        for (int p = 0; p < sounds.size(); p++) {
+
+            sb.append("{\"name\": \"");
+            sb.append(sounds.get(p).getName());
+            sb.append("\", \"sound\": \"");
+            sb.append(sounds.get(p).getURL());
+            sb.append("\", \"data\": [");
+            for (int i = 0; i < totalBeats; i++) {
+                sb.append(pattern[p][i] ?1:0) ;
+                if (i < totalBeats - 1)
+                    sb.append(",");
+            }
+            sb.append("]}");
+
+            if (p < sounds.size() - 1)
+                sb.append(",");
+
+        }
+
+        sb.append("]}");
+
+    }
+
+    public void clearPattern() {
+        for (int i = 0; i < pattern.length; i++) {
+            for (int j = 0; j < pattern[i].length; j++) {
+                pattern[i][j] = false;
+            }
+        }
+    }
+
+    public void setPattern(boolean[][] pattern) {
+        Log.d("MGH", "set pattern " + pattern.length);
+        this.pattern = pattern;
+    }
+
+    public boolean[] getTrack(int track)  {
+        return pattern[track];
+    }
+
+    public void setPattern(int track, int subbeat, boolean value) {
+        pattern[track][subbeat] = value;
+    }
+
 }

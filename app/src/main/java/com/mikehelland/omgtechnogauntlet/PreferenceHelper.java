@@ -15,7 +15,8 @@ public class PreferenceHelper {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
     public static String getLastChannelConfiguration(Context c) {
-        return getPrefs(c).getString(LAST_CHANNEL_CONFIGURATION, "PRESET_PERCUSSION_SAMPLER,PRESET_HIPKIT");
+        return getPrefs(c).getString(LAST_CHANNEL_CONFIGURATION,
+                "PRESET_KEYBOARD,PRESET_BASS,PRESET_HIPKIT,PRESET_PERCUSSION_SAMPLER");
     }
 
     public static int dingPointCount(Activity activity) {

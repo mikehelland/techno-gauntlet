@@ -25,15 +25,6 @@ public class Jam {
 
     private ArrayList<Channel> mChannels = new ArrayList<>();
 
-
-    private DrumChannel drumChannel;
-    private DrumChannel samplerChannel;
-
-    private Channel basslineChannel;
-
-    private Channel keyboardChannel;
-    private Channel guitarChannel;
-
     private DialpadChannel dialpadChannel;
 
     private OMGSoundPool pool;
@@ -84,34 +75,16 @@ public class Jam {
         boolean usingListener = false;
         boolean updatePB = false;
 
-        //basslineChannel = new BassSamplerChannel(mContext, this, pool, "BASSLINE", "PRESET_BASS");
-
-        guitarChannel = new ElectricSamplerChannel(mContext, this, pool, "MELODY", "PRESET_GUITAR1");
-        keyboardChannel = new KeyboardSamplerChannel(mContext, this, pool, "MELODY", "PRESET_SYNTH1");
         dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY", new DialpadChannelSettings());
 
         soundsToLoad = 0;
 
-        basslineChannel = new Channel(mContext, this, pool);
-        soundsToLoad = basslineChannel.prepareSoundSet(4);
-
-        //todo make this a list of urls instead of database _ids? decide
         String[] channelConfig = PreferenceHelper.getLastChannelConfiguration(mContext).split(",");
         for (String sId : channelConfig) {
-            DrumChannel channel = new DrumChannel(mContext, this, pool);
+            Channel channel = new Channel(mContext, this, pool);
             soundsToLoad += channel.prepareSoundSet(sId);
             mChannels.add(channel);
         }
-
-        samplerChannel = (DrumChannel)mChannels.get(0);
-        drumChannel = (DrumChannel)mChannels.get(1);
-
-
-        //TODO instead of load a soundset, prepare it to get the precount
-        soundsToLoad +=
-                //basslineChannel.getSoundCount() +
-                guitarChannel.getSoundCount() +
-                keyboardChannel.getSoundCount();
 
         if (Build.VERSION.SDK_INT >= 11 && progressBar != null) {
             usingListener = true;
@@ -142,31 +115,13 @@ public class Jam {
                 progressBar.setMax(5);
         }
 
-        Log.d("MGH", "load sampler");
-        if (!samplerChannel.loadSoundSet())
-            return;
-        if (updatePB)
-            progressBar.incrementProgressBy(1);
+        for (Channel channel : mChannels) {
+            if (!channel.loadSoundSet())
+                return;
+            if (updatePB)
+                progressBar.incrementProgressBy(1);
 
-        Log.d("MGH", "drum sampler");
-        if (!drumChannel.loadSoundSet())
-            return;
-        if (updatePB) progressBar.incrementProgressBy(1);
-
-        Log.d("MGH", "bass sampler");
-        //if (basslineChannel.loadPool() == -1) return;
-        if (!basslineChannel.loadSoundSet()) {
-            Log.e("MGH", "DIDN'T LOAD BASSLINE CHANNEL");
-            return;
         }
-        if (updatePB) progressBar.incrementProgressBy(1);
-
-        Log.d("MGH", "oethers");
-        if (guitarChannel.loadPool() == -1) return;
-        if (updatePB) progressBar.incrementProgressBy(1);
-
-        if (keyboardChannel.loadPool() == -1) return;
-        if (updatePB) progressBar.incrementProgressBy(1);
 
         if (!usingListener) {
             if (!pool.isCanceled())
@@ -181,9 +136,13 @@ public class Jam {
     public void playBeatSampler(int subbeat) {
 
         if (subbeat == 0) {
-            basslineChannel.resetI();
-            guitarChannel.resetI();
-            keyboardChannel.resetI();
+            for (Channel channel : mChannels) {
+                channel.resetI();
+            }
+
+            //basslineChannel.resetI();
+            //guitarChannel.resetI();
+            //keyboardChannel.resetI();
             dialpadChannel.resetI();
 
         }
@@ -191,16 +150,13 @@ public class Jam {
         for (Channel channel : mChannels) {
             channel.playBeat(subbeat);
         }
-        //samplerChannel.playBeat(subbeat);
-
-        drumChannel.playBeat(subbeat);
 
         double beat = subbeat / (double)subbeats;
 
-        basslineChannel.playBeat(subbeat);
-        playChannelBeat(basslineChannel, beat);
-        playChannelBeat(guitarChannel, beat);
-        playChannelBeat(keyboardChannel, beat);
+        //basslineChannel.playBeat(subbeat);
+        //playChannelBeat(basslineChannel, beat);
+        //playChannelBeat(guitarChannel, beat);
+        //playChannelBeat(keyboardChannel, beat);
         playChannelBeat(dialpadChannel, beat);
 
     }
@@ -235,31 +191,8 @@ public class Jam {
 
     }
 
-    public boolean  toggleMuteBassline() {
-        basslineChannel.toggleEnabled();
-        return basslineChannel.enabled;
-
-    }
-    public boolean  toggleMuteGuitar() {
-        guitarChannel.toggleEnabled();
-        return guitarChannel.enabled;
-    }
 
 
-    public boolean toggleMuteRhythm() {
-        keyboardChannel.toggleEnabled();
-        return keyboardChannel.enabled;
-    }
-
-    public boolean toggleMuteDrums() {
-        drumChannel.toggleEnabled();
-        return drumChannel.enabled;
-    }
-
-    public boolean toggleMuteSampler() {
-        samplerChannel.toggleEnabled();
-        return samplerChannel.enabled;
-    }
     public boolean  toggleMuteDsp() {
         dialpadChannel.toggleEnabled();
         return dialpadChannel.enabled;
@@ -328,13 +261,7 @@ public class Jam {
                 setScale(jsonData.getString("scale"));
             }
 
-            basslineChannel = new BassSamplerChannel(mContext, this, pool, "BASSLINE", "PRESET_BASS");
-            guitarChannel = new ElectricSamplerChannel(mContext, this, pool, "MELODY", "PRESET_GUITAR1");
-            keyboardChannel = new KeyboardSamplerChannel(mContext, this, pool, "MELODY", "PRESET_SYNTH1");
             dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY", new DialpadChannelSettings());
-            basslineChannel.loadPool();
-            guitarChannel.loadPool();
-            keyboardChannel.loadPool();
 
             Channel channel;
 
@@ -352,33 +279,10 @@ public class Jam {
                     continue;
                 }
 
-                //Log.d("MGH loadData()", part.toString());
-                String soundsetURL = part.getString("soundsetURL");
-
-                if ("MELODY".equals(type)) {
-                    if ("PRESET_SYNTH1".equals(soundsetURL)) {
-                        loadMelody(getSynthChannel(), part);
-                    } else if ("PRESET_GUITAR1".equals(soundsetURL)) {
-                        loadMelody(getGuitarChannel(), part);
-                    }
-                    else if ("DIALPAD_SINE_DELAY".equals(soundsetURL)) {
-                        loadMelody(getDialpadChannel(), part);
-                    }
-                    continue;
-                } else if ("BASSLINE".equals(type)) {
-                    loadMelody(getBassChannel(), part);
-                    continue;
-                }
-
-                if ("DRUMBEAT".equals(type)) {
-                    channel = new DrumChannel(mContext, this, pool);
-                    loadDrums((DrumChannel)channel, part);
-                    mChannels.add(channel);
-                }
+                channel = new Channel(mContext, this, pool);
+                load(channel, part);
+                mChannels.add(channel);
             }
-
-            samplerChannel = (DrumChannel)mChannels.get(0);
-            drumChannel = (DrumChannel)mChannels.get(1);
 
             onNewLoop();
 
@@ -391,6 +295,10 @@ public class Jam {
 
         return good;
 
+    }
+
+    public ArrayList<Channel> getChannels() {
+        return mChannels;
     }
 
 
@@ -448,13 +356,12 @@ public class Jam {
         }
 
         public void pollFinishedNotes(long now) {
-            long finishAt = basslineChannel.getFinishAt();
-            if (finishAt > 0 && now >= finishAt) {
-                basslineChannel.mute();
-            }
-            finishAt = keyboardChannel.getFinishAt();
-            if (finishAt > 0 && now >= finishAt) {
-                keyboardChannel.mute();
+            long finishAt;
+            for (Channel channel : mChannels) {
+                finishAt = channel.getFinishAt();
+                if (finishAt > 0 && now >= finishAt) {
+                    channel.mute();
+                }
             }
 
         }
@@ -484,9 +391,11 @@ public class Jam {
 
     private void updateChord(int chord) {
 
-        mm.applyScale(basslineChannel, chord);
-        mm.applyScale(guitarChannel, chord);
-        mm.applyScale(keyboardChannel, chord);
+
+        for (Channel channel : mChannels) {
+            if (channel.getSoundSet().isChromatic())
+                mm.applyScale(channel, chord);
+        }
         mm.applyScale(dialpadChannel, chord);
     }
 
@@ -496,11 +405,6 @@ public class Jam {
         for (Channel channel : mChannels) {
             channel.mute();
         }
-        //samplerChannel.mute();
-
-        keyboardChannel.mute();
-        basslineChannel.mute();
-        guitarChannel.mute();
 
 
         dialpadChannel.mute();
@@ -529,15 +433,14 @@ public class Jam {
                 makeChordProgression();
                 break;
             case 4:
-                makeDrumbeatFromMelody();
-
+                //drumChannel.makeDrumBeatsFromMelody(basslineChannel.getNotes());
                 break;
             case 5:
-                makeChannelNotes(basslineChannel);
+                //makeChannelNotes(basslineChannel);
 
                 break;
             case 6:
-                makeChannelNotes(keyboardChannel);
+                //makeChannelNotes(keyboardChannel);
 
                 break;
 
@@ -559,7 +462,7 @@ public class Jam {
         // effects probabilities of makeDrumBeats
         setDrumset(rand.nextInt(2));
 
-        monkeyWithBass();
+        /*monkeyWithBass();
         if (rand.nextInt(20) == 0) {
             basslineChannel.disable();
         }
@@ -610,6 +513,7 @@ public class Jam {
         makeChannelNotes(guitarChannel);
         makeChannelNotes(keyboardChannel);
 
+        */
         makeChannelNotes(dialpadChannel);
 
         playbackThread.ibeat = 0;
@@ -703,32 +607,10 @@ public class Jam {
 
         for (Channel channel : mChannels) {
             channel.getData(sb);
-            sb.append(", ");
+            sb.append(",");
         }
 
-        //samplerChannel.getData(sb);
-        //sb.append(", ");
-        //drumChannel.getData(sb);
-        //sb.append(", ");
-
-        getChannelData(basslineChannel, sb);
-
-        sb.append(", ");
-
-        getChannelData(keyboardChannel, sb);
-
-        sb.append(", ");
-
-        getChannelData(guitarChannel, sb);
-
-        sb.append(", ");
-
-        getChannelData(dialpadChannel, sb);
-
-        sb.append(", ");
-
-        getChordsData(sb);
-
+        sb.delete(sb.length() - 1, 1);
         sb.append("]}");
 
         Log.d("MGH getData", sb.toString());
@@ -803,7 +685,7 @@ public class Jam {
 
     }
 
-    public void monkeyWithSampler() {
+    /*public void monkeyWithSampler() {
         samplerChannel.makePercussionFill();
     }
 
@@ -842,6 +724,8 @@ public class Jam {
         //progressionI = 0;
     }
 
+    */
+
 
     public int[] getProgression() {
         return progression;
@@ -861,18 +745,6 @@ public class Jam {
 
     public String getScaleString() {
         return mm.getScale();
-    }
-
-    public Channel getGuitarChannel() {
-        return guitarChannel;
-    }
-
-    public Channel getBassChannel() {
-        return basslineChannel;
-    }
-
-    public Channel getSynthChannel() {
-        return keyboardChannel;
     }
 
     public int getKey() {
@@ -897,13 +769,6 @@ public class Jam {
         viewsToInvalidateOnBeat.remove(view);
     }
 
-    public DrumChannel getSamplerChannel() {
-        return samplerChannel;
-    }
-
-    public DrumChannel getDrumChannel() {
-        return drumChannel;
-    }
 
     public void setScale(String scale) {
         mm.setScale(scale);
@@ -971,10 +836,6 @@ public class Jam {
         return rand;
     }
 
-    public void makeDrumbeatFromMelody() {
-        drumChannel.makeDrumBeatsFromMelody(basslineChannel.getNotes());
-    }
-
     public boolean isSoundPoolInitialized() {
         return soundPoolInitialized;
     }
@@ -1024,13 +885,23 @@ public class Jam {
 
     }
 
-    private void loadDrums(DrumChannel jamChannel, JSONObject part) throws JSONException {
-
+    private void load(Channel jamChannel, JSONObject part) throws  JSONException {
         String soundsetName = part.getString("soundsetName");
         String soundsetURL = part.getString("soundsetURL");
 
         jamChannel.prepareSoundSet(soundsetURL);
         jamChannel.loadSoundSet();
+
+        if (jamChannel.getSoundSet().isChromatic()) {
+
+        }
+        else {
+            loadDrums(jamChannel, part);
+        }
+    }
+
+    private void loadDrums(Channel jamChannel, JSONObject part) throws JSONException {
+
 
         JSONArray tracks = part.getJSONArray("tracks");
 

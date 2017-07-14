@@ -52,7 +52,8 @@ public class DrumView extends View {
     private int lastX = -1;
     private int lastY = -1;
 
-    private DrumChannel mChannel;
+    //private DrumChannel mChannel;
+    private Channel mChannel;
 
     public DrumView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -216,7 +217,7 @@ public class DrumView extends View {
 
     }
 
-    public void setJam(Jam jam, DrumChannel channel) {
+    public void setJam(Jam jam, Channel channel) {
         mJam = jam;
         mChannel = channel;
         mJam.addInvalidateOnBeatListener(this);

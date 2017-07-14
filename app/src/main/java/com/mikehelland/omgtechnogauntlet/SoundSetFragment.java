@@ -58,7 +58,7 @@ public class SoundSetFragment extends OMGFragment {
         final SoundSetDataOpenHelper openHelper = new SoundSetDataOpenHelper(context);
         final SQLiteDatabase db = openHelper.getWritableDatabase();
         final Cursor cursor;
-        if (mChannel.getType().equals("DRUMBEAT")) {
+        if (mChannel.getSoundSet().isChromatic()) {
             cursor = openHelper.getSavedCursor(db);
         }
         else {

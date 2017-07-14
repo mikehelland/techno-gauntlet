@@ -51,6 +51,10 @@ public class Dac extends UGen {
 	public void open() {
 		track.play();
 	}
+
+	public void setVolume(float gain) {
+        //track.setVolume(gain);
+    }
 	
 	public void tick() {
 		

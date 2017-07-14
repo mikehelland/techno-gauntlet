@@ -50,7 +50,7 @@ public class CommandProcessor extends BluetoothDataCallback {
             int subbeat = Integer.parseInt(params[1]);
             boolean patternValue = params[2].equals("true");
 
-            DrumChannel drums = (DrumChannel)getChannel(channelI);
+            Channel drums = getChannel(channelI);
             drums.setPattern(track, subbeat, patternValue);
         }
 
@@ -58,14 +58,14 @@ public class CommandProcessor extends BluetoothDataCallback {
 
     Channel getChannel(int i) {
         //hard coded, eh
-        switch (i) {
+        /*switch (i) {
             case 10: return mJam.getSamplerChannel();
             case 11: return mJam.getGuitarChannel();
             case 12: return mJam.getDialpadChannel();
             case 13: return mJam.getSynthChannel();
             case 14: return mJam.getBassChannel();
             case 15: return mJam.getDrumChannel();
-        }
+        }*/
         return null;
     }
 

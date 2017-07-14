@@ -58,6 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:id="@+id/libeniz_head"
+            android:paddingLeft="10dp"
             android:layout_alignParentLeft="true">
             </ImageView>
 
@@ -117,7 +118,8 @@
 
 
 
-    <LinearLayout android:layout_below="@id/song_controls"
+    <LinearLayout android:id="@+id/channel_list"
+                  android:layout_below="@id/song_controls"
                   android:layout_width="fill_parent"
                   android:layout_height="fill_parent"
                   android:orientation="vertical">
@@ -134,7 +136,7 @@
             android:id="@+id/dsp_controls"
             />
 
-        <include layout="@layout/main_panel"
+        <!--<include layout="@layout/main_panel"
                  android:id="@+id/bass_controls"
                 />
 
@@ -145,7 +147,7 @@
         <include layout="@layout/main_panel"
             android:id="@+id/sampler"
             />
-
+        -->
 
     </LinearLayout>
 

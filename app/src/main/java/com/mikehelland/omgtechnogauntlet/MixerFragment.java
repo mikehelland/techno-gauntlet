@@ -9,14 +9,8 @@ public class MixerFragment extends OMGFragment {
 
     private View mView;
 
-    private View drumControls;
-
-    private View bassControls;
     private View keyboardControls;
     private View guitarControls;
-
-    private View samplerControls;
-
     private View oscControls;
 
 
@@ -29,32 +23,27 @@ public class MixerFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.mixer_fragment,
                 container, false);
 
-        setupDrumPanel();
-        setupBassPanel();
-        setupGuitarPanel();
-        setupKeyboardPanel();
-        setupSamplerPanel();
+        setupPanels(inflater);
+
         setupOscPanel();
 
         return mView;
     }
 
-    public void setupDrumPanel() {
+    void setupPanels(LayoutInflater inflater) {
 
-        drumControls = mView.findViewById(R.id.drums);
 
-        ((MixerView)drumControls.findViewById(R.id.mixer_view)).
-                setJam(mJam, mJam.getDrumChannel(), "Drums");
+        ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
+        View controls;
+        for (final Channel channel : mJam.getChannels()) {
 
-    }
+            controls = inflater.inflate(R.layout.mixer_panel, container, false);
+            container.addView(controls);
 
-    public void setupBassPanel() {
+            ((MixerView) controls.findViewById(R.id.mixer_view)).
+                    setJam(mJam, channel, channel.getSoundSetName());
 
-        bassControls = mView.findViewById(R.id.bass_controls);
-
-        ((MixerView)bassControls.findViewById(R.id.mixer_view)).
-                setJam(mJam, mJam.getBassChannel(), "Bass");
-
+        }
 
     }
 
@@ -70,30 +59,6 @@ public class MixerFragment extends OMGFragment {
 
 
 
-    public void setupGuitarPanel() {
-
-        guitarControls = mView.findViewById(R.id.guitar);
-        ((MixerView)guitarControls.findViewById(R.id.mixer_view)).
-                setJam(mJam, mJam.getGuitarChannel(), "Guitar");
-
-    }
-
-    public void setupSamplerPanel() {
-
-        samplerControls = mView.findViewById(R.id.sampler);
-        ((MixerView)samplerControls.findViewById(R.id.mixer_view)).
-                setJam(mJam, mJam.getSamplerChannel(), "Sampler");
-
-    }
-
-    public void setupKeyboardPanel() {
-        keyboardControls = mView.findViewById(R.id.rhythm_controls);
-
-        ((MixerView)keyboardControls.findViewById(R.id.mixer_view)).
-                setJam(mJam, mJam.getSynthChannel(), "Keyboard");
-
-
-    }
 
     /*public void showFragmentRight(Fragment f) {
 

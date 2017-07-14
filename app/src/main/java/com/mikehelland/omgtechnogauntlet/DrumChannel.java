@@ -239,13 +239,6 @@ public class DrumChannel extends Channel {
 
     }
 
-    public boolean[] getTrack(int track)  {
-        return pattern[track];
-    }
-
-    public void setPattern(int track, int subbeat, boolean value) {
-        pattern[track][subbeat] = value;
-    }
 
     public void makeDrumBeats() {
 
@@ -388,6 +381,14 @@ public class DrumChannel extends Channel {
     @Override
     public void clearNotes() {
         clearPattern();
+    }
+
+    public boolean[] getTrack(int track)  {
+        return pattern[track];
+    }
+
+    public void setPattern(int track, int subbeat, boolean value) {
+        pattern[track][subbeat] = value;
     }
 
 

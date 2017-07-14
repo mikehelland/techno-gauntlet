@@ -41,6 +41,14 @@
             android:background="#FF00FF00"
             />
 
+    <ImageButton android:layout_width="48dip"
+        android:layout_height="48dip"
+        android:id="@+id/open_fretboard_button"
+        android:text=""
+        android:layout_toLeftOf="@id/mute_button"
+        android:textColor="#FFFFFFFF"
+        android:src="@drawable/fretboard"
+        />
 
 
 </RelativeLayout>

@@ -124,6 +124,10 @@ public class SoundSet {
         return mID;
     }
 
+    public void setChromatic(boolean b) {
+        mChromatic = b;
+    }
+
     class Sound {
 
         private String mName;

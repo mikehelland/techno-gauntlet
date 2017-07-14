@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,22 +19,6 @@ public class MainFragment extends OMGFragment {
 
     private Button playButton;
 
-    private Button guitarMuteButton;
-
-    private View drumControls;
-    private Button drumMuteButton;
-
-    private View bassControls;
-    private Button bassMuteButton;
-
-    private View keyboardControls;
-    private Button synthMuteButton;
-
-    private View guitarControls;
-
-    private View samplerControls;
-    private Button samplerMuteButton;
-
     private Button dspMuteButton;
 
     private Button mKeyButton;
@@ -41,11 +26,6 @@ public class MainFragment extends OMGFragment {
 
     private ImageView mainLibenizHead;
 
-    private View drumMonkeyHead;
-    private View synthMonkeyHead;
-    private View bassMonkeyHead;
-    private View guitarMonkeyHead;
-    private View samplerMonkeyHead;
 
     private View dspMonkeyHead;
 
@@ -53,6 +33,8 @@ public class MainFragment extends OMGFragment {
     private Button bpmButton;
 
     private OMGHelper mOMGHelper;
+
+    private LayoutInflater mInflater;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,11 +45,9 @@ public class MainFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.main_fragment,
                 container, false);
 
-        setupDrumPanel();
-        setupBassPanel();
-        setupGuitarPanel();
-        setupKeyboardPanel();
-        setupSamplerPanel();
+        mInflater = inflater;
+
+        setupPanels();
 
         setupDspPanel();
 
@@ -78,265 +58,79 @@ public class MainFragment extends OMGFragment {
         return mView;
     }
 
-    public void setupDrumPanel() {
+    private void setupPanels() {
 
-        drumControls = mView.findViewById(R.id.drums);
+        ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
+        //View controls;
+        for (final Channel channel : mJam.getChannels()) {
 
-        Button button = ((Button)drumControls.findViewById(R.id.track_button));
-        button.setText("Drums");
+            View controls = mInflater.inflate(R.layout.main_panel, container, false);
+            container.addView(controls);
 
-        drumMuteButton = (Button)drumControls.findViewById(R.id.mute_button);
-        drumMuteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drumMuteButton.setBackgroundColor(mJam.toggleMuteDrums() ?
-                        Color.GREEN : Color.RED);
-            }
-        });
+            Button button = ((Button)controls.findViewById(R.id.track_button));
+            button.setText(channel.getSoundSetName());
 
-        drumMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                mJam.getDrumChannel().clearNotes();
-                return true;
-            }
-        });
+            Log.d("MGH sound name", channel.getSoundSetName());
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("MGH", "onclick!");
+                    SoundSetFragment f = new SoundSetFragment();
+                    f.setJam(mJam, channel);
+                    showFragmentRight(f);
 
-        drumMonkeyHead = drumControls.findViewById(R.id.libeniz_head);
-        drumMonkeyHead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                play();
-                mJam.monkeyWithDrums();
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                view.startAnimation(turnin);
-            }
-        });
+                }
+            });
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            final Button muteButton = (Button)controls.findViewById(R.id.mute_button);
+            muteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    muteButton.setBackgroundColor(channel.toggleEnabled() ?
+                            Color.GREEN : Color.RED);
+                }
+            });
+            muteButton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    channel.clearNotes();
+                    return true;
+                }
+            });
 
-                DrumFragment f = new DrumFragment();
-                f.setJam(mJam, mJam.getDrumChannel());
-                showFragmentRight(f);
-            }
-        });
+            controls.findViewById(R.id.libeniz_head).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    play();
+                    //TODO yeah, that's hard coded
+                    //mJam.monkeyWithDrums();
+                    Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                    view.startAnimation(turnin);
+                }
+            });
 
-        button.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                SoundSetFragment f = new SoundSetFragment();
-                f.setJam(mJam, mJam.getDrumChannel());
-                showFragmentRight(f);
+            controls.findViewById(R.id.open_fretboard_button).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                return false;
-            }
-        });
-
-
-
-    }
-
-    public void setupBassPanel() {
-
-        bassControls = mView.findViewById(R.id.bass_controls);
-        ((Button)bassControls.findViewById(R.id.track_button)).setText("Bass");
+                    if (channel.mSoundSet.isChromatic()) {
+                        GuitarFragment f = new GuitarFragment();
+                        f.setJam(mJam, channel);
+                        showFragmentRight(f);
+                    }
+                    else {
+                        DrumFragment f = new DrumFragment();
+                        f.setJam(mJam, channel);
+                        showFragmentRight(f);
+                    }
+                }
+            });
 
 
-        bassMuteButton = (Button)bassControls.findViewById(R.id.mute_button);
-        bassMuteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.setBackgroundColor(mJam.toggleMuteBassline() ?
-                        Color.GREEN : Color.RED);
-            }
-        });
-
-        bassMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                mJam.getBassChannel().clearNotes();
-                return true;
-            }
-        });
-
-        bassMonkeyHead = bassControls.findViewById(R.id.libeniz_head);
-        bassMonkeyHead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                play();
-                mJam.monkeyWithBass();
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                view.startAnimation(turnin);
-            }
-        });
-
-        bassControls.findViewById(R.id.track_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                GuitarFragment f = new GuitarFragment();
-                f.setJam(mJam, mJam.getBassChannel());
-                showFragmentRight(f);
-            }
-        });
-
+        }
     }
 
 
-
-    public void setupGuitarPanel() {
-
-        guitarControls = mView.findViewById(R.id.guitar);
-        ((Button)guitarControls.findViewById(R.id.track_button)).setText("Guitar");
-
-        guitarMonkeyHead = guitarControls.findViewById(R.id.libeniz_head);
-        guitarMonkeyHead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                play();
-                mJam.monkeyWithGuitar();
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                view.startAnimation(turnin);
-            }
-        });
-
-
-        guitarMuteButton = (Button)guitarControls.findViewById(R.id.mute_button);
-        guitarMuteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.setBackgroundColor(mJam.toggleMuteGuitar() ?
-                        Color.GREEN : Color.RED);
-            }
-        });
-
-        guitarMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                mJam.getGuitarChannel().clearNotes();
-                return true;
-            }
-        });
-
-        guitarControls.findViewById(R.id.track_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                GuitarFragment f = new GuitarFragment();
-                f.setJam(mJam, mJam.getGuitarChannel());
-
-                showFragmentRight(f);
-            }
-        });
-
-    }
-
-    public void setupSamplerPanel() {
-
-        samplerControls = mView.findViewById(R.id.sampler);
-        Button button = (Button)samplerControls.findViewById(R.id.track_button);
-        button.setText("Sampler");
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                DrumFragment f = new DrumFragment();
-                f.setJam(mJam, mJam.getSamplerChannel());
-                showFragmentRight(f);
-
-            }
-        });
-
-        button.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                SoundSetFragment f = new SoundSetFragment();
-                f.setJam(mJam, mJam.getSamplerChannel());
-                showFragmentRight(f);
-
-                return false;
-            }
-        });
-
-        samplerMonkeyHead = samplerControls.findViewById(R.id.libeniz_head);
-        samplerMonkeyHead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                play();
-                mJam.monkeyWithSampler();
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                view.startAnimation(turnin);
-            }
-        });
-
-
-        samplerMuteButton = (Button)samplerControls.findViewById(R.id.mute_button);
-        samplerMuteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.setBackgroundColor(mJam.toggleMuteSampler() ?
-                        Color.GREEN : Color.RED);
-            }
-        });
-
-        samplerMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                mJam.getSamplerChannel().clearNotes();
-                return true;
-            }
-        });
-
-
-    }
-
-    public void setupKeyboardPanel() {
-        keyboardControls = mView.findViewById(R.id.rhythm_controls);
-        ((Button)(keyboardControls.findViewById(R.id.track_button))).setText("Keyboard");
-
-
-        synthMuteButton = (Button) keyboardControls.findViewById(R.id.mute_button);
-        synthMuteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.setBackgroundColor(mJam.toggleMuteRhythm() ?
-                        Color.GREEN : Color.RED);
-            }
-        });
-
-        synthMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                mJam.getSynthChannel().clearNotes();
-                return true;
-            }
-        });
-
-        synthMonkeyHead = keyboardControls.findViewById(R.id.libeniz_head);
-        synthMonkeyHead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                play();
-                mJam.monkeyWithSynth();
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                view.startAnimation(turnin);
-            }
-        });
-
-        keyboardControls.findViewById(R.id.track_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                GuitarFragment f = new GuitarFragment();
-                f.setJam(mJam, mJam.getSynthChannel());
-                showFragmentRight(f);
-            }
-        });
-
-    }
 
 
     public void setupDspPanel() {
@@ -367,7 +161,7 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 play();
-                mJam.monkeyWithDsp();
+                //mJam.monkeyWithDsp();
                 Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
                 view.startAnimation(turnin);
             }
@@ -537,11 +331,9 @@ public class MainFragment extends OMGFragment {
                 Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
                 view.startAnimation(turnin);
 
-                drumMonkeyHead.startAnimation(turnin);
-                synthMonkeyHead.startAnimation(turnin);
-                bassMonkeyHead.startAnimation(turnin);
-                guitarMonkeyHead.startAnimation(turnin);
-                samplerMonkeyHead.startAnimation(turnin);
+                /*for (View view : mPanels) {
+                    view.findViewById(R.id.libeniz_head).startAnimation(turnin);
+                }*/
 
                 dspMonkeyHead.startAnimation(turnin);
 
@@ -649,16 +441,9 @@ public class MainFragment extends OMGFragment {
             updateBPMUI();
             mChordsButton.invalidate();
 
-            bassMuteButton.setBackgroundColor(mJam.getBassChannel().enabled ?
-                    Color.GREEN : Color.RED);
-            guitarMuteButton.setBackgroundColor(mJam.getGuitarChannel().enabled ?
-                    Color.GREEN : Color.RED);
-            synthMuteButton.setBackgroundColor(mJam.getSynthChannel().enabled ?
-                    Color.GREEN : Color.RED);
-            drumMuteButton.setBackgroundColor(mJam.getDrumChannel().enabled ?
-                    Color.GREEN : Color.RED);
-            samplerMuteButton.setBackgroundColor(mJam.getSamplerChannel().enabled ?
-                    Color.GREEN : Color.RED);
+            //todo make mute buttons work
+            //bassMuteButton.setBackgroundColor(mJam.getBassChannel().enabled ?
+            //        Color.GREEN : Color.RED);
 
             dspMuteButton.setBackgroundColor(mJam.getDialpadChannel().enabled ?
                     Color.GREEN : Color.RED);
