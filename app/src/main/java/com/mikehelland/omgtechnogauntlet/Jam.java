@@ -327,7 +327,7 @@ public class Jam {
             progressionI = -1; // gets incremented by onNewLoop
             onNewLoop();
 
-            long lastBeatPlayed = 0;
+            long lastBeatPlayed = System.currentTimeMillis() - subbeatLength;
             long now;
 
             ibeat = 0;
@@ -343,7 +343,8 @@ public class Jam {
                     continue;
                 }
 
-                lastBeatPlayed = now;
+                //lastBeatPlayed = now;
+                lastBeatPlayed += subbeatLength;
                 playBeatSampler(ibeat);
 
                 lastI = ibeat++;
