@@ -9,8 +9,6 @@ public class MixerFragment extends OMGFragment {
 
     private View mView;
 
-    private View keyboardControls;
-    private View guitarControls;
     private View oscControls;
 
 

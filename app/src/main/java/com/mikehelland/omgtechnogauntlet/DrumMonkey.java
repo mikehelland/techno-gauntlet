@@ -1,8 +1,5 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.content.Context;
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -11,11 +8,9 @@ import java.util.Random;
  * Date: 11/15/13
  * Time: 1:56 PM
  */
-public class DrumChannel extends Channel {
+public class DrumMonkey {
 
 
-//    protected String[] mCaptions;
-    protected String[] presetNames;
 
     protected boolean[][] pattern;
 
@@ -26,36 +21,17 @@ public class DrumChannel extends Channel {
 
     protected String kitName = "";
 
-    public DrumChannel(Context context, Jam jam, OMGSoundPool pool) {
-        super(context, jam, pool, "DRUMBEAT", "DRUMBEAT");
+
+
+    public DrumMonkey(Jam jam) {
 
         rand = jam.getRand();
-
-        isAScale = false;
-        highNote = 7;
-        lowNote = 0;
-
-        volume = 1.0f;
-
 
         beats = jam.getBeats();
         subbeats = jam.getSubbeats();
         pattern = new boolean[8][beats * subbeats];
-        rids = new int[8];
+
     }
-
-    public void playBeat(int subbeat) {
-        if (enabled) {
-            for (int i = 0; i < pattern.length; i++) {
-                if (pattern[i][subbeat]) {
-
-                    if (i < ids.length)
-                        playingId = mPool.play(ids[i], volume, volume, 10, 0, 1);
-                }
-            }
-        }
-    }
-
 
     public static boolean[] default_kick = new boolean[] {
             true, false, false, false,
@@ -325,45 +301,6 @@ public class DrumChannel extends Channel {
 
     }
 
-    @Override
-    public void getData(StringBuilder sb) {
-
-        int totalBeats = beats * subbeats;
-        sb.append("{\"type\" : \"DRUMBEAT\", \"soundsetName\": \"");
-        sb.append(mSoundSet.getName());
-        sb.append("\", \"soundsetURL\" : \"");
-        sb.append(mSoundSet.getURL());
-
-        sb.append("\", \"volume\": ");
-        sb.append(volume);
-        if (!enabled)
-            sb.append(", \"mute\": true");
-
-        sb.append(", \"tracks\": [");
-
-        ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();
-        for (int p = 0; p < sounds.size(); p++) {
-
-            sb.append("{\"name\": \"");
-            sb.append(sounds.get(p).getName());
-            sb.append("\", \"sound\": \"");
-            sb.append(sounds.get(p).getURL());
-            sb.append("\", \"data\": [");
-            for (int i = 0; i < totalBeats; i++) {
-                sb.append(pattern[p][i] ?1:0) ;
-                if (i < totalBeats - 1)
-                    sb.append(",");
-            }
-            sb.append("]}");
-
-            if (p < sounds.size() - 1)
-                sb.append(",");
-
-        }
-
-        sb.append("]}");
-
-    }
 
     public void clearPattern() {
         for (int i = 0; i < pattern.length; i++) {
@@ -373,24 +310,9 @@ public class DrumChannel extends Channel {
         }
     }
 
-    public void setPattern(boolean[][] pattern) {
-        Log.d("MGH", "set pattern " + pattern.length);
-        this.pattern = pattern;
+
+    public boolean[][] getPattern() {
+        return pattern;
     }
-
-    @Override
-    public void clearNotes() {
-        clearPattern();
-    }
-
-    public boolean[] getTrack(int track)  {
-        return pattern[track];
-    }
-
-    public void setPattern(int track, int subbeat, boolean value) {
-        pattern[track][subbeat] = value;
-    }
-
-
 }
 

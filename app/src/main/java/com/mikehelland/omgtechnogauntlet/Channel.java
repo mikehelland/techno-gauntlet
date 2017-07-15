@@ -213,22 +213,6 @@ public class Channel {
 
     }
 
-    public int loadPool() {
-
-        ids = new int[rids.length];
-        for (int i = 0; i < rids.length; i++) {
-
-            ids[i] = mPool.load(context, rids[i], 1);
-
-            if (mPool.isCanceled())
-                return -1;
-
-        }
-
-
-        return ids.length;
-    }
-
 
     public int getHighNote() {
         return highNote;
@@ -480,8 +464,51 @@ public class Channel {
         if (!mSoundSet.isChromatic()) {
             getDrumData(sb);
         }
+        else {
+            getNotesData(sb);
+        }
     }
 
+    private void getNotesData(StringBuilder sb) {
+        sb.append("{\"type\" : \"");
+        sb.append(getType());
+        sb.append("\", \"soundsetName\": \"");
+        sb.append(getSoundSetName());
+        sb.append("\", \"soundsetURL\": \"");
+        sb.append(getSoundSetURL());
+        sb.append("\", \"scale\": \"");
+        sb.append(mJam.getScale());
+        sb.append("\", \"rootNote\": ");
+        sb.append(mJam.getKey());
+        sb.append(", \"octave\": ");
+        sb.append(getOctave());
+        sb.append(", \"volume\": ");
+        sb.append(getVolume());
+        if (!enabled)
+            sb.append(", \"mute\": true");
+        sb.append(", \"notes\" : [");
+
+        boolean first = true;
+        for (Note note : getNotes()) {
+
+            if (first)
+                first = false;
+            else
+                sb.append(", ");
+
+            sb.append("{\"rest\": ");
+            sb.append(note.isRest());
+            sb.append(", \"beats\": ");
+            sb.append(note.getBeats());
+            if (!note.isRest()) {
+                sb.append(", \"note\" :");
+                sb.append(note.getBasicNote());
+            }
+            sb.append("}");
+        }
+        sb.append("]}");
+
+    }
 
     public void playBeat(int subbeat) {
 

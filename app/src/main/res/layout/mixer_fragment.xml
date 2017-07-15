@@ -15,14 +15,6 @@
 
 
         <include layout="@layout/mixer_panel"
-                 android:id="@+id/guitar"
-                />
-
-        <include layout="@layout/mixer_panel"
-                 android:id="@+id/rhythm_controls"
-                />
-
-        <include layout="@layout/mixer_panel"
             android:id="@+id/osc_mixer"
             />
 

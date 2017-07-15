@@ -6,6 +6,7 @@ import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -270,6 +271,8 @@ public class Jam {
                 String type = part.getString("type");
 
                 if ("CHORDPROGRESSION".equals(type)) {
+                    Log.d("MGH", "loading chord progression");
+                    Log.d("MGH", part.toString());
                     JSONArray chordsData = part.getJSONArray("data");
                     int[] newChords = new int[chordsData.length()];
                     for (int ic = 0; ic < chordsData.length(); ic++) {
@@ -290,6 +293,8 @@ public class Jam {
 
         } catch (JSONException e) {
             Log.d("MGH loaddata exception", e.getMessage());
+            Toast.makeText(mContext,
+                    "Could not load data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -448,77 +453,6 @@ public class Jam {
 
     }
 
-    public void everyRuleChange() {
-
-        subbeatLength = 70 + rand.nextInt(125);
-
-        mm.pickRandomKey();
-        mm.pickRandomScale();
-        makeChordProgression();
-
-        mm.makeMotif();
-        mm.makeMelodyFromMotif(beats);
-
-        // effects probabilities of makeDrumBeats
-        setDrumset(rand.nextInt(2));
-
-        /*monkeyWithBass();
-        if (rand.nextInt(20) == 0) {
-            basslineChannel.disable();
-        }
-        else {
-            basslineChannel.enable();
-        }
-
-        monkeyWithDrums();
-        if (rand.nextInt(20) == 0) {
-            drumChannel.disable();
-        }
-        else {
-            drumChannel.enable();
-        }
-
-        monkeyWithGuitar();
-        if (rand.nextInt(3) == 0) {
-            guitarChannel.enable();
-        }
-        else {
-            guitarChannel.disable();
-        }
-
-        monkeyWithSynth();
-        if (rand.nextInt(3) == 0) {
-            keyboardChannel.enable();
-        }
-        else {
-            keyboardChannel.disable();
-        }
-
-        monkeyWithDsp();
-        if (rand.nextInt(3) == 0) {
-            dialpadChannel.enable();
-        }
-        else {
-            dialpadChannel.disable();
-        }
-
-        samplerChannel.makePercussionFill();
-        if (rand.nextInt(3) == 0) {
-            samplerChannel.disable();
-        }
-        else {
-            samplerChannel.enable();
-        }
-
-        makeChannelNotes(guitarChannel);
-        makeChannelNotes(keyboardChannel);
-
-        */
-        makeChannelNotes(dialpadChannel);
-
-        playbackThread.ibeat = 0;
-    }
-
 
     public String getKeyName() {
         return mm.getKeyName();
@@ -610,56 +544,16 @@ public class Jam {
             sb.append(",");
         }
 
-        sb.delete(sb.length() - 1, 1);
+        //sb.delete(sb.length() - 1, sb.length());
+
+        getChordsData(sb);
+
         sb.append("]}");
 
         Log.d("MGH getData", sb.toString());
         return sb.toString();
 
     }
-
-    public void getChannelData(Channel channel, StringBuilder sb) {
-
-        sb.append("{\"type\" : \"");
-        sb.append(channel.getType());
-        sb.append("\", \"soundsetName\": \"");
-        sb.append(channel.getSoundSetName());
-        sb.append("\", \"soundsetURL\": \"");
-        sb.append(channel.getSoundSetURL());
-        sb.append("\", \"scale\": \"");
-        sb.append(mm.getScale());
-        sb.append("\", \"rootNote\": ");
-        sb.append(mm.getKey());
-        sb.append(", \"octave\": ");
-        sb.append(channel.getOctave());
-        sb.append(", \"volume\": ");
-        sb.append(channel.getVolume());
-        if (!channel.enabled)
-            sb.append(", \"mute\": true");
-        sb.append(", \"notes\" : [");
-
-        boolean first = true;
-        for (Note note : channel.getNotes()) {
-
-            if (first)
-                first = false;
-            else
-                sb.append(", ");
-
-            sb.append("{\"rest\": ");
-            sb.append(note.isRest());
-            sb.append(", \"beats\": ");
-            sb.append(note.getBeats());
-            if (!note.isRest()) {
-                sb.append(", \"note\" :");
-                sb.append(note.getBasicNote());
-            }
-            sb.append("}");
-        }
-        sb.append("]}");
-
-    }
-
 
 
     public void getChordsData(StringBuilder sb) {
@@ -681,42 +575,52 @@ public class Jam {
     }
 
     public void monkeyWithEverything() {
-        everyRuleChange();
+        subbeatLength = 70 + rand.nextInt(125);
+
+        mm.pickRandomKey();
+        mm.pickRandomScale();
+        makeChordProgression();
+
+        mm.makeMotif();
+        mm.makeMelodyFromMotif(beats);
+
+        for (Channel channel : mChannels) {
+            monkeyWithChannel(channel);
+        }
+
+        makeChannelNotes(dialpadChannel);
+
+        playbackThread.ibeat = 0;
 
     }
 
-    /*public void monkeyWithSampler() {
-        samplerChannel.makePercussionFill();
-    }
+    void monkeyWithChannel(Channel channel) {
 
-    public void monkeyWithDrums() {
-
-        //half the time, drums from the bass
-        if (false && rand.nextBoolean()) {
-            drumChannel.makeDrumBeatsFromMelody(basslineChannel.getNotes());
+        if (channel.getSoundSet().isChromatic()) {
+            makeChannelNotes(channel);
         }
         else {
-            // make them separate
-            drumChannel.makeDrumBeats();
+            monkeyWithDrums(channel);
         }
+    }
+
+    void monkeyWithDrums(Channel channel) {
+
+        DrumMonkey monkey = new DrumMonkey(this);
+
+        if (rand.nextBoolean()) {
+            monkey.makePercussionFill();
+        }
+        else {
+            //todo makeDrumBeatFromMelody is a possibility
+
+            monkey.makeDrumBeats();
+        }
+        channel.setPattern(monkey.getPattern());
 
     }
 
-    public void monkeyWithBass() {
-        makeChannelNotes(basslineChannel);
-    }
 
-    public void monkeyWithSynth() {
-        makeChannelNotes(keyboardChannel);
-    }
-
-    public void monkeyWithGuitar() {
-        makeChannelNotes(guitarChannel);
-    }
-
-    public void monkeyWithDsp() {
-        makeChannelNotes(dialpadChannel);
-    }
 
     public void monkeyWithChords() {
 
@@ -724,7 +628,6 @@ public class Jam {
         //progressionI = 0;
     }
 
-    */
 
 
     public int[] getProgression() {
@@ -892,8 +795,13 @@ public class Jam {
         jamChannel.prepareSoundSet(soundsetURL);
         jamChannel.loadSoundSet();
 
-        if (jamChannel.getSoundSet().isChromatic()) {
+        if (part.has("volume")) {
+            jamChannel.volume = (float)part.getDouble("volume");
+        }
+        //todo pan
 
+        if (jamChannel.getSoundSet().isChromatic()) {
+            loadMelody(jamChannel, part);
         }
         else {
             loadDrums(jamChannel, part);

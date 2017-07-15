@@ -1,32 +1,8 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.content.Context;
+class HipDrumChannel {
 
-public class HipDrumChannel extends DrumChannel {
-
-    public HipDrumChannel(Context context, Jam jam, OMGSoundPool pool) {
-        super(context, jam, pool);
-
-        isAScale = false;
-        highNote = 7;
-        lowNote = 0;
-        rids = new int[8];
-
-        presetNames = new String[] {
-                "PRESET_HH_KICK", "PRESET_HH_CLAP",
-                "PRESET_ROCK_HIHAT_CLOSED",
-                "PRESET_HH_HIHAT",
-                "PRESET_HH_TAMB",
-                "PRESET_HH_TOM_MH",
-                "PRESET_HH_TOM_ML",
-                "PRESET_HH_TOM_L",
-        };
-
-        kitName = "PRESET_HIPKIT";
-    }
-
-
-    public static String getDefaultSoundSetJson() {
+    static String getDefaultSoundSetJson() {
 
         StringBuilder sb = new StringBuilder();
         sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": false, \"name\": \"");

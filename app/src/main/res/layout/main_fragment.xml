@@ -124,30 +124,10 @@
                   android:layout_height="fill_parent"
                   android:orientation="vertical">
 
-        <include layout="@layout/main_panel"
-                 android:id="@+id/guitar"
-                />
-        <include layout="@layout/main_panel"
-                 android:id="@+id/rhythm_controls"
-                />
-
 
         <include layout="@layout/main_panel"
             android:id="@+id/dsp_controls"
             />
-
-        <!--<include layout="@layout/main_panel"
-                 android:id="@+id/bass_controls"
-                />
-
-
-        <include layout="@layout/main_panel"
-                 android:id="@+id/drums"
-                />
-        <include layout="@layout/main_panel"
-            android:id="@+id/sampler"
-            />
-        -->
 
     </LinearLayout>
 

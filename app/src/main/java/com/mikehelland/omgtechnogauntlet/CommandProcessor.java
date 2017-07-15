@@ -30,7 +30,7 @@ public class CommandProcessor extends BluetoothDataCallback {
 
         if (name.equals("SET_CHANNEL")) {
             channelI = Integer.parseInt(value);
-            sendFretboardInfo();
+            sendChannelInfo();
             return;
         }
 
@@ -57,15 +57,9 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     Channel getChannel(int i) {
-        //hard coded, eh
-        /*switch (i) {
-            case 10: return mJam.getSamplerChannel();
-            case 11: return mJam.getGuitarChannel();
-            case 12: return mJam.getDialpadChannel();
-            case 13: return mJam.getSynthChannel();
-            case 14: return mJam.getBassChannel();
-            case 15: return mJam.getDrumChannel();
-        }*/
+        if (i < mJam.getChannels().size())
+            return mJam.getChannels().get(i);
+
         return null;
     }
 
@@ -91,15 +85,55 @@ public class CommandProcessor extends BluetoothDataCallback {
         mConnection.writeString("SET_KEY=" + mJam.getKey() + ";");
         mConnection.writeString("SET_SCALE=" + mJam.getScaleString() + ";");
         mConnection.writeString("SET_SUBBEATLENGTH=" + mJam.getSubbeatLength() + ";");
+
+        String setChannels = "SET_CHANNELS=";
+        for (int i = 0; i < mJam.getChannels().size(); i++) {
+            Channel channel = mJam.getChannels().get(i);
+            setChannels += channel.getSoundSet().isChromatic() ? "1" : "0";
+            setChannels += channel.getSoundSetName();
+
+            if (i < mJam.getChannels().size() - 1) {
+                setChannels += ",";
+            }
+        }
+
+        mConnection.writeString(setChannels + ";");
     }
 
-    void sendFretboardInfo() {
-        //hard coded for non drum channels
-        if (channelI > 10 && channelI < 15) {
-            Channel channel = getChannel(channelI);
+    void sendChannelInfo() {
+
+        Channel channel = getChannel(channelI);
+        if (channel.getSoundSet().isChromatic()) {
             String fretboardInfo = "FRETBOARD_INFO=" + channel.getLowNote() + "," +
                     channel.getHighNote() + "," + channel.getOctave() + ";";
             mConnection.writeString(fretboardInfo);
         }
+        else {
+            String fretboardInfo = "DRUMBEAT_INFO=" + getDrumbeatInfo(channel) + ";";
+
+            mConnection.writeString(fretboardInfo);
+        }
+    }
+
+    String getDrumbeatInfo(Channel channel) {
+        String info = "";
+        for (int i = 0; i < channel.pattern.length; i++) {
+
+            info += channel.getSoundSet().getSounds().get(i).getName() + "|";
+
+            for (int j = 0; j < channel.pattern[i].length; j++) {
+
+                info += channel.pattern[i][j] ? "1" : "0";
+                if (j < channel.pattern[i].length - 1) {
+                    info += "|";
+                }
+
+            }
+
+            if (i < channel.pattern.length - 1) {
+                info += ",";
+            }
+        }
+        return info;
     }
 }

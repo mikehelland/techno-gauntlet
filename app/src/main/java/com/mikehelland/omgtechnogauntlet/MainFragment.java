@@ -13,6 +13,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+
 public class MainFragment extends OMGFragment {
 
     private View mView;
@@ -35,6 +37,8 @@ public class MainFragment extends OMGFragment {
     private OMGHelper mOMGHelper;
 
     private LayoutInflater mInflater;
+
+    private ArrayList<View> monkeyHeads = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -98,14 +102,17 @@ public class MainFragment extends OMGFragment {
                 }
             });
 
-            controls.findViewById(R.id.libeniz_head).setOnClickListener(new View.OnClickListener() {
+            View monkeyHead = controls.findViewById(R.id.libeniz_head);
+            monkeyHeads.add(monkeyHead);
+            monkeyHead.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     play();
-                    //TODO yeah, that's hard coded
-                    //mJam.monkeyWithDrums();
+
+                    mJam.monkeyWithChannel(channel);
                     Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
                     view.startAnimation(turnin);
+
                 }
             });
 
@@ -331,9 +338,9 @@ public class MainFragment extends OMGFragment {
                 Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
                 view.startAnimation(turnin);
 
-                /*for (View view : mPanels) {
-                    view.findViewById(R.id.libeniz_head).startAnimation(turnin);
-                }*/
+                for (View monkeyhead : monkeyHeads) {
+                    monkeyhead.startAnimation(turnin);
+                }
 
                 dspMonkeyHead.startAnimation(turnin);
 
