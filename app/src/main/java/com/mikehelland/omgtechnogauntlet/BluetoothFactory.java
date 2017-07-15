@@ -114,6 +114,12 @@ public class BluetoothFactory {
         acceptThread.start();
     }
 
+    public void sendCommandToDevices(String command) {
+        for(BluetoothConnection conn : connectionThreads) {
+            conn.writeString(command + ";");
+        }
+    }
+
     /*public void toggleDeviceStatus(int deviceI) {
 
         if (deviceI < 0 && deviceI > isConnected.length)

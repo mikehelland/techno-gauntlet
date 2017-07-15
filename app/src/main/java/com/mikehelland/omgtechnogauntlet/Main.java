@@ -15,6 +15,7 @@ public class Main extends Activity {//FragmentActivity {
     Jam mJam;
     OMGSoundPool mPool = new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
     BluetoothFactory mBtf;
+    Jam.StateChangeCallback mJamCallback;
 
 
     private WelcomeFragment mWelcomeFragment;
@@ -38,8 +39,20 @@ public class Main extends Activity {//FragmentActivity {
 
         setContentView(R.layout.main);
 
+        mJamCallback = new Jam.StateChangeCallback() {
 
-        mJam = new Jam(this, mPool);
+            @Override
+            void onPlay() {
+                mBtf.sendCommandToDevices("PLAY");
+            }
+
+            @Override
+            void onStop() {
+                mBtf.sendCommandToDevices("STOP");
+            }
+        };
+
+        mJam = new Jam(this, mPool, mJamCallback);
 
         if (mWelcomeFragment == null) {
             mWelcomeFragment = new WelcomeFragment();

@@ -427,7 +427,7 @@ public class GuitarView extends View {
 
             if (draw_note.isPlaying()) {
                 canvas.drawRect(draw_x, draw_y,
-                        draw_lastDrawnX,
+                        draw_x + draw_boxwidth,
                         draw_y + boxHeight,
                         paintCurrentBeat);
             }

@@ -52,10 +52,15 @@ public class Jam {
     private int soundsToLoad = 0;
 
     private boolean soundPoolInitialized = false;
+    private BluetoothFactory btf;
 
-    public Jam(Context context, OMGSoundPool pool) {
+    StateChangeCallback mCallback;
+
+    public Jam(Context context, OMGSoundPool pool, Jam.StateChangeCallback callback) {
 
         this.pool = pool;
+
+        mCallback = callback;
 
         mContext = context;
         mm = new MelodyMaker(mContext);
@@ -189,6 +194,9 @@ public class Jam {
             playbackThread = new PlaybackThread();
             playbackThread.start();
         }
+
+        if (mCallback != null)
+            mCallback.onPlay();
 
     }
 
@@ -413,6 +421,9 @@ public class Jam {
 
 
         dialpadChannel.mute();
+
+        if (mCallback != null)
+            mCallback.onStop();
 
         //mPool.release();
         //mPool = null;
@@ -841,5 +852,10 @@ public class Jam {
 
         }
 
+    }
+
+    public abstract static class StateChangeCallback {
+        abstract void onPlay();
+        abstract void onStop();
     }
 }

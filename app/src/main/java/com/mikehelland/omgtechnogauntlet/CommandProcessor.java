@@ -96,8 +96,9 @@ public class CommandProcessor extends BluetoothDataCallback {
                 setChannels += ",";
             }
         }
-
         mConnection.writeString(setChannels + ";");
+
+        mConnection.writeString(mJam.isPlaying() ? "PLAY;" : "STOP;");
     }
 
     void sendChannelInfo() {
@@ -107,12 +108,31 @@ public class CommandProcessor extends BluetoothDataCallback {
             String fretboardInfo = "FRETBOARD_INFO=" + channel.getLowNote() + "," +
                     channel.getHighNote() + "," + channel.getOctave() + ";";
             mConnection.writeString(fretboardInfo);
+
+            String noteInfo = "NOTE_INFO=" + getNoteInfo(channel) + ";";
+            Log.d("MGH note info", noteInfo);
+            mConnection.writeString(noteInfo);
         }
         else {
             String fretboardInfo = "DRUMBEAT_INFO=" + getDrumbeatInfo(channel) + ";";
 
             mConnection.writeString(fretboardInfo);
         }
+    }
+
+    String getNoteInfo(Channel channel) {
+
+        String info = "";
+        int i = 0;
+        for (Note note : channel.getNotes()) {
+            info += (note.isRest() ? "-" : "") + Double.toString(note.getBeats()) + "|" +
+                    Integer.toString(note.getInstrumentNote());
+            if (i++ < channel.getNotes().size() - 1) {
+                info += ",";
+            }
+        }
+
+        return info;
     }
 
     String getDrumbeatInfo(Channel channel) {
