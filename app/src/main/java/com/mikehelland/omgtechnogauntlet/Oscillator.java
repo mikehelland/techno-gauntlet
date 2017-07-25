@@ -1,7 +1,5 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.content.Context;
-
 import com.mikehelland.omgtechnogauntlet.dsp.Dac;
 import com.mikehelland.omgtechnogauntlet.dsp.Delay;
 import com.mikehelland.omgtechnogauntlet.dsp.ExpEnv;
@@ -14,7 +12,7 @@ import com.mikehelland.omgtechnogauntlet.dsp.WtOsc;
  * Date: 11/15/13
  * Time: 1:56 PM
  */
-public class DialpadChannel extends Channel {
+public class Oscillator { //DialpadChannel extends Channel {
 
     private boolean envActive = false;
     private final WtOsc ugOscA1 = new WtOsc();
@@ -25,30 +23,22 @@ public class DialpadChannel extends Channel {
     private boolean delayed = false;
     private boolean flanged = false;
 
-    public DialpadChannel(Context context, Jam jam, OMGSoundPool pool,
-                          String type, DialpadChannelSettings settings) {
-        super(context, jam, pool, type, settings.settingsName);
+    private Note lastPlayedNote;
 
-        lowNote = 0;
-        highNote = 108;
-
-        octave = 5;
+    public Oscillator(DialpadChannelSettings settings) {
 
         boolean delay = settings.delay;
         boolean flange = settings.flange;
-        boolean softTimbre = settings.softt;
         boolean softEnvelope = settings.softe;
-        boolean saw = settings.saw;
 
 
-        if (saw)
+        if (settings.waveType == DialpadChannelSettings.WaveType.SAW)
             ugOscA1.fillWithSaw();
-        else if (softTimbre) {
-            ugOscA1.fillWithHardSin(7.0f);
-        } else {
+        else if (settings.waveType == DialpadChannelSettings.WaveType.SQUARE) {
             ugOscA1.fillWithSqrDuty(0.6f);
+        } else {
+            ugOscA1.fillWithHardSin(7.0f);
         }
-
 
         if (delay) {
             delayed = true;
@@ -84,25 +74,22 @@ public class DialpadChannel extends Channel {
 
         ugDac.open();
 
-        pool.addDac(ugDac);
-
     }
 
-    @Override
+
     public int playNote(Note note, boolean multiTouch) {
         //super.playNote(note);
 
         if (lastPlayedNote != null)
             lastPlayedNote.isPlaying(false);
 
-        if (!enabled)
-            return -1;
+        //if (!enabled)
+        //    return -1;
 
         if (note.isRest()) {
             mute();
         }
         else {
-            mPool.makeSureDspIsRunning();;
 
             float frequency = buildFrequencyFromMapped(note.getInstrumentNote());
 

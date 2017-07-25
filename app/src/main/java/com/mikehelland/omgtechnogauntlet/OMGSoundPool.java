@@ -16,7 +16,7 @@ public class OMGSoundPool extends SoundPool {
     private boolean isLoaded = false;
     private boolean cancelLoading = false;
 
-    private DialpadThread mDspThread = null;
+    private OscillatorThread mDspThread = null;
     private boolean mIsDspRunning = false;
     private ArrayList<Dac> mDacs = new ArrayList<Dac>();
 
@@ -68,7 +68,7 @@ public class OMGSoundPool extends SoundPool {
 
     public void makeSureDspIsRunning() {
         if (!mIsDspRunning) {
-            mDspThread = new DialpadThread(mDacs);
+            mDspThread = new OscillatorThread(mDacs);
             mDspThread.start();
             mIsDspRunning = true;
         }

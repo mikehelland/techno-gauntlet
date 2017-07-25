@@ -152,6 +152,9 @@ public class Channel {
         //if (!enabled)
         //    return -1;
 
+        if (mSoundSet.isOscillator()) {
+            return mSoundSet.getOscillator().playNote(note, multiTouch);
+        }
 
         playingNoteNumber = note.getScaledNote();
 
@@ -212,6 +215,10 @@ public class Channel {
     }
 
     public void mute() {
+
+        if (mSoundSet.isOscillator()) {
+            mSoundSet.getOscillator().mute();
+        }
 
         if (playingId > -1) {
             mPool.pause(playingId);
@@ -430,11 +437,23 @@ public class Channel {
     }
 
     boolean loadSoundSet(SoundSet soundset) {
+
+        if (mSoundSet != null && mSoundSet.isOscillator()) {
+            mSoundSet.getOscillator().mute();
+        }
+
         mSoundSet = soundset;
 
         return loadSoundSet();
     }
     boolean loadSoundSet() {
+
+        if (mSoundSet.isOscillator()) {
+            Log.d("MGH loading dac", "yep");
+            mPool.addDac(mSoundSet.getOscillator().ugDac);
+            mPool.makeSureDspIsRunning();;
+        }
+
 
         String path = context.getFilesDir() + "/" + Long.toString(mSoundSet.getID()) + "/";
         isAScale = mSoundSet.isChromatic();
@@ -522,10 +541,10 @@ public class Channel {
 
     public void playBeat(int subbeat) {
 
-        if (!mSoundSet.isChromatic()) {
-            playDrumBeat(subbeat);
-            return;
-        }
+        //if (!mSoundSet.isChromatic()) {
+        playDrumBeat(subbeat);
+        //    return;
+        //}
 
         if (getState() != Channel.STATE_PLAYBACK)
             return;

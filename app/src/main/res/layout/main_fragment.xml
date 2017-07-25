@@ -127,14 +127,10 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="0px"
-            android:layout_weight="1"
+            android:layout_weight="0.66"
             android:id="@+id/add_channel_button"
             android:text="+ Add Channel"/>
 
-
-        <include layout="@layout/main_panel"
-            android:id="@+id/dsp_controls"
-            />
 
     </LinearLayout>
 

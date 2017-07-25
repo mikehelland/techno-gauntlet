@@ -11,11 +11,11 @@ import java.util.ArrayList;
  * Date: 11/15/13
  * Time: 1:37 PM
  */
-public class DialpadThread extends Thread {
+public class OscillatorThread extends Thread {
 
     private ArrayList<Dac> mDacs;
 
-    public DialpadThread(ArrayList<Dac> dacs) {
+    public OscillatorThread(ArrayList<Dac> dacs) {
 
         mDacs = dacs;
 

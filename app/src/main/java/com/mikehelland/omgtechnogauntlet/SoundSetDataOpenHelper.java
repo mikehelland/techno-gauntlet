@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     private String cErrorMessage = "";
@@ -39,6 +42,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         setupRockDrumsSoundSet(db);
         setupBassSoundSet(db);
         setupKeyboardSoundSet(db);
+        setupOscillatorSoundSet(db);
 
     }
 
@@ -113,6 +117,79 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("soundsets", null, data);
+
+    }
+
+    private void setupOscillatorSoundSet(SQLiteDatabase db) {
+
+        String[] oscs = new String[11];
+        oscs[0] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Soft Sine Delay\", \"url\": \"PRESET_OSC_SINE_SOFT_DELAY\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+        oscs[1] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Sine\", \"url\": \"PRESET_OSC_SINE\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+        oscs[2] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Soft Square Delay\", \"url\": \"PRESET_OSC_SQUARE_SOFT_DELAY\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+        oscs[3] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Square Delay\", \"url\": \"PRESET_OSC_SQUARE_DELAY\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+        oscs[4] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Soft Square Flange\", \"url\": \"PRESET_OSC_SQUARE_SOFT_FLANGE\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+        oscs[5] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Square\", \"url\": \"PRESET_OSC_SQUARE\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+        oscs[6] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Soft Square\", \"url\": \"PRESET_OSC_SQUARE_SOFT\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+        oscs[7] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Soft Saw\", \"url\": \"PRESET_OSC_SAW_SOFT\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+        oscs[8] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Saw\", \"url\": \"PRESET_OSC_SAW\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+
+        oscs[9] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Soft Saw Delay\", \"url\": \"PRESET_OSC_SAW_SOFT_DELAT\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+        oscs[10] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+                "Osc Saw Delay\", \"url\": \"PRESET_OSC_SAW_DELAY\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
+
+        for (String s : oscs) {
+
+            try {
+
+                JSONObject jsonObject = new JSONObject(s);
+
+                ContentValues data = new ContentValues();
+                data.put("name", jsonObject.getString("name"));
+                data.put("url", jsonObject.getString("url"));
+                data.put("omg_id", jsonObject.getString("url"));
+                data.put("type", "MELODY");
+                data.put("chromatic", true);
+                data.put("data", s);
+                data.put("time", System.currentTimeMillis() / 1000);
+                db.insert("soundsets", null, data);
+            }
+
+            catch (JSONException e) {
+                Log.e("MGH setup oscillators", e.getMessage());
+            }
+        }
 
     }
 

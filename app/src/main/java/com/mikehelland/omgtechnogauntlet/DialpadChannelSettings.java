@@ -9,9 +9,31 @@ public class DialpadChannelSettings {
 
     public boolean delay = true;
     public boolean flange = false;
-    public boolean saw = false;
-    public boolean softt = true;
     public boolean softe = false;
 
-    public String settingsName = "DIALPAD_SINE_DELAY";
+    public WaveType waveType = WaveType.SINE;
+
+    public enum WaveType {SINE, SQUARE, SAW};
+
+    public String settingsName;
+
+    public DialpadChannelSettings(String settings) {
+
+        settingsName = settings;
+
+        delay = settings.contains("DELAY");
+        flange = settings.contains("FLANGE");
+        if (settings.contains("SINE")) {
+            waveType = WaveType.SINE;
+        }
+        else if (settings.contains("SQUARE")) {
+            waveType = WaveType.SQUARE;
+        }
+        else if (settings.contains("SAW")) {
+            waveType = WaveType.SAW;
+        }
+
+        softe = settings.contains("SOFT");
+
+    }
 }

@@ -20,16 +20,10 @@ public class MainFragment extends OMGFragment {
 
     private Button playButton;
 
-    private Button dspMuteButton;
-
     private Button mKeyButton;
     private ChordsView mChordsButton;
 
     private ImageView mainLibenizHead;
-
-
-    private View dspMonkeyHead;
-
 
     private Button bpmButton;
 
@@ -52,8 +46,6 @@ public class MainFragment extends OMGFragment {
 
         setupPanels();
 
-        setupDspPanel();
-
         setupSectionInfoPanel();
 
         setupMainControls();
@@ -68,7 +60,9 @@ public class MainFragment extends OMGFragment {
         for (final Channel channel : mJam.getChannels()) {
 
             View controls = mInflater.inflate(R.layout.main_panel, container, false);
-            container.addView(controls);
+
+            // the -1 keeps the add channel button on the bottom
+            container.addView(controls, container.getChildCount() - 1);
 
             Button button = ((Button)controls.findViewById(R.id.track_button));
             button.setText(channel.getSoundSetName());
@@ -165,52 +159,6 @@ public class MainFragment extends OMGFragment {
 
 
 
-
-    public void setupDspPanel() {
-
-        View controls = mView.findViewById(R.id.dsp_controls);
-        ((Button)(controls.findViewById(R.id.track_button))).setText("Oscillator");
-
-
-        dspMuteButton = (Button) controls.findViewById(R.id.mute_button);
-        dspMuteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.setBackgroundColor(mJam.toggleMuteDsp() ?
-                        Color.GREEN : Color.RED);
-            }
-        });
-
-        dspMuteButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                mJam.getDialpadChannel().clearNotes();
-                return true;
-            }
-        });
-
-        dspMonkeyHead = controls.findViewById(R.id.libeniz_head);
-        dspMonkeyHead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                play();
-                //mJam.monkeyWithDsp();
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                view.startAnimation(turnin);
-            }
-        });
-
-        controls.findViewById(R.id.track_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                GuitarFragment f = new GuitarFragment();
-                f.setJam(mJam, mJam.getDialpadChannel());
-                showFragmentRight(f);
-            }
-        });
-
-    }
 
 
     public void setupSectionInfoPanel() {
@@ -345,6 +293,8 @@ public class MainFragment extends OMGFragment {
         });
 
         playButton = (Button)mView.findViewById(R.id.play_button);
+        playButton.setText(mJam.isPlaying() ? "Stop" : "Play");
+
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -382,8 +332,6 @@ public class MainFragment extends OMGFragment {
                 for (View monkeyhead : monkeyHeads) {
                     monkeyhead.startAnimation(turnin);
                 }
-
-                dspMonkeyHead.startAnimation(turnin);
 
                 updateUI();
             }
@@ -489,14 +437,6 @@ public class MainFragment extends OMGFragment {
             updateBPMUI();
             mChordsButton.invalidate();
 
-            //todo make mute buttons work
-            //bassMuteButton.setBackgroundColor(mJam.getBassChannel().enabled ?
-            //        Color.GREEN : Color.RED);
-
-            dspMuteButton.setBackgroundColor(mJam.getDialpadChannel().enabled ?
-                    Color.GREEN : Color.RED);
-
-            playButton.setText(mJam.isPlaying() ? "Stop" : "Play");
 
         }
 

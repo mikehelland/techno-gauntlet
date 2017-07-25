@@ -26,6 +26,9 @@ public class SoundSet {
 
     private boolean mIsValid = false;
 
+    private boolean mIsOscillator = false;
+    private Oscillator mOscillator = null;
+
     public SoundSet() {}
 
     public SoundSet(Cursor cursor) {
@@ -56,6 +59,12 @@ public class SoundSet {
             if (soundset.has("highNote") && soundset.has("lowNote")) {
                 mHighNote = soundset.getInt("highNote");
                 mLowNote = soundset.getInt("lowNote");
+            }
+
+            mIsOscillator = mURL.startsWith("PRESET_OSC_");
+            if (mIsOscillator) {
+                mOscillator = new Oscillator(new DialpadChannelSettings(mURL));
+                return true;
             }
 
             JSONArray data = soundset.getJSONArray("data");
@@ -136,10 +145,18 @@ public class SoundSet {
         return names;
     }
 
+    boolean isOscillator() {
+        return mIsOscillator;
+    }
+
+    Oscillator getOscillator() {
+        return mOscillator;
+    }
+
     class Sound {
 
-        private String mName;
-        private String mURL;
+        private String mName = "";
+        private String mURL = "";
         private int preset_id = -1;
 
         public String getName() {

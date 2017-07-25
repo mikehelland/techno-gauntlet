@@ -23,8 +23,6 @@ public class MixerFragment extends OMGFragment {
 
         setupPanels(inflater);
 
-        setupOscPanel();
-
         return mView;
     }
 
@@ -42,16 +40,6 @@ public class MixerFragment extends OMGFragment {
                     setJam(mJam, channel, channel.getSoundSetName());
 
         }
-
-    }
-
-    public void setupOscPanel() {
-
-        oscControls = mView.findViewById(R.id.osc_mixer);
-
-        ((MixerView)oscControls.findViewById(R.id.mixer_view)).
-                setJam(mJam, mJam.getDialpadChannel(), "Oscillator");
-
 
     }
 

@@ -7,10 +7,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-//import android.support.v4.app.FragmentActivity;
-//import android.support.v4.app.FragmentTransaction;
-
-public class Main extends Activity {//FragmentActivity {
+public class Main extends Activity {
 
     Jam mJam;
     OMGSoundPool mPool = new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
@@ -25,7 +22,7 @@ public class Main extends Activity {//FragmentActivity {
         super.onCreate(savedInstanceState);
 
         //TODO have such a good database I don't need to blow it away every time
-        //deleteDatabase("OMG_TECHNO_GAUNTLET");
+        deleteDatabase("OMG_TECHNO_GAUNTLET");
         //deleteDatabase("OMG_BANANAS");
 
 

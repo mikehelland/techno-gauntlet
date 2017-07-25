@@ -26,7 +26,7 @@ public class Jam {
 
     private ArrayList<Channel> mChannels = new ArrayList<>();
 
-    private DialpadChannel dialpadChannel;
+    //private DialpadChannel dialpadChannel;
 
     private OMGSoundPool pool;
 
@@ -149,24 +149,11 @@ public class Jam {
                 channel.resetI();
             }
 
-            //basslineChannel.resetI();
-            //guitarChannel.resetI();
-            //keyboardChannel.resetI();
-            dialpadChannel.resetI();
-
         }
 
-        for (int i = 0; i < mChannels.size(); i++) { //Channel channel : mChannels) {
+        for (int i = 0; i < mChannels.size(); i++) {
             mChannels.get(i).playBeat(subbeat);
         }
-
-        double beat = subbeat / (double)subbeats;
-
-        //basslineChannel.playBeat(subbeat);
-        //playChannelBeat(basslineChannel, beat);
-        //playChannelBeat(guitarChannel, beat);
-        //playChannelBeat(keyboardChannel, beat);
-        playChannelBeat(dialpadChannel, beat);
 
     }
 
@@ -204,11 +191,6 @@ public class Jam {
     }
 
 
-
-    public boolean  toggleMuteDsp() {
-        dialpadChannel.toggleEnabled();
-        return dialpadChannel.enabled;
-    }
 
     public int getCurrentSubbeat() {
         int i = playbackThread.ibeat;
@@ -272,8 +254,6 @@ public class Jam {
             if (jsonData.has("scale")) {
                 setScale(jsonData.getString("scale"));
             }
-
-            dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY", new DialpadChannelSettings());
 
             Channel channel;
 
@@ -418,7 +398,6 @@ public class Jam {
             if (channel.getSoundSet().isChromatic())
                 mm.applyScale(channel, chord);
         }
-        mm.applyScale(dialpadChannel, chord);
     }
 
     public void finish() {
@@ -428,8 +407,6 @@ public class Jam {
             channel.mute();
         }
 
-
-        dialpadChannel.mute();
 
         if (mCallback != null)
             mCallback.onStop();
@@ -608,8 +585,6 @@ public class Jam {
             monkeyWithChannel(channel);
         }
 
-        makeChannelNotes(dialpadChannel);
-
         playbackThread.ibeat = 0;
 
     }
@@ -761,11 +736,6 @@ public class Jam {
 
     public boolean isSoundPoolInitialized() {
         return soundPoolInitialized;
-    }
-
-
-    public Channel getDialpadChannel() {
-        return dialpadChannel;
     }
 
     public int getScaledNoteNumber(int basicNote) {

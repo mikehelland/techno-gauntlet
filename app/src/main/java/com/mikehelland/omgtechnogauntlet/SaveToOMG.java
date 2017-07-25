@@ -1,6 +1,5 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.content.ContentValues;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -10,32 +9,11 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
-/*import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-*/
-
-/**
- * User: m
- * Date: 7/4/13
- * Time: 11:35 PM
- */
 public class SaveToOMG {
-
-    public String desc = "";
-    public String responseString = "";
-
 
     public SaveToOMG() {
     }
@@ -43,25 +21,21 @@ public class SaveToOMG {
     private long doHttp(String saveUrl, String type, String data) {
         long id = -1;
 
-        ContentValues values = new ContentValues();
-        values.put("data", data);
-        values.put("type", type);
-
         try
         {
-            JSONObject jsonParam = new JSONObject();
-            jsonParam.put("data", new JSONObject(data));
-            jsonParam.put("type", type);
 
             URL url = new URL(saveUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestMethod("POST");
 
-            OutputStreamWriter request = new OutputStreamWriter(connection.getOutputStream());
+            //OutputStreamWriter request = new OutputStreamWriter(connection.getOutputStream());
+            OutputStream request = connection.getOutputStream();
 
-            request.write(URLEncoder.encode(jsonParam.toString(),"UTF-8"));
+            //request.write(URLEncoder.encode(jsonParam.toString(),"UTF-8"));
+            byte[] bytes = data.getBytes("UTF-8");
+            request.write(bytes);
             request.flush();
             request.close();
             String line = "";
@@ -74,7 +48,6 @@ public class SaveToOMG {
             }
             // Response from server after login process will be stored in response variable.
             String response = sb.toString();
-            responseString = response;
 
             id = getIdFromResponse(response);
 
@@ -89,16 +62,7 @@ public class SaveToOMG {
             // Error
             Log.e("MGH SaveToOMG IO", e.getMessage());
         }
-        catch (JSONException e) {
-            Log.e("MGH SaveToOMG JSON", e.getMessage());
-        }
 
-        Log.d("MGH doHttp", responseString);
-        desc = responseString;
-            //}
-
-
-        Log.d("MGH doHttp saved?", desc);
         return id;
 
         //return 0;
@@ -139,15 +103,12 @@ public class SaveToOMG {
         try {
             JSONObject response = new JSONObject(responseString);
 
-
-            if (response.has("result") && response.getString("result").equals("good")) {
-                if (response.has("id")) {
-                    ret = response.getLong("id");
-                }
+            if (response.has("id")) {
+                ret = response.getLong("id");
             }
         }
         catch (JSONException ex) {
-
+            Log.e("MGH getIdFromResponse", ex.getMessage());
         }
 
         return ret;
