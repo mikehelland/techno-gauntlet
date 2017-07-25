@@ -32,6 +32,7 @@ public class SoundSetDownloader {
     private ProgressDialog mProgressDialog;
     private Runnable mCallback;
 
+    private String mURL;
 
     public SoundSetDownloader(Context context, String url, Runnable callback) {
 
@@ -41,6 +42,8 @@ public class SoundSetDownloader {
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.setCancelable(true);
+
+        mURL = url;
 
         final DownloadSoundSetJSON downloadTask = new DownloadSoundSetJSON(context);
         downloadTask.execute(url);
@@ -168,6 +171,7 @@ public class SoundSetDownloader {
         protected ContentValues processSoundSetJSON(String result) {
 
             ContentValues soundset = new ContentValues();
+            soundset.put("url", mURL);
 
             // now, process the json
             if (result == null) {

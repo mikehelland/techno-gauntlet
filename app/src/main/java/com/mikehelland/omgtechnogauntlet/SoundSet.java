@@ -128,6 +128,14 @@ public class SoundSet {
         mChromatic = b;
     }
 
+    public String[] getSoundNames() {
+        String[] names = new String[mSounds.size()];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = mSounds.get(i).getName();
+        }
+        return names;
+    }
+
     class Sound {
 
         private String mName;

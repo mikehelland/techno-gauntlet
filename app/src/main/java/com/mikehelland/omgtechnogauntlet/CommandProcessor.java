@@ -87,9 +87,17 @@ public class CommandProcessor extends BluetoothDataCallback {
         mConnection.writeString("SET_SUBBEATLENGTH=" + mJam.getSubbeatLength() + ";");
 
         String setChannels = "SET_CHANNELS=";
+        String surfaceURL;
         for (int i = 0; i < mJam.getChannels().size(); i++) {
             Channel channel = mJam.getChannels().get(i);
-            setChannels += channel.getSoundSet().isChromatic() ? "1" : "0";
+            surfaceURL = channel.getSurfaceURL();
+            if ("PRESET_SEQUENCER".equals(surfaceURL))
+                setChannels +=  "0";
+            if ("PRESET_VERTICAL".equals(surfaceURL))
+                setChannels +=  "1";
+            if ("PRESET_FRETBOARD".equals(surfaceURL))
+                setChannels +=  "2";
+
             setChannels += channel.getSoundSetName();
 
             if (i < mJam.getChannels().size() - 1) {

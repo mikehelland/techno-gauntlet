@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,15 +73,25 @@ public class MainFragment extends OMGFragment {
             Button button = ((Button)controls.findViewById(R.id.track_button));
             button.setText(channel.getSoundSetName());
 
-            Log.d("MGH sound name", channel.getSoundSetName());
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d("MGH", "onclick!");
                     SoundSetFragment f = new SoundSetFragment();
                     f.setJam(mJam, channel);
                     showFragmentRight(f);
 
+                }
+            });
+
+            button.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+
+                    ChannelOptionsFragment f = new ChannelOptionsFragment();
+                    f.setJam(mJam, channel);
+                    showFragmentRight(f);
+
+                    return false;
                 }
             });
 
@@ -94,6 +103,8 @@ public class MainFragment extends OMGFragment {
                             Color.GREEN : Color.RED);
                 }
             });
+            muteButton.setBackgroundColor(channel.enabled ?
+                    Color.GREEN : Color.RED);
             muteButton.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -120,16 +131,31 @@ public class MainFragment extends OMGFragment {
                 @Override
                 public void onClick(View view) {
 
-                    if (channel.mSoundSet.isChromatic()) {
-                        GuitarFragment f = new GuitarFragment();
-                        f.setJam(mJam, channel);
-                        showFragmentRight(f);
-                    }
-                    else {
+                    String surfaceURL = channel.getSurfaceURL();
+
+                    if (surfaceURL.equals("PRESET_SEQUENCER")) {
                         DrumFragment f = new DrumFragment();
                         f.setJam(mJam, channel);
                         showFragmentRight(f);
                     }
+                    else {
+
+                        GuitarFragment f = new GuitarFragment();
+                        f.setJam(mJam, channel);
+                        showFragmentRight(f);
+                    }
+                }
+            });
+
+            controls.findViewById(R.id.open_fretboard_button).setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+
+                    SurfaceFragment f = new SurfaceFragment();
+                    f.setJam(mJam, channel);
+                    showFragmentRight(f);
+
+                    return false;
                 }
             });
 
@@ -292,6 +318,21 @@ public class MainFragment extends OMGFragment {
 
     private void setupMainControls() {
 
+
+        mView.findViewById(R.id.add_channel_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Channel channel = new Channel(getActivity(), mJam, mPool);
+
+                mJam.addChannel(channel);
+
+                SoundSetFragment f = new SoundSetFragment();
+                f.setJam(mJam, channel);
+                showFragmentRight(f);
+
+            }
+        });
 
         mView.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
             @Override

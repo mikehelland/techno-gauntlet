@@ -64,6 +64,8 @@ public class Channel {
     protected SoundSet mSoundSet;
     private String mMainSound;
 
+    private String mSurfaceURL = "PRESET_SEQUENCER";
+
     protected boolean[][] pattern;
 
     public Channel(Context context, Jam jam, OMGSoundPool pool) {
@@ -72,6 +74,12 @@ public class Channel {
         mJam = jam;
 
         pattern = new boolean[8][mJam.getSubbeats() * mJam.getBeats()];
+
+        mSoundSet = new SoundSet();
+        mSoundSet.setName("DRUMBEAT");
+        mSoundSet.setURL("");
+        mSoundSet.setChromatic(false);
+
 
         setup();
     }
@@ -476,6 +484,8 @@ public class Channel {
         sb.append(getSoundSetName());
         sb.append("\", \"soundsetURL\": \"");
         sb.append(getSoundSetURL());
+        sb.append("\", \"surfaceURL\" : \"");
+        sb.append(mSurfaceURL);
         sb.append("\", \"scale\": \"");
         sb.append(mJam.getScale());
         sb.append("\", \"rootNote\": ");
@@ -522,7 +532,7 @@ public class Channel {
 
         int i = getI();
         if (i <  getNotes().size()) {
-            Log.d("MGH next beat", Double.toString(subbeat / mJam.getBeats()));
+            //Log.d("MGH next beat", Double.toString(subbeat / mJam.getBeats()));
             if (getNextBeat() == subbeat / (double)subbeats) {
                 Note note = getNotes().get(i);
 
@@ -558,6 +568,8 @@ public class Channel {
         sb.append(mSoundSet.getName());
         sb.append("\", \"soundsetURL\" : \"");
         sb.append(mSoundSet.getURL());
+        sb.append("\", \"surfaceURL\" : \"");
+        sb.append(mSurfaceURL);
 
         sb.append("\", \"volume\": ");
         sb.append(volume);
@@ -611,4 +623,11 @@ public class Channel {
         pattern[track][subbeat] = value;
     }
 
+    public void setSurface(String surfaceURL) {
+        mSurfaceURL = surfaceURL;
+    }
+
+    public String getSurfaceURL() {
+        return mSurfaceURL;
+    }
 }

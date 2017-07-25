@@ -81,16 +81,10 @@ public class Jam {
         boolean usingListener = false;
         boolean updatePB = false;
 
-        dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY", new DialpadChannelSettings());
 
         soundsToLoad = 0;
 
-        String[] channelConfig = PreferenceHelper.getLastChannelConfiguration(mContext).split(",");
-        for (String sId : channelConfig) {
-            Channel channel = new Channel(mContext, this, pool);
-            soundsToLoad += channel.prepareSoundSet(sId);
-            mChannels.add(channel);
-        }
+        load(mContext.getResources().getString(R.string.default_jam), false);
 
         if (Build.VERSION.SDK_INT >= 11 && progressBar != null) {
             usingListener = true;
@@ -113,6 +107,15 @@ public class Jam {
                 }
             });
         }
+
+        /*dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY", new DialpadChannelSettings());
+        String[] channelConfig = PreferenceHelper.getLastChannelConfiguration(mContext).split(",");
+        for (String sId : channelConfig) {
+            Channel channel = new Channel(mContext, this, pool);
+            soundsToLoad += channel.prepareSoundSet(sId);
+            mChannels.add(channel);
+        }*/
+
 
 
         if (!usingListener) {
@@ -153,8 +156,8 @@ public class Jam {
 
         }
 
-        for (Channel channel : mChannels) {
-            channel.playBeat(subbeat);
+        for (int i = 0; i < mChannels.size(); i++) { //Channel channel : mChannels) {
+            mChannels.get(i).playBeat(subbeat);
         }
 
         double beat = subbeat / (double)subbeats;
@@ -248,7 +251,7 @@ public class Jam {
         return subbeatLength;
     }
 
-    public boolean load(String json) {
+    public boolean load(String json, boolean loadSoundSets) {
 
         boolean good = false;
         try {
@@ -291,7 +294,7 @@ public class Jam {
                 }
 
                 channel = new Channel(mContext, this, pool);
-                load(channel, part);
+                loadPart(channel, part, loadSoundSets);
                 mChannels.add(channel);
             }
 
@@ -312,6 +315,11 @@ public class Jam {
 
     public ArrayList<Channel> getChannels() {
         return mChannels;
+    }
+
+    public void addChannel(Channel channel) {
+
+        mChannels.add(channel);
     }
 
 
@@ -371,10 +379,10 @@ public class Jam {
 
         public void pollFinishedNotes(long now) {
             long finishAt;
-            for (Channel channel : mChannels) {
-                finishAt = channel.getFinishAt();
+            for (int i = 0; i < mChannels.size(); i++) { // Channel channel : mChannels) {
+                finishAt = mChannels.get(i).getFinishAt();
                 if (finishAt > 0 && now >= finishAt) {
-                    channel.mute();
+                    mChannels.get(i).mute();
                 }
             }
 
@@ -800,12 +808,26 @@ public class Jam {
 
     }
 
-    private void load(Channel jamChannel, JSONObject part) throws  JSONException {
+    private void loadPart(Channel jamChannel, JSONObject part, boolean loadSoundSet) throws  JSONException {
         String soundsetName = part.getString("soundsetName");
         String soundsetURL = part.getString("soundsetURL");
 
-        jamChannel.prepareSoundSet(soundsetURL);
-        jamChannel.loadSoundSet();
+        if (part.has("surfaceURL")) {
+            String surfaceURL = part.getString("surfaceURL");
+            jamChannel.setSurface(surfaceURL);
+        }
+        else {
+            jamChannel.setSurface("PRESET_VERTICAL");
+        }
+
+        Log.d("MGH soundsetname", soundsetName);
+        Log.d("MGH soundseturl", soundsetURL);
+
+        soundsToLoad += jamChannel.prepareSoundSet(soundsetURL);
+
+        if (loadSoundSet) {
+            jamChannel.loadSoundSet();
+        }
 
         if (part.has("volume")) {
             jamChannel.volume = (float)part.getDouble("volume");

@@ -17,11 +17,7 @@ import java.util.ArrayList;
  * Date: 2/20/13
  * Time: 9:23 PM
  */
-public class Fretboard {
-
-
-    private String name;
-    private String url;
+public class FretboardViewHelper {
 
 
     int frets;
@@ -53,19 +49,19 @@ public class Fretboard {
 
     private Jam mJam;
 
-    public Fretboard(Channel channel, Jam jam, Cursor cursor) {
+    public FretboardViewHelper(Channel channel, Jam jam, Cursor cursor) {
 
         setup("");
-        //cursor.getColumnIndex("data")
+        cursor.getColumnIndex("data");
     }
 
 
-    public Fretboard(Channel channel, Jam jam, String fretboardJson) {
+    public FretboardViewHelper(Channel channel, Jam jam, String fretboardJson) {
 
         mChannel = channel;
         mJam = jam;
 
-        setup(fretboardJson);
+
     }
 
     private void setup(String fretboardJson) {

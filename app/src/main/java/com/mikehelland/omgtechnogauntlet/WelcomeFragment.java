@@ -220,7 +220,7 @@ public class WelcomeFragment extends OMGFragment {
                 mJam.makeChannels(progressBar, callback);
             }
         }).start();
-
+        //mJam.makeChannels(progressBar, callback);
 
     }
 

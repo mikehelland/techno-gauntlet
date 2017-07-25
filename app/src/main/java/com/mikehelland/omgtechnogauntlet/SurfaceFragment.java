@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +20,7 @@ import android.widget.TextView;
  * Date: 5/6/14
  * Time: 7:11 PM
  */
-public class SoundSetFragment extends OMGFragment {
+public class SurfaceFragment extends OMGFragment {
 
     private Jam mJam;
     private View mView;
@@ -55,15 +54,15 @@ public class SoundSetFragment extends OMGFragment {
 
         final Context context = getActivity();
 
-        final SoundSetDataOpenHelper openHelper = new SoundSetDataOpenHelper(context);
+        final SufacesDataHelper openHelper = new SufacesDataHelper(context);
         final SQLiteDatabase db = openHelper.getWritableDatabase();
         final Cursor cursor;
-        //if (mChannel.getSoundSet().isChromatic()) {
+        if (mChannel.getSoundSet().isChromatic()) {
             cursor = openHelper.getSavedCursor(db);
-        //}
-        //else {
-        //    cursor = openHelper.getSavedCursor(db);
-       // }
+        }
+        else {
+            cursor = openHelper.getSavedCursor(db);
+        }
 
         final SoundSetAdapter curA = new SoundSetAdapter(context,
                 R.layout.saved_row,
@@ -85,12 +84,15 @@ public class SoundSetFragment extends OMGFragment {
 
                 String json = cursor.getString(cursor.getColumnIndex("data"));
 
-                if (mChannel.loadSoundSet(new SoundSet(cursor))) {
+                //todo yeah this is way whacky, needs an surface object
+                mChannel.setSurface(json);
+
+                /*if (mChannel.loadSoundSet(new SoundSet(cursor))) {
                     Log.d("MGH", "sound set loaded");
                 }
                 else {
                     Log.d("MGH", "sound set NOT loaded");
-                }
+                }*/
 
                 //mainFragment.updateUI();
                 getActivity().getFragmentManager().popBackStack();

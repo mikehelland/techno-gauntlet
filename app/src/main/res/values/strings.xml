@@ -8,7 +8,7 @@
     <string name="tags_explain">Add tags like \"funky\" or \"soothing\".
 
         \n\n
-        Tags make it easier to mix and mash music on the Open Music Gallery (OMG)
+        Tags make it easier to mix and mash music on the OpenMusic.Gallery (OMG)
 
     </string>
     <string name="ok">OK</string>
@@ -16,16 +16,41 @@
     <string name="edit_to_draw">Edit</string>
     <string name="saved_list_title">Saved</string>
     <string name="exit_text">Press Back again to Exit</string>
-    <string name="cap_source_code">&lt;a href="https://github.com/MazeHatter/OMGBananas">Source Code&lt;/a></string>
+    <string name="cap_source_code">&lt;a href="https://github.com/mikehelland/OMGTechnoGauntlet">Source Code&lt;/a></string>
 
-    <string name="cap_suggestions">&lt;a href="mailto:maze@sketchatune.com">Make a suggestion&lt;/a></string>
+    <string name="cap_suggestions">&lt;a href="mailto:mike@mikehelland.com">Make a suggestion&lt;/a></string>
 
     <string name="default_fretboard_json">{\"maps\": [
+        {\"frets\": [[0,1],[2,3]]},
+        {\"scale\": \"0,3,5,6,7,10\", \"frets\": [[-1,0,1,2,3],[2,4,5,6,7]]}]}</string>_
+
+    <string name="default_fretboard_json2">{\"maps\": [
         {\"frets\": [[0,1,2,3,4],[4,5,6,7,8]]},
         {\"scale\": \"0,3,5,6,7,10\", \"frets\": [[-1,0,1,2,3],[2,4,5,6,7]]}]}</string>
 
     <string name="other_major_fretboard_json">{\"maps\": [
         {\"frets\": [[-1,0,3,4,5],[2,5,6,7,8]]},
         {\"scale\": \"0,3,5,6,7,10\", \"frets\": [[-1,0,1,2,3],[2,4,5,6,7]]}]}</string>
+
+    <string name="default_jam">
+        {\"type\": \"SECTION\", \"scale\": \"0,3,5,6,7,10\", \"ascale\": [0,3,5,6,7,10], \"rootNote\": 0,
+        \"beats\" :8, \"subbeats\" :4, \"subbeatMillis\" :125, \"parts\" : [
+            {\"type\" : \"null\", \"soundsetName\": \"Keyboard\", \"soundsetURL\": \"PRESET_KEYBOARD\",
+                \"surfaceURL\": \"PRESET_VERTICAL\",
+                \"scale\": \"[I@5903e96\", \"rootNote\": 0, \"octave\": 3, \"volume\": 0.75, \"notes\" : []},
+            {\"type\" : \"null\", \"soundsetName\": \"Electric Bass\", \"soundsetURL\": \"PRESET_BASS\",
+                \"surfaceURL\": \"PRESET_FRETBOARD\",
+                \"scale\": \"[I@5903e96\", \"rootNote\": 0, \"octave\": 3, \"volume\": 0.75, \"notes\" : []},
+            {\"type\" : \"DRUMBEAT\", \"soundsetName\": \"Hip Hop Drum Kit\", \"soundsetURL\" : \"PRESET_HIPKIT\",
+                \"surfaceURL\": \"PRESET_SEQUENCER\",
+                \"volume\": 0.75, \"tracks\": [{\"name\": \"kick\", \"sound\": \"PRESET_HH_KICK\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"clap\", \"sound\": \"PRESET_HH_CLAP\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"closed hi-hat\", \"sound\": \"PRESET_ROCK_HIHAT_CLOSED\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"open hi-hat\", \"sound\": \"PRESET_HH_HIHAT\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"tambourine\", \"sound\": \"PRESET_HH_TAMB\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"h tom\", \"sound\": \"PRESET_HH_TOM_MH\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"m tom\", \"sound\": \"PRESET_HH_TOM_ML\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"l tom\", \"sound\": \"PRESET_HH_TOM_L\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}]},
+            {\"type\" : \"DRUMBEAT\", \"soundsetName\": \"Percussion Sampler\", \"soundsetURL\" : \"PRESET_PERCUSSION_SAMPLER\",
+                \"surfaceURL\": \"PRESET_SEQUENCER\",
+                \"volume\": 0.75, \"tracks\": [{\"name\": \"bongo l\", \"sound\": \"PRESET_bongol\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"bongo l\", \"sound\": \"PRESET_bongoh\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"click l\", \"sound\": \"PRESET_clickl\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"click h\", \"sound\": \"PRESET_clickh\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"shhk\", \"sound\": \"PRESET_shhk\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"scrape\", \"sound\": \"PRESET_scrape\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"whoop\", \"sound\": \"PRESET_whoop\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"chimes\", \"sound\": \"PRESET_chimes\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}]},{\"type\" : \"CHORDPROGRESSION\", \"data\" : [0]}]}
+    </string>
+
+
+
+
 
 </resources>

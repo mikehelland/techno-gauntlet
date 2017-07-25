@@ -4,14 +4,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class OMGHelper {
 
-    private static String mSubmitUrl = "omg";
+    private static String mSubmitUrl = "data/";
     //private static String mHomeUrl = "http://10.0.2.2:8888/";
     //private static String mHomeUrl = "http://192.168.1.116:8888/";
-    private static String mHomeUrl = "http://openmusicgallery.appspot.com/";
-    private static String SHARE_URL_SUFFIX = "omgbam.jsp?share=SECTION-";
+    private static String mHomeUrl = "http://openmusic.gallery/";
+    private static String SHARE_URL_SUFFIX = "viewer.htm?id=";
 
     private Context mContext;
 
@@ -76,6 +77,7 @@ public class OMGHelper {
     }
 
     public void shareLastSaved() {
+        Log.d("MGH last saved ID", Long.toString(lastSavedId));
         if (lastSavedId <= 0) {
             return;
         }

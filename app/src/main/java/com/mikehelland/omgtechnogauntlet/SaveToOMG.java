@@ -1,7 +1,19 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.content.ContentValues;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 
 /*import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -13,13 +25,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 */
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: m
@@ -36,42 +41,67 @@ public class SaveToOMG {
     }
 
     private long doHttp(String saveUrl, String type, String data) {
-/*        long id = -1;
-        HttpClient httpclientup = new DefaultHttpClient();
-        Log.d("MGH doHttp", "1");
-        try {
-            HttpPost hPost = new HttpPost(saveUrl);
-            List<NameValuePair> postParams = new ArrayList<NameValuePair>();
-            postParams.add(new BasicNameValuePair("data", data));
-            postParams.add(new BasicNameValuePair("type", type));
-            postParams.add(new BasicNameValuePair("tags", ""));
-            hPost.setEntity(new UrlEncodedFormEntity(postParams));
+        long id = -1;
 
-            HttpResponse response = httpclientup.execute(hPost);
-            StatusLine statusLine = response.getStatusLine();
-            //if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                response.getEntity().writeTo(out);
-                out.close();
-                responseString = out.toString();
+        ContentValues values = new ContentValues();
+        values.put("data", data);
+        values.put("type", type);
 
-                id = getIdFromResponse(responseString);
+        try
+        {
+            JSONObject jsonParam = new JSONObject();
+            jsonParam.put("data", new JSONObject(data));
+            jsonParam.put("type", type);
 
-                Log.d("MGH doHttp", responseString);
-                desc = responseString;
+            URL url = new URL(saveUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestMethod("POST");
+
+            OutputStreamWriter request = new OutputStreamWriter(connection.getOutputStream());
+
+            request.write(URLEncoder.encode(jsonParam.toString(),"UTF-8"));
+            request.flush();
+            request.close();
+            String line = "";
+            InputStreamReader isr = new InputStreamReader(connection.getInputStream());
+            BufferedReader reader = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            while ((line = reader.readLine()) != null)
+            {
+                sb.append(line + "\n");
+            }
+            // Response from server after login process will be stored in response variable.
+            String response = sb.toString();
+            responseString = response;
+
+            id = getIdFromResponse(response);
+
+            // You can perform UI operations here
+            Log.d("MGH server response", response);
+            isr.close();
+            reader.close();
+
+        }
+        catch(IOException e)
+        {
+            // Error
+            Log.e("MGH SaveToOMG IO", e.getMessage());
+        }
+        catch (JSONException e) {
+            Log.e("MGH SaveToOMG JSON", e.getMessage());
+        }
+
+        Log.d("MGH doHttp", responseString);
+        desc = responseString;
             //}
 
-        } catch (ClientProtocolException ee) {
-            desc = ee.getMessage();
-
-        } catch (IOException ee) {
-            desc = ee.getMessage();
-        }
 
         Log.d("MGH doHttp saved?", desc);
         return id;
-*/
-        return 0;
+
+        //return 0;
     }
 
     public void execute(String saveUrl, String type, String data, OMGCallback callback) {

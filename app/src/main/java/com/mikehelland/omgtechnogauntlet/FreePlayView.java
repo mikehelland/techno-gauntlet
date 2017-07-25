@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * Date: 11/15/13
  * Time: 11:01 PM
  */
-public class GuitarView extends View {
+public class FreePlayView extends View {
 
     private Paint paint;
     private Paint paintOff;
@@ -58,7 +58,6 @@ public class GuitarView extends View {
     private int[] noteMapping;
 
     private String[] keyCaptions = {"C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "Bb", "B"};
-    private String[] soundsetCaptions;
 
     private boolean useScale = true;
 
@@ -87,7 +86,7 @@ public class GuitarView extends View {
 
     private Fretboard mFretboard = null;
 
-    public GuitarView(Context context, AttributeSet attrs) {
+    public FreePlayView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         paint = new Paint();
@@ -152,7 +151,7 @@ public class GuitarView extends View {
 
         if (mFretboard != null) {
             mFretboard.onDraw(canvas, getWidth(), getHeight());
-            return;
+            //return;
         }
 
         //if (height != getHeight()) {
@@ -180,25 +179,24 @@ public class GuitarView extends View {
                         width / 4 * 3, height - (fret - 1) * boxHeight, paintOff);
             }
 
-            /*if (noteNumber == playingNote) {
+            if (noteNumber == playingNote) {
                 canvas.drawRect(0, height - fret * boxHeight,
                         width, height - (fret - 1) * boxHeight,
                         topPanelPaint);
 
-            }*/
+            }
 
             canvas.drawLine(0, height - fret * boxHeight, width,
                     height - fret * boxHeight, paint);
 
-            canvas.drawText(useScale ? keyCaptions[noteNumber % 12] : soundsetCaptions[noteNumber],
-                    0, height - (fret - 1) * boxHeight - boxHeightHalf, paint);
+            canvas.drawText(keyCaptions[noteNumber % 12], 0,
+                    height - (fret - 1) * boxHeight - boxHeightHalf, paint);
 
         }
 
         canvas.drawLine(0, height - 1, width,
                 height - 1, paint);
 
-        Log.d("MGH touching fret", Integer.toString(touchingFret));
         if (touchingFret > -1 ) {
             canvas.drawRect(0, height - (touchingFret + 1) * boxHeight,
                     width, height - touchingFret  * boxHeight,
@@ -307,7 +305,7 @@ public class GuitarView extends View {
         mJam = jam;
         mChannel = channel;
 
-        mFretboard = fretboard;
+        //=7mFretboard = fretboard;
 
         setScaleInfo();
 
@@ -327,23 +325,16 @@ public class GuitarView extends View {
 
         useScale = mChannel.isAScale();
 
-        int highNote;
         if (!useScale) {
             key = 0;
             rootNote = 0;
-            lowNote = 0;
-            highNote = mChannel.getSoundSet().getSounds().size() - 1;
-
-            soundsetCaptions = mChannel.getSoundSet().getSoundNames();
-
         }
         else {
             rootNote = key + mChannel.getOctave() * 12;
-            Log.d("MGH guitarview rootnote", Integer.toString(mChannel.getOctave()));
-            lowNote = mChannel.getLowNote();
-            highNote = mChannel.getHighNote();
         }
-
+        Log.d("MGH guitarview rootnote", Integer.toString(mChannel.getOctave()));
+        lowNote = mChannel.getLowNote();
+        int highNote = mChannel.getHighNote();
         int[] allFrets = new int[highNote - lowNote + 1];
         noteMapping = new int[highNote - lowNote + 1];
 

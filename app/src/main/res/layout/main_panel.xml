@@ -28,6 +28,7 @@
             android:layout_toRightOf="@id/libeniz_head"
             android:text="Name"
             android:id="@+id/track_button"
+            android:background="#888888"
             />
        <!--     android:background="?android:attr/selectableItemBackground"-->
 
