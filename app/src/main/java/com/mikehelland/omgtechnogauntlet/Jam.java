@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Jam {
+class Jam {
 
     private Random rand = new Random();
 
@@ -26,15 +26,13 @@ public class Jam {
 
     private ArrayList<Channel> mChannels = new ArrayList<>();
 
-    //private DialpadChannel dialpadChannel;
-
     private OMGSoundPool pool;
 
     private Context mContext;
 
-    PlaybackThread playbackThread;
+    private PlaybackThread playbackThread;
 
-    boolean cancel = false;
+    private boolean cancelPlaybackThread = false;
 
     private MelodyMaker mm;
 
@@ -54,9 +52,9 @@ public class Jam {
     private boolean soundPoolInitialized = false;
     private BluetoothFactory btf;
 
-    StateChangeCallback mCallback;
+    private StateChangeCallback mCallback;
 
-    public Jam(Context context, OMGSoundPool pool, Jam.StateChangeCallback callback) {
+    Jam(Context context, OMGSoundPool pool, Jam.StateChangeCallback callback) {
 
         this.pool = pool;
 
@@ -66,12 +64,9 @@ public class Jam {
         mm = new MelodyMaker(mContext);
         mm.makeMotif();
         mm.makeMelodyFromMotif(beats);
-
-        setDrumset(0);
-
     }
 
-    public void makeChannels(final ProgressBar progressBar, final Runnable callback) {
+    void makeChannels(final ProgressBar progressBar, final Runnable callback) {
 
         pool.allowLoading();
         if (progressBar != null) {
@@ -142,7 +137,7 @@ public class Jam {
 
 
 
-    public void playBeatSampler(int subbeat) {
+    void playBeatSampler(int subbeat) {
 
         if (subbeat == 0) {
             for (Channel channel : mChannels) {
@@ -157,7 +152,7 @@ public class Jam {
 
     }
 
-    public void makeChannelNotes(Channel channel) {
+    private void makeChannelNotes(Channel channel) {
 
         if (rand.nextInt(5) == 0) {
             mm.makeMotif();
@@ -177,10 +172,10 @@ public class Jam {
     }
 
 
-    public void kickIt() {
+    void kickIt() {
 
         if (!playing) {
-            cancel = false;
+            cancelPlaybackThread = false;
             playbackThread = new PlaybackThread();
             playbackThread.start();
         }
@@ -192,14 +187,14 @@ public class Jam {
 
 
 
-    public int getCurrentSubbeat() {
+    int getCurrentSubbeat() {
         int i = playbackThread.ibeat;
         if (i == 0) i = beats * subbeats;
         return i - 1;
 
     }
 
-    public int getClosestSubbeat(DebugTouch debugTouch) {
+    int getClosestSubbeat(DebugTouch debugTouch) {
         if (playbackThread == null)
             return 0;
 
@@ -229,11 +224,11 @@ public class Jam {
 
     }
 
-    public int getSubbeatLength() {
+    int getSubbeatLength() {
         return subbeatLength;
     }
 
-    public boolean load(String json, boolean loadSoundSets) {
+    boolean load(String json, boolean loadSoundSets) {
 
         boolean good = false;
         try {
@@ -293,12 +288,11 @@ public class Jam {
 
     }
 
-    public ArrayList<Channel> getChannels() {
+    ArrayList<Channel> getChannels() {
         return mChannels;
     }
 
-    public void addChannel(Channel channel) {
-
+    void addChannel(Channel channel) {
         mChannels.add(channel);
     }
 
@@ -321,7 +315,7 @@ public class Jam {
             ibeat = 0;
 
 
-            while (!cancel) {
+            while (!cancelPlaybackThread) {
 
                 now = System.currentTimeMillis();
                 timeSinceLast = now - lastBeatPlayed;
@@ -357,7 +351,7 @@ public class Jam {
 
         }
 
-        public void pollFinishedNotes(long now) {
+        void pollFinishedNotes(long now) {
             long finishAt;
             for (int i = 0; i < mChannels.size(); i++) { // Channel channel : mChannels) {
                 finishAt = mChannels.get(i).getFinishAt();
@@ -372,7 +366,7 @@ public class Jam {
 
     private int[] progression = {0};
 
-    void onNewLoop() {
+    private void onNewLoop() {
 
         //long now = System.currentTimeMillis();
         //if (lastHumanInteraction > now - 30000) {
@@ -392,16 +386,14 @@ public class Jam {
     }
 
     private void updateChord(int chord) {
-
-
         for (Channel channel : mChannels) {
             if (channel.getSoundSet().isChromatic())
                 mm.applyScale(channel, chord);
         }
     }
 
-    public void finish() {
-        cancel = true;
+    void finish() {
+        cancelPlaybackThread = true;
 
         for (Channel channel : mChannels) {
             channel.mute();
@@ -414,7 +406,6 @@ public class Jam {
         //mPool.release();
         //mPool = null;
     }
-
 
     public void randomRuleChange(long now) {
 
@@ -450,12 +441,11 @@ public class Jam {
 
     }
 
-
-    public String getKeyName() {
+    String getKeyName() {
         return mm.getKeyName();
     }
 
-    public void makeChordProgression() {
+    void makeChordProgression() {
         progressionI = 0;
 
         int pattern = rand.nextInt(10);
@@ -509,15 +499,15 @@ public class Jam {
 
     }
 
-    public int getBPM() {
+    int getBPM() {
         return 60000 / (subbeatLength * subbeats);
     }
 
-    public boolean isPlaying() {
+    boolean isPlaying() {
         return playing;
     }
 
-    public String getData() {
+    String getData() {
 
         StringBuilder sb = new StringBuilder();
 
@@ -553,7 +543,7 @@ public class Jam {
     }
 
 
-    public void getChordsData(StringBuilder sb) {
+    private void getChordsData(StringBuilder sb) {
 
         sb.append("{\"type\" : \"CHORDPROGRESSION\", \"data\" : [");
 
@@ -571,7 +561,7 @@ public class Jam {
 
     }
 
-    public void monkeyWithEverything() {
+    void monkeyWithEverything() {
         subbeatLength = 70 + rand.nextInt(125);
 
         mm.pickRandomKey();
@@ -599,7 +589,7 @@ public class Jam {
         }
     }
 
-    void monkeyWithDrums(Channel channel) {
+    private void monkeyWithDrums(Channel channel) {
 
         DrumMonkey monkey = new DrumMonkey(this);
 
@@ -615,66 +605,54 @@ public class Jam {
 
     }
 
-
-
-    public void monkeyWithChords() {
-
+    void monkeyWithChords() {
         makeChordProgression();
         //progressionI = 0;
     }
 
-
-
-    public int[] getProgression() {
+    int[] getProgression() {
         return progression;
     }
 
-    public int getChordInProgression() {
+    int getChordInProgression() {
         return progressionI;
     }
 
-    public int[] getScale() {
+    int[] getScale() {
         return mm.getScaleArray();
     }
 
-    public int getScaleIndex() {
+    int getScaleIndex() {
         return mm.getScaleIndex();
     }
 
-    public String getScaleString() {
+    String getScaleString() {
         return mm.getScale();
     }
 
-    public int getKey() {
+    int getKey() {
         return mm.getKey() % 12;
     }
 
-    public void setDrumset(int set) {
-        //drumset = set;
-        //setCaptions();
-    }
-
-    public void addInvalidateOnBeatListener(View view) {
+    void addInvalidateOnBeatListener(View view) {
         viewsToInvalidateOnBeat.add(view);
     }
 
-    public void addInvalidateOnNewMeasureListener(View view) {
+    void addInvalidateOnNewMeasureListener(View view) {
         viewsToInvalidateOnNewMeasure.add(view);
     }
 
-
-    public void removeInvalidateOnBeatListener(View view)  {
+    void removeInvalidateOnBeatListener(View view)  {
         viewsToInvalidateOnBeat.remove(view);
     }
 
-
-    public void setScale(String scale) {
+    void setScale(String scale) {
         mm.setScale(scale);
     }
-    public void setScale(int scaleI) {
+    void setScale(int scaleI) {
         mm.setScale(scaleI);
     }
-    public void setKey(int keyI) {
+    void setKey(int keyI) {
         mm.setKey(keyI);
     }
 
@@ -698,16 +676,16 @@ public class Jam {
         }
     }
 
-    public void setBPM(float bpm) {
+    void setBPM(float bpm) {
         subbeatLength = (int)((60000 / bpm) / subbeats);
         //bpm = 60000 / (subbeatLength * subbeats);
     }
 
-    public void setSubbeatLength(int length) {
+    void setSubbeatLength(int length) {
         subbeatLength = length;
     }
 
-    public void setChordProgression(int[] chordProgression) {
+    void setChordProgression(int[] chordProgression) {
         // ifeel like this should be negative one?
         progressionI = 0;
         progression = chordProgression;
@@ -718,30 +696,29 @@ public class Jam {
         }
     }
 
-    public int getBeats() {
+    int getBeats() {
         return beats;
     }
 
-    public int getSubbeats() {
+    int getSubbeats() {
         return subbeats;
     }
 
-    public int getTotalSubbeats() {
+    int getTotalSubbeats() {
         return totalsubbeats;
     }
 
-    public Random getRand() {
+    Random getRand() {
         return rand;
     }
 
-    public boolean isSoundPoolInitialized() {
+    boolean isSoundPoolInitialized() {
         return soundPoolInitialized;
     }
 
-    public int getScaledNoteNumber(int basicNote) {
+    int getScaledNoteNumber(int basicNote) {
         return mm.scaleNote(basicNote, 0);
     }
-
 
     private void loadMelody(Channel channel, JSONObject part) throws JSONException {
 
@@ -847,7 +824,7 @@ public class Jam {
 
     }
 
-    public abstract static class StateChangeCallback {
+    abstract static class StateChangeCallback {
         abstract void onPlay();
         abstract void onStop();
     }

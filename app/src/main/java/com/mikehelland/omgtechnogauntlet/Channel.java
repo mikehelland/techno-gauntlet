@@ -359,9 +359,9 @@ class Channel {
 
         String mynotes = "";
         for (Note debugNote : mNoteList) {
-            mynotes = mynotes + debugNote.getInstrumentNote();
+            mynotes += debugNote.getInstrumentNote();
             if (debugNote.isRest())
-                mynotes = mynotes + "R";
+                mynotes += "R";
             mynotes = mynotes + "=" + debugNote.getBeats() + ":";
         }
 
