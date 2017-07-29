@@ -37,12 +37,12 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     private void setupDefaultSoundSets(SQLiteDatabase db) {
 
-        setupSamplerSoundSet(db);
-        setupHipHopDrumsSoundSet(db);
-        setupRockDrumsSoundSet(db);
-        setupBassSoundSet(db);
-        setupKeyboardSoundSet(db);
         setupOscillatorSoundSet(db);
+        setupKeyboardSoundSet(db);
+        setupBassSoundSet(db);
+        setupSamplerSoundSet(db);
+        setupRockDrumsSoundSet(db);
+        setupHipHopDrumsSoundSet(db);
 
     }
 
@@ -123,23 +123,23 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     private void setupOscillatorSoundSet(SQLiteDatabase db) {
 
         String[] oscs = new String[11];
-        oscs[0] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+        oscs[10] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
                 "Osc Soft Sine Delay\", \"url\": \"PRESET_OSC_SINE_SOFT_DELAY\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
-        oscs[1] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+        oscs[9] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
                 "Osc Sine\", \"url\": \"PRESET_OSC_SINE\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
-        oscs[2] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+        oscs[8] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
                 "Osc Soft Square Delay\", \"url\": \"PRESET_OSC_SQUARE_SOFT_DELAY\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
-        oscs[3] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+        oscs[7] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
                 "Osc Square Delay\", \"url\": \"PRESET_OSC_SQUARE_DELAY\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
-        oscs[4] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+        oscs[6] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
                 "Osc Soft Square Flange\", \"url\": \"PRESET_OSC_SQUARE_SOFT_FLANGE\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
@@ -147,24 +147,24 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
                 "Osc Square\", \"url\": \"PRESET_OSC_SQUARE\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
-        oscs[6] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+        oscs[4] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
                 "Osc Soft Square\", \"url\": \"PRESET_OSC_SQUARE_SOFT\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
-        oscs[7] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+        oscs[3] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
                 "Osc Soft Saw\", \"url\": \"PRESET_OSC_SAW_SOFT\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
-        oscs[8] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+        oscs[2] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
                 "Osc Saw\", \"url\": \"PRESET_OSC_SAW\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
 
-        oscs[9] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+        oscs[1] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
                 "Osc Soft Saw Delay\", \"url\": \"PRESET_OSC_SAW_SOFT_DELAT\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
-        oscs[10] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
+        oscs[0] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
                 "Osc Saw Delay\", \"url\": \"PRESET_OSC_SAW_DELAY\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
@@ -196,7 +196,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     Cursor getSavedCursor(SQLiteDatabase db) {
 
-        Cursor cursor = db.rawQuery("SELECT * FROM soundsets ORDER BY time DESC", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM soundsets ORDER BY _id DESC", null);
         //db.close();
 
         Log.d("MGH", "opening cursor");
@@ -219,12 +219,12 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         return ret;
     }
 
-    long newSoundSet(ContentValues data) {
-        long id;
+    SoundSet newSoundSet(ContentValues data) {
+
         final SQLiteDatabase db = getWritableDatabase();
-        id = db.insert("soundsets", null, data);
+        data.put("_id", db.insert("soundsets", null, data));
         db.close();
-        return id;
+        return new SoundSet(data);
     }
 
     private SoundSet getSoundSetByQuery(String where) {
@@ -248,6 +248,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
             }
         }
 
+        cursor.close();
         db.close();
         return soundset;
     }
@@ -260,7 +261,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         return getSoundSetByQuery("url = '" + url + "'");
     }
 
-    public String getLastErrorMessage() {
+    String getLastErrorMessage() {
         return cErrorMessage;
     }
 

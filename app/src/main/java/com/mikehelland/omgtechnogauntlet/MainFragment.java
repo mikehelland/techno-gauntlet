@@ -23,8 +23,6 @@ public class MainFragment extends OMGFragment {
     private Button mKeyButton;
     private ChordsView mChordsButton;
 
-    private ImageView mainLibenizHead;
-
     private Button bpmButton;
 
     private OMGHelper mOMGHelper;
@@ -97,7 +95,7 @@ public class MainFragment extends OMGFragment {
                             Color.GREEN : Color.RED);
                 }
             });
-            muteButton.setBackgroundColor(channel.enabled ?
+            muteButton.setBackgroundColor(channel.isEnabled() ?
                     Color.GREEN : Color.RED);
             muteButton.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -301,7 +299,7 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
                 if (mJam.isPlaying()) {
                     mJam.finish();
-                    playButton.setText("Play");
+                    playButton.setText(R.string.play);
                 }
                 else {
                     play();
@@ -320,7 +318,7 @@ public class MainFragment extends OMGFragment {
             }
         });
 
-        mainLibenizHead = (ImageView)mView.findViewById(R.id.libeniz_head);
+        ImageView mainLibenizHead = (ImageView)mView.findViewById(R.id.libeniz_head);
         mainLibenizHead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -421,7 +419,7 @@ public class MainFragment extends OMGFragment {
     private void play() {
         if (!mJam.isPlaying()) {
             mJam.kickIt();
-            playButton.setText("Stop");
+            playButton.setText(R.string.stop);
         }
     }
 

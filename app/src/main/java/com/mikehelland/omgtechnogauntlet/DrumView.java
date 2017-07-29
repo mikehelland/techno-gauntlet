@@ -18,7 +18,6 @@ public class DrumView extends View {
     private Paint paint;
     private Paint paintOff;
 
-    private int width = -1;
     private int height = -1;
 
     private int marginX;
@@ -93,7 +92,7 @@ public class DrumView extends View {
     public void onDraw(Canvas canvas) {
 
         if (height != getHeight()) {
-            width = getWidth();
+            int width = getWidth();
             height = getHeight();
             marginX = width / 64;
             marginY = height / 128;
@@ -114,7 +113,7 @@ public class DrumView extends View {
                 boxWidth, height,
                 topPanelPaint);
 
-        if (mChannel.enabled)
+        if (mChannel.isEnabled())
             paintBeat.setARGB(255, 0, 255, 0);
         else
             paintBeat.setARGB(255, 255, 0, 0);

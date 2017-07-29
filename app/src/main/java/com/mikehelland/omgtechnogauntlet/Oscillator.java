@@ -25,16 +25,16 @@ public class Oscillator { //DialpadChannel extends Channel {
 
     private Note lastPlayedNote;
 
-    public Oscillator(DialpadChannelSettings settings) {
+    public Oscillator(OscillatorSettings settings) {
 
         boolean delay = settings.delay;
         boolean flange = settings.flange;
         boolean softEnvelope = settings.softe;
 
 
-        if (settings.waveType == DialpadChannelSettings.WaveType.SAW)
+        if (settings.waveType == OscillatorSettings.WaveType.SAW)
             ugOscA1.fillWithSaw();
-        else if (settings.waveType == DialpadChannelSettings.WaveType.SQUARE) {
+        else if (settings.waveType == OscillatorSettings.WaveType.SQUARE) {
             ugOscA1.fillWithSqrDuty(0.6f);
         } else {
             ugOscA1.fillWithHardSin(7.0f);

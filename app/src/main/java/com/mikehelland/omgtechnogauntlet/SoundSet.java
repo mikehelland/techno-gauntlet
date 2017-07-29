@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -9,16 +10,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-/**
- * Created by m on 7/9/17.
- */
-
-public class SoundSet {
+class SoundSet {
 
     private String mName;
     private String mURL;
     private long mID;
-    private ArrayList<Sound> mSounds = new ArrayList<Sound>();
+    private ArrayList<Sound> mSounds = new ArrayList<>();
 
     private boolean mChromatic = false;
     private int mHighNote;
@@ -29,9 +26,9 @@ public class SoundSet {
     private boolean mIsOscillator = false;
     private Oscillator mOscillator = null;
 
-    public SoundSet() {}
+    SoundSet() {}
 
-    public SoundSet(Cursor cursor) {
+    SoundSet(Cursor cursor) {
         mName = cursor.getString(cursor.getColumnIndex("name"));
         mURL = cursor.getString(cursor.getColumnIndex("url"));
         mID = cursor.getLong(cursor.getColumnIndex("_id"));
@@ -39,35 +36,43 @@ public class SoundSet {
         mIsValid = loadFromJSON(cursor.getString(cursor.getColumnIndex("data")));
     }
 
+    SoundSet(ContentValues data) {
+        mName = (String)data.get("name");
+        mURL = (String)data.get("url");
+        mID = (long)data.get("_id");
+
+        mIsValid = loadFromJSON((String)data.get("data"));
+    }
+
     boolean isValid() {
         return mIsValid;
     }
 
-    public boolean loadFromJSON(String json) {
+    private boolean loadFromJSON(String json) {
         try {
-            JSONObject soundset = new JSONObject(json);
+            JSONObject soundSet = new JSONObject(json);
 
-            String type = soundset.getString("type");
+            String type = soundSet.getString("type");
             if (!"SOUNDSET".equals(type)) {
                 Log.e("MGH", "soundset not type=SOUNDSET");
                 mIsValid = false;
                 return false;
             }
 
-            mName = soundset.getString("name");
-            mChromatic = soundset.has("chromatic") && soundset.getBoolean("chromatic");
-            if (soundset.has("highNote") && soundset.has("lowNote")) {
-                mHighNote = soundset.getInt("highNote");
-                mLowNote = soundset.getInt("lowNote");
+            mName = soundSet.getString("name");
+            mChromatic = soundSet.has("chromatic") && soundSet.getBoolean("chromatic");
+            if (soundSet.has("highNote") && soundSet.has("lowNote")) {
+                mHighNote = soundSet.getInt("highNote");
+                mLowNote = soundSet.getInt("lowNote");
             }
 
             mIsOscillator = mURL.startsWith("PRESET_OSC_");
             if (mIsOscillator) {
-                mOscillator = new Oscillator(new DialpadChannelSettings(mURL));
+                mOscillator = new Oscillator(new OscillatorSettings(mURL));
                 return true;
             }
 
-            JSONArray data = soundset.getJSONArray("data");
+            JSONArray data = soundSet.getJSONArray("data");
 
             JSONObject soundJSON;
             Sound sound;
@@ -99,37 +104,37 @@ public class SoundSet {
         return true;
     }
 
-    public boolean isChromatic() {
+    boolean isChromatic() {
         return mChromatic;
     }
-    public int getHighNote() {
+    int getHighNote() {
         return mHighNote;
     }
-    public int getLowNote() {
+    int getLowNote() {
         return mLowNote;
     }
 
-    public String getName() {
+    String getName() {
         return mName;
     }
-    public String getURL() {
+    String getURL() {
         return mURL;
     }
-    public void setName(String name) {
+    void setName(String name) {
         mName = name;
     }
-    public void setURL(String url) {
+    void setURL(String url) {
         mURL = url;
     }
 
-    public ArrayList<Sound> getSounds() {
+    ArrayList<Sound> getSounds() {
         return mSounds;
     }
 
-    public void setID(long ID) {
-        this.mID = ID;
-    }
-    public long getID() {
+    //public void setID(long ID) {
+    //    this.mID = ID;
+    //}
+    long getID() {
         return mID;
     }
 
@@ -137,7 +142,7 @@ public class SoundSet {
         mChromatic = b;
     }
 
-    public String[] getSoundNames() {
+    String[] getSoundNames() {
         String[] names = new String[mSounds.size()];
         for (int i = 0; i < names.length; i++) {
             names[i] = mSounds.get(i).getName();
@@ -159,31 +164,31 @@ public class SoundSet {
         private String mURL = "";
         private int preset_id = -1;
 
-        public String getName() {
+        String getName() {
             return mName;
         }
 
-        public void setName(String mName) {
+        void setName(String mName) {
             this.mName = mName;
         }
 
-        public String getURL() {
+        String getURL() {
             return mURL;
         }
 
-        public void setURL(String mURL) {
+        void setURL(String mURL) {
             this.mURL = mURL;
         }
 
-        public boolean isPreset() {
+        boolean isPreset() {
             return preset_id > 0;
         }
 
-        public int getPresetId() {
+        int getPresetId() {
             return preset_id;
         }
 
-        public void setPresetId(int id) {
+        void setPresetId(int id) {
             preset_id = id;
         }
     }

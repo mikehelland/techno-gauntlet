@@ -24,6 +24,7 @@ public class GuitarView extends View {
     private Paint paintOff;
     private Paint paintRed;
     private Paint paintGreen;
+    private Paint paintYellow;
 
     private int width = -1;
     private int height = -1;
@@ -114,6 +115,11 @@ public class GuitarView extends View {
         paintGreen.setARGB(128, 0, 255, 0);
         paintGreen.setStyle(Paint.Style.FILL_AND_STROKE);
 
+        paintYellow = new Paint();
+        paintYellow.setARGB(128, 255, 255, 0);
+        paintYellow.setStyle(Paint.Style.FILL_AND_STROKE);
+
+
         topPanelPaint = new Paint();
         topPanelPaint.setARGB(255, 192, 192, 255);
 
@@ -150,8 +156,17 @@ public class GuitarView extends View {
 
     public void onDraw(Canvas canvas) {
 
+        if (mJam.isPlaying()) {
+            float beatBoxWidth = getWidth() / mJam.getBeats();
+            float beatBoxStart = (float)Math.floor(mJam.getCurrentSubbeat() / mJam.getSubbeats()) * beatBoxWidth;
+
+            canvas.drawRect(beatBoxStart, 0, beatBoxStart + beatBoxWidth, getHeight(), paintYellow);
+        }
+
         if (mFretboard != null) {
             mFretboard.onDraw(canvas, getWidth(), getHeight());
+
+            drawNotes(canvas, mChannel.getNotes());
             return;
         }
 
@@ -198,12 +213,10 @@ public class GuitarView extends View {
         canvas.drawLine(0, height - 1, width,
                 height - 1, paint);
 
-        Log.d("MGH touching fret", Integer.toString(touchingFret));
         if (touchingFret > -1 ) {
             canvas.drawRect(0, height - (touchingFret + 1) * boxHeight,
                     width, height - touchingFret  * boxHeight,
                     topPanelPaint);
-
         }
 
         drawNotes(canvas, mChannel.getNotes());
@@ -244,14 +257,11 @@ public class GuitarView extends View {
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
 
-            if (mChannel.enabled && !modified) {
+            if (mChannel.isEnabled() && !modified) {
                 modified = true;
 
                 mChannel.clearNotes();
             }
-
-            //if (!mChannel.enabled)
-            //    mChannel.enable();
 
             touchingString = (int)Math.floor(event.getX() / boxWidth);
             touchingFret = (int)Math.floor(event.getY() / boxHeight);

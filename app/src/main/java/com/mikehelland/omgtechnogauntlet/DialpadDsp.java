@@ -10,7 +10,7 @@ public class DialpadDsp {
 
     /*public DialpadChannel makeBasslineChannel() {
 
-        DialpadChannelSettings settings = new DialpadChannelSettings();
+        OscillatorSettings settings = new OscillatorSettings();
         settings.saw = false;
         settings.softe = false;
 
@@ -25,7 +25,7 @@ public class DialpadDsp {
 
     public DialpadChannel makeGlitzlineChannel() {
 
-        DialpadChannelSettings settings = new DialpadChannelSettings();
+        OscillatorSettings settings = new OscillatorSettings();
         settings.softe = false;//true;
         settings.softt = true;
         settings.delay = false;//true;

@@ -5,7 +5,7 @@ package com.mikehelland.omgtechnogauntlet;
  * Date: 11/15/13
  * Time: 6:07 PM
  */
-public class DialpadChannelSettings {
+public class OscillatorSettings {
 
     public boolean delay = true;
     public boolean flange = false;
@@ -17,7 +17,7 @@ public class DialpadChannelSettings {
 
     public String settingsName;
 
-    public DialpadChannelSettings(String settings) {
+    public OscillatorSettings(String settings) {
 
         settingsName = settings;
 

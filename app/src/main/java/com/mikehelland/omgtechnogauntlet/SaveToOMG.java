@@ -33,11 +33,12 @@ public class SaveToOMG {
             //OutputStreamWriter request = new OutputStreamWriter(connection.getOutputStream());
             OutputStream request = connection.getOutputStream();
 
+            Log.d("MGH save omg data", data);
             //request.write(URLEncoder.encode(jsonParam.toString(),"UTF-8"));
             byte[] bytes = data.getBytes("UTF-8");
             request.write(bytes);
             request.flush();
-            request.close();
+
             String line = "";
             InputStreamReader isr = new InputStreamReader(connection.getInputStream());
             BufferedReader reader = new BufferedReader(isr);
@@ -46,6 +47,9 @@ public class SaveToOMG {
             {
                 sb.append(line + "\n");
             }
+
+            request.close();
+
             // Response from server after login process will be stored in response variable.
             String response = sb.toString();
 

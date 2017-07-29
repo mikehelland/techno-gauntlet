@@ -20,11 +20,11 @@
 
     <string name="cap_suggestions">&lt;a href="mailto:mike@mikehelland.com">Make a suggestion&lt;/a></string>
 
-    <string name="default_fretboard_json">{\"maps\": [
+    <string name="default_fretboard_jsonX">{\"maps\": [
         {\"frets\": [[0,1],[2,3]]},
         {\"scale\": \"0,3,5,6,7,10\", \"frets\": [[-1,0,1,2,3],[2,4,5,6,7]]}]}</string>_
 
-    <string name="default_fretboard_json2">{\"maps\": [
+    <string name="default_fretboard_json">{\"maps\": [
         {\"frets\": [[0,1,2,3,4],[4,5,6,7,8]]},
         {\"scale\": \"0,3,5,6,7,10\", \"frets\": [[-1,0,1,2,3],[2,4,5,6,7]]}]}</string>
 
@@ -35,10 +35,10 @@
     <string name="default_jam">
         {\"type\": \"SECTION\", \"scale\": \"0,3,5,6,7,10\", \"ascale\": [0,3,5,6,7,10], \"rootNote\": 0,
         \"beats\" :8, \"subbeats\" :4, \"subbeatMillis\" :125, \"parts\" : [
-            {\"type\" : \"null\", \"soundsetName\": \"Soft Sine w Delay\", \"soundsetURL\": \"PRESET_OSC_SINE\",
+            {\"type\" : \"null\", \"soundsetName\": \"Soft Sine w Delay\", \"soundsetURL\": \"PRESET_OSC_SINE_SOFT_DELAY\",
                 \"surfaceURL\": \"PRESET_VERTICAL\",
                 \"scale\": \"[I@5903e96\", \"rootNote\": 0, \"octave\": 5, \"volume\": 0.75, \"notes\" : []},
-            {\"type\" : \"null\", \"soundsetName\": \"Keyboard\", \"soundsetURL\": \"PRESET_KEYBOARD\",
+            {\"type\" : \"null\", \"soundsetName\": \"Saw\", \"soundsetURL\": \"PRESET_OSC_SAW\",
                 \"surfaceURL\": \"PRESET_VERTICAL\",
                 \"scale\": \"[I@5903e96\", \"rootNote\": 0, \"octave\": 3, \"volume\": 0.75, \"notes\" : []},
             {\"type\" : \"null\", \"soundsetName\": \"Electric Bass\", \"soundsetURL\": \"PRESET_BASS\",
@@ -51,9 +51,8 @@
                 \"surfaceURL\": \"PRESET_SEQUENCER\",
                 \"volume\": 0.75, \"tracks\": [{\"name\": \"bongo l\", \"sound\": \"PRESET_bongol\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"bongo l\", \"sound\": \"PRESET_bongoh\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"click l\", \"sound\": \"PRESET_clickl\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"click h\", \"sound\": \"PRESET_clickh\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"shhk\", \"sound\": \"PRESET_shhk\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"scrape\", \"sound\": \"PRESET_scrape\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"whoop\", \"sound\": \"PRESET_whoop\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"chimes\", \"sound\": \"PRESET_chimes\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}]},{\"type\" : \"CHORDPROGRESSION\", \"data\" : [0]}]}
     </string>
-
-
-
+    <string name="stop">Stop</string>
+    <string name="play">Play</string>
 
 
 </resources>

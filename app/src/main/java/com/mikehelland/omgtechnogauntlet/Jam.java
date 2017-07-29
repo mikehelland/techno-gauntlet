@@ -108,7 +108,7 @@ public class Jam {
             });
         }
 
-        /*dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY", new DialpadChannelSettings());
+        /*dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY", new OscillatorSettings());
         String[] channelConfig = PreferenceHelper.getLastChannelConfiguration(mContext).split(",");
         for (String sId : channelConfig) {
             Channel channel = new Channel(mContext, this, pool);

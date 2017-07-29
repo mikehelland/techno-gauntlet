@@ -30,11 +30,13 @@ import java.net.URL;
 public class SoundSetDownloader {
 
     private ProgressDialog mProgressDialog;
-    private Runnable mCallback;
+    private DownloaderCallback mCallback;
 
     private String mURL;
 
-    public SoundSetDownloader(Context context, String url, Runnable callback) {
+    private SoundSet mSoundSet = null;
+
+    public SoundSetDownloader(Context context, String url, DownloaderCallback callback) {
 
         mCallback = callback;
         mProgressDialog = new ProgressDialog(context);
@@ -152,10 +154,10 @@ public class SoundSetDownloader {
             ContentValues soundset = processSoundSetJSON(result);
             if (soundset != null) {
                 SoundSetDataOpenHelper soundsetDataHelper = new SoundSetDataOpenHelper(context);
-                long id = soundsetDataHelper.newSoundSet(soundset);
+                mSoundSet = soundsetDataHelper.newSoundSet(soundset);
 
                 String soundsetDirectoryPath = context.getFilesDir() + "/" +
-                        Long.toString(id) + "/";
+                        Long.toString(mSoundSet.getID()) + "/";
                 //String soundsetDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
                 new File(soundsetDirectoryPath).mkdirs();
 
@@ -385,8 +387,12 @@ public class SoundSetDownloader {
             else
                 Toast.makeText(context,"Sound Set downloaded", Toast.LENGTH_SHORT).show();
 
-            mCallback.run();
+            if (mCallback != null)
+                mCallback.run(mSoundSet);
         }
     }
 
+    static abstract class DownloaderCallback {
+        abstract void run(SoundSet soundSet);
+    }
 }

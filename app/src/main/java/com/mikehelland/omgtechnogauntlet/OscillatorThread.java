@@ -1,7 +1,5 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.os.Process;
-
 import com.mikehelland.omgtechnogauntlet.dsp.Dac;
 
 import java.util.ArrayList;
@@ -26,8 +24,7 @@ public class OscillatorThread extends Thread {
         int i;
         Dac dac;
 
-        Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
-        //setPriority();
+        //was this: Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
 //        setPriority(Process.THREAD_PRIORITY_AUDIO);
 
         while (!isInterrupted()) {

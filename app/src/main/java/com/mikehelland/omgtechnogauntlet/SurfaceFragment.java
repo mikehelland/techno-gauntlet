@@ -117,11 +117,7 @@ public class SurfaceFragment extends OMGFragment {
         InputMethodManager imm = (InputMethodManager)editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
 
-        new SoundSetDownloader(getActivity(), customUrl, new Runnable() {
-            public void run() {
-                setup();
-            }
-        });
+        //todo download surfaces
     }
 
 

@@ -6,70 +6,62 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class Channel {
+class Channel {
 
-    private boolean wasSetup = false;
+    static int STATE_LIVEPLAY = 0;
+    static int STATE_PLAYBACK = 1;
 
-    public static int STATE_LIVEPLAY = 0;
-    public static int STATE_PLAYBACK = 1;
+    private int state = 1;
 
-    protected int state = 1;
-
-    protected boolean enabled = true;
+    private boolean enabled = true;
 
     private long finishAt;
 
-    protected Note lastPlayedNote;
-    protected int playingNoteNumber = -1;
+    private Note lastPlayedNote;
+    private int playingNoteNumber = -1;
 
-    protected int highNote = 0;
-    protected int lowNote = 0;
+    private int highNote = 0;
+    private int lowNote = 0;
 
-    protected boolean isAScale = true;
+    private boolean isAScale = true;
 
-    protected NoteList mNoteList = new NoteList();
-    //protected NoteList mBasicMelody = new NoteList();
+    private NoteList mNoteList = new NoteList();
 
-    protected int playingI = 0;
+    private int playingI = 0;
 
-    protected OMGSoundPool mPool;
+    private OMGSoundPool mPool;
 
-    protected int[] ids;
-    protected int[] rids;
-    //protected String[] captions;
+    private  int[] ids;
 
-    protected int playingId = -1;
+    private int playingId = -1;
 
-    protected Context context;
+    private Context context;
 
-    protected float volume = 0.75f;
+    private int octave = 3;
 
-    protected int octave = 3;
+    private Note recordingNote;
+    private int recordingStartedAtSubbeat;
 
-    protected Note recordingNote;
-    protected int recordingStartedAtSubbeat;
+    private Jam mJam;
 
-    protected Jam mJam;
+    private double nextBeat = 0.0d;
 
-    protected double nextBeat = 0.0d;
-
-    protected int subbeats;
-    protected int mainbeats;
-    protected int totalsubbeats;
+    private int subbeats;
+    private int totalsubbeats;
     private double dsubbeats;
 
-    ArrayList<DebugTouch> debugTouchData = new ArrayList<DebugTouch>();
+    ArrayList<DebugTouch> debugTouchData = new ArrayList<>();
 
-    private String mType;
-    protected SoundSet mSoundSet;
+    private SoundSet mSoundSet;
     private String mMainSound;
 
     private String mSurfaceURL = "PRESET_SEQUENCER";
 
-    protected boolean[][] pattern;
+    boolean[][] pattern;
+    float volume = 0.75f;
 
     public Channel(Context context, Jam jam, OMGSoundPool pool) {
-        mPool = pool; //new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
+        mPool = pool;
         this.context = context;
         mJam = jam;
 
@@ -99,7 +91,6 @@ public class Channel {
         pattern = new boolean[8][mJam.getSubbeats() * mJam.getBeats()];
 
 
-        mType = type;
         mMainSound = sound;
         //mSoundSetName = sound;
 
@@ -108,16 +99,19 @@ public class Channel {
 
     private void setup() {
         subbeats = mJam.getSubbeats();
-        mainbeats = mJam.getBeats();
-        totalsubbeats = subbeats * mainbeats;
+        totalsubbeats = subbeats * mJam.getBeats();
         dsubbeats = (double)subbeats;
     }
 
-    public int playLiveNote(Note note) {
+    int playLiveNote(Note note) {
         return playLiveNote(note, false);
     }
 
-    public int playLiveNote(Note note, boolean multiTouch) {
+    int playLiveNote(Note note, boolean multiTouch) {
+
+        if (mSoundSet.isOscillator()) {
+            mSoundSet.getOscillator().unmute();
+        }
 
         int noteHandle = playNote(note, multiTouch);
 
@@ -136,13 +130,13 @@ public class Channel {
         return noteHandle;
     }
 
-    public void playRecordedNote(Note note) {
+    void playRecordedNote(Note note) {
         if (state == STATE_PLAYBACK && enabled) {
             playNote(note, false);
         }
     }
 
-    public int playNote(Note note, boolean multiTouch) {
+    int playNote(Note note, boolean multiTouch) {
 
         if (lastPlayedNote != null)
             lastPlayedNote.isPlaying(false);
@@ -183,11 +177,11 @@ public class Channel {
         return noteHandle;
     }
 
-    public void stopWithHandle(int handle) {
+    void stopWithHandle(int handle) {
         mPool.stop(handle);
     }
 
-    public boolean toggleEnabled() {
+    boolean toggleEnabled() {
         if (enabled) {
             disable();
         }
@@ -197,24 +191,24 @@ public class Channel {
         return enabled;
     }
 
-    public void disable() {
+    void disable() {
         enabled = false;
         mute();
     }
 
-    public void enable() {
+    void enable() {
         enabled = true;
     }
 
-    public void finishCurrentNoteAt(long time) {
+    void finishCurrentNoteAt(long time) {
         finishAt = time;
     }
 
-    public long getFinishAt() {
+    long getFinishAt() {
         return finishAt;
     }
 
-    public void mute() {
+    void mute() {
 
         if (mSoundSet.isOscillator()) {
             mSoundSet.getOscillator().mute();
@@ -229,28 +223,28 @@ public class Channel {
     }
 
 
-    public int getHighNote() {
+    int getHighNote() {
         return highNote;
     }
 
-    public int getLowNote() {
+    int getLowNote() {
         return lowNote;
     }
 
-    public boolean isAScale() {
+    boolean isAScale() {
         return isAScale;
     }
 
-    public int getPlayingNoteNumber() {
+    int getPlayingNoteNumber() {
         return playingNoteNumber;
     }
 
-    public NoteList getNotes() {
+    NoteList getNotes() {
         return mNoteList;
     }
 
 
-    public void fitNotesToInstrument() {
+    void fitNotesToInstrument() {
 
         for (Note note : mNoteList) {
 
@@ -268,7 +262,7 @@ public class Channel {
         state = STATE_PLAYBACK;
     }
 
-    public int getInstrumentNoteNumber(int scaledNote) {
+    int getInstrumentNoteNumber(int scaledNote) {
         int noteToPlay = scaledNote + octave * 12;
 
         while (noteToPlay < lowNote) {
@@ -283,11 +277,11 @@ public class Channel {
         return noteToPlay;
     }
 
-    public double getNextBeat() {
+    double getNextBeat() {
         return nextBeat;
     }
 
-    public void setNextBeat(double beats) {
+    void setNextBeat(double beats) {
         nextBeat = beats;
         playingI++;
     }
@@ -296,7 +290,7 @@ public class Channel {
         return playingI;
     }
 
-    public void resetI() {
+    void resetI() {
         nextBeat = 0.0d;
         playingI = 0;
 
@@ -304,11 +298,11 @@ public class Channel {
             state = STATE_PLAYBACK;
     }
 
-    public int getState() {
+    int getState() {
         return state;
     }
 
-    public void clearNotes() {
+    void clearNotes() {
         mNoteList.clear();
         state = STATE_LIVEPLAY;
 
@@ -317,16 +311,11 @@ public class Channel {
         }
     }
 
-    public int getSoundCount() {
-        return rids.length;
-    }
-
-    public int getOctave() {
+    int getOctave() {
         return octave;
     }
 
-
-    public void startRecordingNote(Note note) {
+    void startRecordingNote(Note note) {
 
         Log.d("MGH recording", "start");
 
@@ -344,13 +333,9 @@ public class Channel {
 
     }
 
-    public void stopRecording() {
-        Log.d("MGH recording", "stop1");
-
+    void stopRecording() {
         if (recordingNote == null)
             return;
-
-        Log.d("MGH recording", "stop2");
 
         DebugTouch debugTouch = new DebugTouch();
         debugTouch.mode = "STOP";
@@ -365,12 +350,8 @@ public class Channel {
             nowSubbeat = recordingStartedAtSubbeat + 2;
         }
 
-        Log.d("MGH dsubbeats", Double.toString(dsubbeats));
         double beats = (nowSubbeat - recordingStartedAtSubbeat) / dsubbeats;
         double startBeat = recordingStartedAtSubbeat / dsubbeats;
-
-        Log.d("MGH recordingnote", Integer.toString(recordingNote.getInstrumentNote()));
-
 
         recordingNote.setBeats(beats);
 
@@ -383,28 +364,23 @@ public class Channel {
                 mynotes = mynotes + "R";
             mynotes = mynotes + "=" + debugNote.getBeats() + ":";
         }
-        Log.d("MGH notelist", mynotes);
 
         recordingNote = null;
         recordingStartedAtSubbeat = -1;
     }
 
-    public float getVolume() {
+    float getVolume() {
         return volume;
     }
 
-    public String getSoundSetName() {
+    String getSoundSetName() {
         return mSoundSet.getName();
     }
-    public String getSoundSetURL() {
+    String getSoundSetURL() {
         return mSoundSet.getURL();
     }
 
-    public String getType() {
-        return mType;
-    }
-
-    public String getMainSound() {
+    String getMainSound() {
         return mMainSound;
     }
 
@@ -449,11 +425,9 @@ public class Channel {
     boolean loadSoundSet() {
 
         if (mSoundSet.isOscillator()) {
-            Log.d("MGH loading dac", "yep");
             mPool.addDac(mSoundSet.getOscillator().ugDac);
             mPool.makeSureDspIsRunning();;
         }
-
 
         String path = context.getFilesDir() + "/" + Long.toString(mSoundSet.getID()) + "/";
         isAScale = mSoundSet.isChromatic();
@@ -483,22 +457,13 @@ public class Channel {
     }
 
 
-    public SoundSet getSoundSet() {
+    SoundSet getSoundSet() {
         return mSoundSet;
     }
 
-    public void getData(StringBuilder sb) {
-        if (!mSoundSet.isChromatic()) {
-            getDrumData(sb);
-        }
-        else {
-            getNotesData(sb);
-        }
-    }
+    void getData(StringBuilder sb) {
 
-    private void getNotesData(StringBuilder sb) {
-        sb.append("{\"type\" : \"");
-        sb.append(getType());
+        sb.append("{\"type\" : \"PART");
         sb.append("\", \"soundsetName\": \"");
         sb.append(getSoundSetName());
         sb.append("\", \"soundsetURL\": \"");
@@ -506,8 +471,10 @@ public class Channel {
         sb.append("\", \"surfaceURL\" : \"");
         sb.append(mSurfaceURL);
         sb.append("\", \"scale\": \"");
-        sb.append(mJam.getScale());
-        sb.append("\", \"rootNote\": ");
+        sb.append(mJam.getScaleString());
+        sb.append("\", \"ascale\": [");
+        sb.append(mJam.getScaleString());
+        sb.append("], \"rootNote\": ");
         sb.append(mJam.getKey());
         sb.append(", \"octave\": ");
         sb.append(getOctave());
@@ -535,11 +502,39 @@ public class Channel {
             }
             sb.append("}");
         }
-        sb.append("]}");
+        sb.append("]");
+
+        if (!mSoundSet.isChromatic()) {
+            sb.append(", \"tracks\": [");
+
+            ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();
+            for (int p = 0; p < sounds.size(); p++) {
+
+                sb.append("{\"name\": \"");
+                sb.append(sounds.get(p).getName());
+                sb.append("\", \"sound\": \"");
+                sb.append(sounds.get(p).getURL());
+                sb.append("\", \"data\": [");
+                for (int i = 0; i < pattern[p].length; i++) {
+                    sb.append(pattern[p][i] ? 1 : 0);
+                    if (i < pattern[p].length - 1)
+                        sb.append(",");
+                }
+                sb.append("]}");
+
+                if (p < sounds.size() - 1)
+                    sb.append(",");
+
+            }
+
+            sb.append("]");
+        }
+
+        sb.append("}");
 
     }
 
-    public void playBeat(int subbeat) {
+    void playBeat(int subbeat) {
 
         //if (!mSoundSet.isChromatic()) {
         playDrumBeat(subbeat);
@@ -566,7 +561,7 @@ public class Channel {
 
     }
 
-    public void playDrumBeat(int subbeat) {
+    void playDrumBeat(int subbeat) {
         if (enabled) {
             for (int i = 0; i < pattern.length; i++) {
                 if (pattern[i][subbeat]) {
@@ -621,7 +616,7 @@ public class Channel {
 
     }
 
-    public void clearPattern() {
+    void clearPattern() {
         for (int i = 0; i < pattern.length; i++) {
             for (int j = 0; j < pattern[i].length; j++) {
                 pattern[i][j] = false;
@@ -629,24 +624,28 @@ public class Channel {
         }
     }
 
-    public void setPattern(boolean[][] pattern) {
+    void setPattern(boolean[][] pattern) {
         Log.d("MGH", "set pattern " + pattern.length);
         this.pattern = pattern;
     }
 
-    public boolean[] getTrack(int track)  {
+    boolean[] getTrack(int track)  {
         return pattern[track];
     }
 
-    public void setPattern(int track, int subbeat, boolean value) {
+    void setPattern(int track, int subbeat, boolean value) {
         pattern[track][subbeat] = value;
     }
 
-    public void setSurface(String surfaceURL) {
+    void setSurface(String surfaceURL) {
         mSurfaceURL = surfaceURL;
     }
 
-    public String getSurfaceURL() {
+    String getSurfaceURL() {
         return mSurfaceURL;
+    }
+
+    boolean isEnabled() {
+        return enabled;
     }
 }
