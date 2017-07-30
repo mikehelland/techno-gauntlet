@@ -30,7 +30,7 @@ public class SurfaceFragment extends OMGFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.choosesoundset,
+        mView = inflater.inflate(R.layout.choose_surface,
                 container, false);
 
         editText = (EditText)mView.findViewById(R.id.custom_url_edittext);

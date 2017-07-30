@@ -4,85 +4,58 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-public class OMGHelper {
+class OMGHelper {
 
     private static String mSubmitUrl = "data/";
-    //private static String mHomeUrl = "http://10.0.2.2:8888/";
-    //private static String mHomeUrl = "http://192.168.1.116:8888/";
     private static String mHomeUrl = "http://openmusic.gallery/";
     private static String SHARE_URL_SUFFIX = "viewer.htm?id=";
 
     private Context mContext;
 
-    private Type mType;
-    private String mData;
+    private Jam mJam;
 
-    private long lastSavedId = -1;
-    private long lastSavedSQLId = -1;
-
-    public enum Type {
+    enum Type {
         DRUMBEAT, BASSLINE, MELODY, CHORDPROGRESSION, SECTION
     }
 
-    public OMGHelper(Context context, Type type, String data) {
+    OMGHelper(Context context, Jam jam) {
         mContext =  context;
-        mType = type;
-        mData = data;
+        mJam = jam;
 
     }
 
-    public void submit() {
+    void submit(final boolean shareAfter) {
 
-        final ContentValues data = new ContentValues();
-        data.put("tags", "");
-        data.put("data", mData);
-        data.put("time", System.currentTimeMillis()/1000);
-
-
-        final SQLiteDatabase db = new SavedDataOpenHelper(mContext).getWritableDatabase();
-        lastSavedSQLId = db.insert("saves", null, data);
-        db.close();
-
+        final String jamData = mJam.getData();
         OMGCallback callback = new OMGCallback() {
             @Override
             public void onSuccess(long id) {
 
-                lastSavedId = id;
-
-                ContentValues data = new ContentValues();
+                final ContentValues data = new ContentValues();
+                data.put("tags", mJam.getTags());
+                data.put("data", jamData);
+                data.put("time", System.currentTimeMillis()/1000);
                 data.put("omg_id", id);
 
-                SQLiteDatabase db = new SavedDataOpenHelper(mContext).getWritableDatabase();
-                db.update("saves", data, "_id=" + Long.toString(lastSavedSQLId), null);
+                final SQLiteDatabase db = new SavedDataOpenHelper(mContext).getWritableDatabase();
+                db.insert("saves", null, data);
                 db.close();
 
+                if (shareAfter) {
+                    share(id);
+                }
             }
         };
 
-        new SaveToOMG().execute(mHomeUrl + mSubmitUrl, mType.toString(), mData,
+        new SaveToOMG().execute(mHomeUrl + mSubmitUrl, Type.SECTION.toString(), jamData,
                 callback);
 
     }
 
-    public void updateTags(String tags) {
-        ContentValues data = new ContentValues();
-        data.put("tags", tags);
+    private void share(long id) {
 
-        SQLiteDatabase db = new SavedDataOpenHelper(mContext).getWritableDatabase();
-        db.update("saves", data, "_id=" + Long.toString(lastSavedSQLId), null);
-        db.close();
-
-    }
-
-    public void shareLastSaved() {
-        Log.d("MGH last saved ID", Long.toString(lastSavedId));
-        if (lastSavedId <= 0) {
-            return;
-        }
-
-        String shareUrl = mHomeUrl + SHARE_URL_SUFFIX + Long.toString(lastSavedId);
+        String shareUrl = mHomeUrl + SHARE_URL_SUFFIX + Long.toString(id);
         String actionSend = Intent.ACTION_SEND;
         Intent shareIntent = new Intent(actionSend);
         shareIntent.setType("text/plain");

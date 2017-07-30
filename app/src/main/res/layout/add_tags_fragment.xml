@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.mikehelland.omgtechnogauntlet.SlidingFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
 
@@ -35,7 +35,9 @@
              android:id="@+id/add_tags_text"
              android:layout_below="@id/why_tags"
              android:textSize="20sp"
-            android:hint="(Separate tags with spaces)">
+            android:hint="(Separate tags with spaces)"
+            android:maxLines="1"
+            android:inputType="text">
         <requestFocus/>
     </EditText>
 
@@ -164,4 +166,4 @@
 
     </LinearLayout>
 
-</RelativeLayout>
+</com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>

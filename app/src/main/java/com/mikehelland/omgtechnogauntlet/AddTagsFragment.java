@@ -1,11 +1,13 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.EditText;
 
 /**
  * User: m
@@ -24,6 +26,7 @@ public class AddTagsFragment extends OMGFragment {
     public AddTagsFragment() {}
 
     private boolean isSetup = false;
+    private EditText mTagText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,19 +36,16 @@ public class AddTagsFragment extends OMGFragment {
 
         mView = view;
 
+        getActivityMembers();
 
-        if (mOMGHelper != null) {
-            setup();
-        }
-        else
-            isSetup = true;
-
+        setup();
         return view;
     }
 
     private void setup() {
 
-        final TextView tagText = (TextView) mView.findViewById(R.id.add_tags_text);
+        mTagText = (EditText) mView.findViewById(R.id.add_tags_text);
+        mTagText.setText(mJam.getTags());
 
         int[] tagIds = new int[]{R.id.popular_tag_button_1,
                 R.id.popular_tag_button_2,
@@ -61,8 +61,8 @@ public class AddTagsFragment extends OMGFragment {
             mView.findViewById(tagId).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (!tagText.getText().toString().contains(((Button) view).getText())) {
-                        tagText.append(" " + ((Button) view).getText());
+                    if (!mTagText.getText().toString().contains(((Button) view).getText())) {
+                        mTagText.append(" " + ((Button) view).getText());
                     }
                 }
             });
@@ -71,35 +71,33 @@ public class AddTagsFragment extends OMGFragment {
         mView.findViewById(R.id.finish_and_share).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mOMGHelper.updateTags(tagText.getText().toString());
-
-                getActivity().getFragmentManager().popBackStack();
-
-                mOMGHelper.shareLastSaved();
+                finish(true);
             }
         });
 
         mView.findViewById(R.id.finish).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mOMGHelper.updateTags(tagText.getText().toString());
-
-                getActivity().getFragmentManager().popBackStack();
+                finish(false);
             }
         });
+
+        InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        mTagText.requestFocus();
+        imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        mTagText.setSelection(mTagText.getText().length());
+
     }
 
-    /*public void setJam(Jam jam, MainFragment mainFragment) {
-        mJam = jam;
-        mMainFragment = mainFragment;
+    private void finish(boolean shareAfter) {
+        String tags = mTagText.getText().toString();
+        mJam.setTags(tags);
 
-    }*/
+        mOMGHelper = new OMGHelper(getActivity(), mJam);
+        mOMGHelper.submit(shareAfter);
 
-    public void setOMGHelper(OMGHelper omgHelper) {
-        mOMGHelper = omgHelper;
+        getActivity().getFragmentManager().popBackStack();
 
-        if (isSetup)
-            setup();
     }
 
 }

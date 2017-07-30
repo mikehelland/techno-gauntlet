@@ -17,6 +17,7 @@ import java.util.Random;
 
 class Jam {
 
+    private String mTags = "";
     private Random rand = new Random();
 
     private int subbeats = 4;
@@ -250,6 +251,10 @@ class Jam {
                 setScale(jsonData.getString("scale"));
             }
 
+            if (jsonData.has("tags")) {
+                mTags = jsonData.getString("tags");
+            }
+
             Channel channel;
 
             for (int ip = 0; ip < parts.length(); ip++) {
@@ -296,6 +301,13 @@ class Jam {
         mChannels.add(channel);
     }
 
+    void setTags(String s) {
+        mTags = s;
+    }
+
+    String getTags() {
+        return mTags;
+    }
 
     class PlaybackThread extends Thread {
 
@@ -511,7 +523,9 @@ class Jam {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("{\"type\": \"SECTION\", \"scale\": \"");
+        sb.append("{\"type\": \"SECTION\", \"tags\": \"");
+        sb.append(mTags);
+        sb.append("\", \"scale\": \"");
         sb.append(mm.getScale());
         sb.append("\", \"ascale\": [");
         sb.append(mm.getScale());
@@ -562,6 +576,9 @@ class Jam {
     }
 
     void monkeyWithEverything() {
+
+        mTags = "";
+
         subbeatLength = 70 + rand.nextInt(125);
 
         mm.pickRandomKey();

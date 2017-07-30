@@ -19,6 +19,7 @@ public class MainFragment extends OMGFragment {
     private View mView;
 
     private Button playButton;
+    private Button pointsButton;
 
     private Button mKeyButton;
     private ChordsView mChordsButton;
@@ -341,7 +342,7 @@ public class MainFragment extends OMGFragment {
 
     private void setupMainBanana() {
 
-        final Button pointsButton = (Button) mView.findViewById(R.id.points_button);
+        pointsButton = (Button) mView.findViewById(R.id.points_button);
         String pointsText = Integer.toString(PreferenceHelper.getPointCount(getActivity()));
         pointsButton.setText(pointsText);
         pointsButton.setOnClickListener(new View.OnClickListener() {
@@ -362,19 +363,20 @@ public class MainFragment extends OMGFragment {
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                saveJam(true);
+
                 doneButton.setVisibility(View.GONE);
                 tagsButton.setVisibility(View.GONE);
                 shareButton.setVisibility(View.GONE);
 
-                mOMGHelper.shareLastSaved();
             }
         });
 
         tagsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddTagsFragment f = new AddTagsFragment();
-                f.setOMGHelper(mOMGHelper);
+                Fragment f = new AddTagsFragment();
                 showFragmentUp(f);
             }
         });
@@ -382,6 +384,8 @@ public class MainFragment extends OMGFragment {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                saveJam(false);
 
                 doneButton.setVisibility(View.GONE);
                 tagsButton.setVisibility(View.GONE);
@@ -395,15 +399,8 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
 
-                mOMGHelper = new OMGHelper(getActivity(), OMGHelper.Type.SECTION,
-                        mJam.getData());
-                mOMGHelper.submit();
-
                 Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
                 view.startAnimation(turnin);
-
-                String pointsText = Integer.toString(PreferenceHelper.dingPointCount(getActivity()));
-                pointsButton.setText(pointsText);
 
                 doneButton.setVisibility(View.VISIBLE);
                 tagsButton.setVisibility(View.VISIBLE);
@@ -446,6 +443,15 @@ public class MainFragment extends OMGFragment {
 
     public void updateKeyUI() {
         mKeyButton.setText(mJam.getKeyName());
+    }
+
+    private void saveJam(boolean share){
+        mOMGHelper = new OMGHelper(getActivity(), mJam);
+        mOMGHelper.submit(share);
+
+        String pointsText = Integer.toString(PreferenceHelper.dingPointCount(getActivity()));
+        pointsButton.setText(pointsText);
+
     }
 }
 
