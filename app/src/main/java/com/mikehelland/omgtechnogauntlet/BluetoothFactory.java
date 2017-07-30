@@ -17,15 +17,15 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
-public class BluetoothFactory {
+class BluetoothFactory {
 
-    public static final String STATUS_IO_CONNECTED_THREAD  = "IOException in ConnectedThread";
-    public static final String STATUS_IO_OPEN_STREAMS  = "IOException opening streams";
-    public static final String STATUS_ACCEPTING_CONNECTIONS = "Accepting Connections";
-    public static final String STATUS_CONNECTING_TO = "Connecting to ";
-    public static final String STATUS_IO_CONNECT_THREAD  = "IOException in ConnectThread";
-    public static final String STATUS_BLUETOOTH_TURNED_ON = "Bluetooth has been turned on";
-    public static final int REQUEST_ENABLE_BT = 2;
+    static final String STATUS_IO_CONNECTED_THREAD  = "IOException in ConnectedThread";
+    static final String STATUS_IO_OPEN_STREAMS  = "IOException opening streams";
+    static final String STATUS_ACCEPTING_CONNECTIONS = "Accepting Connections";
+    static final String STATUS_CONNECTING_TO = "Searching ...";
+    static final String STATUS_IO_CONNECT_THREAD  = "Device not Available";
+    static final String STATUS_BLUETOOTH_TURNED_ON = "Bluetooth has been turned on";
+    static final int REQUEST_ENABLE_BT = 2;
 
     private static final String NAME = "OMG BANANAS";
     private static final UUID MY_UUID = UUID.fromString("e0358210-6406-11e1-b86c-0800200c9a66");
@@ -51,7 +51,7 @@ public class BluetoothFactory {
 
     private String partialTransmission = "";
 
-    public BluetoothFactory(Activity context) {
+    BluetoothFactory(Activity context) {
         ctx = context;
         mBluetooth = BluetoothAdapter.getDefaultAdapter();
     }
@@ -193,8 +193,13 @@ public class BluetoothFactory {
 
     }
 
-    public void connectToPairedDevices(final BluetoothConnectCallback callback) {
+    void connectToDevice(BluetoothDevice device, BluetoothConnectCallback callback) {
+        newStatus(callback, STATUS_CONNECTING_TO);
 
+        new ConnectThread(device, callback).start();
+    }
+
+    void checkConnections() {
         ArrayList<BluetoothConnection> toRemove = new ArrayList<>();
         for (BluetoothConnection connection : connectionThreads) {
             if (connection.isDisconnected()) {
@@ -202,8 +207,14 @@ public class BluetoothFactory {
             }
         }
         connectionThreads.removeAll(toRemove);
+    }
+
+    void connectToPairedDevices(final BluetoothConnectCallback callback) {
+
+        checkConnections();
 
         boolean isConnected;
+
         paired = mBluetooth.getBondedDevices();
         Iterator<BluetoothDevice> iterator = paired.iterator();
         while (iterator.hasNext()) {

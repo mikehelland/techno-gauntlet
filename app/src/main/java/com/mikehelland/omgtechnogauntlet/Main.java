@@ -10,7 +10,7 @@ import android.view.WindowManager;
 public class Main extends Activity {
 
     Jam mJam;
-    OMGSoundPool mPool = new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
+    OMGSoundPool mPool = new OMGSoundPool(32, AudioManager.STREAM_MUSIC, 0);
     BluetoothFactory mBtf;
     Jam.StateChangeCallback mJamCallback;
 
@@ -25,6 +25,9 @@ public class Main extends Activity {
         //deleteDatabase("OMG_TECHNO_GAUNTLET");
         //deleteDatabase("OMG_BANANAS");
 
+        //SoundPool.Builder builder = new SoundPool.Builder();
+        //AudioAttributes aa = new AudioAttributes();
+        //AudioAttributes.
 
         mBtf = new BluetoothFactory(this);
 

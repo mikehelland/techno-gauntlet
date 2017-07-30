@@ -251,6 +251,15 @@ class Jam {
                 setScale(jsonData.getString("scale"));
             }
 
+            if (jsonData.has("chordProgression")) {
+                JSONArray chordsData = jsonData.getJSONArray("chordProgression");
+                int[] newChords = new int[chordsData.length()];
+                for (int ic = 0; ic < chordsData.length(); ic++) {
+                    newChords[ic] = chordsData.getInt(ic);
+                }
+                setChordProgression(newChords);
+            }
+
             if (jsonData.has("tags")) {
                 mTags = jsonData.getString("tags");
             }
@@ -261,6 +270,7 @@ class Jam {
                 JSONObject part = parts.getJSONObject(ip);
                 String type = part.getString("type");
 
+                //todo get rid of this, only good for old saved songs, prelaunch
                 if ("CHORDPROGRESSION".equals(type)) {
                     Log.d("MGH", "loading chord progression");
                     Log.d("MGH", part.toString());
@@ -539,6 +549,8 @@ class Jam {
         sb.append(subbeats);
         sb.append(", \"subbeatMillis\" :");
         sb.append(subbeatLength);
+        sb.append(", ");
+        getChordsData(sb);
 
         sb.append(", \"parts\" : [");
 
@@ -547,10 +559,7 @@ class Jam {
             sb.append(",");
         }
 
-        //sb.delete(sb.length() - 1, sb.length());
-
-        getChordsData(sb);
-
+        sb.delete(sb.length() - 1, sb.length());
         sb.append("]}");
 
         Log.d("MGH getData", sb.toString());
@@ -561,7 +570,7 @@ class Jam {
 
     private void getChordsData(StringBuilder sb) {
 
-        sb.append("{\"type\" : \"CHORDPROGRESSION\", \"data\" : [");
+        sb.append("\"chordProgression\" : [");
 
         boolean first = true;
 
@@ -573,7 +582,7 @@ class Jam {
 
             sb.append(chord);
         }
-        sb.append("]}");
+        sb.append("]");
 
     }
 
