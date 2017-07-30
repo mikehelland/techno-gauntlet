@@ -2,7 +2,6 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -384,49 +383,34 @@ class Channel {
         return mMainSound;
     }
 
-
-    int prepareSoundSet(long id) {
+    int prepareSoundSetFromURL(String url) {
         SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(context);
-        SoundSet soundset = dataHelper.getSoundSetById(id);
-        if (soundset == null) {
-            Toast.makeText(context, dataHelper.getLastErrorMessage(), Toast.LENGTH_SHORT).show();
+        SoundSet soundSet = dataHelper.getSoundSetByURL(url);
+        if (soundSet == null) {
             return 0;
         }
 
-        return prepareSoundSet(soundset);
+        return prepareSoundSet(soundSet);
     }
 
-    int prepareSoundSet(String url) {
-        SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(context);
-        SoundSet soundset = dataHelper.getSoundSetByURL(url);
-        if (soundset == null) {
-            return 0;
-        }
+    int prepareSoundSet(SoundSet soundSet) {
 
-        return prepareSoundSet(soundset);
-    }
-
-
-    int prepareSoundSet(SoundSet soundset) {
-        mSoundSet = soundset;
-        return soundset.getSounds().size();
-    }
-
-    boolean loadSoundSet(SoundSet soundset) {
-
+        // first take care of the last soundset
+        //todo see if any sounds are running
         if (mSoundSet != null && mSoundSet.isOscillator()) {
             mSoundSet.getOscillator().mute();
         }
 
-        mSoundSet = soundset;
-
-        return loadSoundSet();
+        mSoundSet = soundSet;
+        return soundSet.getSounds().size();
     }
+
+
     boolean loadSoundSet() {
 
         if (mSoundSet.isOscillator()) {
             mPool.addDac(mSoundSet.getOscillator().ugDac);
-            mPool.makeSureDspIsRunning();;
+            mPool.makeSureDspIsRunning();
         }
 
         String path = context.getFilesDir() + "/" + Long.toString(mSoundSet.getID()) + "/";
@@ -572,49 +556,7 @@ class Channel {
             }
         }
     }
-
-
-    private void getDrumData(StringBuilder sb) {
-
-        int beats = mJam.getBeats();
-        int totalBeats = beats * subbeats;
-        sb.append("{\"type\" : \"DRUMBEAT\", \"soundsetName\": \"");
-        sb.append(mSoundSet.getName());
-        sb.append("\", \"soundsetURL\" : \"");
-        sb.append(mSoundSet.getURL());
-        sb.append("\", \"surfaceURL\" : \"");
-        sb.append(mSurfaceURL);
-
-        sb.append("\", \"volume\": ");
-        sb.append(volume);
-        if (!enabled)
-            sb.append(", \"mute\": true");
-
-        sb.append(", \"tracks\": [");
-
-        ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();
-        for (int p = 0; p < sounds.size(); p++) {
-
-            sb.append("{\"name\": \"");
-            sb.append(sounds.get(p).getName());
-            sb.append("\", \"sound\": \"");
-            sb.append(sounds.get(p).getURL());
-            sb.append("\", \"data\": [");
-            for (int i = 0; i < totalBeats; i++) {
-                sb.append(pattern[p][i] ?1:0) ;
-                if (i < totalBeats - 1)
-                    sb.append(",");
-            }
-            sb.append("]}");
-
-            if (p < sounds.size() - 1)
-                sb.append(",");
-
-        }
-
-        sb.append("]}");
-
-    }
+    
 
     void clearPattern() {
         for (int i = 0; i < pattern.length; i++) {

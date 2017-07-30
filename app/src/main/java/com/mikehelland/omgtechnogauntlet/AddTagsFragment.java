@@ -21,11 +21,8 @@ public class AddTagsFragment extends OMGFragment {
 
     private View mView;
 
-    private OMGHelper mOMGHelper;
-
     public AddTagsFragment() {}
 
-    private boolean isSetup = false;
     private EditText mTagText;
 
     @Override
@@ -93,8 +90,8 @@ public class AddTagsFragment extends OMGFragment {
         String tags = mTagText.getText().toString();
         mJam.setTags(tags);
 
-        mOMGHelper = new OMGHelper(getActivity(), mJam);
-        mOMGHelper.submit(shareAfter);
+        OMGHelper omgHelper = new OMGHelper(getActivity(), mJam);
+        omgHelper.submit(shareAfter);
 
         getActivity().getFragmentManager().popBackStack();
 

@@ -787,7 +787,7 @@ class Jam {
         Log.d("MGH soundsetname", soundsetName);
         Log.d("MGH soundseturl", soundsetURL);
 
-        soundsToLoad += jamChannel.prepareSoundSet(soundsetURL);
+        soundsToLoad += jamChannel.prepareSoundSetFromURL(soundsetURL);
 
         if (loadSoundSet) {
             jamChannel.loadSoundSet();

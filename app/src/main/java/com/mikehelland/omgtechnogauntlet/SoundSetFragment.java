@@ -129,7 +129,8 @@ public class SoundSetFragment extends OMGFragment {
 
                 cursor.moveToPosition(i);
 
-                if (mChannel.loadSoundSet(new SoundSet(cursor))) {
+                mChannel.prepareSoundSet(new SoundSet(cursor));
+                if (mChannel.loadSoundSet()) {
                     Log.d("MGH", "sound set loaded");
                 }
                 else {
@@ -180,12 +181,14 @@ public class SoundSetFragment extends OMGFragment {
 
                             public void run(SoundSet soundSet) {
 
-                                if (soundSet != null && mChannel.loadSoundSet(soundSet)) {
-                                    Log.d("MGH", "sound set loaded");
-                                }
-                                else {
+                                if (soundSet == null){
                                     Log.d("MGH", "Not a valid soundset");
+                                    return;
                                 }
+
+                                mChannel.prepareSoundSet(soundSet);
+                                mChannel.loadSoundSet();
+                                Log.d("MGH", "sound set loaded");
 
                                 getActivity().getFragmentManager().popBackStack();
                             }
