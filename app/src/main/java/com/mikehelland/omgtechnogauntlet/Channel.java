@@ -109,7 +109,8 @@ class Channel {
     int playLiveNote(Note note, boolean multiTouch) {
 
         if (mSoundSet.isOscillator()) {
-            mSoundSet.getOscillator().unmute();
+            mPool.makeSureDspIsRunning();
+            mSoundSet.getOscillator().unmute(); Log.d("MGH", "unmuting dsp");
         }
 
         int noteHandle = playNote(note, multiTouch);
@@ -127,12 +128,6 @@ class Channel {
         }
 
         return noteHandle;
-    }
-
-    void playRecordedNote(Note note) {
-        if (state == STATE_PLAYBACK && enabled) {
-            playNote(note, false);
-        }
     }
 
     int playNote(Note note, boolean multiTouch) {
@@ -530,13 +525,14 @@ class Channel {
 
         int i = getI();
         if (i <  getNotes().size()) {
-            //Log.d("MGH next beat", Double.toString(subbeat / mJam.getBeats()));
             if (getNextBeat() == subbeat / (double)subbeats) {
                 Note note = getNotes().get(i);
 
-                playRecordedNote(note);
-                finishCurrentNoteAt(System.currentTimeMillis() +
-                        (long)(note.getBeats() * 4 * mJam.getSubbeatLength()) - 50);
+                if (enabled) {
+                    playNote(note, false);
+                    finishCurrentNoteAt(System.currentTimeMillis() +
+                            (long) (note.getBeats() * 4 * mJam.getSubbeatLength()) - 50);
+                }
 
                 setNextBeat(getNextBeat() +  note.getBeats());
 
@@ -556,7 +552,7 @@ class Channel {
             }
         }
     }
-    
+
 
     void clearPattern() {
         for (int i = 0; i < pattern.length; i++) {

@@ -365,13 +365,15 @@ class Jam {
 
         void pollFinishedNotes(long now) {
             long finishAt;
+            Channel channel;
             for (int i = 0; i < mChannels.size(); i++) { // Channel channel : mChannels) {
-                finishAt = mChannels.get(i).getFinishAt();
+                channel = mChannels.get(i);
+                finishAt = channel.getFinishAt();
                 if (finishAt > 0 && now >= finishAt) {
-                    mChannels.get(i).mute();
+                    channel.mute();
+                    channel.finishCurrentNoteAt(0);
                 }
             }
-
         }
 
     }
@@ -671,26 +673,6 @@ class Jam {
     }
     void setKey(int keyI) {
         mm.setKey(keyI);
-    }
-
-    private void playChannelBeat(Channel channel, double beat) {
-
-        if (channel.getState() != Channel.STATE_PLAYBACK)
-            return;
-
-        int i = channel.getI();
-        if (i <  channel.getNotes().size()) {
-            if (channel.getNextBeat() == beat) {
-                Note note = channel.getNotes().get(i);
-
-                channel.playRecordedNote(note);
-                channel.finishCurrentNoteAt(System.currentTimeMillis() +
-                        (long)(note.getBeats() * 4 * subbeatLength) - 50);
-
-                channel.setNextBeat(channel.getNextBeat() +  note.getBeats());
-
-            }
-        }
     }
 
     void setBPM(float bpm) {
