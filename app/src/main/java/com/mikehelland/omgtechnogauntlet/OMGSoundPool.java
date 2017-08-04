@@ -8,26 +8,23 @@ import com.mikehelland.omgtechnogauntlet.dsp.Dac;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Created by m on 6/4/14.
- */
-public class OMGSoundPool extends SoundPool {
+class OMGSoundPool extends SoundPool {
 
     private boolean isLoaded = false;
     private boolean cancelLoading = false;
 
     private OscillatorThread mDspThread = null;
     private boolean mIsDspRunning = false;
-    private ArrayList<Dac> mDacs = new ArrayList<Dac>();
+    private ArrayList<Dac> mDacs = new ArrayList<>();
 
-    private HashMap<String, Integer> loadedUrls = new HashMap();
+    private HashMap<String, Integer> loadedUrls = new HashMap<>();
 
-    public OMGSoundPool(int i1, int i2, int i3) {
+    OMGSoundPool(int i1, int i2, int i3) {
         super(i1, i2, i3);
 
     }
 
-    public int load(String url, Context context, int resource, int p) {
+    int load(String url, Context context, int resource, int p) {
         if (loadedUrls.containsKey(url))
             return loadedUrls.get(url);
 
@@ -36,7 +33,7 @@ public class OMGSoundPool extends SoundPool {
         return newId;
     }
 
-    public int load(String url, String path, int p) {
+    int load(String url, String path, int p) {
 
         if (loadedUrls.containsKey(url))
             return loadedUrls.get(url);
@@ -46,27 +43,27 @@ public class OMGSoundPool extends SoundPool {
         return newId;
     }
 
-    public void cancelLoading() {
+    void cancelLoading() {
         cancelLoading = true;
     }
 
-    public void allowLoading() {
+    void allowLoading() {
         cancelLoading = false;
     }
 
-    public boolean isCanceled() {
+    boolean isCanceled() {
         return cancelLoading;
     }
 
-    public boolean isLoaded() {
+    boolean isLoaded() {
         return isLoaded;
     }
 
-    public void setLoaded(boolean value) {
+    void setLoaded(boolean value) {
         isLoaded = value;
     }
 
-    public void makeSureDspIsRunning() {
+    void makeSureDspIsRunning() {
         if (!mIsDspRunning) {
             mDspThread = new OscillatorThread(mDacs);
             mDspThread.start();
@@ -74,7 +71,7 @@ public class OMGSoundPool extends SoundPool {
         }
     }
 
-    public void addDac(Dac dac) {
+    void addDac(Dac dac) {
         mDacs.add(dac);
     }
 }

@@ -149,13 +149,15 @@ class Channel {
         note.isPlaying(true);
         lastPlayedNote = note;
 
+        finishAt = -1;
+
         if (playingId > -1 && (note.isRest() || !multiTouch)) {
+            mute();
+            /*mPool.setVolume(playingId, 0.01f, 0.01f);
             mPool.pause(playingId);
             mPool.stop(playingId);
-            playingId = -1;
+            playingId = -1;*/
         }
-
-        finishCurrentNoteAt(-1);
 
         int noteHandle = -1;
         if (!note.isRest()) {
@@ -163,7 +165,7 @@ class Channel {
             //Log.d("MGH noteToPlay", Integer.toString(noteToPlay));
 
             if (noteToPlay >= 0 && noteToPlay < ids.length) {
-                noteHandle = mPool.play(ids[noteToPlay], volume, volume, 10, 0, 1);
+                noteHandle = mPool.play(ids[noteToPlay], volume, volume, 1, 0, 1);
                 playingId = noteHandle;
             }
 
@@ -172,6 +174,7 @@ class Channel {
     }
 
     void stopWithHandle(int handle) {
+        mPool.pause(handle);
         mPool.stop(handle);
     }
 
@@ -209,6 +212,7 @@ class Channel {
         }
 
         if (playingId > -1) {
+            //mPool.setVolume(playingId, -100, -100);
             mPool.pause(playingId);
             mPool.stop(playingId);
             playingId = -1;

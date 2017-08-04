@@ -16,6 +16,7 @@ public class DrumFragment extends OMGFragment {
     //private DrumChannel mChannel;
     private Channel mChannel;
     private DrumView drumMachine;
+    //private DrumDownBeatView drumMachine;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -24,6 +25,7 @@ public class DrumFragment extends OMGFragment {
                 container, false);
 
         drumMachine = (DrumView)view.findViewById(R.id.drummachine);
+        //drumMachine = (DrumDownBeatView)view.findViewById(R.id.drummachine);
         if (mJam != null)
             drumMachine.setJam(mJam, mChannel);
 

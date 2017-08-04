@@ -10,7 +10,7 @@ import android.view.WindowManager;
 public class Main extends Activity {
 
     Jam mJam;
-    OMGSoundPool mPool = new OMGSoundPool(32, AudioManager.STREAM_MUSIC, 0);
+    OMGSoundPool mPool = new OMGSoundPool(32, AudioManager.STREAM_MUSIC, 100);
     BluetoothFactory mBtf;
     Jam.StateChangeCallback mJamCallback;
 
