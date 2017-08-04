@@ -1,7 +1,9 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,26 +86,33 @@ public class BluetoothConnectFragment extends OMGFragment {
         mBtf.connectToDevice(device, new BluetoothConnectCallback() {
             @Override
             public void newStatus(final String status) {
-                //if (status.equals(BluetoothFactory.STATUS_IO_CONNECT_THREAD)) {
-                    getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             button.setText(device.getName() + "\n(" + status + ")");
                         }
                     });
-                //}
+                }
+                else {
+                    Log.w("MGH bt newStatus", "activity is null");
+                }
             }
 
             @Override
             public void onConnected(BluetoothConnection connection) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        button.setText(device.getName() + "\n(connected)");
-                        button.setCompoundDrawablesWithIntrinsicBounds(R.drawable.device_blue,
-                                0, 0, 0);
-                    }
-                });
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            button.setText(device.getName() + "\n(connected)");
+                            button.setCompoundDrawablesWithIntrinsicBounds(R.drawable.device_blue,
+                                    0, 0, 0);
+                        }
+                    });
+                }
 
                 setupDataCallBackForConnection(connection);
             }
