@@ -132,8 +132,6 @@ public class DrumView extends View {
             }
             else {
                 int i = mJam.getCurrentSubbeat() / mJam.getSubbeats();
-                int j = 1;
-
                 canvas.drawRect(boxWidth  + boxWidth * i,  0,
                         boxWidth + boxWidth * i + boxWidth, height,
                         paintBeat);
@@ -158,13 +156,7 @@ public class DrumView extends View {
 
             for (int i = 0; i < wide; i++) {
 
-                if (firstRowButton == -1) {
-                    on = data[j][i];
-                }
-                else {
-                    //on = (i > 0 && trackData[(i - 1) + j * wide]) || (i == 0 && j == firstRowButton);
-                    on = trackData[i + j * wide]; //|| (i == 0 && j == firstRowButton);
-                }
+                on = (firstRowButton == -1) ? data[j][i] : trackData[i + j * wide];
 
                 canvas.drawRect(boxWidth + boxWidth * i + marginX,  j * boxHeight + marginY,
                         boxWidth + boxWidth * i + boxWidth - marginX, j * boxHeight + boxHeight - marginY,
@@ -190,7 +182,6 @@ public class DrumView extends View {
         int boxX = (int)Math.floor(event.getX() / boxWidth);
         int boxY = (int)Math.floor(event.getY() / boxHeight);
 
-        //boxX = Math.min(wide - 1, Math.max(0, boxX));
         boxX = Math.min(wide, Math.max(0, boxX));
         boxY = Math.min(tall - 1, Math.max(0, boxY));
 
@@ -251,7 +242,6 @@ public class DrumView extends View {
         setChannel(channel);
 
         mJam.addInvalidateOnBeatListener(this);
-        //handleFirstColumn(0);
     }
 
     void setChannel(Channel channel) {
@@ -270,21 +260,17 @@ public class DrumView extends View {
 
 
     void handleFirstColumn(int y)  {
-
         if (firstRowButton == y) {
             firstRowButton = -1;
             wide = mJam.getBeats();
-
         }
         else {
             trackData = mChannel.getTrack(y);
-
             firstRowButton = y;
             wide = mJam.getSubbeats();
         }
 
         height = -1;
-
         postInvalidate();
     }
 
