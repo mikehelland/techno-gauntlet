@@ -3,7 +3,6 @@ package com.mikehelland.omgtechnogauntlet;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,7 +12,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
@@ -21,7 +19,6 @@ class BluetoothFactory {
 
     static final String STATUS_IO_CONNECTED_THREAD  = "IOException in ConnectedThread";
     static final String STATUS_IO_OPEN_STREAMS  = "IOException opening streams";
-    static final String STATUS_ACCEPTING_CONNECTIONS = "Accepting Connections";
     static final String STATUS_CONNECTING_TO = "Searching ...";
     static final String STATUS_IO_CONNECT_THREAD  = "Device not Available";
     static final String STATUS_BLUETOOTH_TURNED_ON = "Bluetooth has been turned on";
@@ -30,20 +27,15 @@ class BluetoothFactory {
     private static final String NAME = "OMG BANANAS";
     private static final UUID MY_UUID = UUID.fromString("e0358210-6406-11e1-b86c-0800200c9a66");
     private BluetoothAdapter mBluetooth;
-    private AcceptThread acceptThread;
     private final Activity ctx;
 
     private final static String TAG = "MGH Bluetooth";
 
     private BluetoothSetupCallback setupCallback;
 
-    private ArrayList<BluetoothConnection> connectionThreads = new ArrayList<BluetoothConnection>();
+    private ArrayList<BluetoothConnection> connectionThreads = new ArrayList<>();
 
     boolean cleaningUp = false;
-
-    BluetoothServerSocket mServerSocket;
-
-    private Set<BluetoothDevice> paired;
 
     private boolean isSetup = false;
 
@@ -81,80 +73,10 @@ class BluetoothFactory {
     }
 
 
-    public void startAccepting(final BluetoothConnectCallback callback) {
-
-        // a new callback to relay the old one, plus a few things
-
-        if (isSetup || setup(new BluetoothSetupCallback() {
-            @Override
-            public void newStatus(String status) {
-
-                BluetoothFactory.this.newStatus(callback, status);
-
-                if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
-                    isSetup = true;
-                    startAccepting(callback);
-                }
-            }
-        })) {
-
-            newStatus(callback, STATUS_BLUETOOTH_TURNED_ON);
-        }
-        else {
-
-            // wait for the  bluetooth to turn on
-            return;
-        }
-
-        newStatus(callback, STATUS_ACCEPTING_CONNECTIONS);
-
-        acceptThread = new AcceptThread(callback);
-        acceptThread.start();
-    }
-
-    public void sendCommandToDevices(String command) {
+    void sendCommandToDevices(String command) {
         for(BluetoothConnection conn : connectionThreads) {
-            conn.writeString(command + ";");
+            conn.sendCommand(command);
         }
-    }
-
-    private class AcceptThread extends Thread{
-        private BluetoothConnectCallback mCallback;
-        public AcceptThread(BluetoothConnectCallback callback){
-            mCallback = callback;
-            if (mServerSocket == null ) {
-                BluetoothServerSocket tmp = null;
-                try {
-                    tmp =  mBluetooth.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
-
-                }    catch (IOException e) {
-                    newStatus(callback, "IOException in listenUsingRfcomm");
-                }
-                mServerSocket = tmp;
-            }
-        }
-
-        public void run(){
-
-            BluetoothSocket socket;
-            while (!isInterrupted()){
-                try {
-                    socket = mServerSocket.accept();
-                } catch (IOException e){
-                    if (!cleaningUp)
-                        newStatus(mCallback, "IOException in accept()");
-
-                    break;
-                }
-
-                if (socket != null){
-                    newStatus(mCallback, "Connecting...");
-                    readSocket(socket.getRemoteDevice(), socket, mCallback);
-                }
-
-            }
-        }
-
     }
 
     void connectToDevice(BluetoothDevice device, BluetoothConnectCallback callback) {
@@ -179,10 +101,7 @@ class BluetoothFactory {
 
         boolean isConnected;
 
-        paired = mBluetooth.getBondedDevices();
-        Iterator<BluetoothDevice> iterator = paired.iterator();
-        while (iterator.hasNext()) {
-            BluetoothDevice device = iterator.next();
+        for (BluetoothDevice device : getPairedDevices()) {
             isConnected = false;
             for (BluetoothConnection connection : connectionThreads) {
                 if (connection.getDevice().getAddress().equals(device.getAddress())) {
@@ -205,7 +124,7 @@ class BluetoothFactory {
         BluetoothSocket mSocket;
         BluetoothConnectCallback mConnectCallback;
 
-        public ConnectThread(BluetoothDevice device, BluetoothConnectCallback callback) {
+        private ConnectThread(BluetoothDevice device, BluetoothConnectCallback callback) {
             mConnectCallback = callback;
             BluetoothSocket tmp = null;
             mDevice = device;
@@ -255,51 +174,14 @@ class BluetoothFactory {
 
     }
 
-    private void writeSocket(String toWrite){
-        //Log.d(TAG, "write socket");
-        //newStatus("write socket");
 
-        //new ConnectedThread(socket).write(toWrite.getBytes());
-
-        for (BluetoothConnection ct : connectionThreads) {
-            ct.write(toWrite.getBytes());
-        }
-
-    }
-
-    public void writeToBluetooth(String toWrite){
-        writeSocket(toWrite);
-    }
-
-
-    public void cleanUp() {
+    void cleanUp() {
         cleaningUp = true;
 
-        Log.d("MGH", "cleanup 2");
         for (BluetoothConnection ct : connectionThreads) {
             ct.resetConnections();
         }
         connectionThreads.clear();
-
-        if (mServerSocket != null) {
-            try {
-                mServerSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (acceptThread != null && !acceptThread.isInterrupted()){
-            Log.d("MGH", "cleanup 3");
-            acceptThread.interrupt();
-            try {
-                acceptThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                //newStatus(statusCallback, "cleanup catch", -1);
-            }
-        }
-        Log.d("MGH", "cleanup 4");
     }
 
     void newStatus(BluetoothConnectCallback callback, String newString) {
@@ -337,7 +219,7 @@ class BluetoothFactory {
             }
         }
     }
-    BroadcastReceiver btStateReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver btStateReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -353,22 +235,8 @@ class BluetoothFactory {
         }
     };
 
-    public boolean isEnabled() {
-        return mBluetooth != null && mBluetooth.isEnabled();
-    }
-
-    public ArrayList<BluetoothDevice> getPairedDevices() {
-
-        ArrayList<BluetoothDevice> devices = new ArrayList<BluetoothDevice>();
-
-        paired = mBluetooth.getBondedDevices();
-        Iterator<BluetoothDevice> iterator = paired.iterator();
-
-        while (iterator.hasNext()) {
-            BluetoothDevice device = iterator.next();
-            devices.add(device);
-        }
-        return devices;
+    Set<BluetoothDevice> getPairedDevices() {
+        return mBluetooth.getBondedDevices();
     }
 
     private abstract class BluetoothSetupCallback {
@@ -377,11 +245,11 @@ class BluetoothFactory {
 
     }
 
-    public ArrayList<BluetoothConnection> getConnections() {
+    ArrayList<BluetoothConnection> getConnections() {
         return connectionThreads;
     }
 
-    public void whenReady(final BluetoothReadyCallback callback) {
+    void whenReady(final BluetoothReadyCallback callback) {
 
         if (isSetup) {
             callback.onReady();
@@ -391,8 +259,6 @@ class BluetoothFactory {
         boolean lsetup = setup(new BluetoothSetupCallback() {
             @Override
             public void newStatus(String status) {
-                //BluetoothFactory.this.newStatus(callback, status);
-
                 if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
                     isSetup = true;
                     callback.onReady();
@@ -405,3 +271,109 @@ class BluetoothFactory {
 
     }
 }
+
+
+/* old accepting thread code, might be used again, but should probably be copied from OMG Remote
+
+    private AcceptThread acceptThread;
+    BluetoothServerSocket mServerSocket;
+    static final String STATUS_ACCEPTING_CONNECTIONS = "Accepting Connections";
+
+
+
+ void startAccepting(final BluetoothConnectCallback callback) {
+
+        // a new callback to relay the old one, plus a few things
+
+        if (isSetup || setup(new BluetoothSetupCallback() {
+            @Override
+            public void newStatus(String status) {
+
+                BluetoothFactory.this.newStatus(callback, status);
+
+                if (BluetoothFactory.STATUS_BLUETOOTH_TURNED_ON.equals(status)) {
+                    isSetup = true;
+                    startAccepting(callback);
+                }
+            }
+        })) {
+
+            newStatus(callback, STATUS_BLUETOOTH_TURNED_ON);
+        }
+        else {
+
+            // wait for the  bluetooth to turn on
+            return;
+        }
+
+        newStatus(callback, STATUS_ACCEPTING_CONNECTIONS);
+
+        acceptThread = new AcceptThread(callback);
+        acceptThread.start();
+    }
+
+
+    private class AcceptThread extends Thread{
+        private BluetoothConnectCallback mCallback;
+        public AcceptThread(BluetoothConnectCallback callback){
+            mCallback = callback;
+            if (mServerSocket == null ) {
+                BluetoothServerSocket tmp = null;
+                try {
+                    tmp =  mBluetooth.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
+
+                }    catch (IOException e) {
+                    newStatus(callback, "IOException in listenUsingRfcomm");
+                }
+                mServerSocket = tmp;
+            }
+        }
+
+        public void run(){
+
+            BluetoothSocket socket;
+            while (!isInterrupted()){
+                try {
+                    socket = mServerSocket.accept();
+                } catch (IOException e){
+                    if (!cleaningUp)
+                        newStatus(mCallback, "IOException in accept()");
+
+                    break;
+                }
+
+                if (socket != null){
+                    newStatus(mCallback, "Connecting...");
+                    readSocket(socket.getRemoteDevice(), socket, mCallback);
+                }
+
+            }
+        }
+
+    }
+
+
+cleanup() code
+
+        if (acceptThread != null && !acceptThread.isInterrupted()){
+            Log.d("MGH", "cleanup 3");
+            acceptThread.interrupt();
+            try {
+                acceptThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                //newStatus(statusCallback, "cleanup catch", -1);
+            }
+        }
+
+        if (mServerSocket != null) {
+            try {
+                mServerSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+  */

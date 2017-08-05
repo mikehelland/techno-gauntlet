@@ -27,6 +27,7 @@ public class SoundSetFragment extends OMGFragment {
     private Jam mJam;
     private View mView;
     private Channel mChannel;
+    private ChoiceCallback mCallback = null;
 
     private boolean mDownloadedFromOMG = false;
 
@@ -116,12 +117,10 @@ public class SoundSetFragment extends OMGFragment {
                 cursor, new String[]{"name"},
                 new int[]{R.id.saved_data_tags});
 
-
         ListView soundsetList = (ListView)mView.findViewById(R.id.installed_soundset_list);
         soundsetList.setAdapter(curA);
 
         //db.close();
-
 
         soundsetList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -137,7 +136,9 @@ public class SoundSetFragment extends OMGFragment {
                     Log.d("MGH", "sound set NOT loaded");
                 }
 
-                //mainFragment.updateUI();
+                if (mCallback != null)
+                    mCallback.onChoice(mChannel.getSoundSet());
+
                 getActivity().getFragmentManager().popBackStack();
             }
 
@@ -150,11 +151,9 @@ public class SoundSetFragment extends OMGFragment {
                 downloadCustomUrl();
             }
         });
-
     }
 
     public void setupOMGTab() {
-
 
         new SoundSetListDownloader(getActivity(), new SoundSetListDownloader.DownloaderCallback() {
             @Override
@@ -165,7 +164,6 @@ public class SoundSetFragment extends OMGFragment {
                         R.layout.saved_row,
                         cursor, new String[]{"name"},
                         new int[]{R.id.saved_data_tags});
-
 
                 ListView soundsetList = (ListView)mView.findViewById(R.id.online_soundset_list);
                 soundsetList.setAdapter(curA);
@@ -188,7 +186,9 @@ public class SoundSetFragment extends OMGFragment {
 
                                 mChannel.prepareSoundSet(soundSet);
                                 mChannel.loadSoundSet();
-                                Log.d("MGH", "sound set loaded");
+
+                                if (mCallback != null)
+                                    mCallback.onChoice(soundSet);
 
                                 getActivity().getFragmentManager().popBackStack();
                             }
@@ -214,5 +214,13 @@ public class SoundSetFragment extends OMGFragment {
 
             }
         });
+    }
+
+    static abstract class ChoiceCallback {
+        abstract void onChoice(SoundSet soundSet);
+    }
+
+    void setCallback(ChoiceCallback callback) {
+        mCallback = callback;
     }
 }

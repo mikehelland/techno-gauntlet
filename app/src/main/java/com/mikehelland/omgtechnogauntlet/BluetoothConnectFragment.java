@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.List;
-
 public class BluetoothConnectFragment extends OMGFragment {
 
     private View mView;
@@ -43,11 +41,10 @@ public class BluetoothConnectFragment extends OMGFragment {
         ((TextView)mView.findViewById(R.id.bt_status)).setText("Paired Devices:");
 
         ViewGroup pairedDevicesViewGroup = (ViewGroup)mView.findViewById(R.id.paired_devices);
-        List<BluetoothDevice> devices = mBtf.getPairedDevices();
 
         mBtf.checkConnections();
 
-        for (BluetoothDevice device : devices) {
+        for (BluetoothDevice device : mBtf.getPairedDevices()) {
             pairedDevicesViewGroup.addView(setupDeviceButton(device));
         }
     }

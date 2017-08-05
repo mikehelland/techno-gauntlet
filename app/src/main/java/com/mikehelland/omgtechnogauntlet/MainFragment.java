@@ -26,8 +26,6 @@ public class MainFragment extends OMGFragment {
 
     private Button bpmButton;
 
-    private OMGHelper mOMGHelper;
-
     private LayoutInflater mInflater;
 
     private ArrayList<View> monkeyHeads = new ArrayList<>();
@@ -270,12 +268,16 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
 
-                Channel channel = new Channel(getActivity(), mJam, mPool);
-
-                mJam.addChannel(channel);
+                final Channel channel = new Channel(getActivity(), mJam, mPool);
 
                 SoundSetFragment f = new SoundSetFragment();
                 f.setJam(mJam, channel);
+                f.setCallback(new SoundSetFragment.ChoiceCallback() {
+                    void onChoice(SoundSet soundSet) {
+                        mJam.addChannel(channel);
+                        mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel));
+                    }
+                });
                 showFragmentRight(f);
 
             }
@@ -438,7 +440,7 @@ public class MainFragment extends OMGFragment {
     }
 
     public void updateBPMUI() {
-        bpmButton.setText(Integer.toString(mJam.getBPM()) + " bpm");
+        bpmButton.setText(String.format("%s bpm", Integer.toString(mJam.getBPM())));
     }
 
     public void updateKeyUI() {
@@ -446,8 +448,8 @@ public class MainFragment extends OMGFragment {
     }
 
     private void saveJam(boolean share){
-        mOMGHelper = new OMGHelper(getActivity(), mJam);
-        mOMGHelper.submit(share);
+        OMGHelper omgHelper = new OMGHelper(getActivity(), mJam);
+        omgHelper.submit(share);
 
         String pointsText = Integer.toString(PreferenceHelper.dingPointCount(getActivity()));
         pointsButton.setText(pointsText);

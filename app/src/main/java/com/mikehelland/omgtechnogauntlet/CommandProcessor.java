@@ -88,31 +88,46 @@ class CommandProcessor extends BluetoothDataCallback {
 
     private void sendJamInfo() {
         //should this be JSON? Maybe faster this way tho
-        mConnection.writeString("SET_KEY=" + mJam.getKey() + ";");
-        mConnection.writeString("SET_SCALE=" + mJam.getScaleString() + ";");
-        mConnection.writeString("SET_SUBBEATLENGTH=" + mJam.getSubbeatLength() + ";");
+        mConnection.sendNameValuePair("SET_KEY", Integer.toString(mJam.getKey()));
+        mConnection.sendNameValuePair("SET_SCALE", mJam.getScaleString());
+        mConnection.sendNameValuePair("SET_SUBBEATLENGTH",
+                Integer.toString(mJam.getSubbeatLength()));
 
-        String setChannels = "SET_CHANNELS=";
-        String surfaceURL;
-        for (int i = 0; i < mJam.getChannels().size(); i++) {
-            Channel channel = mJam.getChannels().get(i);
-            surfaceURL = channel.getSurfaceURL();
-            if ("PRESET_SEQUENCER".equals(surfaceURL))
-                setChannels +=  "0";
-            if ("PRESET_VERTICAL".equals(surfaceURL))
-                setChannels +=  "1";
-            if ("PRESET_FRETBOARD".equals(surfaceURL))
-                setChannels +=  "2";
+        String setChannels = getChannelsInfo(mJam);
+        mConnection.sendNameValuePair("SET_CHANNELS", setChannels);
 
-            setChannels += channel.getSoundSetName();
+        mConnection.sendCommand(mJam.isPlaying() ? "PLAY" : "STOP");
+    }
 
-            if (i < mJam.getChannels().size() - 1) {
+    static private String getChannelsInfo(Jam jam) {
+        String setChannels = "";
+        for (int i = 0; i < jam.getChannels().size(); i++) {
+            Channel channel = jam.getChannels().get(i);
+
+            setChannels += getChannelInfo(channel);
+
+            if (i < jam.getChannels().size() - 1) {
                 setChannels += ",";
             }
         }
-        mConnection.writeString(setChannels + ";");
+        return setChannels;
+    }
 
-        mConnection.writeString(mJam.isPlaying() ? "PLAY;" : "STOP;");
+    static String getNewChannelCommand(Channel channel) {
+        return "NEW_CHANNEL=" + getChannelInfo(channel);
+    }
+
+    static private String getChannelInfo(Channel channel) {
+
+        String surfaceURL = channel.getSurfaceURL();
+        if ("PRESET_SEQUENCER".equals(surfaceURL))
+            return "0" + channel.getSoundSetName();
+        if ("PRESET_VERTICAL".equals(surfaceURL))
+            return "1" + channel.getSoundSetName();
+        if ("PRESET_FRETBOARD".equals(surfaceURL))
+            return "2" + channel.getSoundSetName();
+
+        return channel.getSoundSetName();
     }
 
     private void sendChannelInfo() {
@@ -121,18 +136,18 @@ class CommandProcessor extends BluetoothDataCallback {
 
         Channel channel = mChannel;
         if (channel.getSoundSet().isChromatic()) {
-            String fretboardInfo = "FRETBOARD_INFO=" + channel.getLowNote() + "," +
+            String fretboardInfo = channel.getLowNote() + "," +
                     channel.getHighNote() + "," + channel.getOctave() + ";";
-            mConnection.writeString(fretboardInfo);
+            mConnection.sendNameValuePair("FRETBOARD_INFO", fretboardInfo);
 
-            String noteInfo = "NOTE_INFO=" + getNoteInfo(channel) + ";";
+            String noteInfo = getNoteInfo(channel) + ";";
             Log.d("MGH note info", noteInfo);
-            mConnection.writeString(noteInfo);
+            mConnection.sendNameValuePair("NOTE_INFO", noteInfo);
         }
         else {
-            String fretboardInfo = "DRUMBEAT_INFO=" + getDrumbeatInfo(channel) + ";";
+            String fretboardInfo = getDrumbeatInfo(channel) + ";";
 
-            mConnection.writeString(fretboardInfo);
+            mConnection.sendNameValuePair("DRUMBEAT_INFO", fretboardInfo);
         }
     }
 

@@ -92,7 +92,15 @@ public class BluetoothConnection extends Thread {
         return disconnected;
     }
 
-    public void write(byte[] bytes){
+    void sendNameValuePair(String name, String value) {
+        writeString(name + "=" + value + ";");
+    }
+
+    void sendCommand(String command) {
+        writeString(command + ";");
+    }
+
+    private void write(byte[] bytes){
         try {
             mmOutStream.write(bytes);
         } catch (IOException e) {
@@ -100,7 +108,7 @@ public class BluetoothConnection extends Thread {
         }
     }
 
-    public void writeString(String toWrite){
+    private void writeString(String toWrite){
         try {
             mmOutStream.write(toWrite.getBytes());
         } catch (IOException e) {
