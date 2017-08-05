@@ -767,18 +767,12 @@ class Jam {
         String soundsetName = part.getString("soundsetName");
         String soundsetURL = part.getString("soundsetURL");
 
+        soundsToLoad += jamChannel.prepareSoundSetFromURL(soundsetURL);
+
         if (part.has("surfaceURL")) {
             String surfaceURL = part.getString("surfaceURL");
             jamChannel.setSurface(surfaceURL);
         }
-        else {
-            jamChannel.setSurface("PRESET_VERTICAL");
-        }
-
-        Log.d("MGH soundsetname", soundsetName);
-        Log.d("MGH soundseturl", soundsetURL);
-
-        soundsToLoad += jamChannel.prepareSoundSetFromURL(soundsetURL);
 
         if (loadSoundSet) {
             jamChannel.loadSoundSet();

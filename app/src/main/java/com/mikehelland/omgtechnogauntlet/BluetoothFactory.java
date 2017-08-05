@@ -47,8 +47,6 @@ class BluetoothFactory {
 
     private boolean isSetup = false;
 
-    private ArrayList<BluetoothConnection> mConnections = new ArrayList<BluetoothConnection>();
-
     private String partialTransmission = "";
 
     BluetoothFactory(Activity context) {
@@ -56,7 +54,7 @@ class BluetoothFactory {
         mBluetooth = BluetoothAdapter.getDefaultAdapter();
     }
 
-    public boolean setup(BluetoothSetupCallback callback) {
+    boolean setup(BluetoothSetupCallback callback) {
 
         // for the receiver
         setupCallback = callback;
@@ -119,40 +117,6 @@ class BluetoothFactory {
             conn.writeString(command + ";");
         }
     }
-
-    /*public void toggleDeviceStatus(int deviceI) {
-
-        if (deviceI < 0 && deviceI > isConnected.length)
-            return;
-
-        if (!isConnected[deviceI]) {
-            Iterator<BluetoothDevice> iterator = paired.iterator();
-            BluetoothDevice device = iterator.next();
-            int currentDeviceI = 0;
-
-            while (currentDeviceI < deviceI && iterator.hasNext()) {
-                device = iterator.next();
-                currentDeviceI++;
-            }
-
-            newStatus(statusCallback, STATUS_CONNECTING_TO + device.getName(), deviceI);
-            new ConnectThread(device, deviceI).start();
-        }
-        else {
-            for (ConnectedThread ct : connectionThreads) {
-                if (ct.deviceI == deviceI) {
-                    Log.d("MGH", "reseting...");
-                    ct.resetConnections();
-                    Log.d("MGH", "connections are reset");
-                    connectionThreads.remove(ct);
-                    isConnected[deviceI] = false;
-                    Log.d("MGH", "disconnected");
-                    return;
-                }
-            }
-        }
-    }*/
-
 
     private class AcceptThread extends Thread{
         private BluetoothConnectCallback mCallback;

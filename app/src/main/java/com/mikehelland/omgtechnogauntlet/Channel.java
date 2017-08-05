@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 class Channel {
 
-    static int STATE_LIVEPLAY = 0;
-    static int STATE_PLAYBACK = 1;
+    private static int STATE_LIVEPLAY = 0;
+    private static int STATE_PLAYBACK = 1;
 
     private int state = 1;
 
@@ -54,7 +54,7 @@ class Channel {
     private SoundSet mSoundSet;
     private String mMainSound;
 
-    private String mSurfaceURL = "PRESET_SEQUENCER";
+    private String mSurfaceURL = "";
 
     boolean[][] pattern;
     float volume = 0.75f;
@@ -130,7 +130,7 @@ class Channel {
         return noteHandle;
     }
 
-    int playNote(Note note, boolean multiTouch) {
+    private int playNote(Note note, boolean multiTouch) {
 
         if (lastPlayedNote != null)
             lastPlayedNote.isPlaying(false);
@@ -275,11 +275,11 @@ class Channel {
         return noteToPlay;
     }
 
-    double getNextBeat() {
+    private double getNextBeat() {
         return nextBeat;
     }
 
-    void setNextBeat(double beats) {
+    private void setNextBeat(double beats) {
         nextBeat = beats;
         playingI++;
     }
@@ -313,7 +313,7 @@ class Channel {
         return octave;
     }
 
-    void startRecordingNote(Note note) {
+    private void startRecordingNote(Note note) {
 
         Log.d("MGH recording", "start");
 
@@ -331,7 +331,7 @@ class Channel {
 
     }
 
-    void stopRecording() {
+    private void stopRecording() {
         if (recordingNote == null)
             return;
 
@@ -401,6 +401,12 @@ class Channel {
         }
 
         mSoundSet = soundSet;
+
+        //creates a new array from the old one
+        if (pattern.length != mSoundSet.getSounds().size()) {
+            pattern = new boolean[mSoundSet.getSounds().size()][mJam.getTotalSubbeats()];
+        }
+
         return soundSet.getSounds().size();
     }
 
@@ -452,7 +458,7 @@ class Channel {
         sb.append("\", \"soundsetURL\": \"");
         sb.append(getSoundSetURL());
         sb.append("\", \"surfaceURL\" : \"");
-        sb.append(mSurfaceURL);
+        sb.append(getSurfaceURL());
         sb.append("\", \"scale\": \"");
         sb.append(mJam.getScaleString());
         sb.append("\", \"ascale\": [");
@@ -584,7 +590,13 @@ class Channel {
     }
 
     String getSurfaceURL() {
-        return mSurfaceURL;
+        if (mSurfaceURL.length() > 0)
+            return mSurfaceURL;
+
+        if (mSoundSet != null && mSoundSet.isChromatic())
+            return "PRESET_VERTICAL";
+
+        return "PRESET_SEQUENCER";
     }
 
     boolean isEnabled() {

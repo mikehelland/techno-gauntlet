@@ -4,18 +4,23 @@ import android.util.Log;
 
 /**
  * Created by m on 7/31/16.
+ * the layer between the bluetooth connection and the jam
  */
-public class CommandProcessor extends BluetoothDataCallback {
+class CommandProcessor extends BluetoothDataCallback {
 
     private BluetoothConnection mConnection;
     private Jam mJam;
+    private Channel mChannel = null;
 
-    public CommandProcessor(BluetoothConnection connection, Jam jam) {
+    void setup(BluetoothConnection connection, Jam jam, Channel channel) {
         mJam = jam;
         mConnection = connection;
-    }
 
-    private int channelI = 10;
+        //can be null
+        mChannel = channel;
+
+        sendJamInfo();
+    }
 
     @Override
     public void newData(String name, String value) {
@@ -29,8 +34,11 @@ public class CommandProcessor extends BluetoothDataCallback {
         }
 
         if (name.equals("SET_CHANNEL")) {
-            channelI = Integer.parseInt(value);
-            sendChannelInfo();
+            int channelI = Integer.parseInt(value);
+            if (channelI < mJam.getChannels().size()) {
+                mChannel = mJam.getChannels().get(channelI);
+                sendChannelInfo();
+            }
             return;
         }
 
@@ -50,20 +58,18 @@ public class CommandProcessor extends BluetoothDataCallback {
             int subbeat = Integer.parseInt(params[1]);
             boolean patternValue = params[2].equals("true");
 
-            Channel drums = getChannel(channelI);
-            drums.setPattern(track, subbeat, patternValue);
+            if (mChannel != null) {
+                mChannel.setPattern(track, subbeat, patternValue);
+            }
         }
 
     }
 
-    Channel getChannel(int i) {
-        if (i < mJam.getChannels().size())
-            return mJam.getChannels().get(i);
+    private void channelPlayNote(String value) {
+        if (mChannel == null) {
+            return;
+        }
 
-        return null;
-    }
-
-    void channelPlayNote(String value) {
         Note note = new Note();
         String[] noteInfo = value.split(",");
         int basicNoteNumber = Integer.parseInt(noteInfo[0]);
@@ -77,11 +83,11 @@ public class CommandProcessor extends BluetoothDataCallback {
 
         Log.d("MGH connection playnote", Integer.toString(basicNoteNumber));
 
-        getChannel(channelI).playLiveNote(note);
+        mChannel.playLiveNote(note);
     }
 
-    void sendJamInfo() {
-        //TODO should be JSON? Maybe faster this way tho
+    private void sendJamInfo() {
+        //should this be JSON? Maybe faster this way tho
         mConnection.writeString("SET_KEY=" + mJam.getKey() + ";");
         mConnection.writeString("SET_SCALE=" + mJam.getScaleString() + ";");
         mConnection.writeString("SET_SUBBEATLENGTH=" + mJam.getSubbeatLength() + ";");
@@ -109,9 +115,11 @@ public class CommandProcessor extends BluetoothDataCallback {
         mConnection.writeString(mJam.isPlaying() ? "PLAY;" : "STOP;");
     }
 
-    void sendChannelInfo() {
+    private void sendChannelInfo() {
+        if (mChannel == null)
+            return;
 
-        Channel channel = getChannel(channelI);
+        Channel channel = mChannel;
         if (channel.getSoundSet().isChromatic()) {
             String fretboardInfo = "FRETBOARD_INFO=" + channel.getLowNote() + "," +
                     channel.getHighNote() + "," + channel.getOctave() + ";";
@@ -128,7 +136,7 @@ public class CommandProcessor extends BluetoothDataCallback {
         }
     }
 
-    String getNoteInfo(Channel channel) {
+    private String getNoteInfo(Channel channel) {
 
         String info = "";
         int i = 0;
@@ -143,9 +151,10 @@ public class CommandProcessor extends BluetoothDataCallback {
         return info;
     }
 
-    String getDrumbeatInfo(Channel channel) {
+    private String getDrumbeatInfo(Channel channel) {
         String info = "";
-        for (int i = 0; i < channel.pattern.length; i++) {
+        int channels = Math.min(channel.pattern.length, channel.getSoundSet().getSounds().size());
+        for (int i = 0; i < channels; i++) {
 
             info += channel.getSoundSet().getSounds().get(i).getName() + "|";
 

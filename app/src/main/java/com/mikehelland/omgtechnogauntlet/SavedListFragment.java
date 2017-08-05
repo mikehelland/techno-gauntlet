@@ -88,6 +88,14 @@ public class SavedListFragment extends ListFragment
 
         ((Main)getActivity()).mJam = jam;
 
+        //pretty lousy spot for this
+        BluetoothFactory btf = ((Main)getActivity()).mBtf;
+        CommandProcessor cp;
+        for (BluetoothConnection connection : btf.getConnections()) {
+            cp = new CommandProcessor();
+            cp.setup(connection, jam, null);
+            connection.setDataCallback(cp);
+        }
 
         if (!mJam.isPlaying())
             mJam.kickIt();
