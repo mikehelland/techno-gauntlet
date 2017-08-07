@@ -48,9 +48,9 @@ class SufacesDataHelper extends SQLiteOpenHelper {
         db.insert("surfaces", null, data);
 
         data = new ContentValues();
-        data.put("name", "Default Fretboard");
-        data.put("url", "PRESET_DEFAULT_FRETBOARD");
-        data.put("data", "PRESET_DEFAULT_FRETBOARD");
+        data.put("name", "Fretboard");
+        data.put("url", "PRESET_FRETBOARD");
+        data.put("data", "PRESET_FRETBOARD");
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("surfaces", null, data);
 

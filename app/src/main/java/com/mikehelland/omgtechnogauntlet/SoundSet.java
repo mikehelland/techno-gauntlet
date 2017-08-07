@@ -74,6 +74,11 @@ class SoundSet {
 
             JSONArray data = soundSet.getJSONArray("data");
 
+            if (!mChromatic) {
+                mLowNote = 0;
+                mHighNote = data.length() - 1;
+            }
+
             JSONObject soundJSON;
             Sound sound;
 

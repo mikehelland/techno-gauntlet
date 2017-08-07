@@ -117,17 +117,23 @@ class CommandProcessor extends BluetoothDataCallback {
         return "NEW_CHANNEL=" + getChannelInfo(channel);
     }
 
+    static String getChannelsInfoCommand(Jam jam) {
+        return "SET_CHANNELS=" + getChannelsInfo(jam);
+    }
+
     static private String getChannelInfo(Channel channel) {
+
+        String chromatic = channel.getSoundSet().isChromatic() ? "1" : "0";
 
         String surfaceURL = channel.getSurfaceURL();
         if ("PRESET_SEQUENCER".equals(surfaceURL))
-            return "0" + channel.getSoundSetName();
+            return chromatic + "0" + channel.getSoundSetName();
         if ("PRESET_VERTICAL".equals(surfaceURL))
-            return "1" + channel.getSoundSetName();
+            return chromatic + "1" + channel.getSoundSetName();
         if ("PRESET_FRETBOARD".equals(surfaceURL))
-            return "2" + channel.getSoundSetName();
+            return chromatic + "2" + channel.getSoundSetName();
 
-        return channel.getSoundSetName();
+        return chromatic + "0" + channel.getSoundSetName();
     }
 
     private void sendChannelInfo() {
@@ -135,7 +141,12 @@ class CommandProcessor extends BluetoothDataCallback {
             return;
 
         Channel channel = mChannel;
-        if (channel.getSoundSet().isChromatic()) {
+        if (channel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
+            String fretboardInfo = getDrumbeatInfo(channel) + ";";
+
+            mConnection.sendNameValuePair("DRUMBEAT_INFO", fretboardInfo);
+        }
+        else {
             String fretboardInfo = channel.getLowNote() + "," +
                     channel.getHighNote() + "," + channel.getOctave() + ";";
             mConnection.sendNameValuePair("FRETBOARD_INFO", fretboardInfo);
@@ -143,11 +154,6 @@ class CommandProcessor extends BluetoothDataCallback {
             String noteInfo = getNoteInfo(channel) + ";";
             Log.d("MGH note info", noteInfo);
             mConnection.sendNameValuePair("NOTE_INFO", noteInfo);
-        }
-        else {
-            String fretboardInfo = getDrumbeatInfo(channel) + ";";
-
-            mConnection.sendNameValuePair("DRUMBEAT_INFO", fretboardInfo);
         }
     }
 

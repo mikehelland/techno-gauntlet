@@ -52,6 +52,8 @@ public class SurfaceFragment extends OMGFragment {
 
     public void setup() {
 
+        getActivityMembers();
+
         final Context context = getActivity();
 
         final SufacesDataHelper openHelper = new SufacesDataHelper(context);
@@ -87,14 +89,8 @@ public class SurfaceFragment extends OMGFragment {
                 //todo yeah this is way whacky, needs an surface object
                 mChannel.setSurface(json);
 
-                /*if (mChannel.loadSoundSet(new SoundSet(cursor))) {
-                    Log.d("MGH", "sound set loaded");
-                }
-                else {
-                    Log.d("MGH", "sound set NOT loaded");
-                }*/
+                mBtf.sendCommandToDevices(CommandProcessor.getChannelsInfoCommand(mJam));
 
-                //mainFragment.updateUI();
                 getActivity().getFragmentManager().popBackStack();
             }
 

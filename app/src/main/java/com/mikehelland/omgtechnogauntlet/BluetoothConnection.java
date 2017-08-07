@@ -109,6 +109,7 @@ public class BluetoothConnection extends Thread {
     }
 
     private void writeString(String toWrite){
+        Log.d("MGH bt writeString", toWrite);
         try {
             mmOutStream.write(toWrite.getBytes());
         } catch (IOException e) {

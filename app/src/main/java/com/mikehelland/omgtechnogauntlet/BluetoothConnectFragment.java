@@ -89,6 +89,8 @@ public class BluetoothConnectFragment extends OMGFragment {
                         @Override
                         public void run() {
                             button.setText(device.getName() + "\n(" + status + ")");
+                            button.setCompoundDrawablesWithIntrinsicBounds(R.drawable.device,
+                                    0, 0, 0);
                         }
                     });
                 }
