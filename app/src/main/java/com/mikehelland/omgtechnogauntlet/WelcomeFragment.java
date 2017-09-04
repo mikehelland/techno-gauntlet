@@ -182,6 +182,13 @@ public class WelcomeFragment extends OMGFragment {
             }
         });
 
+        mView.findViewById(R.id.exit_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().finish();
+            }
+        });
+
 
         return mView;
     }

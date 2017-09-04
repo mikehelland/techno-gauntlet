@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class Main extends Activity {
 
@@ -80,5 +81,18 @@ public class Main extends Activity {
         mBtf.cleanUp();
     }
 
+    @Override
+    public void onBackPressed() {
 
+        int count = getFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            Toast.makeText(this, "Can't back out now! \nHit the 'OUT' button.", Toast.LENGTH_LONG).show();
+
+        } else {
+            super.onBackPressed();
+            //getFragmentManager().popBackStack();
+        }
+
+    }
 }

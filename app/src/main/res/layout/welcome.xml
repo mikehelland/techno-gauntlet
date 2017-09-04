@@ -43,6 +43,13 @@ android:layout_alignParentTop="true"-->
             android:id="@+id/return_to_omg_bananas"
             android:layout_alignParentTop="true"></Button>
 
+        <Button android:text="Exit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@android:drawable/ic_media_rew"
+            android:id="@+id/exit_button"
+            android:layout_alignParentBottom="true"></Button>
+
         <TextView android:text="@string/cap_source_code"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"
