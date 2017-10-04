@@ -42,6 +42,13 @@ class CommandProcessor extends BluetoothDataCallback {
             return;
         }
 
+        if (name.equals("SET_CHORD")) {
+            int chordI = Integer.parseInt(value);
+            int[] chords = {chordI};
+            mJam.setChordProgression(chords);
+            return;
+        }
+
         if (name.equals("GET_JAM_INFO")) {
             sendJamInfo();
             return;
