@@ -42,6 +42,25 @@
              android:id="@+id/bpm_seekbar"
              android:layout_below="@id/bpm_caption"/>
 
+
+    <TextView android:text="XXX Shuffle"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:id="@+id/shuffle_caption"
+        android:textSize="48sp"
+        android:layout_below="@id/bpm_seekbar"
+        android:gravity="center"
+        android:padding="8dip"
+        />
+
+    <SeekBar
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/shuffle_seekbar"
+        android:layout_below="@id/shuffle_caption"/>
+
+
+
     <!--<Button android:text="Tap Tempo"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

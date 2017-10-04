@@ -20,6 +20,8 @@ public class BeatsFragment extends OMGFragment {
     private View mView;
     private TextView bpmText;
     private SeekBar bpmSeekBar;
+    private TextView shuffleText;
+    private SeekBar shuffleSeekBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,6 +33,10 @@ public class BeatsFragment extends OMGFragment {
         bpmText = (TextView)view.findViewById(R.id.bpm_caption);
         bpmSeekBar = (SeekBar)view.findViewById(R.id.bpm_seekbar);
         bpmSeekBar.setMax(200);
+
+        shuffleText = (TextView)view.findViewById(R.id.shuffle_caption);
+        shuffleSeekBar = (SeekBar)view.findViewById(R.id.shuffle_seekbar);
+
 
         if (mJam != null)
             setup();
@@ -72,6 +78,31 @@ public class BeatsFragment extends OMGFragment {
                 mMainFragment.updateBPMUI();
             }
         });
+
+        shuffleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (b) {
+                    int newbpm = i;
+                    shuffleText.setText(Integer.toString(newbpm) + "% shuffle");
+                    mJam.setShuffle(newbpm / 100.0f);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mMainFragment.updateBPMUI();
+            }
+        });
+        int shuffle = (int)(mJam.getShuffle() * 100);
+        shuffleText.setText(Integer.toString(shuffle) + "% shuffle");
+        shuffleSeekBar.setProgress(shuffle);
+
     }
 
 

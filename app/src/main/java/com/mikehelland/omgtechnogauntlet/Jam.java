@@ -25,6 +25,8 @@ class Jam {
     private int totalsubbeats = subbeats * beats;
     private int subbeatLength = 125; //70 + rand.nextInt(125); // 125;
 
+    private float shuffle = 0;
+
     private ArrayList<Channel> mChannels = new ArrayList<>();
 
     private OMGSoundPool pool;
@@ -243,6 +245,10 @@ class Jam {
                 setSubbeatLength(jsonData.getInt("subbeatMillis"));
             }
 
+            if (jsonData.has("shuffle")) {
+                setShuffle((float)jsonData.getDouble("shuffle"));
+            }
+
             if (jsonData.has("rootNote")) {
                 setKey(jsonData.getInt("rootNote") % 12);
             }
@@ -319,6 +325,10 @@ class Jam {
         return mTags;
     }
 
+    public float getShuffle() {
+        return shuffle;
+    }
+
     class PlaybackThread extends Thread {
 
         int ibeat;
@@ -342,9 +352,17 @@ class Jam {
                 now = System.currentTimeMillis();
                 timeSinceLast = now - lastBeatPlayed;
 
-                if (timeSinceLast < subbeatLength) {
-                    pollFinishedNotes(now);
-                    continue;
+                if (ibeat % subbeats == 0) {
+                    if (timeSinceLast < subbeatLength) {
+                        pollFinishedNotes(now);
+                        continue;
+                    }
+                }
+                else {
+                    if (timeSinceLast < subbeatLength + (int)(subbeatLength * shuffle)) {
+                        pollFinishedNotes(now);
+                        continue;
+                    }
                 }
 
                 //lastBeatPlayed = now;
@@ -549,6 +567,8 @@ class Jam {
         sb.append(subbeats);
         sb.append(", \"subbeatMillis\" :");
         sb.append(subbeatLength);
+        sb.append(", \"shuffle\" :");
+        sb.append(shuffle);
         sb.append(", ");
         getChordsData(sb);
 
@@ -687,6 +707,10 @@ class Jam {
     void setBPM(float bpm) {
         subbeatLength = (int)((60000 / bpm) / subbeats);
         //bpm = 60000 / (subbeatLength * subbeats);
+    }
+
+    void setShuffle(float value) {
+        shuffle = value;
     }
 
     void setSubbeatLength(int length) {
