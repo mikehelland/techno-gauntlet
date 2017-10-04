@@ -10,6 +10,8 @@ class Channel {
     private static int STATE_LIVEPLAY = 0;
     private static int STATE_PLAYBACK = 1;
 
+    private int arpeggiate= -1;
+
     private int state = 1;
 
     private boolean enabled = true;
@@ -119,6 +121,7 @@ class Channel {
             return noteHandle;
 
         if (note.isRest()) {
+            Log.d("MGH ERROR a REST", "Not really an error");
             stopRecording();
             state = STATE_PLAYBACK;
         }
@@ -256,8 +259,6 @@ class Channel {
 
             note.setInstrumentNote(noteToPlay - lowNote);
         }
-
-        state = STATE_PLAYBACK;
     }
 
     int getInstrumentNoteNumber(int scaledNote) {
@@ -529,6 +530,20 @@ class Channel {
         playDrumBeat(subbeat);
         //    return;
         //}
+        Log.d("MGH", "state, appregiate, subbeat");
+        Log.d("MGH", Integer.toString(getState()));
+        Log.d("MGH", Integer.toString(arpeggiate));
+        Log.d("MGH", Integer.toString(subbeat));
+        if (getState() == Channel.STATE_LIVEPLAY && arpeggiate > 0 &&
+                subbeat % arpeggiate == 0) {
+
+            if (lastPlayedNote != null) {
+                playNote(lastPlayedNote, false);
+                finishCurrentNoteAt(System.currentTimeMillis() +
+                        (long) (arpeggiate * mJam.getSubbeatLength()) - 50);
+            } else {Log.d("MGH", "LastNoteAPleydIsNULL!");}
+            return;
+        }
 
         if (getState() != Channel.STATE_PLAYBACK)
             return;
@@ -601,5 +616,14 @@ class Channel {
 
     boolean isEnabled() {
         return enabled;
+    }
+
+    void setArpeggiator(int newValue) {
+        arpeggiate = newValue;
+    }
+
+    void updateLiveNote(Note note) {
+        lastPlayedNote = note;
+        //TODO probably some recording stuff?
     }
 }
