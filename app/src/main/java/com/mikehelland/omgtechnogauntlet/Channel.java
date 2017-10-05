@@ -526,14 +526,11 @@ class Channel {
 
     void playBeat(int subbeat) {
 
-        //if (!mSoundSet.isChromatic()) {
-        playDrumBeat(subbeat);
-        //    return;
-        //}
-        Log.d("MGH", "state, appregiate, subbeat");
-        Log.d("MGH", Integer.toString(getState()));
-        Log.d("MGH", Integer.toString(arpeggiate));
-        Log.d("MGH", Integer.toString(subbeat));
+        if (mSurfaceURL.equals("PRESET_SEQUENCER")) {
+            playDrumBeat(subbeat);
+            return;
+        }
+
         if (getState() == Channel.STATE_LIVEPLAY && arpeggiate > 0 &&
                 subbeat % arpeggiate == 0) {
 
@@ -541,7 +538,7 @@ class Channel {
                 playNote(lastPlayedNote, false);
                 finishCurrentNoteAt(System.currentTimeMillis() +
                         (long) (arpeggiate * mJam.getSubbeatLength()) - 50);
-            } else {Log.d("MGH", "LastNoteAPleydIsNULL!");}
+            }
             return;
         }
 
