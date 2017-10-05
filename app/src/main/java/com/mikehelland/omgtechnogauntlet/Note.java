@@ -68,6 +68,9 @@ public class Note {
         ret.isrest = isrest;
         ret.basicNote = basicNote;
 
+        ret.scaledNote = scaledNote;
+        ret.instrumentNoteNumber = instrumentNoteNumber;
+
         return ret;
     }
 

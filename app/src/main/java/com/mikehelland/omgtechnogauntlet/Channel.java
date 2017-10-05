@@ -112,21 +112,25 @@ class Channel {
 
         if (mSoundSet.isOscillator()) {
             mPool.makeSureDspIsRunning();
-            mSoundSet.getOscillator().unmute(); Log.d("MGH", "unmuting dsp");
+            mSoundSet.getOscillator().unmute();
         }
 
         int noteHandle = playNote(note, multiTouch);
 
-        if (!mJam.isPlaying() || !enabled)
-            return noteHandle;
-
         if (note.isRest()) {
-            Log.d("MGH ERROR a REST", "Not really an error");
+            arpeggiate = 0;
             stopRecording();
             state = STATE_PLAYBACK;
         }
         else {
-            startRecordingNote(note);
+            if (mJam.isPlaying() && enabled) {
+                if (arpeggiate == 0)
+                    startRecordingNote(note);
+                else {
+                    note.setBeats(arpeggiate / dsubbeats);
+                    recordNote(note, mJam.getCurrentSubbeat());
+                }
+            }
             state = STATE_LIVEPLAY;
         }
 
@@ -293,21 +297,14 @@ class Channel {
         nextBeat = 0.0d;
         playingI = 0;
 
-        if (recordingNote == null)
+        if (recordingNote == null && arpeggiate == 0)
             state = STATE_PLAYBACK;
     }
 
-    int getState() {
-        return state;
-    }
 
     void clearNotes() {
         mNoteList.clear();
-        state = STATE_LIVEPLAY;
-
-        if (!mSoundSet.isChromatic()) {
-            clearPattern();
-        }
+        clearPattern();
     }
 
     int getOctave() {
@@ -318,16 +315,17 @@ class Channel {
 
         Log.d("MGH recording", "start");
 
-        if (recordingNote != null) {
-            stopRecording();
-        }
-
         DebugTouch debugTouch = new DebugTouch();
         debugTouch.mode = "START";
         debugTouchData.add(debugTouch);
 
-        recordingStartedAtSubbeat = mJam.getClosestSubbeat(debugTouch);
+        int subbeat = mJam.getClosestSubbeat(debugTouch);
 
+        if (recordingNote != null) {
+            stopRecording();
+        }
+
+        recordingStartedAtSubbeat = subbeat;
         recordingNote = note;
 
     }
@@ -340,43 +338,38 @@ class Channel {
         debugTouch.mode = "STOP";
         debugTouchData.add(debugTouch);
 
-        int nowSubbeat = mJam.getClosestSubbeat(debugTouch);
+        int subbeat = mJam.getClosestSubbeat(debugTouch);
 
-        if (nowSubbeat < recordingStartedAtSubbeat) {
-            nowSubbeat += totalsubbeats;
+        if (subbeat < recordingStartedAtSubbeat) {
+            subbeat += totalsubbeats;
         }
-        if (nowSubbeat - recordingStartedAtSubbeat < 2) {
-            nowSubbeat = recordingStartedAtSubbeat + 2;
+        if (subbeat - recordingStartedAtSubbeat < 2) {
+            subbeat = recordingStartedAtSubbeat + 2;
         }
 
-        double beats = (nowSubbeat - recordingStartedAtSubbeat) / dsubbeats;
+        double beats = (subbeat - recordingStartedAtSubbeat) / dsubbeats;
         double startBeat = recordingStartedAtSubbeat / dsubbeats;
 
         recordingNote.setBeats(beats);
 
         mNoteList.overwrite(recordingNote, startBeat);
 
-        String mynotes = "";
-        for (Note debugNote : mNoteList) {
-            mynotes += debugNote.getInstrumentNote();
-            if (debugNote.isRest())
-                mynotes += "R";
-            mynotes = mynotes + "=" + debugNote.getBeats() + ":";
-        }
-
         recordingNote = null;
         recordingStartedAtSubbeat = -1;
     }
 
-    float getVolume() {
-        return volume;
+    private void recordNote(Note note, int startSubbeat) {
+        if (recordingNote != null) {
+            stopRecording();
+        }
+
+        double startBeat = startSubbeat / dsubbeats;
+        mNoteList.overwrite(note, startBeat);
+
     }
 
     String getSoundSetName() {
         return mSoundSet.getName();
-    }
-    String getSoundSetURL() {
-        return mSoundSet.getURL();
     }
 
     String getMainSound() {
@@ -457,7 +450,7 @@ class Channel {
         sb.append("\", \"soundsetName\": \"");
         sb.append(getSoundSetName());
         sb.append("\", \"soundsetURL\": \"");
-        sb.append(getSoundSetURL());
+        sb.append(mSoundSet.getURL());
         sb.append("\", \"surfaceURL\" : \"");
         sb.append(getSurfaceURL());
         sb.append("\", \"scale\": \"");
@@ -469,7 +462,7 @@ class Channel {
         sb.append(", \"octave\": ");
         sb.append(getOctave());
         sb.append(", \"volume\": ");
-        sb.append(getVolume());
+        sb.append(volume);
         if (!enabled)
             sb.append(", \"mute\": true");
         sb.append(", \"notes\" : [");
@@ -531,18 +524,11 @@ class Channel {
             return;
         }
 
-        if (getState() == Channel.STATE_LIVEPLAY && arpeggiate > 0 &&
-                subbeat % arpeggiate == 0) {
-
-            if (lastPlayedNote != null) {
-                playNote(lastPlayedNote, false);
-                finishCurrentNoteAt(System.currentTimeMillis() +
-                        (long) (arpeggiate * mJam.getSubbeatLength()) - 50);
-            }
+        if (playArpeggiator(subbeat)) {
             return;
         }
 
-        if (getState() != Channel.STATE_PLAYBACK)
+        if (state != Channel.STATE_PLAYBACK)
             return;
 
         int i = getI();
@@ -563,7 +549,7 @@ class Channel {
 
     }
 
-    void playDrumBeat(int subbeat) {
+    private void playDrumBeat(int subbeat) {
         if (enabled) {
             for (int i = 0; i < pattern.length; i++) {
                 if (pattern[i][subbeat]) {
@@ -575,8 +561,29 @@ class Channel {
         }
     }
 
+    private boolean playArpeggiator(int subbeat) {
+        if (state == Channel.STATE_LIVEPLAY && arpeggiate > 0 &&
+                subbeat % arpeggiate == 0) {
 
-    void clearPattern() {
+            if (lastPlayedNote != null && !lastPlayedNote.isRest() ) {
+                Note note = lastPlayedNote.clone();
+
+                playNote(note, false);
+                finishCurrentNoteAt(System.currentTimeMillis() +
+                        (long) (arpeggiate * mJam.getSubbeatLength()) - 50);
+
+                note.setBeats(arpeggiate / dsubbeats);
+
+                if (enabled) {
+                    recordNote(note, subbeat);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void clearPattern() {
         for (int i = 0; i < pattern.length; i++) {
             for (int j = 0; j < pattern[i].length; j++) {
                 pattern[i][j] = false;
@@ -621,6 +628,5 @@ class Channel {
 
     void updateLiveNote(Note note) {
         lastPlayedNote = note;
-        //TODO probably some recording stuff?
     }
 }

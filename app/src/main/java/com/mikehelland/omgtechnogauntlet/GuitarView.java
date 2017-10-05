@@ -267,7 +267,6 @@ public class GuitarView extends View {
             }
 
             touchingString = getTouchingString(event.getX());
-            mChannel.setArpeggiator(touchingString);
 
             touchingFret = (int)Math.floor(event.getY() / boxHeight);
             touchingFret = Math.max(0, Math.min(fretMapping.length - 1, touchingFret));
@@ -280,13 +279,13 @@ public class GuitarView extends View {
             note.setScaledNote(fretMapping[touchingFret]);
             note.setInstrumentNote(fretMapping[touchingFret] - lowNote);
             mChannel.playLiveNote(note);
+            mChannel.setArpeggiator(touchingString);
 
         }
 
         if (action == MotionEvent.ACTION_MOVE) {
             if (lastFret > -1) {
                 touchingString = getTouchingString(event.getX());
-                mChannel.setArpeggiator(touchingString);
 
                 touchingFret = (int)Math.floor(event.getY() / boxHeight);
                 touchingFret = Math.max(0, Math.min(fretMapping.length - 1, touchingFret));
@@ -304,8 +303,8 @@ public class GuitarView extends View {
                         mChannel.playLiveNote(note);
                     else
                         mChannel.updateLiveNote(note);
-
                 }
+                mChannel.setArpeggiator(touchingString);
 
             }
 
