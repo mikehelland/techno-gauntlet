@@ -24,7 +24,6 @@ import android.widget.TextView;
  */
 public class SoundSetFragment extends OMGFragment {
 
-    private Jam mJam;
     private View mView;
     private Channel mChannel;
     private ChoiceCallback mCallback = null;
@@ -84,7 +83,8 @@ public class SoundSetFragment extends OMGFragment {
             }
         });
 
-        if (mJam != null)
+        getActivityMembers();
+        if (mChannel != null)
             setup();
 
         return mView;
@@ -128,18 +128,33 @@ public class SoundSetFragment extends OMGFragment {
 
                 cursor.moveToPosition(i);
 
-                mChannel.prepareSoundSet(new SoundSet(cursor));
-                if (mChannel.loadSoundSet()) {
-                    Log.d("MGH", "sound set loaded");
-                }
-                else {
-                    Log.d("MGH", "sound set NOT loaded");
+                final Runnable oldPoolCallback = mPool.onAllLoadsFinishedCallback;
+                mPool.onAllLoadsFinishedCallback = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mCallback != null)
+                            mCallback.onChoice(mChannel.getSoundSet());
+
+                        getActivity().getFragmentManager().popBackStack();
+
+                        mPool.onAllLoadsFinishedCallback = oldPoolCallback;
+                    }
+                };
+
+                int soundsToLoad = mChannel.prepareSoundSet(new SoundSet(cursor));
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mChannel.loadSoundSet();
+                    }
+                }).start();
+
+
+                if (soundsToLoad == 0) {
+                    mPool.onAllLoadsFinishedCallback.run();
                 }
 
-                if (mCallback != null)
-                    mCallback.onChoice(mChannel.getSoundSet());
-
-                getActivity().getFragmentManager().popBackStack();
             }
 
 
@@ -184,13 +199,24 @@ public class SoundSetFragment extends OMGFragment {
                                     return;
                                 }
 
-                                mChannel.prepareSoundSet(soundSet);
+                                final Runnable oldPoolCallback = mPool.onAllLoadsFinishedCallback;
+                                mPool.onAllLoadsFinishedCallback = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (mCallback != null)
+                                            mCallback.onChoice(mChannel.getSoundSet());
+
+                                        getActivity().getFragmentManager().popBackStack();
+
+                                        mPool.onAllLoadsFinishedCallback = oldPoolCallback;
+                                    }
+                                };
+
+                                int soundsToLoad = mChannel.prepareSoundSet(soundSet);
                                 mChannel.loadSoundSet();
 
-                                if (mCallback != null)
-                                    mCallback.onChoice(soundSet);
-
-                                getActivity().getFragmentManager().popBackStack();
+                                if (soundsToLoad == 0)
+                                    mPool.onAllLoadsFinishedCallback.run();
                             }
                         });
                     }

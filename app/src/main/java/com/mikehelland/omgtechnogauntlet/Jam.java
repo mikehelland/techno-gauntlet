@@ -47,8 +47,6 @@ class Jam {
 
     private int currentChord = 0;
 
-    int soundsToLoad = 0;
-
     private BluetoothFactory btf;
 
     private StateChangeCallback mCallback;
@@ -722,7 +720,7 @@ class Jam {
         String soundsetName = part.getString("soundsetName");
         String soundsetURL = part.getString("soundsetURL");
 
-        soundsToLoad += jamChannel.prepareSoundSetFromURL(soundsetURL);
+        jamChannel.prepareSoundSetFromURL(soundsetURL);
 
         if (part.has("surfaceURL")) {
             String surfaceURL = part.getString("surfaceURL");

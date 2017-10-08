@@ -23,11 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by m on 7/7/17.
- */
-
-public class SoundSetDownloader {
+class SoundSetDownloader {
 
     private ProgressDialog mProgressDialog;
     private DownloaderCallback mCallback;
@@ -36,7 +32,7 @@ public class SoundSetDownloader {
 
     private SoundSet mSoundSet = null;
 
-    public SoundSetDownloader(Context context, String url, DownloaderCallback callback) {
+    SoundSetDownloader(Context context, String url, DownloaderCallback callback) {
 
         mCallback = callback;
         mProgressDialog = new ProgressDialog(context);
@@ -57,7 +53,7 @@ public class SoundSetDownloader {
         private Context context;
         //private PowerManager.WakeLock mWakeLock;
 
-        public DownloadSoundSetJSON(Context context) {
+        DownloadSoundSetJSON(Context context) {
             this.context = context;
         }
 
@@ -220,7 +216,7 @@ public class SoundSetDownloader {
 
         private String mDownloadPath;
 
-        public DownloadSoundSetFiles(Context context, JSONObject jsonObject, String downloadpath) {
+        DownloadSoundSetFiles(Context context, JSONObject jsonObject, String downloadpath) {
             mJSON = jsonObject;
             mDownloadPath = downloadpath;
             this.context = context;

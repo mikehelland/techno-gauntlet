@@ -21,8 +21,6 @@ public class WelcomeFragment extends OMGFragment {
 
     private View mView;
     private ProgressBar mProgressBar;
-    private int mSoundsToLoad = 0;
-
     private Cursor mCursor;
 
     @Override
@@ -34,7 +32,8 @@ public class WelcomeFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.welcome,
                 container, false);
 
-        mProgressBar = (ProgressBar)mView.findViewById(R.id.loading_progress);
+        //mProgressBar = (ProgressBar)mView.findViewById(R.id.loading_progress);
+        mProgressBar = (ProgressBar)getActivity().findViewById(R.id.loading_progress);
         populateSavedListView();
 
         if (!mPool.isInitialized()) {
@@ -105,8 +104,6 @@ public class WelcomeFragment extends OMGFragment {
         final Jam jam = new Jam(getActivity(), mPool, mJamCallback);
         jam.load(json, false);
 
-        mSoundsToLoad = jam.soundsToLoad;
-
         final Runnable callback = new Runnable() {
             @Override
             public void run() {
@@ -129,16 +126,17 @@ public class WelcomeFragment extends OMGFragment {
                 if (!mJam.isPlaying())
                     mJam.kickIt();
 
+
             }
         };
 
-        if (mSoundsToLoad == 0) {
+        if (mPool.soundsToLoad == 0) {
             callback.run();
             showFragment(new MainFragment());
             return;
         }
 
-        mProgressBar.setMax(mSoundsToLoad);
+        mProgressBar.setMax(mPool.soundsToLoad);
 
         new Thread(new Runnable() {
             @Override
@@ -166,12 +164,11 @@ public class WelcomeFragment extends OMGFragment {
 
     private void setupSoundPool() {
 
-        final Runnable callback = new Runnable() {
+        mPool.onAllLoadsFinishedCallback = new Runnable() {
             @Override
             public void run() {
                 MainFragment mainFragment = new MainFragment();
                 showFragment(mainFragment);
-
             }
         };
 
@@ -179,23 +176,28 @@ public class WelcomeFragment extends OMGFragment {
 
         mJam.load(getActivity().getResources().getString(R.string.default_jam), false);
 
-        mSoundsToLoad = mJam.soundsToLoad;
-        mProgressBar.setMax(mJam.soundsToLoad);
-        mProgressBar.setProgress(0);
+        //mProgressBar.setMax(mPool.soundsToLoad);
+        //mProgressBar.setProgress(0);
         mPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
 
             @Override
             public void onLoadComplete(SoundPool soundPool, int i, int i1) {
-                mSoundsToLoad--;
+                if (mProgressBar.getVisibility() == View.INVISIBLE) {
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    mProgressBar.setMax(mPool.soundsToLoad);
+                }
+
                 mProgressBar.incrementProgressBy(1);
 
-                if (mSoundsToLoad <= 0) {
+                mPool.soundsToLoad--;
+                if (mPool.soundsToLoad <= 0) {
 
                     mPool.setLoaded(true);
                     mProgressBar.setProgress(0);
+                    mProgressBar.setVisibility(View.INVISIBLE);
 
-                    if (!mPool.isCanceled())
-                        callback.run();
+                    if (!mPool.isCanceled() && mPool.onAllLoadsFinishedCallback != null)
+                        mPool.onAllLoadsFinishedCallback.run();
 
                 }
             }

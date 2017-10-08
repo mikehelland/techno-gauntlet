@@ -407,6 +407,7 @@ class Channel {
                 unloadedSounds++;
         }
 
+        mPool.soundsToLoad += unloadedSounds;
         return unloadedSounds;
     }
 
@@ -525,7 +526,7 @@ class Channel {
 
     void playBeat(int subbeat) {
 
-        if (mSurfaceURL.equals("PRESET_SEQUENCER")) {
+        if (getSurfaceURL().equals("PRESET_SEQUENCER")) {
             playDrumBeat(subbeat);
             return;
         }

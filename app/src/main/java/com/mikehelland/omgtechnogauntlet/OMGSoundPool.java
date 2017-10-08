@@ -20,6 +20,9 @@ class OMGSoundPool extends SoundPool {
 
     private HashMap<String, Integer> loadedUrls = new HashMap<>();
 
+    int soundsToLoad = 0;
+    public Runnable onAllLoadsFinishedCallback = null;
+
     OMGSoundPool(int i1, int i2, int i3) {
         super(i1, i2, i3);
 

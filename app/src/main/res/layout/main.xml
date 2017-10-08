@@ -6,6 +6,12 @@
               android:id="@+id/main_layout"
         >
 
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/loading_progress"
+        />
     <!--<fragment
         android:id="@+id/welcome_fragment"
         android:layout_width="fill_parent"
