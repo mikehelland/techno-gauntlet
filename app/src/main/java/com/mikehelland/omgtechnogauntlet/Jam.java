@@ -1,11 +1,8 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
-import android.media.SoundPool;
-import android.os.Build;
 import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -50,9 +47,8 @@ class Jam {
 
     private int currentChord = 0;
 
-    private int soundsToLoad = 0;
+    int soundsToLoad = 0;
 
-    private boolean soundPoolInitialized = false;
     private BluetoothFactory btf;
 
     private StateChangeCallback mCallback;
@@ -69,73 +65,12 @@ class Jam {
         mm.makeMelodyFromMotif(beats);
     }
 
-    void makeChannels(final ProgressBar progressBar, final Runnable callback) {
-
-        pool.allowLoading();
-        if (progressBar != null) {
-            progressBar.setProgress(0);
-        }
-
-        boolean usingListener = false;
-        boolean updatePB = false;
-
-
-        soundsToLoad = 0;
-
-        load(mContext.getResources().getString(R.string.default_jam), false);
-
-        if (Build.VERSION.SDK_INT >= 11 && progressBar != null) {
-            usingListener = true;
-            progressBar.setMax(soundsToLoad);
-            pool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-                int loadedSounds = 0;
-                @Override
-                public void onLoadComplete(SoundPool soundPool, int i, int i1) {
-                    loadedSounds++;
-                    progressBar.incrementProgressBy(1);
-
-                    if (loadedSounds == soundsToLoad) {
-
-                        pool.setLoaded(true);
-
-                        if (callback != null && !pool.isCanceled())
-                            callback.run();
-
-                    }
-                }
-            });
-        }
-
-        /*dialpadChannel = new DialpadChannel(mContext, this, pool, "MELODY", new OscillatorSettings());
-        String[] channelConfig = PreferenceHelper.getLastChannelConfiguration(mContext).split(",");
-        for (String sId : channelConfig) {
-            Channel channel = new Channel(mContext, this, pool);
-            soundsToLoad += channel.prepareSoundSet(sId);
-            mChannels.add(channel);
-        }*/
-
-
-
-        if (!usingListener) {
-            updatePB = progressBar != null;
-            if (updatePB)
-                progressBar.setMax(5);
-        }
+    void loadSoundSets() {
 
         for (Channel channel : mChannels) {
             if (!channel.loadSoundSet())
                 return;
-            if (updatePB)
-                progressBar.incrementProgressBy(1);
-
         }
-
-        if (!usingListener) {
-            if (!pool.isCanceled())
-                callback.run();
-        }
-
-        soundPoolInitialized = true;
     }
 
 
@@ -742,10 +677,6 @@ class Jam {
 
     Random getRand() {
         return rand;
-    }
-
-    boolean isSoundPoolInitialized() {
-        return soundPoolInitialized;
     }
 
     int getScaledNoteNumber(int basicNote) {

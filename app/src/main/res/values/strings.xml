@@ -51,6 +51,10 @@
                 \"surfaceURL\": \"PRESET_SEQUENCER\",
                 \"volume\": 0.75, \"tracks\": [{\"name\": \"bongo l\", \"sound\": \"PRESET_bongol\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"bongo l\", \"sound\": \"PRESET_bongoh\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"click l\", \"sound\": \"PRESET_clickl\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"click h\", \"sound\": \"PRESET_clickh\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"shhk\", \"sound\": \"PRESET_shhk\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"scrape\", \"sound\": \"PRESET_scrape\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"whoop\", \"sound\": \"PRESET_whoop\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{\"name\": \"chimes\", \"sound\": \"PRESET_chimes\", \"data\": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}]},{\"type\" : \"CHORDPROGRESSION\", \"data\" : [0]}]}
     </string>
+    <string name="blank_jam">
+        {\"type\": \"SECTION\", \"scale\": \"0,3,5,6,7,10\", \"ascale\": [0,3,5,6,7,10], \"rootNote\": 0,
+        \"beats\" :8, \"subbeats\" :4, \"subbeatMillis\" :125, \"parts\" : []}
+    </string>
     <string name="stop">Stop</string>
     <string name="play">Play</string>
 

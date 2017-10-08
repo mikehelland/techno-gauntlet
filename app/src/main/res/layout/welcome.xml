@@ -5,8 +5,6 @@
     android:layout_height="wrap_content"
     >
 
-
-
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -27,119 +25,65 @@
             android:text="(Loading...)"/>-->
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/goback"
-        android:visibility="gone">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <!--android:layout_above="@id/bt_remote"
-android:layout_alignParentTop="true"-->
-
-        <Button android:text="Return to OMG Bananas"
+        <Button android:text="Return To Jam"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:drawableRight="@android:drawable/ic_media_ff"
             android:id="@+id/return_to_omg_bananas"
-            android:layout_alignParentTop="true"></Button>
+            android:layout_alignParentTop="true"/>
 
-        <Button android:text="Exit"
-            android:layout_width="fill_parent"
+        <Button
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableLeft="@android:drawable/ic_media_rew"
-            android:id="@+id/exit_button"
-            android:layout_alignParentBottom="true"></Button>
+            android:text="Start A Blank Jam"
+            android:id="@+id/blank_jam_button"/>
 
-        <TextView android:text="@string/cap_source_code"
+        <!--<Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bluetooth Jam"/>-->
+
+        <TextView
+            android:text="Or Load A Saved Jam"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
-            android:id="@+id/source_link"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:layout_centerVertical="true"
-            />
-        <TextView android:text="@string/cap_suggestions"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:id="@+id/issues_link"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:layout_below="@id/source_link"
-            android:layout_marginTop="10dp"
-            />
-        <TextView android:text="@string/exit_text"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:id="@+id/txt_press_back"
             android:textSize="22sp"
-            android:layout_above="@id/source_link"
-            android:autoLink="web"
             android:gravity="center"
-            android:layout_marginBottom="30dp"
             />
 
-    </RelativeLayout>
+        <ListView android:id="@+id/saved_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:listSelector="#6666FF"
+            />
 
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:id="@+id/welcome_info">
-
-<!--        android:layout_above="@id/bt_remote"
-        android:layout_alignParentTop="true" -->
-
-        <TextView android:text="OpenMusic.Gallery"
+        <TextView
+            android:text="Instructions:"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
-            android:id="@+id/omg_presents_1"
-            android:textSize="28sp"
+            android:textSize="22sp"
             android:gravity="center"
-            android:visibility="invisible"
-            />
-
-        <TextView android:text="presents"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:id="@+id/omg_presents_2"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:visibility="invisible"
-            />
-
-        <TextView android:text="TECHNO GAUNTLET"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:id="@+id/omg_bananas"
-            android:textSize="56sp"
-            android:gravity="center"
-            android:visibility="invisible"
             />
 
         <ImageView
             android:id="@+id/img_press_banana"
-            android:visibility="invisible"
             android:layout_marginTop="10dp"
             android:src="@drawable/banana48"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
 
         <TextView
-            android:visibility="invisible"
             android:text="Press to Save"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"
@@ -151,13 +95,12 @@ android:layout_alignParentTop="true"-->
             />
         <ImageView
             android:id="@+id/img_press_monkey"
-            android:visibility="invisible"
             android:layout_marginTop="40dip"
             android:src="@drawable/icon48"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
         <TextView
-            android:visibility="invisible"
             android:text="Press to Change"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"
@@ -168,6 +111,28 @@ android:layout_alignParentTop="true"-->
             android:id="@+id/txt_press_monkey"
             android:gravity="center"
             />
-
     </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/goback"
+        android:visibility="gone">
+
+
+
+
+        <Button android:text="Exit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@android:drawable/ic_media_rew"
+            android:id="@+id/exit_button"
+            android:layout_alignParentBottom="true"/>
+
+
+    </RelativeLayout>
+
+
 </com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>
+

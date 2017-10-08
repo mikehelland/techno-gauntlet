@@ -401,7 +401,13 @@ class Channel {
             pattern = new boolean[mSoundSet.getSounds().size()][mJam.getTotalSubbeats()];
         }
 
-        return soundSet.getSounds().size();
+        int unloadedSounds = 0;
+        for (SoundSet.Sound sound : mSoundSet.getSounds()) {
+            if (!mPool.isSoundLoaded(sound))
+                unloadedSounds++;
+        }
+
+        return unloadedSounds;
     }
 
 

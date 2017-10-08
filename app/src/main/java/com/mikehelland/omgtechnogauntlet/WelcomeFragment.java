@@ -2,177 +2,50 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.database.Cursor;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.SimpleCursorAdapter;
 
 public class WelcomeFragment extends OMGFragment {
 
     private View mView;
+    private ProgressBar mProgressBar;
+    private int mSoundsToLoad = 0;
 
-    private Handler mHandler;
+    private Cursor mCursor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        mHandler = new Handler();
 
         getActivityMembers();
 
         mView = inflater.inflate(R.layout.welcome,
                 container, false);
 
-        if (!mJam.isSoundPoolInitialized()) {
+        mProgressBar = (ProgressBar)mView.findViewById(R.id.loading_progress);
+        populateSavedListView();
 
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (mPool.isCanceled()) return;
-
-                    final AlphaAnimation anim = new AlphaAnimation(0, 1);
-                    anim.setDuration(1200);
-                    View view = mView.findViewById(R.id.omg_presents_1);
-                    view.setVisibility(View.VISIBLE);
-                    view.startAnimation(anim);
-                }
-            }, 800);
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (mPool.isCanceled()) return;
-
-                    final AlphaAnimation anim = new AlphaAnimation(0, 1);
-                    anim.setDuration(1200);
-                    View view = mView.findViewById(R.id.omg_presents_2);
-                    view.setVisibility(View.VISIBLE);
-                    view.startAnimation(anim);
-
-                }
-            }, 2300);
-
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (mPool.isCanceled()) return;
-
-                    final AlphaAnimation anim = new AlphaAnimation(0, 1);
-                    anim.setDuration(2700);
-
-                    View view = mView.findViewById(R.id.omg_bananas);
-                    view.setVisibility(View.VISIBLE);
-                    view.startAnimation(anim);
-
-                    Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                    view.startAnimation(turnin);
-
-                }
-            }, 5200);
-
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (mPool.isCanceled()) return;
-
-                    final AlphaAnimation anim = new AlphaAnimation(0, 1);
-                    anim.setDuration(2000);
-                    anim.setFillAfter(true);
-
-                    mView.findViewById(R.id.txt_press_banana).startAnimation(anim);
-                    View view = mView.findViewById(R.id.img_press_banana);
-                    view.startAnimation(anim);
-
-                    Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                    view.startAnimation(turnin);
-                    view.setVisibility(View.VISIBLE);
-
-                    final AlphaAnimation anim2 = new AlphaAnimation(1, 0);
-                    anim2.setFillAfter(true);
-                    anim2.setDuration(2700);
-
-                    View view2 = mView.findViewById(R.id.omg_bananas);
-                    view2.startAnimation(anim2);
-
-                    mView.findViewById(R.id.omg_presents_1).startAnimation(anim2);
-                    mView.findViewById(R.id.omg_presents_2).startAnimation(anim2);
-
-                }
-            }, 8500);
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (mPool.isCanceled()) return;
-
-                    final AlphaAnimation anim = new AlphaAnimation(0, 1);
-                    anim.setDuration(2000);
-                    anim.setFillAfter(true);
-                    mView.findViewById(R.id.txt_press_monkey).startAnimation(anim);
-                    View view = mView.findViewById(R.id.img_press_monkey);
-                    view.startAnimation(anim);
-
-                    Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                    view.startAnimation(turnin);
-                    view.setVisibility(View.VISIBLE);
-
-                }
-            }, 10500);
-
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (mPool.isCanceled()) return;
-
-                    final AlphaAnimation anim2 = new AlphaAnimation(1, 0);
-                    anim2.setFillAfter(true);
-                    anim2.setDuration(2700);
-
-                    mView.findViewById(R.id.txt_press_banana).startAnimation(anim2);
-                    mView.findViewById(R.id.img_press_banana).startAnimation(anim2);
-
-                }
-            }, 13000);
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (mPool.isCanceled()) return;
-
-                    final AlphaAnimation anim2 = new AlphaAnimation(1, 0);
-                    anim2.setFillAfter(true);
-                    anim2.setDuration(2700);
-
-                    mView.findViewById(R.id.txt_press_monkey).startAnimation(anim2);
-                    mView.findViewById(R.id.img_press_monkey).startAnimation(anim2);
-
-                }
-            }, 15800);
+        if (!mPool.isInitialized()) {
 
             setupSoundPool();
 
+            animateIcons();
+
         }
-        else {
-            hideWelcome();
-        }
+
+
 
         mView.findViewById(R.id.return_to_omg_bananas).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,8 +62,90 @@ public class WelcomeFragment extends OMGFragment {
             }
         });
 
+        mView.findViewById(R.id.blank_jam_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadJam(getActivity().getResources().getString(R.string.blank_jam));
+            }
+        });
+
 
         return mView;
+    }
+
+    private void populateSavedListView() {
+        Context context = getActivity();
+
+        ListView listView = (ListView)mView.findViewById(R.id.saved_list);
+        mCursor = new SavedDataOpenHelper(context).getSavedCursor();
+
+        SimpleCursorAdapter curA = new SavedDataAdapter(context,
+                R.layout.saved_row,
+                mCursor, new String[]{"tags", "time"},
+                new int[]{R.id.saved_data_tags, R.id.saved_data_date});
+
+        listView.setAdapter(curA);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                loadSavedJam(i);
+            }
+        });
+
+    }
+
+    private void loadSavedJam(int position) {
+        mCursor.moveToPosition(position);
+        String json = mCursor.getString(mCursor.getColumnIndex("data"));
+        loadJam(json);
+    }
+
+    private void loadJam(String json) {
+
+        final Jam jam = new Jam(getActivity(), mPool, mJamCallback);
+        jam.load(json, false);
+
+        mSoundsToLoad = jam.soundsToLoad;
+
+        final Runnable callback = new Runnable() {
+            @Override
+            public void run() {
+                jam.loadSoundSets();
+
+                mJam.finish();
+                mJam = jam;
+
+                ((Main)getActivity()).mJam = jam;
+
+                //pretty lousy spot for this
+                BluetoothFactory btf = ((Main)getActivity()).mBtf;
+                CommandProcessor cp;
+                for (BluetoothConnection connection : btf.getConnections()) {
+                    cp = new CommandProcessor();
+                    cp.setup(connection, jam, null);
+                    connection.setDataCallback(cp);
+                }
+
+                if (!mJam.isPlaying())
+                    mJam.kickIt();
+
+            }
+        };
+
+        if (mSoundsToLoad == 0) {
+            callback.run();
+            showFragment(new MainFragment());
+            return;
+        }
+
+        mProgressBar.setMax(mSoundsToLoad);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                callback.run();
+            }
+        }).start();
     }
 
     public void showFragment(Fragment f) {
@@ -210,7 +165,6 @@ public class WelcomeFragment extends OMGFragment {
     }
 
     private void setupSoundPool() {
-        final ProgressBar progressBar = (ProgressBar)mView.findViewById(R.id.loading_progress);
 
         final Runnable callback = new Runnable() {
             @Override
@@ -221,29 +175,73 @@ public class WelcomeFragment extends OMGFragment {
             }
         };
 
+        mPool.allowLoading();
+
+        mJam.load(getActivity().getResources().getString(R.string.default_jam), false);
+
+        mSoundsToLoad = mJam.soundsToLoad;
+        mProgressBar.setMax(mJam.soundsToLoad);
+        mProgressBar.setProgress(0);
+        mPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int i, int i1) {
+                mSoundsToLoad--;
+                mProgressBar.incrementProgressBy(1);
+
+                if (mSoundsToLoad <= 0) {
+
+                    mPool.setLoaded(true);
+                    mProgressBar.setProgress(0);
+
+                    if (!mPool.isCanceled())
+                        callback.run();
+
+                }
+            }
+        });
+
+        mPool.setInitialized(true);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mJam.makeChannels(progressBar, callback);
+                mJam.loadSoundSets();
             }
         }).start();
-        //mJam.makeChannels(progressBar, callback);
 
     }
 
-    private void hideWelcome() {
-        mView.findViewById(R.id.welcome_info).setVisibility(View.GONE);
-        mView.findViewById(R.id.loading_info).setVisibility(View.GONE);
-        mView.findViewById(R.id.goback).setVisibility(View.VISIBLE);
+    void animateIcons() {
 
-        TextView source = (TextView)mView.findViewById(R.id.source_link);
-        source.setText(Html.fromHtml(getString(R.string.cap_source_code)));
-        source.setMovementMethod(LinkMovementMethod.getInstance());
-        source.setClickable(true);
-        TextView issues = (TextView)mView.findViewById(R.id.issues_link);
-        issues.setText(Html.fromHtml(getString(R.string.cap_suggestions)));
-        issues.setMovementMethod(LinkMovementMethod.getInstance());
-        issues.setClickable(true);
+        Handler handler = new Handler();
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                if (mPool.isCanceled()) return;
+
+                View view = mView.findViewById(R.id.img_press_banana);
+                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                view.startAnimation(turnin);
+
+
+            }
+        }, 250);
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                if (mPool.isCanceled()) return;
+
+                View view = mView.findViewById(R.id.img_press_monkey);
+                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                view.startAnimation(turnin);
+
+            }
+        }, 500);
 
     }
 }

@@ -19,7 +19,6 @@ public class MainFragment extends OMGFragment {
     private View mView;
 
     private Button playButton;
-    private Button pointsButton;
 
     private Button mKeyButton;
     private ChordsView mChordsButton;
@@ -344,18 +343,6 @@ public class MainFragment extends OMGFragment {
 
     private void setupMainBanana() {
 
-        pointsButton = (Button) mView.findViewById(R.id.points_button);
-        String pointsText = Integer.toString(PreferenceHelper.getPointCount(getActivity()));
-        pointsButton.setText(pointsText);
-        pointsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SavedListFragment f = new SavedListFragment();
-                f.setJam(MainFragment.this, mJam);
-                showFragmentUp(f);
-            }
-        });
-
         final View savedPanel = mView.findViewById(R.id.saved_panel);
 
         final Button doneButton = (Button)savedPanel.findViewById(R.id.saved_done);
@@ -450,9 +437,6 @@ public class MainFragment extends OMGFragment {
     private void saveJam(boolean share){
         OMGHelper omgHelper = new OMGHelper(getActivity(), mJam);
         omgHelper.submit(share);
-
-        String pointsText = Integer.toString(PreferenceHelper.dingPointCount(getActivity()));
-        pointsButton.setText(pointsText);
 
     }
 }

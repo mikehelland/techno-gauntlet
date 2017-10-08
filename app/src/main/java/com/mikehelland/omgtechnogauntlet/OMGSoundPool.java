@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 class OMGSoundPool extends SoundPool {
 
+    private boolean isInitialized = false;
     private boolean isLoaded = false;
     private boolean cancelLoading = false;
 
@@ -73,5 +74,17 @@ class OMGSoundPool extends SoundPool {
 
     void addDac(Dac dac) {
         mDacs.add(dac);
+    }
+
+
+    boolean isInitialized() {
+        return isInitialized;
+    }
+    void setInitialized(boolean value) {
+        isInitialized = value;
+    }
+
+    public boolean isSoundLoaded(SoundSet.Sound sound) {
+        return loadedUrls.containsKey(sound.getURL());
     }
 }
