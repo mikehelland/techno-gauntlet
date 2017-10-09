@@ -62,4 +62,8 @@ public class GuitarFragment extends OMGFragment {
         return null;
     }
 
+    public void onPause() {
+        super.onPause();
+        mJam.removeInvalidateOnBeatListener(guitarView);
+    }
 }

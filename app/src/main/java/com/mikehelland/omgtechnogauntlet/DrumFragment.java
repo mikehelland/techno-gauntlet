@@ -40,4 +40,8 @@ public class DrumFragment extends OMGFragment {
             drumMachine.setJam(mJam, channel);
     }
 
+    public void onPause() {
+        super.onPause();
+        mJam.removeInvalidateOnBeatListener(drumMachine);
+    }
 }
