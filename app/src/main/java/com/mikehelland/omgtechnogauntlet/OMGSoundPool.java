@@ -20,31 +20,17 @@ class OMGSoundPool extends SoundPool {
 
     private HashMap<String, Integer> loadedUrls = new HashMap<>();
 
+    private ArrayList<SoundSet.Sound> mSoundsToLoad = new ArrayList<>();
+
+    Runnable onAllLoadsFinishedCallback = null;
+
+    private Context mContext;
     int soundsToLoad = 0;
-    public Runnable onAllLoadsFinishedCallback = null;
 
-    OMGSoundPool(int i1, int i2, int i3) {
+    OMGSoundPool(Context context, int i1, int i2, int i3) {
         super(i1, i2, i3);
+        mContext = context;
 
-    }
-
-    int load(String url, Context context, int resource, int p) {
-        if (loadedUrls.containsKey(url))
-            return loadedUrls.get(url);
-
-        int newId = super.load(context, resource, p);
-        loadedUrls.put(url, newId);
-        return newId;
-    }
-
-    int load(String url, String path, int p) {
-
-        if (loadedUrls.containsKey(url))
-            return loadedUrls.get(url);
-
-        int newId = super.load(path, p);
-        loadedUrls.put(url, newId);
-        return newId;
     }
 
     void cancelLoading() {
@@ -87,7 +73,55 @@ class OMGSoundPool extends SoundPool {
         isInitialized = value;
     }
 
-    public boolean isSoundLoaded(SoundSet.Sound sound) {
-        return loadedUrls.containsKey(sound.getURL());
+    void addSoundToLoad(SoundSet.Sound sound) {
+        if (!loadedUrls.containsKey(sound.getURL())) {
+            if (!mSoundsToLoad.contains(sound)) {
+                mSoundsToLoad.add(sound);
+            }
+        }
+    }
+
+    void loadSounds() {
+
+        // used by the onLoadListener
+        soundsToLoad = mSoundsToLoad.size();
+
+        if (soundsToLoad == 0) {
+            // because the listener won't fire without sounds to load
+            if (onAllLoadsFinishedCallback != null) {
+                onAllLoadsFinishedCallback.run();
+            }
+            return;
+        }
+
+        String path;
+        int preset_id;
+        int poolId;
+        SoundSet.Sound sound;
+        while (mSoundsToLoad.size() > 0) {
+            sound = mSoundsToLoad.get(0);
+
+            if (!loadedUrls.containsKey(sound.getURL())) {
+                if (sound.isPreset()) {
+                    preset_id = sound.getPresetId();
+
+                    poolId = load(mContext, preset_id, 1);
+                }
+                else {
+                    path = mContext.getFilesDir() + "/" + Long.toString(sound.getSoundSetId()) + "/";
+                    poolId = load(path + Integer.toString(sound.getSoundSetIndex()), 1);
+                }
+                loadedUrls.put(sound.getURL(), poolId);
+            }
+
+            mSoundsToLoad.remove(0);
+        }
+    }
+
+    int getPoolId(String url) {
+        if (!loadedUrls.containsKey(url))
+            return -1;
+
+        return loadedUrls.get(url);
     }
 }

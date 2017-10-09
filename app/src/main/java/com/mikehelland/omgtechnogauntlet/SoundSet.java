@@ -86,6 +86,9 @@ class SoundSet {
                 sound = new Sound();
                 soundJSON = data.getJSONObject(i);
 
+                sound.setSoundSetId(mID);
+                sound.setSoundSetIndex(i);
+
                 if (soundJSON.has("name")) {
                     sound.setName(soundJSON.getString("name"));
                 }
@@ -168,6 +171,8 @@ class SoundSet {
         private String mName = "";
         private String mURL = "";
         private int preset_id = -1;
+        private long soundset_id = -1;
+        private int soundset_index = -1;
 
         String getName() {
             return mName;
@@ -195,6 +200,22 @@ class SoundSet {
 
         void setPresetId(int id) {
             preset_id = id;
+        }
+
+        long getSoundSetId() {
+            return soundset_id;
+        }
+
+        void setSoundSetId(long id) {
+            soundset_id = id;
+        }
+
+        void setSoundSetIndex(int index) {
+            soundset_index = index;
+        }
+
+        int getSoundSetIndex() {
+            return soundset_index;
         }
     }
 

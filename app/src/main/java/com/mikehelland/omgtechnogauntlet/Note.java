@@ -19,30 +19,30 @@ public class Note {
 
     private boolean isplaying = false;
 
-    public void setBeats(double beats) {
+    void setBeats(double beats) {
 
         mBeats = beats;
 
     }
 
-    public void setRest(boolean value) {
+    void setRest(boolean value) {
         isrest = value;
 
     }
 
-    public void setBasicNote(int number) {
+    void setBasicNote(int number) {
         basicNote = number;
     }
 
-    public int getBasicNote() {
+    int getBasicNote() {
         return basicNote;
     }
 
-    public void setInstrumentNote(int number) {
+    void setInstrumentNote(int number) {
         instrumentNoteNumber = number;
     }
 
-    public int getInstrumentNote() {
+    int getInstrumentNote() {
         return instrumentNoteNumber;
     }
 
@@ -54,15 +54,15 @@ public class Note {
         return mBeats;
     }
 
-    public void setScaledNote(int newScaledNote) {
+    void setScaledNote(int newScaledNote) {
         scaledNote = newScaledNote;
     }
 
-    public int getScaledNote() {
+    int getScaledNote() {
         return scaledNote;
     }
 
-    public Note clone() {
+    Note cloneNote() {
         Note ret = new Note();
         ret.mBeats = mBeats;
         ret.isrest = isrest;

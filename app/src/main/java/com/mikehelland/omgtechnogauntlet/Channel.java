@@ -376,17 +376,15 @@ class Channel {
         return mMainSound;
     }
 
-    int prepareSoundSetFromURL(String url) {
+    void prepareSoundSetFromURL(String url) {
         SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(context);
         SoundSet soundSet = dataHelper.getSoundSetByURL(url);
-        if (soundSet == null) {
-            return 0;
+        if (soundSet != null) {
+            prepareSoundSet(soundSet);
         }
-
-        return prepareSoundSet(soundSet);
     }
 
-    int prepareSoundSet(SoundSet soundSet) {
+    void prepareSoundSet(SoundSet soundSet) {
 
         // first take care of the last soundset
         //todo see if any sounds are running
@@ -401,46 +399,28 @@ class Channel {
             pattern = new boolean[mSoundSet.getSounds().size()][mJam.getTotalSubbeats()];
         }
 
-        int unloadedSounds = 0;
         for (SoundSet.Sound sound : mSoundSet.getSounds()) {
-            if (!mPool.isSoundLoaded(sound))
-                unloadedSounds++;
+            mPool.addSoundToLoad(sound);
         }
-
-        mPool.soundsToLoad += unloadedSounds;
-        return unloadedSounds;
-    }
-
-
-    boolean loadSoundSet() {
 
         if (mSoundSet.isOscillator()) {
             mPool.addDac(mSoundSet.getOscillator().ugDac);
             mPool.makeSureDspIsRunning();
         }
 
-        String path = context.getFilesDir() + "/" + Long.toString(mSoundSet.getID()) + "/";
         isAScale = mSoundSet.isChromatic();
         highNote = mSoundSet.getHighNote();
         lowNote = mSoundSet.getLowNote();
 
-        int preset_id;
-        ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();
+        ids = new int[mSoundSet.getSounds().size()];
 
-        ids = new int[sounds.size()];
+    }
 
-        for (int i = 0; i < sounds.size(); i++) {
-            SoundSet.Sound sound = mSoundSet.getSounds().get(i);
 
-            if (sound.isPreset()) {
-                preset_id = sound.getPresetId();
+    boolean loadSoundSetIds() {
 
-                ids[i] = mPool.load(sound.getURL(), context, preset_id, 1);
-            }
-            else {
-
-                ids[i] = mPool.load(sound.getURL(), path + Integer.toString(i), 1);
-            }
+        for (int i = 0; i < mSoundSet.getSounds().size(); i++) {
+            ids[i] = mPool.getPoolId(mSoundSet.getSounds().get(i).getURL());
         }
 
         return true;
@@ -573,7 +553,7 @@ class Channel {
                 subbeat % arpeggiate == 0) {
 
             if (lastPlayedNote != null && !lastPlayedNote.isRest() ) {
-                Note note = lastPlayedNote.clone();
+                Note note = lastPlayedNote.cloneNote();
 
                 playNote(note, false);
                 finishCurrentNoteAt(System.currentTimeMillis() +

@@ -141,19 +141,15 @@ public class SoundSetFragment extends OMGFragment {
                     }
                 };
 
-                int soundsToLoad = mChannel.prepareSoundSet(new SoundSet(cursor));
+                mChannel.prepareSoundSet(new SoundSet(cursor));
 
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        mChannel.loadSoundSet();
+                        mPool.loadSounds();
+                        mChannel.loadSoundSetIds();
                     }
                 }).start();
-
-
-                if (soundsToLoad == 0) {
-                    mPool.onAllLoadsFinishedCallback.run();
-                }
 
             }
 
@@ -212,11 +208,10 @@ public class SoundSetFragment extends OMGFragment {
                                     }
                                 };
 
-                                int soundsToLoad = mChannel.prepareSoundSet(soundSet);
-                                mChannel.loadSoundSet();
+                                mChannel.prepareSoundSet(soundSet);
 
-                                if (soundsToLoad == 0)
-                                    mPool.onAllLoadsFinishedCallback.run();
+                                mPool.loadSounds();
+                                mChannel.loadSoundSetIds();
                             }
                         });
                     }

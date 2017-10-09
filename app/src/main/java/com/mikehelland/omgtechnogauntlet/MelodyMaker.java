@@ -251,7 +251,7 @@ public class MelodyMaker {
                     ret.add(note);
                 }
                 else {
-                    Note note = motif.get(0).clone();
+                    Note note = motif.get(0).cloneNote();
                     ret.add(note);
                     double beatsFromFirstNote = note.getBeats();
 
@@ -268,7 +268,7 @@ public class MelodyMaker {
             }
             else {
                 for (Note note : motif) {
-                    note = note.clone();
+                    note = note.cloneNote();
                     ret.add(note);
                     playedBeats += note.getBeats();
                 }
@@ -439,7 +439,7 @@ public class MelodyMaker {
 
         Note newNote;
         for (Note note : currentMelody) {
-            newNote = note.clone();
+            newNote = note.cloneNote();
             noteList.add(newNote);
         }
     }

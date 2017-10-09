@@ -36,18 +36,14 @@ class Jam {
 
     private MelodyMaker mm;
 
-    private boolean chordsEnabled = true;
-
     private boolean playing = false;
 
     private int progressionI = -1;
 
-    private ArrayList<View> viewsToInvalidateOnBeat = new ArrayList<View>();
-    private ArrayList<View> viewsToInvalidateOnNewMeasure = new ArrayList<View>();
+    private ArrayList<View> viewsToInvalidateOnBeat = new ArrayList<>();
+    private ArrayList<View> viewsToInvalidateOnNewMeasure = new ArrayList<>();
 
     private int currentChord = 0;
-
-    private BluetoothFactory btf;
 
     private StateChangeCallback mCallback;
 
@@ -64,16 +60,13 @@ class Jam {
     }
 
     void loadSoundSets() {
-
         for (Channel channel : mChannels) {
-            if (!channel.loadSoundSet())
+            if (!channel.loadSoundSetIds())
                 return;
         }
     }
 
-
-
-    void playBeatSampler(int subbeat) {
+    private void playBeatSampler(int subbeat) {
 
         if (subbeat == 0) {
             for (Channel channel : mChannels) {
@@ -164,7 +157,7 @@ class Jam {
         return subbeatLength;
     }
 
-    boolean load(String json, boolean loadSoundSets) {
+    boolean load(String json) {
 
         boolean good = false;
         try {
@@ -223,7 +216,7 @@ class Jam {
                 }
 
                 channel = new Channel(mContext, this, pool);
-                loadPart(channel, part, loadSoundSets);
+                loadPart(channel, part);
                 mChannels.add(channel);
             }
 
@@ -258,11 +251,11 @@ class Jam {
         return mTags;
     }
 
-    public float getShuffle() {
+    float getShuffle() {
         return shuffle;
     }
 
-    class PlaybackThread extends Thread {
+    private class PlaybackThread extends Thread {
 
         int ibeat;
         int lastI;
@@ -343,13 +336,7 @@ class Jam {
 
     private void onNewLoop() {
 
-        //long now = System.currentTimeMillis();
-        //if (lastHumanInteraction > now - 30000) {
-        //    randomRuleChange(now);
-        //}
-
-        if (chordsEnabled)
-            progressionI++;
+        progressionI++;
 
         if (progressionI >= progression.length || progressionI < 0) {
             progressionI = 0;
@@ -399,6 +386,8 @@ class Jam {
                 break;
             case 3:
                 makeChordProgression();
+                //progressionI = 0;
+
                 break;
             case 4:
                 //drumChannel.makeDrumBeatsFromMelody(basslineChannel.getNotes());
@@ -420,7 +409,7 @@ class Jam {
         return mm.getKeyName();
     }
 
-    void makeChordProgression() {
+    private void makeChordProgression() {
         progressionI = 0;
 
         int pattern = rand.nextInt(10);
@@ -586,11 +575,6 @@ class Jam {
 
     }
 
-    void monkeyWithChords() {
-        makeChordProgression();
-        //progressionI = 0;
-    }
-
     int[] getProgression() {
         return progression;
     }
@@ -716,8 +700,7 @@ class Jam {
 
     }
 
-    private void loadPart(Channel jamChannel, JSONObject part, boolean loadSoundSet) throws  JSONException {
-        String soundsetName = part.getString("soundsetName");
+    private void loadPart(Channel jamChannel, JSONObject part) throws  JSONException {
         String soundsetURL = part.getString("soundsetURL");
 
         jamChannel.prepareSoundSetFromURL(soundsetURL);
@@ -725,10 +708,6 @@ class Jam {
         if (part.has("surfaceURL")) {
             String surfaceURL = part.getString("surfaceURL");
             jamChannel.setSurface(surfaceURL);
-        }
-
-        if (loadSoundSet) {
-            jamChannel.loadSoundSet();
         }
 
         if (part.has("volume")) {

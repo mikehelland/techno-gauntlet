@@ -3,15 +3,18 @@ package com.mikehelland.omgtechnogauntlet;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class Main extends Activity {
 
     Jam mJam;
-    OMGSoundPool mPool = new OMGSoundPool(32, AudioManager.STREAM_MUSIC, 100);
+    OMGSoundPool mPool = new OMGSoundPool(this, 32, AudioManager.STREAM_MUSIC, 100);
     BluetoothFactory mBtf;
     Jam.StateChangeCallback mJamCallback;
 
@@ -64,9 +67,29 @@ public class Main extends Activity {
         ft.add(R.id.main_layout, mWelcomeFragment);
         ft.commit();
 
+        final ProgressBar progressBar = (ProgressBar)findViewById(R.id.loading_progress);
+        mPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int i, int i1) {
+                if (progressBar.getVisibility() == View.INVISIBLE) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    progressBar.setMax(mPool.soundsToLoad);
+                }
 
-        //headbob = new HeadBob((ImageView)mLibenizView.findViewById(R.id.libeniz_head));
-        //headbob.start(500);
+                progressBar.incrementProgressBy(1);
+
+                mPool.soundsToLoad--;
+                if (mPool.soundsToLoad <= 0) {
+
+                    mPool.setLoaded(true);
+                    progressBar.setProgress(0);
+                    progressBar.setVisibility(View.INVISIBLE);
+
+                    if (!mPool.isCanceled() && mPool.onAllLoadsFinishedCallback != null)
+                        mPool.onAllLoadsFinishedCallback.run();
+                }
+            }
+        });
 
     }
 
