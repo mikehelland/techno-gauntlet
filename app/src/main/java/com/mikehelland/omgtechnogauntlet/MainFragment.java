@@ -219,24 +219,16 @@ public class MainFragment extends OMGFragment {
     }
 
     public void showFragmentDown(Fragment f) {
-
-
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.animator.slide_in_down,
                 R.animator.slide_out_up,
                 R.animator.slide_in_up,
                 R.animator.slide_out_down
-                //R.anim.slide_in_up,
-                //R.anim.slide_out_up,
-                //R.anim.slide_in_down,
-                //R.anim.slide_out_down
         );
-        //ft.remove(MainFragment.this);
         ft.replace(R.id.main_layout, f);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.addToBackStack(null);
         ft.commit();
-
     }
 
     public void showFragmentUp(Fragment f) {
@@ -274,7 +266,7 @@ public class MainFragment extends OMGFragment {
                 f.setCallback(new SoundSetFragment.ChoiceCallback() {
                     void onChoice(SoundSet soundSet) {
                         mJam.addChannel(channel);
-                        mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel));
+                        mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
                     }
                 });
                 showFragmentRight(f);
@@ -289,6 +281,14 @@ public class MainFragment extends OMGFragment {
 
                 showFragmentDown(f);
 
+            }
+        });
+
+        mView.findViewById(R.id.bt_brain_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment f = new BluetoothBrainFragment();
+                showFragmentDown(f);
             }
         });
 

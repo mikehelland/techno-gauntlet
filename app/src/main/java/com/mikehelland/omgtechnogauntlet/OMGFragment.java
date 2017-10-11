@@ -7,7 +7,7 @@ public class OMGFragment extends Fragment{
 
     protected Jam mJam;
     protected OMGSoundPool mPool;
-    protected BluetoothFactory mBtf;
+    protected BluetoothManager mBtf;
     protected Jam.StateChangeCallback mJamCallback;
 
     protected void getActivityMembers() {

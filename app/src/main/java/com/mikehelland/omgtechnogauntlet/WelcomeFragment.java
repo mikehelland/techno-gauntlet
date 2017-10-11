@@ -111,9 +111,8 @@ public class WelcomeFragment extends OMGFragment {
                 ((Main)getActivity()).mJam = jam;
 
                 //pretty lousy spot for this
-                BluetoothFactory btf = ((Main)getActivity()).mBtf;
                 CommandProcessor cp;
-                for (BluetoothConnection connection : btf.getConnections()) {
+                for (BluetoothConnection connection : ((Main)getActivity()).mBtf.getConnections()) {
                     cp = new CommandProcessor();
                     cp.setup(connection, jam, null);
                     connection.setDataCallback(cp);

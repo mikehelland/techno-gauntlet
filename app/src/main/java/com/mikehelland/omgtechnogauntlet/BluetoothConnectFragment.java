@@ -80,7 +80,7 @@ public class BluetoothConnectFragment extends OMGFragment {
     }
 
     private void connectToDevice(final BluetoothDevice device, final Button button) {
-        mBtf.connectToDevice(device, new BluetoothConnectCallback() {
+        mBtf.connectTo(device, new BluetoothConnectCallback() {
             @Override
             public void newStatus(final String status) {
                 Activity activity = getActivity();
@@ -114,6 +114,11 @@ public class BluetoothConnectFragment extends OMGFragment {
                 }
 
                 setupDataCallBackForConnection(connection);
+            }
+
+            @Override
+            public void onDisconnected(BluetoothConnection connection) {
+
             }
         });
     }

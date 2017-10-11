@@ -10,7 +10,7 @@ import java.io.OutputStream;
 
 public class BluetoothConnection extends Thread {
     private BluetoothDevice mDevice;
-    private BluetoothFactory bluetoothFactory;
+    private BluetoothManager bluetoothFactory;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
     private final BluetoothSocket socket;
@@ -21,7 +21,7 @@ public class BluetoothConnection extends Thread {
 
     private final static String TAG = "MGH bluetoothconnection";
     
-    public BluetoothConnection(BluetoothDevice device, BluetoothFactory bluetoothFactory,
+    public BluetoothConnection(BluetoothDevice device, BluetoothManager bluetoothFactory,
                                BluetoothSocket socket, BluetoothConnectCallback callback){
         this.bluetoothFactory = bluetoothFactory;
         mConnectedCallback = callback;
@@ -68,6 +68,7 @@ public class BluetoothConnection extends Thread {
 
                 if (!bluetoothFactory.cleaningUp) {
                     bluetoothFactory.newStatus(mConnectedCallback, BluetoothFactory.STATUS_IO_CONNECTED_THREAD);
+                    mConnectedCallback.onDisconnected(this);
                 }
                 break;
             }
@@ -145,5 +146,9 @@ public class BluetoothConnection extends Thread {
 
     public void setDataCallback(BluetoothDataCallback callback) {
         mDataCallback = callback;
+    }
+
+    public BluetoothDataCallback getDataCallback() {
+        return mDataCallback;
     }
 }

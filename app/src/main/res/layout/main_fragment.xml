@@ -44,6 +44,13 @@
 
     </ImageView>
 
+    <ImageView
+        android:src="@drawable/bluetooth"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_toLeftOf="@id/bt_button"
+        android:id="@+id/bt_brain_button"
+        />
 
 
     <ImageView

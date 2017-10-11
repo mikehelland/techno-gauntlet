@@ -89,7 +89,7 @@ public class SurfaceFragment extends OMGFragment {
                 //todo yeah this is way whacky, needs an surface object
                 mChannel.setSurface(json);
 
-                mBtf.sendCommandToDevices(CommandProcessor.getChannelsInfoCommand(mJam));
+                mBtf.sendCommandToDevices(CommandProcessor.getChannelsInfoCommand(mJam), null);
 
                 getActivity().getFragmentManager().popBackStack();
             }

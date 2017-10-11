@@ -15,7 +15,8 @@ public class Main extends Activity {
 
     Jam mJam;
     OMGSoundPool mPool = new OMGSoundPool(this, 32, AudioManager.STREAM_MUSIC, 100);
-    BluetoothFactory mBtf;
+    //BluetoothFactory mBtf;
+    BluetoothManager mBtf;
     Jam.StateChangeCallback mJamCallback;
 
 
@@ -28,13 +29,15 @@ public class Main extends Activity {
         //TODO have such a good database I don't need to blow it away every time
         //deleteDatabase("OMG_TECHNO_GAUNTLET");
         //deleteDatabase("OMG_BANANAS");
-        deleteDatabase("OMG_SURFACES");
+        //deleteDatabase("OMG_SURFACES");
+        //deleteDatabase("OMG_BT_DEVICE");
 
         //SoundPool.Builder builder = new SoundPool.Builder();
         //AudioAttributes aa = new AudioAttributes();
         //AudioAttributes.
 
-        mBtf = new BluetoothFactory(this);
+        //mBtf = new BluetoothFactory(this);
+        mBtf = new BluetoothManager(this);
 
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|
@@ -48,12 +51,30 @@ public class Main extends Activity {
 
             @Override
             void onPlay() {
-                mBtf.sendCommandToDevices("PLAY");
+                mBtf.sendCommandToDevices("PLAY", null);
             }
 
             @Override
             void onStop() {
-                mBtf.sendCommandToDevices("STOP");
+                mBtf.sendCommandToDevices("STOP", null);
+            }
+
+            @Override
+            void onSubbeatLengthChange(int length, String source) {
+                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SUBBEATLENGTH,
+                        Integer.toString(length), source);
+            }
+
+            @Override
+            void onKeyChange(int key, String source) {
+                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_KEY,
+                        Integer.toString(key), source);
+            }
+
+            @Override
+            void onScaleChange(String scale, String source) {
+                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SCALE,
+                        scale, source);
             }
         };
 

@@ -376,7 +376,7 @@ class Jam {
         switch (change) {
             case 0:
                 //subbeatLength += rand.nextBoolean() ? 10 : -10;
-                subbeatLength = 70 + rand.nextInt(125); // 125
+                setSubbeatLength(70 + rand.nextInt(125)); // 125
                 break;
             case 1:
                 mm.pickRandomKey();
@@ -532,7 +532,7 @@ class Jam {
 
         mTags = "";
 
-        subbeatLength = 70 + rand.nextInt(125);
+        setSubbeatLength(70 + rand.nextInt(125));
 
         mm.pickRandomKey();
         mm.pickRandomScale();
@@ -612,17 +612,33 @@ class Jam {
     }
 
     void setScale(String scale) {
-        mm.setScale(scale);
+        setScale(scale, null);
     }
     void setScale(int scaleI) {
         mm.setScale(scaleI);
+        afterScaleChange(null);
     }
+    void setScale(String scale, String source) {
+        mm.setScale(scale);
+        afterScaleChange(source);
+    }
+    private void afterScaleChange(String source) {
+        if (mCallback != null)
+            mCallback.onScaleChange(mm.getScale(), source);
+    }
+
     void setKey(int keyI) {
+        setKey(keyI, null);
+    }
+    void setKey(int keyI, String source) {
         mm.setKey(keyI);
+
+        if (mCallback != null)
+            mCallback.onKeyChange(keyI, source);
     }
 
     void setBPM(float bpm) {
-        subbeatLength = (int)((60000 / bpm) / subbeats);
+        setSubbeatLength((int)((60000 / bpm) / subbeats));
         //bpm = 60000 / (subbeatLength * subbeats);
     }
 
@@ -631,7 +647,13 @@ class Jam {
     }
 
     void setSubbeatLength(int length) {
+        setSubbeatLength(length, null);
+    }
+    void setSubbeatLength(int length, String source) {
         subbeatLength = length;
+
+        if (mCallback != null)
+            mCallback.onSubbeatLengthChange(length, source);
     }
 
     void setChordProgression(int[] chordProgression) {
@@ -761,5 +783,8 @@ class Jam {
     abstract static class StateChangeCallback {
         abstract void onPlay();
         abstract void onStop();
+        abstract void onSubbeatLengthChange(int length, String source);
+        abstract void onKeyChange(int key, String source);
+        abstract void onScaleChange(String scale, String source);
     }
 }

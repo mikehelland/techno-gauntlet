@@ -165,12 +165,13 @@ class BluetoothFactory {
     private void readSocket(BluetoothDevice device, BluetoothSocket socket, BluetoothConnectCallback callback){
 
 
-        BluetoothConnection ct = new BluetoothConnection(device, this, socket, callback);
-        connectionThreads.add(ct);
+        // disabled because this class (bluetoothfactory) is deprected
+        //BluetoothConnection ct = new BluetoothConnection(device, this, socket, callback);
+        //connectionThreads.add(ct);
 
         // if you don't add to the arrayList before you start
         // any Write's that occur on CONNECT will fail
-        ct.start();
+        //ct.start();
 
     }
 

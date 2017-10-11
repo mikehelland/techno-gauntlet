@@ -8,9 +8,16 @@ import android.util.Log;
  */
 class CommandProcessor extends BluetoothDataCallback {
 
+    static String JAMINFO_SUBBEATLENGTH = "JAMINFO_SUBBEATLENGTH";
+    static String JAMINFO_KEY = "JAMINFO_KEY";
+    static String JAMINFO_SCALE = "JAMINFO_SCALE";
+
     private BluetoothConnection mConnection;
     private Jam mJam;
     private Channel mChannel = null;
+
+    private JamInfo mPeerJam;
+    private OnPeerChangeListener mOnPeerChangeListener;
 
     void setup(BluetoothConnection connection, Jam jam, Channel channel) {
         mJam = jam;
@@ -26,10 +33,10 @@ class CommandProcessor extends BluetoothDataCallback {
     public void newData(String name, String value) {
 
         Log.d("MGH BT newdata", name);
-        Log.d("MGH BT newdata", value);
+        Log.d("MGH BT newdata", value != null ? value : "");
 
         if (name.equals("SET_SUBBEATLENGTH")) {
-            mJam.setSubbeatLength(Integer.parseInt(value));
+            mJam.setSubbeatLength(Integer.parseInt(value), mConnection.getDevice().getAddress());
             return;
         }
 
@@ -56,20 +63,28 @@ class CommandProcessor extends BluetoothDataCallback {
 
         if (name.equals("CHANNEL_PLAY_NOTE")) {
             channelPlayNote(value);
+            return;
         }
 
         if (name.equals("CHANNEL_SET_PATTERN")) {
 
-            String[] params = value.split(",");
-            int track = Integer.parseInt(params[0]);
-            int subbeat = Integer.parseInt(params[1]);
-            boolean patternValue = params[2].equals("true");
+            if (value != null) {
+                String[] params = value.split(",");
+                int track = Integer.parseInt(params[0]);
+                int subbeat = Integer.parseInt(params[1]);
+                boolean patternValue = params[2].equals("true");
 
-            if (mChannel != null) {
-                mChannel.setPattern(track, subbeat, patternValue);
+                if (mChannel != null) {
+                    mChannel.setPattern(track, subbeat, patternValue);
+                }
             }
+            return;
         }
 
+        if (name.equals(JAMINFO_KEY)) onSetKey(value);
+        if (name.equals("JAMINFO_SCALE")) onSetScale(value);
+        if (name.equals(JAMINFO_SUBBEATLENGTH)) onSetSubbeatLength(value);
+        if (name.equals("JAMINFO_CHANNELS")) onSetChannels(value);
     }
 
     private void channelPlayNote(String value) {
@@ -95,16 +110,18 @@ class CommandProcessor extends BluetoothDataCallback {
 
     private void sendJamInfo() {
         //should this be JSON? Maybe faster this way tho
-        mConnection.sendNameValuePair("SET_KEY", Integer.toString(mJam.getKey()));
-        mConnection.sendNameValuePair("SET_SCALE", mJam.getScaleString());
-        mConnection.sendNameValuePair("SET_SUBBEATLENGTH",
+        mConnection.sendNameValuePair(JAMINFO_KEY, Integer.toString(mJam.getKey()));
+        mConnection.sendNameValuePair(JAMINFO_SCALE, mJam.getScaleString());
+        mConnection.sendNameValuePair(JAMINFO_SUBBEATLENGTH,
                 Integer.toString(mJam.getSubbeatLength()));
 
         String setChannels = getChannelsInfo(mJam);
-        mConnection.sendNameValuePair("SET_CHANNELS", setChannels);
+        mConnection.sendNameValuePair("JAMINFO_CHANNELS", setChannels);
 
         mConnection.sendCommand(mJam.isPlaying() ? "PLAY" : "STOP");
     }
+
+
 
     static private String getChannelsInfo(Jam jam) {
         String setChannels = "";
@@ -200,5 +217,42 @@ class CommandProcessor extends BluetoothDataCallback {
             }
         }
         return info;
+    }
+
+    private void onSetKey(String key) {
+        assurePeerJam();
+        mPeerJam.setKey(Integer.parseInt(key));
+        if (mOnPeerChangeListener != null) mOnPeerChangeListener.onChange(mPeerJam);
+    }
+    private void onSetScale(String scale) {
+        assurePeerJam();
+        mPeerJam.setScale(scale);
+        if (mOnPeerChangeListener != null) mOnPeerChangeListener.onChange(mPeerJam);
+    }
+    private void onSetSubbeatLength(String subbeatLength) {
+        assurePeerJam();
+        mPeerJam.setSubbeatLength(Integer.parseInt(subbeatLength));
+        if (mOnPeerChangeListener != null) mOnPeerChangeListener.onChange(mPeerJam);
+    }
+    private void onSetChannels(String channelInfo) {
+        channelInfo.split("");
+    }
+
+    private void assurePeerJam() {
+        if (mPeerJam == null) {
+            mPeerJam = new JamInfo();
+        }
+    }
+
+    static abstract class OnPeerChangeListener {
+        abstract void onChange(JamInfo jam);
+    }
+
+    void setOnPeerChangeListener(OnPeerChangeListener listener) {
+        mOnPeerChangeListener = listener;
+    }
+
+    JamInfo getJam() {
+        return mPeerJam;
     }
 }
