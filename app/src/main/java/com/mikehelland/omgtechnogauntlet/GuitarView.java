@@ -64,9 +64,6 @@ public class GuitarView extends View {
 
     private boolean useScale = true;
 
-
-
-    private int draw_lastDrawnX = 0;
     private Note draw_note;
     private float draw_x;
     private Bitmap draw_noteImage;
@@ -164,28 +161,23 @@ public class GuitarView extends View {
             canvas.drawRect(beatBoxStart, 0, beatBoxStart + beatBoxWidth, getHeight(), paintYellow);
         }
 
+        //if (height != getHeight()) {
+        draw_debugBeatWidth = getWidth() - draw_leftOffset;
+        draw_beatWidth = draw_debugBeatWidth / (float)mJam.getTotalSubbeats();
+        width = getWidth();
+        height = getHeight();
+        boxHeight = height / frets;
+        boxHeightHalf = boxHeight / 2;
+        boxWidth = width / strings;
+        //}
+
         if (mFretboard != null) {
-            mFretboard.onDraw(canvas, getWidth(), getHeight());
+            mFretboard.onDraw(canvas, width, height);
 
             drawNotes(canvas, mChannel.getNotes());
             return;
         }
 
-        //if (height != getHeight()) {
-            width = getWidth();
-            height = getHeight();
-            boxHeight = height / frets;
-            boxHeightHalf = boxHeight / 2;
-            boxWidth = width / strings;
-
-        int subbeats = mJam.getTotalSubbeats();
-
-        draw_debugBeatWidth = getWidth() - draw_leftOffset;
-        draw_beatWidth = draw_debugBeatWidth / (float)subbeats;
-
-        //}
-
-        int playingNote = mChannel.getPlayingNoteNumber();
         int noteNumber;
 
         for (int fret = 1; fret <= frets; fret++) {
@@ -196,13 +188,6 @@ public class GuitarView extends View {
                 canvas.drawRect(width / 4, height - fret * boxHeight,
                         width / 4 * 3, height - (fret - 1) * boxHeight, paintOff);
             }
-
-            /*if (noteNumber == playingNote) {
-                canvas.drawRect(0, height - fret * boxHeight,
-                        width, height - (fret - 1) * boxHeight,
-                        topPanelPaint);
-
-            }*/
 
             canvas.drawLine(0, height - fret * boxHeight, width,
                     height - fret * boxHeight, paint);
@@ -225,7 +210,7 @@ public class GuitarView extends View {
         drawNotes(canvas, mChannel.getNotes());
 
         if (mChannel.debugTouchData.size() > 0) {
-            for (int isubbeat = 0; isubbeat <= subbeats; isubbeat++) {
+            for (int isubbeat = 0; isubbeat <= mJam.getTotalSubbeats(); isubbeat++) {
                 canvas.drawLine(draw_leftOffset + isubbeat * draw_beatWidth, height - 50,
                         draw_leftOffset + isubbeat * draw_beatWidth, height, paint);
             }
@@ -392,9 +377,7 @@ public class GuitarView extends View {
         }
 
         fretMapping = new int[frets];
-        for (int i = 0; i < frets; i++) {
-            fretMapping[i] = allFrets[i];
-        }
+        System.arraycopy(allFrets, 0, fretMapping, 0, frets);
 
 
     }
@@ -405,20 +388,11 @@ public class GuitarView extends View {
         float draw_y;
         draw_boxwidth = Math.min(images[0][0].getWidth(), getWidth() / (list.size() + 1));
 
-        draw_lastDrawnX = draw_boxwidth / 2;
-
         double beatsUsed = 0.0d;
 
         for (int j = 0; j < list.size(); j++) {
 
             draw_note = list.get(j);
-
-/*            if (draw_note.getBeatPosition() % 4 == 0)
-                canvas.drawLine(draw_lastDrawnX, draw_y,
-                        draw_lastDrawnX, draw_y + boxHeight, paint);
-*/
-            draw_x = (float)(draw_lastDrawnX);
-            draw_lastDrawnX += draw_boxwidth;
 
             draw_noteImage = null;
             if (draw_note.getBeats() == 2.0d) {
