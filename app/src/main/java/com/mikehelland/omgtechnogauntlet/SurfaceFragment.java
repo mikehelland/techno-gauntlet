@@ -15,11 +15,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-/**
- * User: m
- * Date: 5/6/14
- * Time: 7:11 PM
- */
 public class SurfaceFragment extends OMGFragment {
 
     private Jam mJam;
@@ -84,17 +79,27 @@ public class SurfaceFragment extends OMGFragment {
 
                 cursor.moveToPosition(i);
 
-                String json = cursor.getString(cursor.getColumnIndex("data"));
+                String surface = cursor.getString(cursor.getColumnIndex("data"));
 
                 //todo yeah this is way whacky, needs an surface object
-                mChannel.setSurface(json);
+                mChannel.setSurface(surface);
 
                 mBtf.sendCommandToDevices(CommandProcessor.getChannelsInfoCommand(mJam), null);
 
                 getActivity().getFragmentManager().popBackStack();
+
+                if (surface.equals("PRESET_SEQUENCER")) {
+                    DrumFragment f = new DrumFragment();
+                    f.setJam(mJam, mChannel);
+                    showFragmentRight(f);
+                }
+                else {
+
+                    GuitarFragment f = new GuitarFragment();
+                    f.setJam(mJam, mChannel);
+                    showFragmentRight(f);
+                }
             }
-
-
         });
 
         mView.findViewById(R.id.custom_url_button).setOnClickListener(new View.OnClickListener() {
