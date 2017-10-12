@@ -141,6 +141,13 @@ public class DrumView extends View {
         for (int j = 0; j < tall; j++) {
 
             if (j < captions.length) {
+
+                if (firstRowButton == j) {
+                    canvas.drawRect(marginX,  j * boxHeight + marginY,
+                            boxWidth - marginX, j * boxHeight + boxHeight - marginY,
+                            paint);
+                }
+
                 if (captionWidths[j].length == 1) {
                     canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
                             j * boxHeight + boxHeight / 2 + 6, blackPaint);
