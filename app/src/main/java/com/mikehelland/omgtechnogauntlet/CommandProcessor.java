@@ -82,7 +82,7 @@ class CommandProcessor extends BluetoothDataCallback {
         }
 
         if (name.equals(JAMINFO_KEY)) onSetKey(value);
-        if (name.equals("JAMINFO_SCALE")) onSetScale(value);
+        if (name.equals(JAMINFO_SCALE)) onSetScale(value);
         if (name.equals(JAMINFO_SUBBEATLENGTH)) onSetSubbeatLength(value);
         if (name.equals("JAMINFO_CHANNELS")) onSetChannels(value);
     }

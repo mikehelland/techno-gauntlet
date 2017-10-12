@@ -132,13 +132,28 @@ class BluetoothManager {
 
     void cleanUp() {
         cleaningUp = true;
+        Log.d("MGH bt cleanup", "start");
+        /*if (acceptThread != null && !acceptThread.isInterrupted()){
+            acceptThread.interrupt();
+            try {
+                acceptThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                //newStatus(statusCallback, "cleanup catch", -1);
+            }
+        }
+        acceptThread = null;*/
+        if (acceptThread != null) {
+            acceptThread.stopAccepting();
+            acceptThread = null;
+        }
+        Log.d("MGH bt cleanup", "acceptThread null");
+
         for (BluetoothConnection ct : connectionThreads) {
             ct.resetConnections();
         }
         connectionThreads.clear();
-        if (acceptThread != null) {
-            acceptThread.finish();
-        }
+        Log.d("MGH bt cleanup", "connections cleared");
     }
 
     void newStatus(BluetoothConnectCallback callback, String newString) {

@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothDevice;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -202,6 +203,7 @@ public class BluetoothBrainFragment extends OMGFragment {
             }
                     @Override
             public void onConnected(BluetoothConnection connection) {
+                Log.d("MGH btbrain new status", "onConnected!");
                 if (mViewMap.containsKey(connection.getDevice().getAddress())) {
                     final View view = mViewMap.get(connection.getDevice().getAddress());
                     if (getActivity() != null) {
@@ -212,11 +214,13 @@ public class BluetoothBrainFragment extends OMGFragment {
                             }
                         });
                     }
-                    setupDataCallBackForConnection(connection);
                 }
+                setupDataCallBackForConnection(connection);
             }
 
             public void onDisconnected(final BluetoothConnection connection) {
+                Log.d("MGH btbrain new status", "onDisconnected!");
+                Log.d("MGH btbrain new status", connection.getDevice().getAddress());
                 if (mViewMap.containsKey(connection.getDevice().getAddress())) {
                     final View view = mViewMap.get(connection.getDevice().getAddress());
                     if (getActivity() != null) {

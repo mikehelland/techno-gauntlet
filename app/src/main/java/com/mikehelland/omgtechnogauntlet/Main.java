@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -119,6 +120,7 @@ public class Main extends Activity {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d("MGH Main", "onPause");
         if (!mPool.isLoaded())
             mPool.cancelLoading();
         mJam.finish();

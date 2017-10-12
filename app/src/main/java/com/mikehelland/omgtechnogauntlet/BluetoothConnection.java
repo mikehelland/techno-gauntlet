@@ -132,7 +132,7 @@ public class BluetoothConnection extends Thread {
         }
         try {
             socket.close();
-            Log.d("MGH", "socket closed");
+            Log.d("MGH", "connection socket closed");
         }
         catch (IOException e) {
             Log.d(TAG, e.getMessage());

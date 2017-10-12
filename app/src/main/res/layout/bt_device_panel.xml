@@ -29,6 +29,7 @@
         android:layout_toRightOf="@id/bt_device_status_caption"
         android:layout_alignBottom="@id/bt_device_status_caption"/>
 
+
     <LinearLayout android:layout_below="@id/bt_device_status_caption"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -62,6 +63,14 @@
             android:visibility="gone"
             />
     </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/song_controls"
+        android:text="Use These Settings"
+        android:id="@+id/use_peer_jam_settings_button"
+        android:gravity="center"/>
 
     <Button
         android:layout_width="match_parent"
