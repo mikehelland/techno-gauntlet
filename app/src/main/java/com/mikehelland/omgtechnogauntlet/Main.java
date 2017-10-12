@@ -33,11 +33,6 @@ public class Main extends Activity {
         //deleteDatabase("OMG_SURFACES");
         //deleteDatabase("OMG_BT_DEVICE");
 
-        //SoundPool.Builder builder = new SoundPool.Builder();
-        //AudioAttributes aa = new AudioAttributes();
-        //AudioAttributes.
-
-        //mBtf = new BluetoothFactory(this);
         mBtf = new BluetoothManager(this);
 
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -113,6 +108,8 @@ public class Main extends Activity {
             }
         });
 
+        Toast.makeText(this, "Press the MONKEY to Change!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Press the BANANA to Save!", Toast.LENGTH_LONG).show();
     }
 
 
@@ -129,15 +126,11 @@ public class Main extends Activity {
 
     @Override
     public void onBackPressed() {
-
-        int count = getFragmentManager().getBackStackEntryCount();
-
-        if (count == 0) {
-            Toast.makeText(this, "Can't back out now! \nHit the 'OUT' button.", Toast.LENGTH_LONG).show();
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            Toast.makeText(this, "Can't back out now! \nHit the 'EXIT' button.", Toast.LENGTH_SHORT).show();
 
         } else {
             super.onBackPressed();
-            //getFragmentManager().popBackStack();
         }
 
     }

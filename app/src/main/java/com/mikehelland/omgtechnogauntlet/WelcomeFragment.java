@@ -5,12 +5,9 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -34,8 +31,6 @@ public class WelcomeFragment extends OMGFragment {
         if (!mPool.isInitialized()) {
 
             loadDefaultJam();
-
-            animateIcons();
 
         }
 
@@ -176,36 +171,4 @@ public class WelcomeFragment extends OMGFragment {
 
     }
 
-    void animateIcons() {
-
-        Handler handler = new Handler();
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                if (mPool.isCanceled()) return;
-
-                View view = mView.findViewById(R.id.img_press_banana);
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                view.startAnimation(turnin);
-
-
-            }
-        }, 250);
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                if (mPool.isCanceled()) return;
-
-                View view = mView.findViewById(R.id.img_press_monkey);
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                view.startAnimation(turnin);
-
-            }
-        }, 500);
-
-    }
 }

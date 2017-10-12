@@ -1,137 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.mikehelland.omgtechnogauntlet.SlidingFrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.mikehelland.omgtechnogauntlet.SlidingFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    >
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+
+
+    <Button android:text="Return To Jam"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/loading_info"
-        android:layout_alignParentTop="true"
-        >
-        <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/loading_progress"
-            />
-<!--        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14dp"
-            android:text="(Loading...)"/>-->
-    </LinearLayout>
+        android:drawableRight="@android:drawable/ic_media_ff"
+        android:id="@+id/return_to_omg_bananas"
+        android:layout_alignParentTop="true"/>
 
-    <LinearLayout
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:text="Start A Blank Jam"
+        android:id="@+id/blank_jam_button"
+        android:layout_below="@id/return_to_omg_bananas"/>
 
-        <Button android:text="Return To Jam"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:drawableRight="@android:drawable/ic_media_ff"
-            android:id="@+id/return_to_omg_bananas"
-            android:layout_alignParentTop="true"/>
+    <!--<Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bluetooth Jam"/>-->
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Start A Blank Jam"
-            android:id="@+id/blank_jam_button"/>
-
-        <!--<Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Bluetooth Jam"/>-->
-
-        <TextView
-            android:text="Or Load A Saved Jam"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:textSize="22sp"
-            android:gravity="center"
-            />
-
-        <ListView android:id="@+id/saved_list"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:listSelector="#6666FF"
-            />
-
-
-        <TextView
-            android:text="Instructions:"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:textSize="22sp"
-            android:gravity="center"
-            />
-
-        <ImageView
-            android:id="@+id/img_press_banana"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/banana48"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-
-        <TextView
-            android:text="Press to Save"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:id="@+id/txt_press_banana"
-            android:textSize="22sp"
-            android:gravity="center"
-            />
-        <ImageView
-            android:id="@+id/img_press_monkey"
-            android:layout_marginTop="40dip"
-            android:src="@drawable/icon48"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-        <TextView
-            android:text="Press to Change"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="true"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:layout_below="@id/txt_press_banana"
-            android:textSize="22sp"
-            android:id="@+id/txt_press_monkey"
-            android:gravity="center"
-            />
-    </LinearLayout>
-
-
-    <RelativeLayout
+    <TextView
+        android:text="Or Load A Saved Jam"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/goback"
-        android:visibility="visible">
+        android:textSize="22sp"
+        android:gravity="center"
+        android:layout_below="@id/blank_jam_button"
+        android:id="@+id/load_jam_caption"
+        />
+
+    <Button android:text="Exit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@android:drawable/ic_media_rew"
+        android:id="@+id/exit_button"
+        android:layout_alignParentBottom="true"/>
 
 
-
-
-        <Button android:text="Exit"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@android:drawable/ic_media_rew"
-            android:id="@+id/exit_button"
-            android:layout_alignParentBottom="true"/>
-
-
-    </RelativeLayout>
+    <ListView android:id="@+id/saved_list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:listSelector="#6666FF"
+        android:layout_below="@id/load_jam_caption"
+        android:layout_above="@id/exit_button"
+        />
 
 
 </com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>
