@@ -715,7 +715,10 @@ class Jam {
 
             if (!newNote.isRest()) {
                 newNote.setBasicNote(noteData.getInt("note"));
-
+                if (!channel.getSoundSet().isChromatic()) {
+                    newNote.setScaledNote(newNote.getBasicNote());
+                    newNote.setInstrumentNote(newNote.getBasicNote());
+                }
             }
             notes.add(newNote);
         }
