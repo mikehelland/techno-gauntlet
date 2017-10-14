@@ -737,11 +737,11 @@ class Jam {
         }
         //todo pan
 
-        if (jamChannel.getSoundSet().isChromatic()) {
-            loadMelody(jamChannel, part);
+        if (jamChannel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
+            loadDrums(jamChannel, part);
         }
         else {
-            loadDrums(jamChannel, part);
+            loadMelody(jamChannel, part);
         }
     }
 

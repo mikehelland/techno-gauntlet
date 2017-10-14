@@ -20,11 +20,14 @@ class JamInfo {
     private int key = 0;
     private int[] scale = {0, 2, 4, 5, 7, 9, 11};
     private int scaleI = 0;
+    private String scaleS = "";
 
     void setKey(int key) {
         this.key = key;
     }
     void setScale(String scale) {
+
+        this.scaleS = scale;
 
         for (int i = 0; i < scales.length; i++) {
             if (scales[i].equals(scale)) {
@@ -44,6 +47,15 @@ class JamInfo {
         this.subbeatLength = subbeatLength;
     }
 
+    int getKey() {
+        return key;
+    }
+    String getScale() {
+        return scaleS;
+    }
+    int getSubbeatLength() {
+        return subbeatLength;
+    }
 
     static String getKeyName(JamInfo jam) {
         return keyCaptions[jam.key] + " " + scaleCaptions[jam.scaleI];

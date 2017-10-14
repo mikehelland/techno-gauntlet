@@ -83,4 +83,8 @@ class BluetoothAcceptThread  extends Thread {
             }
         }
     }
+
+    void newCallback(BluetoothConnectCallback callback) {
+        mCallback = callback;
+    }
 }

@@ -6,36 +6,48 @@
               android:layout_weight="1"
               android:background="@drawable/back"
               android:padding="8dip"
-              android:layout_margin="5dip"
-              android:gravity="center_vertical">
+              android:layout_margin="5dip">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/device"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:id="@+id/img_device"
+        />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/bt_device_name"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Device Status:"
-        android:id="@+id/bt_device_status_caption"
-        android:layout_below="@id/bt_device_name"/>
+        android:id="@+id/bt_device_name"
+        android:layout_toRightOf="@id/img_device"
+        android:text="Device Name"
+        android:layout_marginTop="32dip"
+        android:textSize="22sp"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Device Status:"
         android:id="@+id/bt_device_status"
-        android:layout_toRightOf="@id/bt_device_status_caption"
-        android:layout_alignBottom="@id/bt_device_status_caption"/>
+        android:layout_below="@id/bt_device_name"
+        android:layout_toRightOf="@id/img_device"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Press to Connect"
+        android:id="@+id/bt_brain_connect_button"/>
 
 
-    <LinearLayout android:layout_below="@id/bt_device_status_caption"
+    <LinearLayout android:layout_below="@id/img_device"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:padding="5dip"
         android:layout_margin="5dip"
-        android:id="@+id/song_controls"
+        android:id="@+id/peer_jam_controls"
         android:orientation="horizontal"
         android:visibility="gone">
 
@@ -64,18 +76,4 @@
             />
     </LinearLayout>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/song_controls"
-        android:text="Use These Settings"
-        android:id="@+id/use_peer_jam_settings_button"
-        android:gravity="center"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="Connect"
-        android:id="@+id/bt_brain_connect_button"/>
 </RelativeLayout>

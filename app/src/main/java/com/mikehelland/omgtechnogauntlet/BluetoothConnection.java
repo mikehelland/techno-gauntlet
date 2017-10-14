@@ -151,4 +151,7 @@ public class BluetoothConnection extends Thread {
     public BluetoothDataCallback getDataCallback() {
         return mDataCallback;
     }
+    void setConnectedCallback(BluetoothConnectCallback callback) {
+        mConnectedCallback = callback;
+    }
 }

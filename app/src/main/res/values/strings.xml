@@ -57,6 +57,8 @@
     </string>
     <string name="stop">Stop</string>
     <string name="play">Play</string>
+    <string name="connected">Connected!</string>
+    <string name="disconnected">Disconnected!</string>
 
 
 </resources>

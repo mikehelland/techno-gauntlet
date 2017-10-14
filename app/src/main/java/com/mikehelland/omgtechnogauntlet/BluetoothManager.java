@@ -82,6 +82,12 @@ class BluetoothManager {
         acceptThread.start();
     }
 
+    void newAcceptThreadCallback(BluetoothConnectCallback callback) {
+        if (acceptThread != null) {
+            acceptThread.newCallback(callback);
+        }
+    }
+
     void connectTo(BluetoothDevice device, BluetoothConnectCallback callback) {
         if (!isBlueToothOn()) return;
         newStatus(callback, STATUS_CONNECTING_TO);
