@@ -91,19 +91,19 @@ public class WelcomeFragment extends OMGFragment {
 
     private void loadJam(String json) {
 
-        final Jam jam = new Jam(getActivity(), mPool, mJamCallback);
+        final Jam jam = new Jam(getActivity(), mPool);
         jam.load(json);
+        jam.addStateChangeListener(mJamCallback);
 
         final Runnable callback = new Runnable() {
             @Override
             public void run() {
+                Jam oldJam = mJam;
+                mJam = jam;
+                ((Main)getActivity()).mJam = jam;
+
                 mPool.loadSounds();
                 jam.loadSoundSets();
-
-                mJam.finish();
-                mJam = jam;
-
-                ((Main)getActivity()).mJam = jam;
 
                 //pretty lousy spot for this
                 CommandProcessor cp;
@@ -113,10 +113,9 @@ public class WelcomeFragment extends OMGFragment {
                     connection.setDataCallback(cp);
                 }
 
+                oldJam.finish();
                 if (!mJam.isPlaying())
                     mJam.kickIt();
-
-
             }
         };
 

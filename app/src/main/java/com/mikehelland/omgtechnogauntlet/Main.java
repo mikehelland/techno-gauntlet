@@ -16,7 +16,6 @@ public class Main extends Activity {
 
     Jam mJam;
     OMGSoundPool mPool = new OMGSoundPool(this, 32, AudioManager.STREAM_MUSIC, 100);
-    //BluetoothFactory mBtf;
     BluetoothManager mBtf;
     Jam.StateChangeCallback mJamCallback;
 
@@ -72,9 +71,15 @@ public class Main extends Activity {
                 mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SCALE,
                         scale, source);
             }
+
+            @Override
+            void onChordProgressionChange(int[] chords) {
+
+            }
         };
 
-        mJam = new Jam(this, mPool, mJamCallback);
+        mJam = new Jam(this, mPool);
+        mJam.addStateChangeListener(mJamCallback);
 
         if (mWelcomeFragment == null) {
             mWelcomeFragment = new WelcomeFragment();

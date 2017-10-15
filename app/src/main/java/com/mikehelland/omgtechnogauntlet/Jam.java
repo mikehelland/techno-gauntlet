@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 class Jam {
@@ -45,18 +46,23 @@ class Jam {
 
     private int currentChord = 0;
 
-    private StateChangeCallback mCallback;
+    private List<StateChangeCallback> mStateChangeListeners = new ArrayList<>();
 
-    Jam(Context context, OMGSoundPool pool, Jam.StateChangeCallback callback) {
+    Jam(Context context, OMGSoundPool pool) {
 
         this.pool = pool;
-
-        mCallback = callback;
 
         mContext = context;
         mm = new MelodyMaker(mContext);
         mm.makeMotif();
         mm.makeMelodyFromMotif(beats);
+    }
+
+    void addStateChangeListener(StateChangeCallback listener) {
+        mStateChangeListeners.add(listener);
+    }
+    void removeStateChangeListener(StateChangeCallback listener) {
+        mStateChangeListeners.remove(listener);
     }
 
     void loadSoundSets() {
@@ -109,9 +115,9 @@ class Jam {
             playbackThread.start();
         }
 
-        if (mCallback != null)
-            mCallback.onPlay();
-
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onPlay();
+        }
     }
 
 
@@ -361,12 +367,9 @@ class Jam {
             channel.mute();
         }
 
-
-        if (mCallback != null)
-            mCallback.onStop();
-
-        //mPool.release();
-        //mPool = null;
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onStop();
+        }
     }
 
     public void randomRuleChange(long now) {
@@ -623,8 +626,9 @@ class Jam {
         afterScaleChange(source);
     }
     private void afterScaleChange(String source) {
-        if (mCallback != null)
-            mCallback.onScaleChange(mm.getScale(), source);
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onScaleChange(mm.getScale(), source);
+        }
     }
 
     void setKey(int keyI) {
@@ -633,8 +637,9 @@ class Jam {
     void setKey(int keyI, String source) {
         mm.setKey(keyI);
 
-        if (mCallback != null)
-            mCallback.onKeyChange(keyI, source);
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onKeyChange(keyI, source);
+        }
     }
 
     void setBPM(float bpm) {
@@ -652,8 +657,9 @@ class Jam {
     void setSubbeatLength(int length, String source) {
         subbeatLength = length;
 
-        if (mCallback != null)
-            mCallback.onSubbeatLengthChange(length, source);
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onSubbeatLengthChange(length, source);
+        }
     }
 
     void setChordProgression(int[] chordProgression) {
@@ -664,6 +670,10 @@ class Jam {
 
         if (chordProgression.length == 1) {
             updateChord(currentChord);
+        }
+
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onChordProgressionChange(chordProgression);
         }
     }
 
@@ -789,5 +799,6 @@ class Jam {
         abstract void onSubbeatLengthChange(int length, String source);
         abstract void onKeyChange(int key, String source);
         abstract void onScaleChange(String scale, String source);
+        abstract void onChordProgressionChange(int[] chords);
     }
 }

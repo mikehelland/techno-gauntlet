@@ -29,6 +29,8 @@ public class MainFragment extends OMGFragment {
 
     private ArrayList<View> monkeyHeads = new ArrayList<>();
 
+    private Jam.StateChangeCallback mJamListener;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -41,10 +43,9 @@ public class MainFragment extends OMGFragment {
         mInflater = inflater;
 
         setupPanels();
-
         setupSectionInfoPanel();
-
         setupMainControls();
+        setupJamStateListener();
 
         return mView;
     }
@@ -199,7 +200,7 @@ public class MainFragment extends OMGFragment {
         mChordsButton.setJam((Main)getActivity(), mJam);
         mJam.addInvalidateOnNewMeasureListener(mChordsButton);
 
-
+        updateUI();
     }
 
     public void showFragmentRight(Fragment f) {
@@ -291,7 +292,6 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
                 if (mJam.isPlaying()) {
                     mJam.finish();
-                    playButton.setText(R.string.play);
                 }
                 else {
                     play();
@@ -323,7 +323,7 @@ public class MainFragment extends OMGFragment {
                     monkeyhead.startAnimation(turnin);
                 }
 
-                updateUI();
+                //updateUI();
             }
         });
 
@@ -395,7 +395,6 @@ public class MainFragment extends OMGFragment {
     private void play() {
         if (!mJam.isPlaying()) {
             mJam.kickIt();
-            playButton.setText(R.string.stop);
         }
     }
 
@@ -409,11 +408,12 @@ public class MainFragment extends OMGFragment {
         if (mChordsButton != null) {
             updateKeyUI();
             updateBPMUI();
-            mChordsButton.invalidate();
-
-
+            updateChordsUI();
         }
+    }
 
+    private void updateChordsUI() {
+        mChordsButton.invalidate();
     }
 
     public void updateBPMUI() {
@@ -428,6 +428,84 @@ public class MainFragment extends OMGFragment {
         OMGHelper omgHelper = new OMGHelper(getActivity(), mJam);
         omgHelper.submit(share);
 
+    }
+
+    private void setupJamStateListener() {
+        mJamListener = new Jam.StateChangeCallback() {
+            @Override
+            void onPlay() {
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            playButton.setText(R.string.stop);
+                        }
+                    });
+            }
+
+            @Override
+            void onStop() {
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            playButton.setText(R.string.play);
+                        }
+                    });
+            }
+
+            @Override
+            void onSubbeatLengthChange(int length, String source) {
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateBPMUI();
+                        }
+                    });
+            }
+
+            @Override
+            void onKeyChange(int key, String source) {
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateKeyUI();
+                        }
+                    });
+            }
+
+            @Override
+            void onScaleChange(String scale, String source) {
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateKeyUI();
+                        }
+                    });
+            }
+
+            @Override
+            void onChordProgressionChange(int[] chords) {
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateChordsUI();
+                        }
+                    });
+            }
+        };
+
+        mJam.addStateChangeListener(mJamListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mJam.removeStateChangeListener(mJamListener);
     }
 }
 

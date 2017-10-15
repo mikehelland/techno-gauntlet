@@ -47,17 +47,10 @@ public class ChordsFragment extends OMGFragment {
                                             chords, mJam.getScale());
         chordsList.setAdapter(soundSetsAdapter);
 
-        //chordsList.setItemChecked(mJam.getScaleIndex(), true);
-
-
         chordsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 mJam.setChordProgression(((ChordsView)view.findViewById(R.id.chords_option)).getChords());
-
-                mainFragment.updateUI();
-
-                //getActivity().getSupportFragmentManager().popBackStack();
             }
         });
 
