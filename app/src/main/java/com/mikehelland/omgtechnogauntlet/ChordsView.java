@@ -304,6 +304,7 @@ public class ChordsView extends View {
    public void setChords(int[] chords, int[] scale) {
        this.chords = chords;
        this.scale = scale;
+       invalidate();
    }
 
    public int[] getChords() {

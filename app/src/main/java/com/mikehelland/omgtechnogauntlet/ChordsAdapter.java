@@ -1,15 +1,10 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
-import android.widget.RatingBar;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 public class ChordsAdapter extends ArrayAdapter<String> {
     private final Context context;
@@ -33,7 +28,7 @@ public class ChordsAdapter extends ArrayAdapter<String> {
             holder.chordsView = (ChordsView)rowView.findViewById(R.id.chords_option);
             rowView.setTag(holder);
 
-       }
+        }
         else {
             rowView = convertView;
             holder = (ViewHolder)convertView.getTag();

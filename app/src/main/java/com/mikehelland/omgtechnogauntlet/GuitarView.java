@@ -39,8 +39,6 @@ public class GuitarView extends View {
     private Paint topPanelPaint;
     private Paint paintText;
 
-    private int firstRowButton = 0;
-
     private Paint paintBeat;
 
     private int touchingString = -1;
