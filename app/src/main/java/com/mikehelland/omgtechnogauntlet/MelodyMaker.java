@@ -47,12 +47,16 @@ public class MelodyMaker {
     public void pickRandomKey() {
         // pick a key
         setKey(rand.nextInt(keys.length));
-
     }
-
+    int getRandomKey() {
+        return rand.nextInt(keys.length);
+    }
     public void pickRandomScale() {
         // pick a scale
         setScale(rand.nextInt(scales.length));
+    }
+    int getRandomScale() {
+        return rand.nextInt(scales.length);
     }
 
 

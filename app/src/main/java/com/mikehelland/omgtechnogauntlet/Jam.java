@@ -537,8 +537,8 @@ class Jam {
 
         setSubbeatLength(70 + rand.nextInt(125));
 
-        mm.pickRandomKey();
-        mm.pickRandomScale();
+        setKey(mm.getRandomKey());
+        setScale(mm.getRandomScale());
         makeChordProgression();
 
         mm.makeMotif();

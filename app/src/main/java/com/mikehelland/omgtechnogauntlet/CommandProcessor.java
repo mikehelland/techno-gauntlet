@@ -39,6 +39,14 @@ class CommandProcessor extends BluetoothDataCallback {
             mJam.setSubbeatLength(Integer.parseInt(value), mConnection.getDevice().getAddress());
             return;
         }
+        if (name.equals("SET_KEY")) {
+            mJam.setKey(Integer.parseInt(value), mConnection.getDevice().getAddress());
+            return;
+        }
+        if (name.equals("SET_SCALE")) {
+            mJam.setScale(value, mConnection.getDevice().getAddress());
+            return;
+        }
 
         if (name.equals("SET_CHANNEL")) {
             int channelI = Integer.parseInt(value);
