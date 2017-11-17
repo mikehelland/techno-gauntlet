@@ -102,6 +102,10 @@ class CommandProcessor extends BluetoothDataCallback {
             return;
         }
 
+        if (name.equals("SET_ARPEGGIATOR")) {
+            mChannel.setArpeggiator(Integer.parseInt(value));
+        }
+
         if (name.equals(JAMINFO_KEY)) onSetKey(value);
         if (name.equals(JAMINFO_SCALE)) onSetScale(value);
         if (name.equals(JAMINFO_SUBBEATLENGTH)) onSetSubbeatLength(value);
@@ -199,7 +203,7 @@ class CommandProcessor extends BluetoothDataCallback {
         }
         else {
             String fretboardInfo = channel.getLowNote() + "," +
-                    channel.getHighNote() + "," + channel.getOctave() + ";";
+                    channel.getHighNote() + "," + channel.getOctave() + getCaptions() +  ";";
             mConnection.sendNameValuePair("FRETBOARD_INFO", fretboardInfo);
 
             String noteInfo = getNoteInfo(channel) + ";";
@@ -283,7 +287,7 @@ class CommandProcessor extends BluetoothDataCallback {
         return mPeerJam;
     }
 
-    void sendSavedJams() {
+    private void sendSavedJams() {
         SavedDataOpenHelper data = new SavedDataOpenHelper(mContext);
         Cursor cursor = data.getSavedCursor();
         StringBuilder value = new StringBuilder();
@@ -299,7 +303,7 @@ class CommandProcessor extends BluetoothDataCallback {
         mConnection.sendNameValuePair("SAVED_JAMS", value.toString());
     }
 
-    void sendSoundSets() {
+    private void sendSoundSets() {
         SoundSetDataOpenHelper data = new SoundSetDataOpenHelper(mContext);
         Cursor cursor = data.getCursor();
         StringBuilder value = new StringBuilder();
@@ -323,5 +327,22 @@ class CommandProcessor extends BluetoothDataCallback {
 
     private void loadJam(long jamId) {
 
+    }
+
+    private String getCaptions() {
+        if (mChannel.getSoundSet().isChromatic()) {
+            return "";
+        }
+
+        String[] captions = mChannel.getSoundSet().getSoundNames();
+        StringBuilder sb = new StringBuilder();
+        sb.append("|");
+        for (int i = 0; i < captions.length; i++) {
+            sb.append(captions[i]);
+            if (i < captions.length - 1) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
     }
 }
