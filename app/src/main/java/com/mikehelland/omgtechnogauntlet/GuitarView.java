@@ -167,6 +167,7 @@ public class GuitarView extends View {
         boxHeight = height / frets;
         boxHeightHalf = boxHeight / 2;
         boxWidth = width / strings;
+        paint.setTextSize(boxHeightHalf);
         //}
 
         if (mFretboard != null) {
