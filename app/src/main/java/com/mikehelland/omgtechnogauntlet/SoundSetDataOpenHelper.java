@@ -274,4 +274,11 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
             }
         });
     }
+
+    void delete(long id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("soundsets", "_id=?", new String[] {Long.toString(id)});
+        db.close();
+    }
+
 }

@@ -1,8 +1,10 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -81,6 +83,13 @@ public class WelcomeFragment extends OMGFragment {
             }
         });
 
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                askToRemoveSavedJam(i);
+                return false;
+            }
+        });
     }
 
     private void loadSavedJam(int position) {
@@ -178,4 +187,33 @@ public class WelcomeFragment extends OMGFragment {
 
     }
 
+    private void askToRemoveSavedJam(final int i) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        removeSavedJam(i);
+                        populateSavedListView();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Remove this jam?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+
+    }
+
+    private void removeSavedJam(int i) {
+        mCursor.moveToPosition(i);
+        long id = mCursor.getLong(mCursor.getColumnIndex("_id"));
+        SavedDataOpenHelper dataHelper = new SavedDataOpenHelper(getActivity());
+        dataHelper.delete(id);
+    }
 }

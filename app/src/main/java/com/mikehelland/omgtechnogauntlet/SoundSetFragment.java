@@ -1,6 +1,8 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
@@ -28,6 +30,8 @@ public class SoundSetFragment extends OMGFragment {
     private ChoiceCallback mCallback = null;
 
     private boolean mDownloadedFromOMG = false;
+
+    private Cursor mCursor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,12 +106,11 @@ public class SoundSetFragment extends OMGFragment {
         final Context context = getActivity();
 
         final SoundSetDataOpenHelper openHelper = new SoundSetDataOpenHelper(context);
-        final Cursor cursor;
-        cursor = openHelper.getCursor();
+        mCursor = openHelper.getCursor();
 
         final SoundSetAdapter curA = new SoundSetAdapter(context,
                 R.layout.saved_row,
-                cursor, new String[]{"name"},
+                mCursor, new String[]{"name"},
                 new int[]{R.id.saved_data_tags});
 
         ListView soundsetList = (ListView)mView.findViewById(R.id.installed_soundset_list);
@@ -119,7 +122,7 @@ public class SoundSetFragment extends OMGFragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                cursor.moveToPosition(i);
+                mCursor.moveToPosition(i);
 
                 final Runnable oldPoolCallback = mPool.onAllLoadsFinishedCallback;
                 mPool.onAllLoadsFinishedCallback = new Runnable() {
@@ -134,7 +137,7 @@ public class SoundSetFragment extends OMGFragment {
                     }
                 };
 
-                mChannel.prepareSoundSet(new SoundSet(cursor));
+                mChannel.prepareSoundSet(new SoundSet(mCursor));
 
                 new Thread(new Runnable() {
                     @Override
@@ -147,6 +150,14 @@ public class SoundSetFragment extends OMGFragment {
             }
 
 
+        });
+
+        soundsetList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                askToRemove(i);
+                return false;
+            }
         });
 
         mView.findViewById(R.id.custom_url_button).setOnClickListener(new View.OnClickListener() {
@@ -237,4 +248,35 @@ public class SoundSetFragment extends OMGFragment {
     void setCallback(ChoiceCallback callback) {
         mCallback = callback;
     }
+
+    private void askToRemove(final int i) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        delete(i);
+                        setup();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Remove this SoundSet?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+
+    }
+
+    private void delete(int i) {
+        mCursor.moveToPosition(i);
+        long id = mCursor.getLong(mCursor.getColumnIndex("_id"));
+        SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(getActivity());
+        dataHelper.delete(id);
+    }
+
 }

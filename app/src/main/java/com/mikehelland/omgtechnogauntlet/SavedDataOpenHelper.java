@@ -78,4 +78,9 @@ public class SavedDataOpenHelper extends SQLiteOpenHelper {
         return ret;
     }
 
+    void delete(long id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("saves", "_id=?", new String[] {Long.toString(id)});
+        db.close();
+    }
 }
