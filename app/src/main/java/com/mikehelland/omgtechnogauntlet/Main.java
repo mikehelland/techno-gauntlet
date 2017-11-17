@@ -105,16 +105,11 @@ public class Main extends Activity {
 
     private void setupBluetooth() {
         mBtf = new BluetoothManager(this);
+        if (mBtf.isBlueToothOn()) {
+            mBtf.startAccepting(makeConnectCallback());
 
-        mBtf.whenReady(new BluetoothReadyCallback() {
-            @Override
-            public void onReady() {
-                mBtf.startAccepting(makeConnectCallback());
-
-                setupBluetoothJamCallback();
-            }
-        });
-
+            setupBluetoothJamCallback();
+        }
     }
 
     private void setupBluetoothJamCallback() {
