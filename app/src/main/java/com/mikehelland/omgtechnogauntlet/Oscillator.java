@@ -118,4 +118,7 @@ public class Oscillator { //DialpadChannel extends Channel {
         return (float)Math.pow(2, (mapped-69.0f)/12.0f) * 440.0f;
     }
 
+    void finish() {
+        ugDac.close();
+    }
 }

@@ -116,6 +116,8 @@ class CommandProcessor extends BluetoothDataCallback {
 
         if (name.equals("ADD_CHANNEL")) addChannel(Long.parseLong(value));
         if (name.equals("LOAD_JAM")) loadJam(Long.parseLong(value));
+
+        if (name.equals("SET_CHANNEL_VOLUME")) setChannelVolume(value);
     }
 
     private void channelPlayNote(String value) {
@@ -162,7 +164,7 @@ class CommandProcessor extends BluetoothDataCallback {
             setChannels += getChannelInfo(channel);
 
             if (i < jam.getChannels().size() - 1) {
-                setChannels += ",";
+                setChannels += "|";
             }
         }
         return setChannels;
@@ -181,14 +183,15 @@ class CommandProcessor extends BluetoothDataCallback {
         String chromatic = channel.getSoundSet().isChromatic() ? "1" : "0";
 
         String surfaceURL = channel.getSurfaceURL();
+        String surface = "0";
         if ("PRESET_SEQUENCER".equals(surfaceURL))
-            return chromatic + "0" + channel.getSoundSetName();
+            surface = "0";
         if ("PRESET_VERTICAL".equals(surfaceURL))
-            return chromatic + "1" + channel.getSoundSetName();
+            surface = "1";
         if ("PRESET_FRETBOARD".equals(surfaceURL))
-            return chromatic + "2" + channel.getSoundSetName();
+            surface = "2";
 
-        return chromatic + "0" + channel.getSoundSetName();
+        return chromatic + "," + surface + "," + channel.volume + "," + channel.getSoundSetName();
     }
 
     private void sendChannelInfo() {
@@ -345,5 +348,17 @@ class CommandProcessor extends BluetoothDataCallback {
             }
         }
         return sb.toString();
+    }
+
+    private void setChannelVolume(String params) {
+        try {
+            String[] data = params.split(",");
+            float volume = Float.parseFloat(data[0]);
+            int channel = Integer.parseInt(data[1]);
+            mJam.getChannels().get(channel).volume = volume;
+        }
+        catch (Exception e) {
+            Log.d("MGH set channel volume", e.getMessage());
+        }
     }
 }

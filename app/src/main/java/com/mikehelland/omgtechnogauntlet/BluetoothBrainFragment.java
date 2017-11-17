@@ -39,7 +39,12 @@ public class BluetoothBrainFragment extends OMGFragment {
                         setupBrainList(inflater);
                     }
                 });
-                mBtf.newAcceptThreadCallback(makeConnectCallback(null));
+                if (!mBtf.isAccepting()) {
+                    mBtf.startAccepting(makeConnectCallback(null));
+                }
+                else {
+                    mBtf.newAcceptThreadCallback(makeConnectCallback(null));
+                }
             }
         });
 

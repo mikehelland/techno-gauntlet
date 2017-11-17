@@ -14,10 +14,8 @@ public class Dac extends UGen {
     private short [] target = new short[UGen.CHUNK_SIZE];
 	private final short [] silentTarget = new short[UGen.CHUNK_SIZE];
 
-  //  private PcmWriter pcmWriter;
-    private boolean recording = false;
-
     private boolean playing = true;
+    private boolean finishing = false;
 
 	public Dac() {
 		localBuffer = new float[CHUNK_SIZE];
@@ -57,6 +55,14 @@ public class Dac extends UGen {
     }
 	
 	public void tick() {
+
+        if (finishing) {
+            playing = false;
+            if (track.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
+                track.stop();
+            }
+            track.release();
+        }
 		
 		render(localBuffer);
 		
@@ -90,23 +96,8 @@ public class Dac extends UGen {
 	}
 	
 	public void close() {
-		track.stop();
-        track.release();
+        finishing = true;
 	}
-
-/*
-    public void record(PcmWriter pcm){
-        recording = true;
-        playing = false;
-        pcmWriter = pcm;
-
-    }
-    public void stopRecord(){
-        recording = false;
-        pcmWriter = null;
-    }
-
-  */
 
     private int iran = 0;
 }

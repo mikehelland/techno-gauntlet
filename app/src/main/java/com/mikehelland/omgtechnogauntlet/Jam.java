@@ -365,6 +365,7 @@ class Jam {
 
         for (Channel channel : mChannels) {
             channel.mute();
+            channel.finish();
         }
 
         for (StateChangeCallback callback : mStateChangeListeners) {
@@ -801,7 +802,6 @@ class Jam {
         abstract void onScaleChange(String scale, String source);
         abstract void onChordProgressionChange(int[] chords);
         abstract void onNewChannel(Channel channel);
-        abstract void onNewJam();
     }
 
     Channel newChannel(long soundsetId) {

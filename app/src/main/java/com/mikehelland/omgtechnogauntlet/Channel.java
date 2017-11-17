@@ -616,4 +616,10 @@ class Channel {
     void updateLiveNote(Note note) {
         lastPlayedNote = note;
     }
+
+    void finish() {
+        if (mSoundSet.isOscillator()) {
+            mSoundSet.getOscillator().finish();
+        }
+    }
 }

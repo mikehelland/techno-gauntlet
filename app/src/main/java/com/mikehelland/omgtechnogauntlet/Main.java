@@ -158,10 +158,6 @@ public class Main extends Activity {
             void onNewChannel(Channel channel) {
                 mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
             }
-            @Override
-            void onNewJam() {
-                //mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
-            }
         };
         mJam.addStateChangeListener(mJamCallback);
 
