@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class BluetoothConnection extends Thread {
+class BluetoothConnection extends Thread {
     private BluetoothDevice mDevice;
     private BluetoothManager bluetoothFactory;
     private final InputStream mmInStream;
@@ -21,7 +21,7 @@ public class BluetoothConnection extends Thread {
 
     private final static String TAG = "MGH bluetoothconnection";
     
-    public BluetoothConnection(BluetoothDevice device, BluetoothManager bluetoothFactory,
+    BluetoothConnection(BluetoothDevice device, BluetoothManager bluetoothFactory,
                                BluetoothSocket socket, BluetoothConnectCallback callback){
         this.bluetoothFactory = bluetoothFactory;
         mConnectedCallback = callback;
@@ -89,7 +89,7 @@ public class BluetoothConnection extends Thread {
         }
     }
 
-    public boolean isDisconnected() {
+    boolean isDisconnected() {
         return disconnected;
     }
 
@@ -99,14 +99,6 @@ public class BluetoothConnection extends Thread {
 
     void sendCommand(String command) {
         writeString(command + ";");
-    }
-
-    private void write(byte[] bytes){
-        try {
-            mmOutStream.write(bytes);
-        } catch (IOException e) {
-            Log.d(TAG, e.getMessage());
-        }
     }
 
     private void writeString(String toWrite){
@@ -144,11 +136,11 @@ public class BluetoothConnection extends Thread {
         return mDevice;
     }
 
-    public void setDataCallback(BluetoothDataCallback callback) {
+    void setDataCallback(BluetoothDataCallback callback) {
         mDataCallback = callback;
     }
 
-    public BluetoothDataCallback getDataCallback() {
+    BluetoothDataCallback getDataCallback() {
         return mDataCallback;
     }
     void setConnectedCallback(BluetoothConnectCallback callback) {

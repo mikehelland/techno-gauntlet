@@ -26,6 +26,7 @@ public class MainFragment extends OMGFragment {
     private Button bpmButton;
 
     private LayoutInflater mInflater;
+    private ViewGroup mContainer;
 
     private ArrayList<View> monkeyHeads = new ArrayList<>();
 
@@ -52,111 +53,111 @@ public class MainFragment extends OMGFragment {
 
     private void setupPanels() {
 
-        ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
+        mContainer = (ViewGroup) mView.findViewById(R.id.channel_list);
         //View controls;
-        for (final Channel channel : mJam.getChannels()) {
-
-            View controls = mInflater.inflate(R.layout.main_panel, container, false);
-
-            // the -1 keeps the add channel button on the bottom
-            container.addView(controls, container.getChildCount() - 1);
-
-            Button button = ((Button)controls.findViewById(R.id.track_button));
-            button.setText(channel.getSoundSetName());
-
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    SoundSetFragment f = new SoundSetFragment();
-                    f.setJam(mJam, channel);
-                    showFragmentRight(f);
-
-                }
-            });
-
-            button.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-
-                    ChannelOptionsFragment f = new ChannelOptionsFragment();
-                    f.setJam(mJam, channel);
-                    showFragmentRight(f);
-
-                    return false;
-                }
-            });
-
-            final Button muteButton = (Button)controls.findViewById(R.id.mute_button);
-            muteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    muteButton.setBackgroundColor(channel.toggleEnabled() ?
-                            Color.GREEN : Color.RED);
-                }
-            });
-            muteButton.setBackgroundColor(channel.isEnabled() ?
-                    Color.GREEN : Color.RED);
-            muteButton.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    channel.clearNotes();
-                    return true;
-                }
-            });
-
-            View monkeyHead = controls.findViewById(R.id.libeniz_head);
-            monkeyHeads.add(monkeyHead);
-            monkeyHead.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    play();
-
-                    mJam.monkeyWithChannel(channel);
-                    Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
-                    view.startAnimation(turnin);
-
-                }
-            });
-
-            controls.findViewById(R.id.open_fretboard_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    String surfaceURL = channel.getSurfaceURL();
-
-                    if (surfaceURL.equals("PRESET_SEQUENCER")) {
-                        DrumFragment f = new DrumFragment();
-                        f.setJam(mJam, channel);
-                        showFragmentRight(f);
-                    }
-                    else {
-
-                        GuitarFragment f = new GuitarFragment();
-                        f.setJam(mJam, channel);
-                        showFragmentRight(f);
-                    }
-                }
-            });
-
-            controls.findViewById(R.id.open_fretboard_button).setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-
-                    SurfaceFragment f = new SurfaceFragment();
-                    f.setJam(mJam, channel);
-                    showFragmentRight(f);
-
-                    return false;
-                }
-            });
-
-
+        for (Channel channel : mJam.getChannels()) {
+            setupPanel(channel);
         }
     }
 
+    private void setupPanel(final Channel channel) {
+
+        View controls = mInflater.inflate(R.layout.main_panel, mContainer, false);
+
+        // the -1 keeps the add channel button on the bottom
+        mContainer.addView(controls, mContainer.getChildCount() - 1);
+
+        Button button = ((Button)controls.findViewById(R.id.track_button));
+        button.setText(channel.getSoundSetName());
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SoundSetFragment f = new SoundSetFragment();
+                f.setJam(mJam, channel);
+                showFragmentRight(f);
+
+            }
+        });
+
+        button.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                ChannelOptionsFragment f = new ChannelOptionsFragment();
+                f.setJam(mJam, channel);
+                showFragmentRight(f);
+
+                return false;
+            }
+        });
+
+        final Button muteButton = (Button)controls.findViewById(R.id.mute_button);
+        muteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                muteButton.setBackgroundColor(channel.toggleEnabled() ?
+                        Color.GREEN : Color.RED);
+            }
+        });
+        muteButton.setBackgroundColor(channel.isEnabled() ?
+                Color.GREEN : Color.RED);
+        muteButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                channel.clearNotes();
+                return true;
+            }
+        });
+
+        View monkeyHead = controls.findViewById(R.id.libeniz_head);
+        monkeyHeads.add(monkeyHead);
+        monkeyHead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                play();
+
+                mJam.monkeyWithChannel(channel);
+                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                view.startAnimation(turnin);
+
+            }
+        });
+
+        controls.findViewById(R.id.open_fretboard_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String surfaceURL = channel.getSurfaceURL();
+
+                if (surfaceURL.equals("PRESET_SEQUENCER")) {
+                    DrumFragment f = new DrumFragment();
+                    f.setJam(mJam, channel);
+                    showFragmentRight(f);
+                }
+                else {
+
+                    GuitarFragment f = new GuitarFragment();
+                    f.setJam(mJam, channel);
+                    showFragmentRight(f);
+                }
+            }
+        });
+
+        controls.findViewById(R.id.open_fretboard_button).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                SurfaceFragment f = new SurfaceFragment();
+                f.setJam(mJam, channel);
+                showFragmentRight(f);
+
+                return false;
+            }
+        });
 
 
-
+    }
 
     public void setupSectionInfoPanel() {
 
@@ -494,6 +495,16 @@ public class MainFragment extends OMGFragment {
                         @Override
                         public void run() {
                             updateChordsUI();
+                        }
+                    });
+            }
+            @Override
+            void onNewChannel(final Channel channel) {
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setupPanel(channel);
                         }
                     });
             }

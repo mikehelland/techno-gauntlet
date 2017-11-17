@@ -39,11 +39,7 @@ public class BluetoothBrainFragment extends OMGFragment {
                         setupBrainList(inflater);
                     }
                 });
-                if (!mBtf.isAccepting())
-                    mBtf.startAccepting(makeConnectCallback(null));
-                else {
-                    mBtf.newAcceptThreadCallback(makeConnectCallback(null));
-                }
+                mBtf.newAcceptThreadCallback(makeConnectCallback(null));
             }
         });
 
@@ -106,7 +102,7 @@ public class BluetoothBrainFragment extends OMGFragment {
             cp.setOnPeerChangeListener(makeOnChangeListener(controls));
         }
 
-        cp.setup(connection, mJam, null);
+        cp.setup(getActivity(), connection, mJam, null);
         connection.setDataCallback(cp);
         return cp;
     }

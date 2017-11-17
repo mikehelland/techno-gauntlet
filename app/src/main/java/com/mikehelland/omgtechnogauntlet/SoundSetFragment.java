@@ -3,7 +3,6 @@ package com.mikehelland.omgtechnogauntlet;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -103,14 +102,8 @@ public class SoundSetFragment extends OMGFragment {
         final Context context = getActivity();
 
         final SoundSetDataOpenHelper openHelper = new SoundSetDataOpenHelper(context);
-        final SQLiteDatabase db = openHelper.getWritableDatabase();
         final Cursor cursor;
-        //if (mChannel.getSoundSet().isChromatic()) {
-            cursor = openHelper.getSavedCursor(db);
-        //}
-        //else {
-        //    cursor = openHelper.getSavedCursor(db);
-       // }
+        cursor = openHelper.getCursor();
 
         final SoundSetAdapter curA = new SoundSetAdapter(context,
                 R.layout.saved_row,

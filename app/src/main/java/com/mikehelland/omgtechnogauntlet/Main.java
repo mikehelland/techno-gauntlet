@@ -32,8 +32,6 @@ public class Main extends Activity {
         //deleteDatabase("OMG_SURFACES");
         //deleteDatabase("OMG_BT_DEVICE");
 
-        mBtf = new BluetoothManager(this);
-
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -42,44 +40,9 @@ public class Main extends Activity {
 
         setContentView(R.layout.main);
 
-        mJamCallback = new Jam.StateChangeCallback() {
-
-            @Override
-            void onPlay() {
-                mBtf.sendCommandToDevices("PLAY", null);
-            }
-
-            @Override
-            void onStop() {
-                mBtf.sendCommandToDevices("STOP", null);
-            }
-
-            @Override
-            void onSubbeatLengthChange(int length, String source) {
-                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SUBBEATLENGTH,
-                        Integer.toString(length), source);
-            }
-
-            @Override
-            void onKeyChange(int key, String source) {
-                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_KEY,
-                        Integer.toString(key), source);
-            }
-
-            @Override
-            void onScaleChange(String scale, String source) {
-                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SCALE,
-                        scale, source);
-            }
-
-            @Override
-            void onChordProgressionChange(int[] chords) {
-
-            }
-        };
-
         mJam = new Jam(this, mPool);
-        mJam.addStateChangeListener(mJamCallback);
+
+        setupBluetooth();
 
         if (mWelcomeFragment == null) {
             mWelcomeFragment = new WelcomeFragment();
@@ -139,4 +102,81 @@ public class Main extends Activity {
         }
 
     }
+
+    private void setupBluetooth() {
+        mBtf = new BluetoothManager(this);
+
+        mBtf.whenReady(new BluetoothReadyCallback() {
+            @Override
+            public void onReady() {
+                mBtf.startAccepting(makeConnectCallback());
+
+                setupBluetoothJamCallback();
+            }
+        });
+
+    }
+
+    private void setupBluetoothJamCallback() {
+
+        mJamCallback = new Jam.StateChangeCallback() {
+
+            @Override
+            void onPlay() {
+                mBtf.sendCommandToDevices("PLAY", null);
+            }
+
+            @Override
+            void onStop() {
+                mBtf.sendCommandToDevices("STOP", null);
+            }
+
+            @Override
+            void onSubbeatLengthChange(int length, String source) {
+                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SUBBEATLENGTH,
+                        Integer.toString(length), source);
+            }
+
+            @Override
+            void onKeyChange(int key, String source) {
+                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_KEY,
+                        Integer.toString(key), source);
+            }
+
+            @Override
+            void onScaleChange(String scale, String source) {
+                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SCALE,
+                        scale, source);
+            }
+
+            @Override
+            void onChordProgressionChange(int[] chords) {
+
+            }
+
+            @Override
+            void onNewChannel(Channel channel) {
+                mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
+            }
+        };
+        mJam.addStateChangeListener(mJamCallback);
+
+    }
+
+    BluetoothConnectCallback makeConnectCallback() {
+        return new BluetoothConnectCallback() {
+            @Override
+            public void newStatus(final String status) {}
+            @Override
+            public void onConnected(BluetoothConnection connection) {
+                final CommandProcessor cp = new CommandProcessor();
+                cp.setup(Main.this, connection, mJam, null);
+                connection.setDataCallback(cp);
+            }
+
+            public void onDisconnected(final BluetoothConnection connection) {}
+        };
+    }
+
+
 }

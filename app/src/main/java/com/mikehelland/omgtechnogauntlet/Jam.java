@@ -800,5 +800,29 @@ class Jam {
         abstract void onKeyChange(int key, String source);
         abstract void onScaleChange(String scale, String source);
         abstract void onChordProgressionChange(int[] chords);
+        abstract void onNewChannel(Channel channel);
+    }
+
+    Channel newChannel(long soundsetId) {
+        final Channel channel = new Channel(mContext, this, pool);
+
+        SoundSetDataOpenHelper helper = new SoundSetDataOpenHelper(mContext);
+        channel.prepareSoundSet(helper.getSoundSetById(soundsetId));
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                pool.loadSounds();
+                channel.loadSoundSetIds();
+                addChannel(channel);
+
+                for (StateChangeCallback callback : mStateChangeListeners) {
+                    callback.onNewChannel(channel);
+                }
+
+            }
+        }).start();
+
+        return channel;
     }
 }

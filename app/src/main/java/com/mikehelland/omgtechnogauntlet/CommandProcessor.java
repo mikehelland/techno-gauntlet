@@ -1,5 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 
 /**
@@ -19,7 +21,10 @@ class CommandProcessor extends BluetoothDataCallback {
     private JamInfo mPeerJam;
     private OnPeerChangeListener mOnPeerChangeListener;
 
-    void setup(BluetoothConnection connection, Jam jam, Channel channel) {
+    private Context mContext;
+
+    void setup(Context context, BluetoothConnection connection, Jam jam, Channel channel) {
+        mContext = context;
         mJam = jam;
         mConnection = connection;
 
@@ -37,6 +42,14 @@ class CommandProcessor extends BluetoothDataCallback {
 
         if (name.equals("SET_SUBBEATLENGTH")) {
             mJam.setSubbeatLength(Integer.parseInt(value), mConnection.getDevice().getAddress());
+            return;
+        }
+        if (name.equals("SET_PLAY")) {
+            mJam.kickIt();
+            return;
+        }
+        if (name.equals("SET_STOP")) {
+            mJam.finish();
             return;
         }
         if (name.equals("SET_KEY")) {
@@ -93,6 +106,12 @@ class CommandProcessor extends BluetoothDataCallback {
         if (name.equals(JAMINFO_SCALE)) onSetScale(value);
         if (name.equals(JAMINFO_SUBBEATLENGTH)) onSetSubbeatLength(value);
         if (name.equals("JAMINFO_CHANNELS")) onSetChannels(value);
+
+        if (name.equals("GET_SAVED_JAMS")) sendSavedJams();
+        if (name.equals("GET_SOUNDSETS")) sendSoundSets();
+
+        if (name.equals("ADD_CHANNEL")) addChannel(Long.parseLong(value));
+        if (name.equals("LOAD_JAM")) loadJam(Long.parseLong(value));
     }
 
     private void channelPlayNote(String value) {
@@ -262,5 +281,47 @@ class CommandProcessor extends BluetoothDataCallback {
 
     JamInfo getJam() {
         return mPeerJam;
+    }
+
+    void sendSavedJams() {
+        SavedDataOpenHelper data = new SavedDataOpenHelper(mContext);
+        Cursor cursor = data.getSavedCursor();
+        StringBuilder value = new StringBuilder();
+        while (cursor.moveToNext()) {
+            value.append(cursor.getString(cursor.getColumnIndex("_id")));
+            value.append(":");
+            value.append(cursor.getString(cursor.getColumnIndex("tags")));
+            if (!cursor.isLast()) {
+                value.append("|");
+            }
+        }
+        cursor.close();
+        mConnection.sendNameValuePair("SAVED_JAMS", value.toString());
+    }
+
+    void sendSoundSets() {
+        SoundSetDataOpenHelper data = new SoundSetDataOpenHelper(mContext);
+        Cursor cursor = data.getCursor();
+        StringBuilder value = new StringBuilder();
+        int idColumn = cursor.getColumnIndex("_id");
+        int nameColumn = cursor.getColumnIndex("name");
+        while (cursor.moveToNext()) {
+            value.append(cursor.getString(idColumn));
+            value.append(":");
+            value.append(cursor.getString(nameColumn));
+            if (!cursor.isLast()) {
+                value.append("|");
+            }
+        }
+        cursor.close();
+        mConnection.sendNameValuePair("SOUNDSETS", value.toString());
+    }
+
+    private void addChannel(long soundsetId) {
+        mJam.newChannel(soundsetId);
+    }
+
+    private void loadJam(long jamId) {
+
     }
 }

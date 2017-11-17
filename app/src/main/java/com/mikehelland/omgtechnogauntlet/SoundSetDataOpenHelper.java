@@ -194,8 +194,9 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     }
 
 
-    Cursor getSavedCursor(SQLiteDatabase db) {
+    Cursor getCursor() {
 
+        SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM soundsets ORDER BY _id DESC", null);
         //db.close();
 

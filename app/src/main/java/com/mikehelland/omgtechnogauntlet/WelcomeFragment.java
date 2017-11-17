@@ -95,6 +95,14 @@ public class WelcomeFragment extends OMGFragment {
         jam.load(json);
         jam.addStateChangeListener(mJamCallback);
 
+        mPool.onAllLoadsFinishedCallback = new Runnable() {
+            @Override
+            public void run() {
+                mPool.onAllLoadsFinishedCallback = null;
+                showFragment(new MainFragment());
+            }
+        };
+
         final Runnable callback = new Runnable() {
             @Override
             public void run() {
@@ -109,7 +117,7 @@ public class WelcomeFragment extends OMGFragment {
                 CommandProcessor cp;
                 for (BluetoothConnection connection : ((Main)getActivity()).mBtf.getConnections()) {
                     cp = new CommandProcessor();
-                    cp.setup(connection, jam, null);
+                    cp.setup(getActivity(), connection, jam, null);
                     connection.setDataCallback(cp);
                 }
 
@@ -148,8 +156,8 @@ public class WelcomeFragment extends OMGFragment {
         mPool.onAllLoadsFinishedCallback = new Runnable() {
             @Override
             public void run() {
-                MainFragment mainFragment = new MainFragment();
-                showFragment(mainFragment);
+                mPool.onAllLoadsFinishedCallback = null;
+                showFragment(new MainFragment());
             }
         };
 
