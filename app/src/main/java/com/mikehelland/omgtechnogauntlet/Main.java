@@ -158,6 +158,10 @@ public class Main extends Activity {
             void onNewChannel(Channel channel) {
                 mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
             }
+            @Override
+            void onNewJam() {
+                //mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
+            }
         };
         mJam.addStateChangeListener(mJamCallback);
 
@@ -178,5 +182,49 @@ public class Main extends Activity {
         };
     }
 
+    void loadJam(String json) {
+
+        int backstack = getFragmentManager().getBackStackEntryCount();
+        while (backstack > 0) {
+            getFragmentManager().popBackStack();
+            backstack--;
+        }
+
+        final Jam jam = new Jam(this, mPool);
+        jam.load(json);
+        jam.addStateChangeListener(mJamCallback);
+
+        final Runnable callback = new Runnable() {
+            @Override
+            public void run() {
+
+                Jam oldJam = mJam;
+                mJam = jam;
+
+                mPool.loadSounds();
+                jam.loadSoundSets();
+
+                //pretty lousy spot for this
+                CommandProcessor cp;
+                for (BluetoothConnection connection : mBtf.getConnections()) {
+                    cp = new CommandProcessor();
+                    cp.setup(Main.this, connection, jam, null);
+                    connection.setDataCallback(cp);
+                }
+
+                oldJam.finish();
+                if (!mJam.isPlaying())
+                    mJam.kickIt();
+            }
+        };
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                callback.run();
+            }
+        }).start();
+
+    }
 
 }

@@ -100,10 +100,6 @@ public class WelcomeFragment extends OMGFragment {
 
     private void loadJam(String json) {
 
-        final Jam jam = new Jam(getActivity(), mPool);
-        jam.load(json);
-        jam.addStateChangeListener(mJamCallback);
-
         mPool.onAllLoadsFinishedCallback = new Runnable() {
             @Override
             public void run() {
@@ -112,36 +108,7 @@ public class WelcomeFragment extends OMGFragment {
             }
         };
 
-        final Runnable callback = new Runnable() {
-            @Override
-            public void run() {
-                Jam oldJam = mJam;
-                mJam = jam;
-                ((Main)getActivity()).mJam = jam;
-
-                mPool.loadSounds();
-                jam.loadSoundSets();
-
-                //pretty lousy spot for this
-                CommandProcessor cp;
-                for (BluetoothConnection connection : ((Main)getActivity()).mBtf.getConnections()) {
-                    cp = new CommandProcessor();
-                    cp.setup(getActivity(), connection, jam, null);
-                    connection.setDataCallback(cp);
-                }
-
-                oldJam.finish();
-                if (!mJam.isPlaying())
-                    mJam.kickIt();
-            }
-        };
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                callback.run();
-            }
-        }).start();
+        ((Main)getActivity()).loadJam(json);
     }
 
     public void showFragment(Fragment f) {

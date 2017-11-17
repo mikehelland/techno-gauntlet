@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class SavedDataOpenHelper extends SQLiteOpenHelper {
+class SavedDataOpenHelper extends SQLiteOpenHelper {
 
     SavedDataOpenHelper(Context context) {
         super(context, "OMG_SAVES", null, 5);
@@ -56,13 +56,12 @@ public class SavedDataOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Cursor getSavedCursor() {
+    Cursor getSavedCursor() {
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM saves ORDER BY time DESC", null);
         //db.close();
 
         return cursor;
-
     }
 
     public String getLastSaved() {
@@ -82,5 +81,15 @@ public class SavedDataOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.delete("saves", "_id=?", new String[] {Long.toString(id)});
         db.close();
+    }
+
+    String getJamJson(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT data FROM saves WHERE _id=" + id, null);
+        cursor.moveToFirst();
+        String json = cursor.getString(0);
+        cursor.close();
+        db.close();
+        return json;
     }
 }

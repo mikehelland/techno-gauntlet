@@ -508,6 +508,16 @@ public class MainFragment extends OMGFragment {
                         }
                     });
             }
+            @Override
+            void onNewJam() {
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setupPanels();
+                        }
+                    });
+            }
         };
 
         mJam.addStateChangeListener(mJamListener);

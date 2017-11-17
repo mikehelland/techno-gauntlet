@@ -326,7 +326,8 @@ class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void loadJam(long jamId) {
-
+        SavedDataOpenHelper dataHelper = new SavedDataOpenHelper(mContext);
+        ((Main)mContext).loadJam(dataHelper.getJamJson(jamId));
     }
 
     private String getCaptions() {
