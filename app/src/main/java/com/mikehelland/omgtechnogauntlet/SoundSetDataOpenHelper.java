@@ -38,7 +38,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     private void setupDefaultSoundSets(SQLiteDatabase db) {
 
         setupOscillatorSoundSet(db);
-        setupKeyboardSoundSet(db);
         setupBassSoundSet(db);
         setupSamplerSoundSet(db);
         setupRockDrumsSoundSet(db);
@@ -105,7 +104,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     }
 
-    private void setupKeyboardSoundSet(SQLiteDatabase db) {
+    /*private void setupKeyboardSoundSet(SQLiteDatabase db) {
         String json = KeyboardSamplerChannel.getDefaultSoundSetJSON(mContext);
 
         ContentValues data = new ContentValues();
@@ -118,7 +117,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("soundsets", null, data);
 
-    }
+    }*/
 
     private void setupOscillatorSoundSet(SQLiteDatabase db) {
 
@@ -237,6 +236,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
         if (cursor.getCount() == 0) {
             cErrorMessage = "Couldn't find Sound Set in the database";
+            Log.e("MGH querysoundset fail", where);
             showToast();
         }
         else {
