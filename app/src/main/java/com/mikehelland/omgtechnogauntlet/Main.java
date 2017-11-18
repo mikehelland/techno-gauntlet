@@ -88,6 +88,7 @@ public class Main extends Activity {
         Log.d("MGH Main", "onPause");
         if (!mPool.isLoaded())
             mPool.cancelLoading();
+        mJam.pause();
         mJam.finish();
         mBtf.cleanUp();
     }
@@ -202,7 +203,7 @@ public class Main extends Activity {
                     cp.setup(Main.this, connection, jam, null);
                     connection.setDataCallback(cp);
                 }
-
+                oldJam.pause();
                 oldJam.finish();
                 if (!mJam.isPlaying())
                     mJam.kickIt();

@@ -49,7 +49,7 @@ class CommandProcessor extends BluetoothDataCallback {
             return;
         }
         if (name.equals("SET_STOP")) {
-            mJam.finish();
+            mJam.pause();
             return;
         }
         if (name.equals("SET_KEY")) {

@@ -360,16 +360,21 @@ class Jam {
         }
     }
 
-    void finish() {
+    void pause() {
         cancelPlaybackThread = true;
 
         for (Channel channel : mChannels) {
             channel.mute();
-            channel.finish();
         }
 
         for (StateChangeCallback callback : mStateChangeListeners) {
             callback.onStop();
+        }
+    }
+
+    void finish() {
+        for (Channel channel : mChannels) {
+            channel.finish();
         }
     }
 

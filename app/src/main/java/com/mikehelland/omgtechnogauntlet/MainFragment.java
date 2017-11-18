@@ -292,7 +292,7 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 if (mJam.isPlaying()) {
-                    mJam.finish();
+                    mJam.pause();
                 }
                 else {
                     play();
