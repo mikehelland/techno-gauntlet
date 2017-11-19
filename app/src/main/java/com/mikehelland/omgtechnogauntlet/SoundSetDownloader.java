@@ -150,7 +150,7 @@ class SoundSetDownloader {
             ContentValues soundset = processSoundSetJSON(result);
             if (soundset != null) {
                 SoundSetDataOpenHelper soundsetDataHelper = new SoundSetDataOpenHelper(context);
-                mSoundSet = soundsetDataHelper.newSoundSet(soundset);
+                mSoundSet = soundsetDataHelper.addSoundSet(soundset);
 
                 String soundsetDirectoryPath = context.getFilesDir() + "/" +
                         Long.toString(mSoundSet.getID()) + "/";

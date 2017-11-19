@@ -27,7 +27,7 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
 
         //TODO have such a good database I don't need to blow it away every time
-        if (true) {
+        if (!true) {
             deleteDatabase("OMG_TECHNO_GAUNTLET");
             deleteDatabase("OMG_BANANAS");
             deleteDatabase("OMG_SURFACES");

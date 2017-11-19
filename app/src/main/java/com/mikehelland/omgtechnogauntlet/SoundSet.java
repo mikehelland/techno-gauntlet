@@ -26,6 +26,8 @@ class SoundSet {
     private boolean mIsOscillator = false;
     private Oscillator mOscillator = null;
 
+    private String mDefaultSurface = "";
+
     SoundSet() {}
 
     SoundSet(Cursor cursor) {
@@ -70,6 +72,10 @@ class SoundSet {
             if (mIsOscillator) {
                 mOscillator = new Oscillator(new OscillatorSettings(mURL));
                 return true;
+            }
+
+            if (soundSet.has("defaultSurface")) {
+                mDefaultSurface = soundSet.getString("defaultSurface");
             }
 
             JSONArray data = soundSet.getJSONArray("data");
@@ -164,6 +170,10 @@ class SoundSet {
 
     Oscillator getOscillator() {
         return mOscillator;
+    }
+
+    String getDefaultSurface() {
+        return mDefaultSurface;
     }
 
     class Sound {

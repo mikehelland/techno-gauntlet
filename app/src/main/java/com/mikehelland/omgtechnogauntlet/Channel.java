@@ -599,10 +599,15 @@ class Channel {
         if (mSurfaceURL.length() > 0)
             return mSurfaceURL;
 
-        if (mSoundSet != null && mSoundSet.isChromatic())
-            return "PRESET_VERTICAL";
+        if (mSoundSet != null) {
+            if (mSoundSet.getDefaultSurface().length() > 0)
+                return mSoundSet.getDefaultSurface();
 
-        return "PRESET_SEQUENCER";
+            if (mSoundSet.isChromatic())
+                return SufacesDataHelper.PRESET_VERTICAL;
+        }
+
+        return SufacesDataHelper.PRESET_SEQUENCER;
     }
 
     boolean isEnabled() {

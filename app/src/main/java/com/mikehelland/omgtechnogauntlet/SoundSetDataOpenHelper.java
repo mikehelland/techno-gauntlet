@@ -219,10 +219,21 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         return ret;
     }
 
-    SoundSet newSoundSet(ContentValues data) {
+    SoundSet addSoundSet(ContentValues data) {
 
         final SQLiteDatabase db = getWritableDatabase();
-        data.put("_id", db.insert("soundsets", null, data));
+        Cursor existing = db.rawQuery(
+                "SELECT _id FROM soundsets WHERE url='" + data.getAsString("url") + "'", null);
+        if (existing.getCount() > 0) {
+            existing.moveToFirst();
+            long id = existing.getLong(0);
+            db.update("soundsets", data, "_id=" + id, null);
+            data.put("_id", id);
+        }
+        else {
+            data.put("_id", db.insert("soundsets", null, data));
+        }
+        existing.close();
         db.close();
         return new SoundSet(data);
     }

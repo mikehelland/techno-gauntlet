@@ -118,6 +118,7 @@ class CommandProcessor extends BluetoothDataCallback {
         if (name.equals("LOAD_JAM")) loadJam(Long.parseLong(value));
 
         if (name.equals("SET_CHANNEL_VOLUME")) setChannelVolume(value);
+        if (name.equals("SET_CHANNEL_ENABLED")) setChannelEnabled(value);
     }
 
     private void channelPlayNote(String value) {
@@ -356,6 +357,23 @@ class CommandProcessor extends BluetoothDataCallback {
             float volume = Float.parseFloat(data[0]);
             int channel = Integer.parseInt(data[1]);
             mJam.getChannels().get(channel).volume = volume;
+        }
+        catch (Exception e) {
+            Log.d("MGH set channel volume", e.getMessage());
+        }
+    }
+    private void setChannelEnabled(String params) {
+        try {
+            String[] data = params.split(",");
+            int enabled = Integer.parseInt(data[0]);
+            int channel = Integer.parseInt(data[1]);
+            if (enabled == 0) {
+                mJam.getChannels().get(channel).disable();
+            }
+            else {
+                mJam.getChannels().get(channel).enable();
+            }
+
         }
         catch (Exception e) {
             Log.d("MGH set channel volume", e.getMessage());

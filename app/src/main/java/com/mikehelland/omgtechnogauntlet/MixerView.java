@@ -16,7 +16,7 @@ import android.view.View;
 public class MixerView extends View {
 
     private Paint paint;
-    private Paint paintOff;
+    private Paint paintBlue;
     private Paint paintRed;
     private Paint paintGreen;
 
@@ -30,8 +30,9 @@ public class MixerView extends View {
     private Paint topPanelPaint;
     private Paint paintText;
 
-    private static final int TOUCHING_AREA_VOLUME = 1;
-    private static final int TOUCHING_AREA_PAN = 2;
+    private static final int TOUCHING_AREA_MUTE = 1;
+    private static final int TOUCHING_AREA_VOLUME = 2;
+    private static final int TOUCHING_AREA_PAN = 3;
     private static final int TOUCHING_AREA_NONE = 0;
 
     private int touchingArea = TOUCHING_AREA_NONE;
@@ -44,6 +45,12 @@ public class MixerView extends View {
     private float volume = 0.5f;
     private float pan = 0.0f;
 
+    private float muteButtonWidth = -1;
+    private float volumeStart = -1;
+    private float controlMargin = 5;
+    private float volumeWidth = -1;
+    private float panStart = -1;
+    private float panWidth = -1;
 
     public MixerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -56,10 +63,9 @@ public class MixerView extends View {
         paintText.setARGB(255, 255, 255, 255);
         paintText.setTextSize(labelTextSize);
 
-        paintOff = new Paint();
-        paintOff.setARGB(128, 128, 128, 128);
-        paintOff.setStyle(Paint.Style.FILL);
-        paintOff.setTextSize(paintText.getTextSize());
+        paintBlue = new Paint();
+        paintBlue.setARGB(128, 0, 0, 255);
+        paintBlue.setStyle(Paint.Style.FILL);
 
         paintRed = new Paint();
         paintRed.setARGB(128, 255, 0, 0);
@@ -91,48 +97,56 @@ public class MixerView extends View {
             height = getHeight();
             width2 = width / 2;
 
+            muteButtonWidth = paintText.measureText(" Mute ");
+            volumeStart = muteButtonWidth + controlMargin;
+            volumeWidth = (width - volumeStart) * 0.75f - 2 * controlMargin;
+            panStart = volumeStart + volumeWidth + controlMargin;
+            panWidth = width - panStart - controlMargin;
         }
 
         float height2 = height / 2;
 
-        canvas.drawLine(2, height2, width2 - 2,
+        canvas.drawRect(0, 0, muteButtonWidth, height,
+                mChannel.isEnabled() ? paintGreen : paintRed);
+        canvas.drawText(" Mute ", 0, height2, paintText);
+
+
+        canvas.drawLine(volumeStart + controlMargin, height2, volumeStart + volumeWidth - controlMargin,
                 height2, paint);
 
-        canvas.drawLine(2 + width2, height2, width - 2,
+        canvas.drawLine(panStart + controlMargin, height2, width - controlMargin,
                 height2, paint);
 
-        canvas.drawText("L", width2 + 25,
+        canvas.drawText("L", panStart,
                 height - 5, paintText);
 
         canvas.drawText("R", width - 35,
                 height - 5, paintText);
 
-        canvas.drawText("Volume", 10,
-                height - 5, paintText);
-
-        canvas.drawText(channelName, width2 - channelNameWidth2, labelTextSize, paintText);
-
-        canvas.drawRect(width2 * volume - 5, 0,
-                        width2 * volume + 5, height,
+        canvas.drawRect(volumeStart + volumeWidth * volume - controlMargin, 0,
+                volumeStart + volumeWidth * volume + controlMargin, height,
                 topPanelPaint);
 
-        canvas.drawRect(0, 0, width2 * volume, height,
-                paintRed);
+        canvas.drawRect(volumeStart, 0, volumeStart + volumeWidth * volume, height,
+                mChannel.isEnabled() ? paintGreen : paintRed);
 
 
-        canvas.drawRect(width2 * pan / 2 + width / 4 * 3 - 5, 0,
-                        width2 * pan / 2 + width / 4 * 3 + 5, height,
+        canvas.drawRect(panStart + panWidth / 2 + panWidth / 2 * pan - controlMargin, 0,
+                panStart + panWidth / 2 + panWidth / 2* pan + controlMargin, height,
                 topPanelPaint);
 
         if (pan < 0) {
-            canvas.drawRect(width2 * pan / 2 + width / 4 * 3, 0, width / 4 * 3, height,
-                    paintGreen);
+            canvas.drawRect(panStart + panWidth / 2 + panWidth / 2 * pan, 0,
+                    panStart + panWidth / 2, height,
+                    paintBlue);
         }
         else {
-            canvas.drawRect(width / 4 + width2, 0, width2 * pan / 2 + width / 4 + width2, height,
-                    paintGreen);
-
+            canvas.drawRect(panStart + panWidth / 2, 0,
+                    panStart + panWidth / 2 + panWidth / 2 * pan, height,
+                    paintBlue);
         }
+
+        canvas.drawText(channelName, volumeStart + controlMargin, height2, paintText);
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -141,7 +155,11 @@ public class MixerView extends View {
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
 
-            if (x <= width2) {
+            if (x <= muteButtonWidth) {
+                mChannel.toggleEnabled();
+                touchingArea = TOUCHING_AREA_MUTE;
+            }
+            else if (x <= volumeStart + volumeWidth) {
                 touchingArea = TOUCHING_AREA_VOLUME;
             }
             else {
@@ -177,13 +195,11 @@ public class MixerView extends View {
 
     private void performTouch(float x) {
         if (touchingArea == TOUCHING_AREA_VOLUME) {
-            volume = Math.max(0, Math.min(1, x / (width/2)));
+            volume = Math.max(0, Math.min(1, (x - volumeStart) / volumeWidth));
             mChannel.volume = volume;
-            invalidate();
         }
         else if (touchingArea == TOUCHING_AREA_PAN) {
-            pan = Math.max(-1.0f, Math.min(1.0f, ((x - width2) / width2 - 0.5f) * 2));
-            invalidate();
+            pan = Math.max(-1.0f, Math.min(1.0f, ((x - panStart) / panWidth - 0.5f) * 2));
         }
     }
 
