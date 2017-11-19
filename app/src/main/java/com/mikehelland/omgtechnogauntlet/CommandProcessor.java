@@ -181,8 +181,6 @@ class CommandProcessor extends BluetoothDataCallback {
 
     static private String getChannelInfo(Channel channel) {
 
-        String chromatic = channel.getSoundSet().isChromatic() ? "1" : "0";
-
         String surfaceURL = channel.getSurfaceURL();
         String surface = "0";
         if ("PRESET_SEQUENCER".equals(surfaceURL))
@@ -192,7 +190,9 @@ class CommandProcessor extends BluetoothDataCallback {
         if ("PRESET_FRETBOARD".equals(surfaceURL))
             surface = "2";
 
-        return chromatic + "," + surface + "," + channel.volume + "," + channel.getSoundSetName();
+        return  (channel.isEnabled() ? "1," : "0,") +
+                (channel.getSoundSet().isChromatic() ? "1," : "0,") +
+                surface + "," + channel.volume + "," + channel.getSoundSetName();
     }
 
     private void sendChannelInfo() {
@@ -367,16 +367,16 @@ class CommandProcessor extends BluetoothDataCallback {
             String[] data = params.split(",");
             int enabled = Integer.parseInt(data[0]);
             int channel = Integer.parseInt(data[1]);
-            if (enabled == 0) {
-                mJam.getChannels().get(channel).disable();
-            }
-            else {
-                mJam.getChannels().get(channel).enable();
-            }
+
+            mJam.setChannelEnabled(channel, enabled != 0, mConnection.getDevice().getAddress());
 
         }
         catch (Exception e) {
             Log.d("MGH set channel volume", e.getMessage());
         }
+    }
+
+    static String getChannelEnabledCommand(int channelNumber, boolean enabled) {
+        return "CHANNEL_ENABLED=" + (enabled?"1,":"0,") + channelNumber;
     }
 }

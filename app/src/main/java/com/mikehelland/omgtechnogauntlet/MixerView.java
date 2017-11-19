@@ -156,7 +156,7 @@ public class MixerView extends View {
         if (action == MotionEvent.ACTION_DOWN) {
 
             if (x <= muteButtonWidth) {
-                mChannel.toggleEnabled();
+                mJam.toggleChannelEnabled(mChannel);
                 touchingArea = TOUCHING_AREA_MUTE;
             }
             else if (x <= volumeStart + volumeWidth) {

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainFragment extends OMGFragment {
 
@@ -31,6 +32,8 @@ public class MainFragment extends OMGFragment {
     private ArrayList<View> monkeyHeads = new ArrayList<>();
 
     private Jam.StateChangeCallback mJamListener;
+
+    private HashMap<Channel, View> channelViewMap = new HashMap<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +66,7 @@ public class MainFragment extends OMGFragment {
     private void setupPanel(final Channel channel) {
 
         View controls = mInflater.inflate(R.layout.main_panel, mContainer, false);
+        channelViewMap.put(channel, controls);
 
         // the -1 keeps the add channel button on the bottom
         mContainer.addView(controls, mContainer.getChildCount() - 1);
@@ -96,7 +100,7 @@ public class MainFragment extends OMGFragment {
         muteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                muteButton.setBackgroundColor(channel.toggleEnabled() ?
+                muteButton.setBackgroundColor(mJam.toggleChannelEnabled(channel) ?
                         Color.GREEN : Color.RED);
             }
         });
@@ -505,6 +509,19 @@ public class MainFragment extends OMGFragment {
                         @Override
                         public void run() {
                             setupPanel(channel);
+                        }
+                    });
+            }
+            @Override
+            void onChannelEnabledChanged(final int channel, final boolean enabled, String source) {
+                if (getActivity() != null)
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            View panel = channelViewMap.get(mJam.getChannels().get(channel));
+                            if (panel != null)
+                                panel.findViewById(R.id.mute_button).setBackgroundColor(
+                                        enabled ? Color.GREEN : Color.RED);
                         }
                     });
             }

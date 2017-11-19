@@ -807,6 +807,7 @@ class Jam {
         abstract void onScaleChange(String scale, String source);
         abstract void onChordProgressionChange(int[] chords);
         abstract void onNewChannel(Channel channel);
+        abstract void onChannelEnabledChanged(int channelNumber, boolean enabled, String source);
     }
 
     Channel newChannel(long soundsetId) {
@@ -830,5 +831,28 @@ class Jam {
         }).start();
 
         return channel;
+    }
+
+    void setChannelEnabled(int i, boolean l, String device) {
+        if (l)
+            getChannels().get(i).enable();
+        else
+            getChannels().get(i).disable();
+
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onChannelEnabledChanged(i, l, device);
+        }
+    }
+    boolean toggleChannelEnabled(Channel channel) {
+        return toggleChannelEnabled(channel, null);
+    }
+    boolean toggleChannelEnabled(Channel channel, String device) {
+        boolean enabled = channel.toggleEnabled();
+
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onChannelEnabledChanged(mChannels.indexOf(channel), enabled, device);
+        }
+
+        return enabled;
     }
 }

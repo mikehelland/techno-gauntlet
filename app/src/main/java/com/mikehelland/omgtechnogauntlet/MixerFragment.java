@@ -5,12 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MixerFragment extends OMGFragment {
 
     private View mView;
 
-    private View oscControls;
+    private List<View> mPanels = new ArrayList<>();
 
+    private Jam.StateChangeCallback mCallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -22,6 +26,24 @@ public class MixerFragment extends OMGFragment {
                 container, false);
 
         setupPanels(inflater);
+
+
+        mCallback = new Jam.StateChangeCallback() {
+            @Override void onPlay() {}
+            @Override void onStop() {}
+            @Override void onSubbeatLengthChange(int length, String source) {}
+            @Override void onKeyChange(int key, String source) {}
+            @Override void onScaleChange(String scale, String source) {}
+            @Override void onChordProgressionChange(int[] chords) {}
+            @Override void onNewChannel(Channel channel) {}
+
+            @Override
+            void onChannelEnabledChanged(int channelNumber, boolean enabled, String source) {
+                for (View panel : mPanels)
+                    panel.postInvalidate();
+            }
+        };
+        mJam.addStateChangeListener(mCallback);
 
         return mView;
     }
@@ -36,68 +58,20 @@ public class MixerFragment extends OMGFragment {
             controls = inflater.inflate(R.layout.mixer_panel, container, false);
             container.addView(controls);
 
-            ((MixerView) controls.findViewById(R.id.mixer_view)).
-                    setJam(mJam, channel, channel.getSoundSetName());
+            MixerView mixerView = (MixerView) controls.findViewById(R.id.mixer_view);
+            mixerView.setJam(mJam, channel, channel.getSoundSetName());
 
+            mPanels.add(mixerView);
         }
 
     }
 
 
-
-
-    /*public void showFragmentRight(Fragment f) {
-
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.anim.slide_in_right,
-                R.anim.slide_out_left,
-                R.anim.slide_in_left,
-                R.anim.slide_out_right
-        );
-        //ft.remove(MainFragment.this);
-        ft.replace(R.id.main_layout, f);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.addToBackStack(null);
-        ft.commit();
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        mJam.removeStateChangeListener(mCallback);
     }
-
-    public void showFragmentDown(Fragment f) {
-
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.anim.slide_in_up,
-                R.anim.slide_out_up,
-                R.anim.slide_in_down,
-                R.anim.slide_out_down
-        );
-        //ft.remove(MainFragment.this);
-        ft.replace(R.id.main_layout, f);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.addToBackStack(null);
-        ft.commit();
-
-    }
-
-    public void showFragmentUp(Fragment f) {
-
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.anim.slide_in_down,
-                R.anim.slide_out_down,
-                R.anim.slide_in_up,
-                R.anim.slide_out_up
-        );
-        //ft.remove(MainFragment.this);
-        ft.replace(R.id.main_layout, f);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.addToBackStack(null);
-        ft.commit();
-
-    }
-    */
-
 
 }
 
