@@ -34,7 +34,7 @@ class BluetoothConnection extends Thread {
             tmpIn = socket.getInputStream();
             tmpOut = socket.getOutputStream();
         } catch (IOException e) {
-            bluetoothFactory.newStatus(mConnectedCallback, BluetoothFactory.STATUS_IO_OPEN_STREAMS);
+            bluetoothFactory.newStatus(mConnectedCallback, BluetoothManager.STATUS_IO_OPEN_STREAMS);
             Log.d(TAG, e.getMessage());
         }
         mmInStream = tmpIn;
@@ -67,7 +67,7 @@ class BluetoothConnection extends Thread {
                 Log.d(TAG, e.getMessage());
 
                 if (!bluetoothFactory.cleaningUp) {
-                    bluetoothFactory.newStatus(mConnectedCallback, BluetoothFactory.STATUS_IO_CONNECTED_THREAD);
+                    bluetoothFactory.newStatus(mConnectedCallback, BluetoothManager.STATUS_IO_CONNECTED_THREAD);
                     mConnectedCallback.onDisconnected(this);
                 }
                 break;
