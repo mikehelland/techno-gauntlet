@@ -230,10 +230,15 @@ class Jam {
 
             good = true;
 
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             Log.d("MGH loaddata exception", e.getMessage());
-            Toast.makeText(mContext,
-                    "Could not load data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            ((Main)mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext,
+                            "Could not load data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
             e.printStackTrace();
         }
 

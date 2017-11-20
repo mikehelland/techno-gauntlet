@@ -32,7 +32,7 @@ class Channel {
 
     private OMGSoundPool mPool;
 
-    private  int[] ids;
+    private  int[] ids = {};
 
     private int playingId = -1;
 

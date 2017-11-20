@@ -212,8 +212,7 @@ public class Main extends Activity {
                 }
                 oldJam.pause();
                 oldJam.finish();
-                if (!mJam.isPlaying())
-                    mJam.kickIt();
+                mJam.kickIt();
             }
         };
 
