@@ -30,8 +30,8 @@ public class GuitarView extends View {
     private int height = -1;
 
     private int boxWidth;
-    private int boxHeight;
-    private int boxHeightHalf;
+    private float boxHeight;
+    private float boxHeightHalf;
 
     private Jam mJam;
     private Channel mChannel;
@@ -83,6 +83,16 @@ public class GuitarView extends View {
     private float draw_beatWidth;
 
     private Fretboard mFretboard = null;
+
+    private float zoomboxHeight = -1;
+    private float zoomTop = -1;
+    private float zoomBottom = -1;
+    private boolean zooming = false;
+    private int zoomingSkipBottom = 0;
+    private int zoomingSkipTop = 0;
+    private int showingFrets = 0;
+    private int skipBottom = 0;
+    private int skipTop = 0;
 
     public GuitarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -164,7 +174,7 @@ public class GuitarView extends View {
         draw_beatWidth = draw_debugBeatWidth / (float)mJam.getTotalSubbeats();
         width = getWidth();
         height = getHeight();
-        boxHeight = height / frets;
+        boxHeight = (float)height / showingFrets;
         boxHeightHalf = boxHeight / 2;
         boxWidth = width / strings;
         paint.setTextSize(boxHeightHalf);
@@ -179,9 +189,9 @@ public class GuitarView extends View {
 
         int noteNumber;
 
-        for (int fret = 1; fret <= frets; fret++) {
+        for (int fret = 1 ; fret <= showingFrets; fret++) {
 
-            noteNumber = fretMapping[fret - 1];
+            noteNumber = fretMapping[fret - 1 + skipBottom + zoomingSkipBottom];
 
             if (noteNumber % 12 == key) {
                 canvas.drawRect(width / 4, height - fret * boxHeight,
@@ -240,6 +250,10 @@ public class GuitarView extends View {
             return result;
         }
 
+        if (zooming || event.getPointerCount() > 1) {
+            onMultiTouchEvent(event);
+            return true;
+        }
 
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
@@ -253,36 +267,35 @@ public class GuitarView extends View {
             touchingString = getTouchingString(event.getX());
 
             touchingFret = (int)Math.floor(event.getY() / boxHeight);
-            touchingFret = Math.max(0, Math.min(fretMapping.length - 1, touchingFret));
-
-            touchingFret = fretMapping.length - touchingFret - 1;
+            touchingFret = Math.max(0, Math.min(showingFrets - 1, touchingFret));
+            touchingFret = showingFrets - touchingFret - 1;
 
             lastFret = touchingFret;
             Note note = new Note();
-            note.setBasicNote(touchingFret - rootFret);
-            note.setScaledNote(fretMapping[touchingFret]);
-            note.setInstrumentNote(fretMapping[touchingFret] - lowNote);
+            note.setBasicNote(skipBottom + touchingFret - rootFret);
+            note.setScaledNote(fretMapping[skipBottom + touchingFret]);
+            note.setInstrumentNote(fretMapping[skipBottom + touchingFret] - lowNote);
             mChannel.playLiveNote(note);
             mChannel.setArpeggiator(touchingString);
 
         }
 
         if (action == MotionEvent.ACTION_MOVE) {
+            Log.d("MGH NOT ZOOMING!", "Yeah");
             if (lastFret > -1) {
                 touchingString = getTouchingString(event.getX());
 
                 touchingFret = (int)Math.floor(event.getY() / boxHeight);
-                touchingFret = Math.max(0, Math.min(fretMapping.length - 1, touchingFret));
-
-                touchingFret = fretMapping.length - touchingFret - 1;
+                touchingFret = Math.max(0, Math.min(showingFrets - 1, touchingFret));
+                touchingFret = showingFrets - touchingFret - 1;
 
                 if (touchingFret != lastFret) {
 
                     lastFret = touchingFret;
                     Note note = new Note();
-                    note.setBasicNote(touchingFret - rootFret);
-                    note.setScaledNote(fretMapping[touchingFret]);
-                    note.setInstrumentNote(fretMapping[touchingFret] - lowNote);
+                    note.setBasicNote(skipBottom + touchingFret - rootFret);
+                    note.setScaledNote(fretMapping[skipBottom + touchingFret]);
+                    note.setInstrumentNote(fretMapping[skipBottom + touchingFret] - lowNote);
                     if (touchingString == 0)
                         mChannel.playLiveNote(note);
                     else
@@ -299,7 +312,6 @@ public class GuitarView extends View {
             touchingString = -1;
             touchingFret = -1;
             lastFret = -1;
-
         }
 
         invalidate();
@@ -378,7 +390,7 @@ public class GuitarView extends View {
         fretMapping = new int[frets];
         System.arraycopy(allFrets, 0, fretMapping, 0, frets);
 
-
+        showingFrets = frets;
     }
 
     public void drawNotes(Canvas canvas, ArrayList<Note> list) {
@@ -463,5 +475,89 @@ public class GuitarView extends View {
         }
 
         return touchingString;
+    }
+
+    private void onMultiTouchEvent(MotionEvent event) {
+
+        if (touchingFret > -1) {
+            mChannel.playLiveNote(restNote);
+            touchingString = -1;
+            touchingFret = -1;
+            lastFret = -1;
+        }
+
+        int action = event.getAction();
+
+        switch (action & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN: {
+                Log.d("MGH multitouch", "down");
+
+                break;
+            }
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                Log.d("MGH multitouch", "pointer_down");
+                final int index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
+                        >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+
+                float y;
+                zoomTop = -1;
+                zoomBottom = -1;
+                for (int i = 0; i < event.getPointerCount(); i++) {
+                    y = event.getY(i);
+                    if (zoomTop == -1 || y < zoomTop) {
+                        zoomTop = y;
+                    }
+                    if (y > zoomBottom) {
+                        zoomBottom = y;
+                    }
+                }
+                zoomboxHeight = boxHeight;
+                zooming = true;
+                break;
+            }
+            case MotionEvent.ACTION_POINTER_UP: {
+                zooming = false;
+                zoomBottom = -1;
+                zoomTop = -1;
+                skipBottom += zoomingSkipBottom;
+                skipTop += zoomingSkipTop;
+                zoomingSkipTop = 0;
+                zoomingSkipBottom = 0;
+
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                if (zooming)
+                    zoom(event);
+                break;
+            }
+        }
+    }
+
+    private void zoom(MotionEvent event) {
+
+        float top = -1;
+        float bottom = -1;
+
+        float y;
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            y = event.getY(i);
+            if (top == -1 || y < top) {
+                top = y;
+            }
+            if (y > bottom) {
+                bottom = y;
+            }
+        }
+
+        float topDiff = zoomTop - top;
+        float bottomDiff = bottom - zoomBottom;
+
+        zoomingSkipTop = Math.max(skipTop * -1, (int)Math.floor(topDiff / zoomboxHeight));
+        zoomingSkipBottom = Math.max(skipBottom * -1, (int)Math.floor(bottomDiff / zoomboxHeight));
+
+        showingFrets = Math.max(1, frets - skipTop - skipBottom - zoomingSkipBottom - zoomingSkipTop);
+
+        invalidate();
     }
 }

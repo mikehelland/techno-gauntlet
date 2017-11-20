@@ -26,13 +26,9 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //TODO have such a good database I don't need to blow it away every time
-        if (!true) {
-            deleteDatabase("OMG_TECHNO_GAUNTLET");
-            deleteDatabase("OMG_BANANAS");
-            deleteDatabase("OMG_SURFACES");
-            deleteDatabase("OMG_BT_DEVICE");
-        }
+        //deleteDatabase("OMG_TECHNO_GAUNTLET"); // soundsets
+        //deleteDatabase("OMG_SURFACES");
+        //deleteDatabase("OMG_BT_DEVICE");
 
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|
