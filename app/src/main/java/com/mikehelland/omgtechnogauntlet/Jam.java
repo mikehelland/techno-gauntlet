@@ -688,6 +688,10 @@ class Jam {
         }
     }
 
+    int[] getChordProgression() {
+        return progression;
+    }
+
     int getBeats() {
         return beats;
     }

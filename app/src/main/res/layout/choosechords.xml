@@ -5,13 +5,35 @@
               android:layout_height="fill_parent"
               android:orientation="vertical">
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+"
+        android:id="@+id/record_chords_button"
+        android:layout_alignParentLeft="true"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="x"
+        android:id="@+id/clear_chords_button"
+        android:layout_alignParentRight="true"/>
+
+    <com.mikehelland.omgtechnogauntlet.ChordsView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@id/record_chords_button"
+        android:id="@+id/chords_view"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/record_chords_button"
+        android:layout_toLeftOf="@id/clear_chords_button"/>
 
     <TextView android:layout_height="wrap_content"
               android:layout_width="wrap_content"
               android:text="Chord Progressions:"
               android:textSize="24sp"
               android:padding="4dip"
-              android:id="@+id/header_caption"/>
+              android:id="@+id/header_caption"
+        android:layout_below="@id/chords_view"/>
 
     <ListView android:id="@+id/chords_list"
               android:layout_width="fill_parent"

@@ -195,14 +195,14 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
 
                 ChordsFragment fragment = new ChordsFragment();
-                fragment.setJam(mJam, MainFragment.this);
+                fragment.setJam(mJam);
                 showFragmentRight(fragment);
 
 
             }
         });
 
-        mChordsButton.setJam((Main)getActivity(), mJam);
+        mChordsButton.setJam(mJam);
         mJam.addInvalidateOnNewMeasureListener(mChordsButton);
 
         updateUI();
