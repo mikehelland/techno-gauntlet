@@ -718,7 +718,7 @@ class Jam {
         notes.clear();
 
         if (part.has("volume")) {
-            channel.volume = (float)part.getDouble("volume");
+            channel.setVolume((float)part.getDouble("volume"));
         }
         if (part.has("mute") && part.getBoolean("mute"))
             channel.disable();
@@ -761,7 +761,7 @@ class Jam {
         }
 
         if (part.has("volume")) {
-            jamChannel.volume = (float)part.getDouble("volume");
+            jamChannel.setVolume((float)part.getDouble("volume"));
         }
         //todo pan
 
@@ -784,7 +784,7 @@ class Jam {
         boolean[][] pattern = jamChannel.pattern;
 
         if (part.has("volume")) {
-            jamChannel.volume = (float)part.getDouble("volume");
+            jamChannel.setVolume((float)part.getDouble("volume"));
         }
         if (part.has("mute") && part.getBoolean("mute"))
             jamChannel.disable();

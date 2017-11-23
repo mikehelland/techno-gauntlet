@@ -192,7 +192,7 @@ class CommandProcessor extends BluetoothDataCallback {
 
         return  (channel.isEnabled() ? "1," : "0,") +
                 (channel.getSoundSet().isChromatic() ? "1," : "0,") +
-                surface + "," + channel.volume + "," + channel.getSoundSetName();
+                surface + "," + channel.getVolume() + "," + channel.getSoundSetName();
     }
 
     private void sendChannelInfo() {
@@ -356,7 +356,7 @@ class CommandProcessor extends BluetoothDataCallback {
             String[] data = params.split(",");
             float volume = Float.parseFloat(data[0]);
             int channel = Integer.parseInt(data[1]);
-            mJam.getChannels().get(channel).volume = volume;
+            mJam.getChannels().get(channel).setVolume(volume);
         }
         catch (Exception e) {
             Log.d("MGH set channel volume", e.getMessage());

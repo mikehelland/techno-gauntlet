@@ -59,7 +59,7 @@ class Channel {
     private String mSurfaceURL = "";
 
     boolean[][] pattern;
-    float volume = 0.75f;
+    private float volume = 0.75f;
 
     public Channel(Context context, Jam jam, OMGSoundPool pool) {
         mPool = pool;
@@ -626,5 +626,15 @@ class Channel {
         if (mSoundSet.isOscillator()) {
             mSoundSet.getOscillator().finish();
         }
+    }
+    void setVolume(float volume) {
+        this.volume = volume;
+
+        if (mSoundSet != null && mSoundSet.isOscillator()) {
+            mSoundSet.getOscillator().ugDac.setVolume(volume);
+        }
+    }
+    float getVolume() {
+        return volume;
     }
 }

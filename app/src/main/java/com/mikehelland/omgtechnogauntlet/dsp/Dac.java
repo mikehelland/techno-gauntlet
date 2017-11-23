@@ -3,6 +3,7 @@ package com.mikehelland.omgtechnogauntlet.dsp;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.os.Build;
 //import com.monadpad.tonezart.PcmWriter;
 
 
@@ -51,8 +52,10 @@ public class Dac extends UGen {
 	}
 
 	public void setVolume(float gain) {
-        //track.setVolume(gain);
-    }
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			track.setVolume(gain);
+		}
+	}
 	
 	public void tick() {
 

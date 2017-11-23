@@ -187,7 +187,7 @@ public class MixerView extends View {
         mJam = jam;
         mChannel = channel;
 
-        volume = channel.volume;
+        volume = channel.getVolume();
 
         setChannelName(name);
 
@@ -196,7 +196,7 @@ public class MixerView extends View {
     private void performTouch(float x) {
         if (touchingArea == TOUCHING_AREA_VOLUME) {
             volume = Math.max(0, Math.min(1, (x - volumeStart) / volumeWidth));
-            mChannel.volume = volume;
+            mChannel.setVolume(volume);
         }
         else if (touchingArea == TOUCHING_AREA_PAN) {
             pan = Math.max(-1.0f, Math.min(1.0f, ((x - panStart) / panWidth - 0.5f) * 2));
