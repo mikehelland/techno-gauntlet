@@ -873,7 +873,6 @@ class Jam {
             if (callback != null) {
                 if (callback.remove) {
                     mStateChangeListeners.remove(i);
-                    i--;
                 } else {
                     callback.newState(state);
                 }

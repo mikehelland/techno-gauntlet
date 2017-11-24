@@ -183,7 +183,8 @@ public class Main extends Activity {
 
         final Jam jam = new Jam(this, mPool);
         jam.load(json);
-        jam.addStateChangeListener(mJamCallback);
+        if (mJamCallback != null)
+            jam.addStateChangeListener(mJamCallback);
 
         final Runnable callback = new Runnable() {
             @Override
