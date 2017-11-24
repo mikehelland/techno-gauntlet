@@ -6,25 +6,40 @@
               android:gravity="center">
 
 
-    <TextView android:text="4 / 4"
+    <TextView android:text="4 Beats"
               android:layout_alignParentRight="true"
               android:layout_alignParentLeft="true"
               android:layout_height="wrap_content"
               android:layout_width="fill_parent"
               android:id="@+id/timesig"
-              android:textSize="28sp"
+              android:textSize="48sp"
               android:gravity="center"
             />
+
+    <SeekBar
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/beats_seekbar"
+        android:layout_below="@id/timesig"/>
+
     <TextView android:text="2 measures"
               android:layout_alignParentRight="true"
               android:layout_alignParentLeft="true"
               android:layout_height="wrap_content"
               android:layout_width="fill_parent"
-              android:layout_below="@id/timesig"
-              android:textSize="28sp"
+              android:layout_below="@id/beats_seekbar"
               android:id="@+id/measures"
+              android:textSize="48sp"
               android:gravity="center"
             />
+
+
+    <SeekBar
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/measures_seekbar"
+        android:layout_below="@id/measures"
+        />
 
     <TextView android:text="XXX bpm"
               android:layout_height="wrap_content"
@@ -58,7 +73,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/shuffle_seekbar"
         android:layout_below="@id/shuffle_caption"/>
-
 
 
     <!--<Button android:text="Tap Tempo"

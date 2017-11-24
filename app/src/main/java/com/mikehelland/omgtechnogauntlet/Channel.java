@@ -66,7 +66,7 @@ class Channel {
         this.context = context;
         mJam = jam;
 
-        pattern = new boolean[8][mJam.getSubbeats() * mJam.getBeats()];
+        pattern = new boolean[8][mJam.getSubbeats() * mJam.getTotalBeats()];
 
         mSoundSet = new SoundSet();
         mSoundSet.setName("DRUMBEAT");
@@ -89,7 +89,7 @@ class Channel {
         this.context = context;
         mJam = jam;
 
-        pattern = new boolean[8][mJam.getSubbeats() * mJam.getBeats()];
+        pattern = new boolean[8][mJam.getSubbeats() * mJam.getTotalBeats()];
 
 
         mMainSound = sound;
@@ -100,7 +100,7 @@ class Channel {
 
     private void setup() {
         subbeats = mJam.getSubbeats();
-        totalsubbeats = subbeats * mJam.getBeats();
+        totalsubbeats = subbeats * mJam.getTotalBeats();
         dsubbeats = (double)subbeats;
     }
 

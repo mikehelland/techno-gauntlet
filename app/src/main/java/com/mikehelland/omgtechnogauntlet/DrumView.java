@@ -244,7 +244,7 @@ public class DrumView extends View {
 
     public void setJam(Jam jam, Channel channel) {
         mJam = jam;
-        wide = mJam.getBeats();
+        wide = mJam.getTotalBeats();
 
         setChannel(channel);
 
@@ -269,12 +269,14 @@ public class DrumView extends View {
     void handleFirstColumn(int y)  {
         if (firstRowButton == y) {
             firstRowButton = -1;
-            wide = mJam.getBeats();
+            wide = mJam.getTotalBeats();
+            tall = mChannel.pattern.length;
         }
         else {
             trackData = mChannel.getTrack(y);
             firstRowButton = y;
             wide = mJam.getSubbeats();
+            tall = mJam.getTotalBeats();
         }
 
         height = -1;

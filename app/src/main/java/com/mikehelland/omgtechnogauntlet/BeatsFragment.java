@@ -22,6 +22,10 @@ public class BeatsFragment extends OMGFragment {
     private SeekBar bpmSeekBar;
     private TextView shuffleText;
     private SeekBar shuffleSeekBar;
+    private TextView measuresText;
+    private SeekBar measuresSeekBar;
+    private TextView beatsText;
+    private SeekBar beatsSeekBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,7 +40,10 @@ public class BeatsFragment extends OMGFragment {
 
         shuffleText = (TextView)view.findViewById(R.id.shuffle_caption);
         shuffleSeekBar = (SeekBar)view.findViewById(R.id.shuffle_seekbar);
-
+        measuresText = (TextView)view.findViewById(R.id.measures);
+        measuresSeekBar = (SeekBar)view.findViewById(R.id.measures_seekbar);
+        beatsText = (TextView)view.findViewById(R.id.timesig);
+        beatsSeekBar = (SeekBar)view.findViewById(R.id.beats_seekbar);
 
         if (mJam != null)
             setup();
@@ -102,6 +109,60 @@ public class BeatsFragment extends OMGFragment {
         int shuffle = (int)(mJam.getShuffle() * 100);
         shuffleText.setText(Integer.toString(shuffle) + "% shuffle");
         shuffleSeekBar.setProgress(shuffle);
+
+        int measures = mJam.getMeasures();
+        measuresText.setText(measures + " Measures");
+        measuresSeekBar.setProgress(measures);
+        measuresSeekBar.setMax(16);
+
+        measuresSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (b) {
+                    if (i > 0) {
+                        measuresText.setText(i + " Measures");
+                        mJam.setMeasures(i);
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mMainFragment.updateBPMUI();
+            }
+        });
+
+        int beats = mJam.getBeats();
+        beatsText.setText(beats + " Beats");
+        beatsSeekBar.setProgress(beats);
+        beatsSeekBar.setMax(8);
+
+        beatsSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (b) {
+                    if (i > 0) {
+                        beatsText.setText(i + " Beats");
+                        mJam.setBeats(i);
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mMainFragment.updateBPMUI();
+            }
+        });
 
     }
 

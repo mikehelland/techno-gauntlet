@@ -19,7 +19,8 @@ class Jam {
     private Random rand = new Random();
 
     private int subbeats = 4;
-    private int beats = 8;
+    private int beats = 4;
+    private int measures = 2;
     private int totalsubbeats = subbeats * beats;
     private int subbeatLength = 125; //70 + rand.nextInt(125); // 125;
 
@@ -172,6 +173,16 @@ class Jam {
             JSONArray parts;
             parts = jsonData.getJSONArray("parts");
 
+            if (jsonData.has("measures")) {
+                setMeasures(jsonData.getInt("measures"));
+                if (jsonData.has("beats")) {
+                    setBeats(jsonData.getInt("beats"));
+                }
+                if (jsonData.has("subbeats")) {
+                    //setSubbeats(jsonData.getInt("subbeats"));
+                }
+            }
+
             if (jsonData.has("subbeatMillis")) {
                 setSubbeatLength(jsonData.getInt("subbeatMillis"));
             }
@@ -265,6 +276,10 @@ class Jam {
         return shuffle;
     }
 
+    void setBeats(int beats) {
+        this.beats = beats;
+    }
+
     private class PlaybackThread extends Thread {
 
         int ibeat;
@@ -307,7 +322,7 @@ class Jam {
 
                 lastI = ibeat++;
 
-                if (ibeat == beats * subbeats) {
+                if (ibeat == beats * subbeats * measures) {
                     ibeat = 0;
                     onNewLoop();
 
@@ -497,6 +512,8 @@ class Jam {
         sb.append(mm.getScale());
         sb.append("], \"rootNote\": ");
         sb.append(mm.getKey());
+        sb.append(", \"measures\" :");
+        sb.append(measures);
         sb.append(", \"beats\" :");
         sb.append(beats);
         sb.append(", \"subbeats\" :");
@@ -692,8 +709,17 @@ class Jam {
         return progression;
     }
 
+    int getTotalBeats() {
+        return beats * measures;
+    }
     int getBeats() {
         return beats;
+    }
+    void setMeasures(int i) {
+        measures = i;
+    }
+    int getMeasures() {
+        return measures;
     }
 
     int getSubbeats() {
@@ -866,7 +892,7 @@ class Jam {
         return enabled;
     }
 
-    void runCallbacks(String state) {
+    private void runCallbacks(String state) {
         StateChangeCallback callback;
         for (int i = mStateChangeListeners.size() - 1; i >= 0; i--) {
             callback = mStateChangeListeners.get(i);

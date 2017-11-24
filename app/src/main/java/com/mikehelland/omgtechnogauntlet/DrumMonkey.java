@@ -27,7 +27,7 @@ public class DrumMonkey {
 
         rand = jam.getRand();
 
-        beats = jam.getBeats();
+        beats = jam.getTotalBeats();
         subbeats = jam.getSubbeats();
         pattern = new boolean[8][beats * subbeats];
 

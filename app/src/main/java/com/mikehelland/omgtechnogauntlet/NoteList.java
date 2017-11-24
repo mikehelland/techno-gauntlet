@@ -39,7 +39,7 @@ public class NoteList extends ArrayList<Note> {
             if (beatsUsed == beat) {
 
                 // if this eight note is over writing another, chop it in two
-                /*if (!existingNote.isRest() && note.getBeats() == 0.5d && existingNote.getBeats() == 0.5d) {
+                /*if (!existingNote.isRest() && note.getTotalBeats() == 0.5d && existingNote.getTotalBeats() == 0.5d) {
                     existingNote.setBeats(0.25d);
                     note.setBeats(0.25d);
                     add(i + 1, note);
