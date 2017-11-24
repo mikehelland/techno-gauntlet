@@ -437,27 +437,23 @@ public class MainFragment extends OMGFragment {
 
     private void setupJamStateListener() {
         mJamListener = new Jam.StateChangeCallback() {
-            @Override
-            void onPlay() {
-                if (getActivity() != null)
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            playButton.setText(R.string.stop);
-                        }
-                    });
-            }
 
             @Override
-            void onStop() {
-                if (getActivity() != null)
+            void newState(final String state, Object... args) {
+                if (getActivity() != null) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            playButton.setText(R.string.play);
+                            if (state.equals("STOP"))
+                                playButton.setText(R.string.play);
+
+                            if (state.equals("PLAY"))
+                                playButton.setText(R.string.stop);
                         }
                     });
+                }
             }
+
 
             @Override
             void onSubbeatLengthChange(int length, String source) {

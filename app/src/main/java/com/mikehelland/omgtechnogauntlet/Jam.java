@@ -62,7 +62,8 @@ class Jam {
         mStateChangeListeners.add(listener);
     }
     void removeStateChangeListener(StateChangeCallback listener) {
-        mStateChangeListeners.remove(listener);
+        listener.remove = true;
+        //mStateChangeListeners.remove(listener);
     }
 
     void loadSoundSets() {
@@ -115,9 +116,7 @@ class Jam {
             playbackThread.start();
         }
 
-        for (StateChangeCallback callback : mStateChangeListeners) {
-            callback.onPlay();
-        }
+        runCallbacks("PLAY");
     }
 
 
@@ -333,10 +332,13 @@ class Jam {
             Channel channel;
             for (int i = 0; i < mChannels.size(); i++) { // Channel channel : mChannels) {
                 channel = mChannels.get(i);
-                finishAt = channel.getFinishAt();
-                if (finishAt > 0 && now >= finishAt) {
-                    channel.mute();
-                    channel.finishCurrentNoteAt(0);
+                //todo this ends up null occasionally, threading issue?
+                if (channel != null) {
+                    finishAt = channel.getFinishAt();
+                    if (finishAt > 0 && now >= finishAt) {
+                        channel.mute();
+                        channel.finishCurrentNoteAt(0);
+                    }
                 }
             }
         }
@@ -372,9 +374,7 @@ class Jam {
             channel.mute();
         }
 
-        for (StateChangeCallback callback : mStateChangeListeners) {
-            callback.onStop();
-        }
+        runCallbacks("STOP");
     }
 
     void finish() {
@@ -809,14 +809,15 @@ class Jam {
     }
 
     abstract static class StateChangeCallback {
-        abstract void onPlay();
-        abstract void onStop();
         abstract void onSubbeatLengthChange(int length, String source);
         abstract void onKeyChange(int key, String source);
         abstract void onScaleChange(String scale, String source);
         abstract void onChordProgressionChange(int[] chords);
         abstract void onNewChannel(Channel channel);
         abstract void onChannelEnabledChanged(int channelNumber, boolean enabled, String source);
+
+        abstract void newState(String stateChange, Object... args);
+        boolean remove = false;
     }
 
     Channel newChannel(long soundsetId) {
@@ -863,5 +864,20 @@ class Jam {
         }
 
         return enabled;
+    }
+
+    void runCallbacks(String state) {
+        StateChangeCallback callback;
+        for (int i = mStateChangeListeners.size() - 1; i >= 0; i--) {
+            callback = mStateChangeListeners.get(i);
+            if (callback != null) {
+                if (callback.remove) {
+                    mStateChangeListeners.remove(i);
+                    i--;
+                } else {
+                    callback.newState(state);
+                }
+            }
+        }
     }
 }

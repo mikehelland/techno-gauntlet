@@ -116,13 +116,9 @@ public class Main extends Activity {
         mJamCallback = new Jam.StateChangeCallback() {
 
             @Override
-            void onPlay() {
-                mBtf.sendCommandToDevices("PLAY", null);
-            }
-
-            @Override
-            void onStop() {
-                mBtf.sendCommandToDevices("STOP", null);
+            void newState(String state, Object... args) {
+                if (state.equals("PLAY") || state.equals("STOP"))
+                    mBtf.sendCommandToDevices(state, null);
             }
 
             @Override

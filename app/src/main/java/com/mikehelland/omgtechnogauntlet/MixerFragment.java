@@ -29,8 +29,7 @@ public class MixerFragment extends OMGFragment {
 
 
         mCallback = new Jam.StateChangeCallback() {
-            @Override void onPlay() {}
-            @Override void onStop() {}
+            @Override void newState(String state, Object... args) {}
             @Override void onSubbeatLengthChange(int length, String source) {}
             @Override void onKeyChange(int key, String source) {}
             @Override void onScaleChange(String scale, String source) {}
