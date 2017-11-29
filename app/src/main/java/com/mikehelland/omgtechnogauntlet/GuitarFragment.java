@@ -1,7 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,19 +41,18 @@ public class GuitarFragment extends OMGFragment {
 
     private Fretboard getPreferredFretboard() {
 
-        String sound = mChannel.getMainSound();
-
         String surfaceURL = mChannel.getSurfaceURL();
+        String surfaceJSON = mChannel.getSurfaceJSON();
 
         Fretboard fretboard;
         if ("PRESET_VERTICAL".equals(surfaceURL)) {
             fretboard = null;
         }
         else {
-            String fretboardJson = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                    .getString(sound + "_DEFAULT_FRETBOARD_JSON",
-                            getString(R.string.default_fretboard_json));
-            fretboard = new Fretboard(mChannel, mJam, fretboardJson);
+            if (surfaceJSON == null) {
+                surfaceJSON = getString(R.string.default_fretboard_json);
+            }
+            fretboard = new Fretboard(mChannel, mJam, surfaceJSON);
         }
 
 

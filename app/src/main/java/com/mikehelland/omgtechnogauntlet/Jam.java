@@ -21,7 +21,7 @@ class Jam {
     private int subbeats = 4;
     private int beats = 4;
     private int measures = 2;
-    private int totalsubbeats = subbeats * beats;
+
     private int subbeatLength = 125; //70 + rand.nextInt(125); // 125;
 
     private float shuffle = 0;
@@ -123,9 +123,13 @@ class Jam {
 
 
     int getCurrentSubbeat() {
-        int i = playbackThread.ibeat;
-        if (i == 0) i = beats * subbeats;
-        return i - 1;
+        return playbackThread.ibeat;
+        //todo there's probably a good reason for this code below
+        //todo but it made the beat counter not right (because I added measures)
+        //todo so.... why was it here? mistake? or part of the recording features?
+        //int i = playbackThread.ibeat;
+        //if (i == 0) i = beats * subbeats;
+        //return i - 1;
 
     }
 
@@ -133,7 +137,7 @@ class Jam {
         if (playbackThread == null)
             return 0;
 
-        int i = playbackThread.lastI;
+        int i = playbackThread.ibeat;
 
         debugTouch.iclosestsubbeat = i;
         debugTouch.dbeat = (i + playbackThread.timeSinceLast / (double)subbeatLength) / subbeats;
@@ -146,7 +150,7 @@ class Jam {
 
         if (playbackThread.timeSinceLast > subbeatLength / 2) {
             i = i + 1;
-            if (i == totalsubbeats)
+            if (i == getTotalSubbeats())
                 i = 0;
 
             //if (i == -1) i = beats * subbeats - 1;
@@ -283,7 +287,6 @@ class Jam {
     private class PlaybackThread extends Thread {
 
         int ibeat;
-        int lastI;
         long timeSinceLast;
 
         public void run() {
@@ -296,41 +299,40 @@ class Jam {
             long now;
 
             ibeat = 0;
-
-
+            long timeUntilNext;
             while (!cancelPlaybackThread) {
 
                 now = System.currentTimeMillis();
                 timeSinceLast = now - lastBeatPlayed;
 
-                if (ibeat % subbeats == 0) {
-                    if (timeSinceLast < subbeatLength) {
-                        pollFinishedNotes(now);
-                        continue;
-                    }
+                timeUntilNext = lastBeatPlayed + subbeatLength;
+                if (ibeat % subbeats != 0 && shuffle > 0) {
+                    timeUntilNext += (int)(subbeatLength * shuffle);
                 }
-                else {
-                    if (timeSinceLast < subbeatLength + (int)(subbeatLength * shuffle)) {
-                        pollFinishedNotes(now);
-                        continue;
-                    }
+
+                if (now < timeUntilNext) {
+                    pollFinishedNotes(now);
+                    continue;
                 }
 
                 //lastBeatPlayed = now;
-                lastBeatPlayed += subbeatLength;
+                //lastBeatPlayed += subbeatLength;
+                //split the difference?
+                lastBeatPlayed = (now + lastBeatPlayed + subbeatLength) / 2;
                 playBeatSampler(ibeat);
 
-                lastI = ibeat++;
-
-                if (ibeat == beats * subbeats * measures) {
+                if (ibeat + 1 == beats * subbeats * measures) {
                     ibeat = 0;
                     onNewLoop();
 
                     for (View iv : viewsToInvalidateOnNewMeasure) {
                         iv.postInvalidate();
                     }
-
                 }
+                else {
+                    ibeat++;
+                }
+
 
                 for (View iv : viewsToInvalidateOnBeat) {
                     iv.postInvalidate();
@@ -727,7 +729,7 @@ class Jam {
     }
 
     int getTotalSubbeats() {
-        return totalsubbeats;
+        return subbeats * beats * measures;
     }
 
     Random getRand() {

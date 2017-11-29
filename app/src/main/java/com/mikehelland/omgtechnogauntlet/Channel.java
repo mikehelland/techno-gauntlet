@@ -19,7 +19,6 @@ class Channel {
     private long finishAt;
 
     private Note lastPlayedNote;
-    private int playingNoteNumber = -1;
 
     private int highNote = 0;
     private int lowNote = 0;
@@ -54,7 +53,6 @@ class Channel {
     ArrayList<DebugTouch> debugTouchData = new ArrayList<>();
 
     private SoundSet mSoundSet;
-    private String mMainSound;
 
     private String mSurfaceURL = "";
 
@@ -66,34 +64,11 @@ class Channel {
         this.context = context;
         mJam = jam;
 
-        pattern = new boolean[8][mJam.getSubbeats() * mJam.getTotalBeats()];
-
         mSoundSet = new SoundSet();
         mSoundSet.setName("DRUMBEAT");
         mSoundSet.setURL("");
         mSoundSet.setChromatic(false);
 
-
-        setup();
-    }
-
-    public Channel(Context context, Jam jam, OMGSoundPool pool, String type, String sound) {
-
-        mSoundSet = new SoundSet();
-        mSoundSet.setName(type);
-        mSoundSet.setURL(sound);
-        mSoundSet.setChromatic(true);
-
-
-        mPool = pool; //new OMGSoundPool(8, AudioManager.STREAM_MUSIC, 0);
-        this.context = context;
-        mJam = jam;
-
-        pattern = new boolean[8][mJam.getSubbeats() * mJam.getTotalBeats()];
-
-
-        mMainSound = sound;
-        //mSoundSetName = sound;
 
         setup();
     }
@@ -150,8 +125,6 @@ class Channel {
         if (mSoundSet.isOscillator()) {
             return mSoundSet.getOscillator().playNote(note, multiTouch);
         }
-
-        playingNoteNumber = note.getScaledNote();
 
         note.isPlaying(true);
         lastPlayedNote = note;
@@ -238,10 +211,6 @@ class Channel {
 
     boolean isAScale() {
         return isAScale;
-    }
-
-    int getPlayingNoteNumber() {
-        return playingNoteNumber;
     }
 
     NoteList getNotes() {
@@ -372,10 +341,6 @@ class Channel {
         return mSoundSet.getName();
     }
 
-    String getMainSound() {
-        return mMainSound;
-    }
-
     void prepareSoundSetFromURL(String url) {
         SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(context);
         SoundSet soundSet = dataHelper.getSoundSetByURL(url);
@@ -394,9 +359,11 @@ class Channel {
 
         mSoundSet = soundSet;
 
-        //creates a new array from the old one
-        if (pattern.length != mSoundSet.getSounds().size()) {
-            pattern = new boolean[mSoundSet.getSounds().size()][mJam.getTotalSubbeats()];
+        //creates a new array from the old one //todo looks like it just blanks it really
+        int soundCount = mSoundSet.getSounds().size();
+        int totalSubbeats = mJam.getTotalSubbeats();
+        if (pattern == null || pattern.length != soundCount) {
+            pattern = new boolean[soundCount][totalSubbeats];
         }
 
         for (SoundSet.Sound sound : mSoundSet.getSounds()) {
@@ -608,6 +575,10 @@ class Channel {
         }
 
         return SufacesDataHelper.PRESET_SEQUENCER;
+    }
+
+    String getSurfaceJSON() {
+        return null;
     }
 
     boolean isEnabled() {
