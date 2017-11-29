@@ -104,17 +104,33 @@ class BluetoothManager {
     }
 
     void sendCommandToDevices(String command, String exceptAddress) {
+        boolean clearDisconnectedConnections = false;
         for(BluetoothConnection conn : connectionThreads) {
+            if (conn.isDisconnected()) {
+                clearDisconnectedConnections = true;
+                continue;
+            }
+
             if (exceptAddress == null || !conn.getDevice().getAddress().equals(exceptAddress))
                 conn.sendCommand(command);
         }
+        if (clearDisconnectedConnections)
+            checkConnections();
     }
 
     void sendNameValuePairToDevices(String name, String value, String exceptAddress) {
+        boolean clearDisconnectedConnections = false;
         for(BluetoothConnection conn : connectionThreads) {
+            if (conn.isDisconnected()) {
+                clearDisconnectedConnections = true;
+                continue;
+            }
+
             if (exceptAddress == null || !conn.getDevice().getAddress().equals(exceptAddress))
                 conn.sendNameValuePair(name, value);
         }
+        if (clearDisconnectedConnections)
+            checkConnections();
     }
 
     void checkConnections() {

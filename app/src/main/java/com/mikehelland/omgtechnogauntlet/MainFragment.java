@@ -132,6 +132,11 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
 
+                if (channel.getSoundSet().getURL().length() == 0 ||
+                        !channel.getSoundSet().isValid()) {
+                    return;
+                }
+
                 String surfaceURL = channel.getSurfaceURL();
 
                 if (surfaceURL.equals("PRESET_SEQUENCER")) {
@@ -152,11 +157,16 @@ public class MainFragment extends OMGFragment {
             @Override
             public boolean onLongClick(View view) {
 
+                if (channel.getSoundSet().getURL().length() == 0 ||
+                        !channel.getSoundSet().isValid()) {
+                    return false;
+                }
+
                 SurfaceFragment f = new SurfaceFragment();
                 f.setJam(mJam, channel);
                 showFragmentRight(f);
 
-                return false;
+                return true;
             }
         });
 

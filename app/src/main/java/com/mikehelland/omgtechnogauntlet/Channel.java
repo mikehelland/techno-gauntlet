@@ -69,6 +69,7 @@ class Channel {
         mSoundSet.setURL("");
         mSoundSet.setChromatic(false);
 
+        pattern = new boolean[8][mJam.getTotalSubbeats()];
 
         setup();
     }

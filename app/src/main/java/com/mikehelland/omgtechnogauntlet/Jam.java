@@ -829,7 +829,8 @@ class Jam {
             trackData = track.getJSONArray("data");
 
             for (int j = 0; j < trackData.length(); j++) {
-                pattern[i][j] = trackData.getInt(j) == 1;
+                if (i < pattern.length && j < pattern[i].length)
+                    pattern[i][j] = trackData.getInt(j) == 1;
             }
 
         }
