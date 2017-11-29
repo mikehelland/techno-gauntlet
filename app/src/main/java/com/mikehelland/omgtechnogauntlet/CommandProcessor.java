@@ -208,20 +208,17 @@ class CommandProcessor extends BluetoothDataCallback {
             return;
 
         Channel channel = mChannel;
-        if (channel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
-            String fretboardInfo = getDrumbeatInfo(channel) + ";";
 
-            mConnection.sendNameValuePair("DRUMBEAT_INFO", fretboardInfo);
-        }
-        else {
-            String fretboardInfo = channel.getLowNote() + "," +
-                    channel.getHighNote() + "," + channel.getOctave() + getCaptions() +  ";";
-            mConnection.sendNameValuePair("FRETBOARD_INFO", fretboardInfo);
+        String drumbeatInfo = getDrumbeatInfo(channel) + ";";
+        mConnection.sendNameValuePair("DRUMBEAT_INFO", drumbeatInfo);
 
-            String noteInfo = getNoteInfo(channel) + ";";
-            Log.d("MGH note info", noteInfo);
-            mConnection.sendNameValuePair("NOTE_INFO", noteInfo);
-        }
+        String fretboardInfo = channel.getLowNote() + "," +
+                channel.getHighNote() + "," + channel.getOctave() + getCaptions() +  ";";
+        mConnection.sendNameValuePair("FRETBOARD_INFO", fretboardInfo);
+
+        String noteInfo = getNoteInfo(channel) + ";";
+        Log.d("MGH note info", noteInfo);
+        mConnection.sendNameValuePair("NOTE_INFO", noteInfo);
     }
 
     private String getNoteInfo(Channel channel) {
