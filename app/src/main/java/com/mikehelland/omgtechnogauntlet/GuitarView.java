@@ -281,7 +281,6 @@ public class GuitarView extends View {
         }
 
         if (action == MotionEvent.ACTION_MOVE) {
-            Log.d("MGH NOT ZOOMING!", "Yeah");
             if (lastFret > -1) {
                 touchingString = getTouchingString(event.getX());
 

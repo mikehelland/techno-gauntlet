@@ -10,7 +10,7 @@ class Channel {
     private static int STATE_LIVEPLAY = 0;
     private static int STATE_PLAYBACK = 1;
 
-    private int arpeggiate= -1;
+    private int arpeggiate = 0;
 
     private int state = 1;
 
