@@ -119,6 +119,14 @@ class CommandProcessor extends BluetoothDataCallback {
 
         if (name.equals("SET_CHANNEL_VOLUME")) setChannelVolume(value);
         if (name.equals("SET_CHANNEL_ENABLED")) setChannelEnabled(value);
+
+        if (name.equals("CLEAR_CHANNEL")) {
+            int channelI = Integer.parseInt(value);
+            if (channelI < mJam.getChannels().size()) {
+                mJam.getChannels().get(channelI).clearNotes();
+            }
+            return;
+        }
     }
 
     private void channelPlayNote(String value) {
