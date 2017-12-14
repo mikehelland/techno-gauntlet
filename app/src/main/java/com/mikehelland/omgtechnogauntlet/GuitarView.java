@@ -352,10 +352,12 @@ public class GuitarView extends View {
 
         }
         else {
-            rootNote = key + mChannel.getOctave() * 12;
-            Log.d("MGH guitarview rootnote", Integer.toString(mChannel.getOctave()));
             lowNote = mChannel.getLowNote();
             highNote = mChannel.getHighNote();
+            rootNote = key + mChannel.getOctave() * 12;
+            while (rootNote < lowNote) {
+                rootNote += 12;
+            }
         }
 
         int[] allFrets = new int[highNote - lowNote + 1];

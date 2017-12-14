@@ -156,7 +156,7 @@ public class SoundSetFragment extends OMGFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 askToRemove(i);
-                return false;
+                return true;
             }
         });
 

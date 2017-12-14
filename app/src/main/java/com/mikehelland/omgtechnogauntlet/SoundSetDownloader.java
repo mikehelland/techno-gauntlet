@@ -225,9 +225,12 @@ class SoundSetDownloader {
         @Override
         protected String doInBackground(String... surl) {
 
+            String resultList = "";
             try {
                 JSONArray data = mJSON.getJSONArray("data");
 
+                String prefix = mJSON.has("prefix") ? mJSON.getString("prefix") : "";
+                String postfix = mJSON.has("postfix") ? mJSON.getString("postfix") : "";
                 itotaldownloads = data.length();
                 String results;
                 Log.d("MGH", "do in background start");
@@ -239,28 +242,28 @@ class SoundSetDownloader {
                     publishProgress(-100);
 
                     try {
-                        URL url = new URL(data.getJSONObject(i).getString("url"));
+                        URL url = new URL(prefix +
+                                data.getJSONObject(i).getString("url") + postfix);
                         results = downloadFile(url, i);
                     }
                     catch (MalformedURLException murle) {
                         results = null;
                     }
                     if (results != null) {
-                        return results;
+                        resultList += results;
                     }
                 }
-
-
             }
             catch (JSONException jsonexp) {
                 Log.d("MGH", "JSON parsing problem");
                 Log.e("MGH", Log.getStackTraceString(jsonexp));
             }
 
+            if (resultList.length() > 0)
+                return resultList;
 
             return null;
         }
-
 
         String downloadFile(URL url, int position) {
 

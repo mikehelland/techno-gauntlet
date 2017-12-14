@@ -200,7 +200,6 @@ public class MelodyMaker {
 
         newNoteNumber = ascale[newNoteNumber];
 
-
         return key + newNoteNumber + octaves * 12;
     }
 

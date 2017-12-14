@@ -21,6 +21,9 @@ class SoundSet {
     private int mHighNote;
     private int mLowNote;
 
+    private String mPrefix = "";
+    private String mPostfix = "";
+
     private boolean mIsValid = false;
 
     private boolean mIsOscillator = false;
@@ -62,10 +65,13 @@ class SoundSet {
             }
 
             mName = soundSet.getString("name");
+
             mChromatic = soundSet.has("chromatic") && soundSet.getBoolean("chromatic");
-            if (soundSet.has("highNote") && soundSet.has("lowNote")) {
-                mHighNote = soundSet.getInt("highNote");
+            if (soundSet.has("lowNote")) {
                 mLowNote = soundSet.getInt("lowNote");
+            }
+            if (soundSet.has("highNote")) {
+                mHighNote = soundSet.getInt("highNote");
             }
 
             mIsOscillator = mURL.startsWith("PRESET_OSC_");
@@ -74,15 +80,25 @@ class SoundSet {
                 return true;
             }
 
+            JSONArray data = soundSet.getJSONArray("data");
+
             if (soundSet.has("defaultSurface")) {
                 mDefaultSurface = soundSet.getString("defaultSurface");
             }
 
-            JSONArray data = soundSet.getJSONArray("data");
+            if (soundSet.has("prefix")) {
+                mPrefix = soundSet.getString("prefix");
+            }
+            if (soundSet.has("postfix")) {
+                mPostfix = soundSet.getString("postfix");
+            }
 
             if (!mChromatic) {
                 mLowNote = 0;
                 mHighNote = data.length() - 1;
+            }
+            else if (!soundSet.has("highNote")) {
+                mHighNote = mLowNote + data.length() - 1;
             }
 
             JSONObject soundJSON;
@@ -99,7 +115,7 @@ class SoundSet {
                     sound.setName(soundJSON.getString("name"));
                 }
 
-                sound.setURL(soundJSON.getString("url"));
+                sound.setURL(mPrefix + soundJSON.getString("url") + mPostfix);
 
                 if (soundJSON.has("preset_id")) {
                     sound.setPresetId((soundJSON.getInt("preset_id")));
