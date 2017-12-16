@@ -22,6 +22,16 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         mContext = context;
     }
 
+    void updatePresetResource() {
+        SQLiteDatabase db = getWritableDatabase();
+        setupBassSoundSet(db);
+        setupSlapBassSoundSet(db);
+        setupSamplerSoundSet(db);
+        setupRockDrumsSoundSet(db);
+        setupHipHopDrumsSoundSet(db);
+        db.close();
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d("MGH", "onCreate soundsets table");
@@ -57,8 +67,19 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("chromatic", false);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
-        db.insert("soundsets", null, data);
 
+        String[] columns = new String[]{"_id"};
+        String[] urls = new String[]{data.getAsString("url")};
+        Cursor cursor = db.query("soundsets", columns, "url=?", urls, null, null, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            long id = cursor.getLong(0);
+            db.update("soundsets", data, "_id=" + id, null);
+        }
+        else {
+            db.insert("soundsets", null, data);
+        }
+        cursor.close();
     }
 
     private void setupRockDrumsSoundSet(SQLiteDatabase db) {
@@ -72,8 +93,19 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("chromatic", false);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
-        db.insert("soundsets", null, data);
 
+        String[] columns = new String[]{"_id"};
+        String[] urls = new String[]{data.getAsString("url")};
+        Cursor cursor = db.query("soundsets", columns, "url=?", urls, null, null, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            long id = cursor.getLong(0);
+            db.update("soundsets", data, "_id=" + id, null);
+        }
+        else {
+            db.insert("soundsets", null, data);
+        }
+        cursor.close();
     }
 
     private void setupHipHopDrumsSoundSet(SQLiteDatabase db) {
@@ -87,7 +119,19 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("chromatic", false);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
-        db.insert("soundsets", null, data);
+
+        String[] columns = new String[]{"_id"};
+        String[] urls = new String[]{data.getAsString("url")};
+        Cursor cursor = db.query("soundsets", columns, "url=?", urls, null, null, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            long id = cursor.getLong(0);
+            db.update("soundsets", data, "_id=" + id, null);
+        }
+        else {
+            db.insert("soundsets", null, data);
+        }
+        cursor.close();
     }
 
     private void setupBassSoundSet(SQLiteDatabase db) {
@@ -101,8 +145,19 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("chromatic", true);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
-        db.insert("soundsets", null, data);
 
+        String[] columns = new String[]{"_id"};
+        String[] urls = new String[]{data.getAsString("url")};
+        Cursor cursor = db.query("soundsets", columns, "url=?", urls, null, null, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            long id = cursor.getLong(0);
+            db.update("soundsets", data, "_id=" + id, null);
+        }
+        else {
+            db.insert("soundsets", null, data);
+        }
+        cursor.close();
     }
 
     private void setupSlapBassSoundSet(SQLiteDatabase db) {
@@ -116,24 +171,20 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("chromatic", true);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
-        db.insert("soundsets", null, data);
 
+        String[] columns = new String[]{"_id"};
+        String[] urls = new String[]{data.getAsString("url")};
+        Cursor cursor = db.query("soundsets", columns, "url=?", urls, null, null, null);
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            long id = cursor.getLong(0);
+            db.update("soundsets", data, "_id=" + id, null);
+        }
+        else {
+            db.insert("soundsets", null, data);
+        }
+        cursor.close();
     }
-
-    /*private void setupKeyboardSoundSet(SQLiteDatabase db) {
-        String json = KeyboardSamplerChannel.getDefaultSoundSetJSON(mContext);
-
-        ContentValues data = new ContentValues();
-        data.put("name", "Keyboard");
-        data.put("url", "PRESET_KEYBOARD");
-        data.put("omg_id", "PRESET_KEYBOARD");
-        data.put("type", "MELODY");
-        data.put("chromatic", true);
-        data.put("data", json);
-        data.put("time", System.currentTimeMillis() / 1000);
-        db.insert("soundsets", null, data);
-
-    }*/
 
     private void setupOscillatorSoundSet(SQLiteDatabase db) {
 

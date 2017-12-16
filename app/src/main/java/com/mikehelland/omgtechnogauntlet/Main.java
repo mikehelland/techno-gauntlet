@@ -27,6 +27,9 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
 
         //deleteDatabase("OMG_TECHNO_GAUNTLET"); // soundsets
+        SoundSetDataOpenHelper soundsetData = new SoundSetDataOpenHelper(this);
+        soundsetData.updatePresetResource();
+
         //deleteDatabase("OMG_SURFACES");
         //deleteDatabase("OMG_BT_DEVICE");
 

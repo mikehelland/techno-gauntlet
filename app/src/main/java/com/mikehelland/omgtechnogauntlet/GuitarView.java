@@ -295,7 +295,7 @@ public class GuitarView extends View {
                     note.setBasicNote(skipBottom + touchingFret - rootFret);
                     note.setScaledNote(fretMapping[skipBottom + touchingFret]);
                     note.setInstrumentNote(fretMapping[skipBottom + touchingFret] - lowNote);
-                    if (touchingString == 0)
+                    if (!mJam.isPlaying() || touchingString == 0)
                         mChannel.playLiveNote(note);
                     else
                         mChannel.updateLiveNote(note);

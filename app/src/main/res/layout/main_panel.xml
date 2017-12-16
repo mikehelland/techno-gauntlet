@@ -44,11 +44,11 @@
 
     <ImageButton android:layout_width="48dip"
         android:layout_height="48dip"
-        android:id="@+id/open_fretboard_button"
+        android:id="@+id/options_button"
         android:text=""
-        android:layout_toLeftOf="@id/mute_button"
+        android:layout_toRightOf="@id/track_button"
         android:textColor="#FFFFFFFF"
-        android:src="@drawable/fretboard"
+        android:src="@drawable/ic_options"
         />
 
 

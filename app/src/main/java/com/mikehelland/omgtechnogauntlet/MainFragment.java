@@ -77,14 +77,28 @@ public class MainFragment extends OMGFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SoundSetFragment f = new SoundSetFragment();
+            if (channel.getSoundSet().getURL().length() == 0 ||
+                    !channel.getSoundSet().isValid()) {
+                return;
+            }
+
+            String surfaceURL = channel.getSurfaceURL();
+
+            if (surfaceURL.equals("PRESET_SEQUENCER")) {
+                DrumFragment f = new DrumFragment();
                 f.setJam(mJam, channel);
                 showFragmentRight(f);
+            }
+            else {
 
+                GuitarFragment f = new GuitarFragment();
+                f.setJam(mJam, channel);
+                showFragmentRight(f);
+            }
             }
         });
 
-        button.setOnLongClickListener(new View.OnLongClickListener() {
+        /*button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
 
@@ -94,7 +108,7 @@ public class MainFragment extends OMGFragment {
 
                 return false;
             }
-        });
+        });*/
 
         final Button muteButton = (Button)controls.findViewById(R.id.mute_button);
         muteButton.setOnClickListener(new View.OnClickListener() {
@@ -128,32 +142,17 @@ public class MainFragment extends OMGFragment {
             }
         });
 
-        controls.findViewById(R.id.open_fretboard_button).setOnClickListener(new View.OnClickListener() {
+        controls.findViewById(R.id.options_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SoundSetFragment f = new SoundSetFragment();
+                f.setJam(mJam, channel);
+                showFragmentRight(f);
 
-                if (channel.getSoundSet().getURL().length() == 0 ||
-                        !channel.getSoundSet().isValid()) {
-                    return;
-                }
-
-                String surfaceURL = channel.getSurfaceURL();
-
-                if (surfaceURL.equals("PRESET_SEQUENCER")) {
-                    DrumFragment f = new DrumFragment();
-                    f.setJam(mJam, channel);
-                    showFragmentRight(f);
-                }
-                else {
-
-                    GuitarFragment f = new GuitarFragment();
-                    f.setJam(mJam, channel);
-                    showFragmentRight(f);
-                }
             }
         });
 
-        controls.findViewById(R.id.open_fretboard_button).setOnLongClickListener(new View.OnLongClickListener() {
+        controls.findViewById(R.id.options_button).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
 
