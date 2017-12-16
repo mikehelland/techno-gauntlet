@@ -113,7 +113,7 @@ public class BeatsFragment extends OMGFragment {
         int measures = mJam.getMeasures();
         measuresText.setText(measures + " Measures");
         measuresSeekBar.setProgress(measures);
-        measuresSeekBar.setMax(16);
+        measuresSeekBar.setMax(2);
 
         measuresSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -140,7 +140,7 @@ public class BeatsFragment extends OMGFragment {
         int beats = mJam.getBeats();
         beatsText.setText(beats + " Beats");
         beatsSeekBar.setProgress(beats);
-        beatsSeekBar.setMax(8);
+        beatsSeekBar.setMax(4);
 
         beatsSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

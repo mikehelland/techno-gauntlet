@@ -80,7 +80,6 @@ class Jam {
             for (Channel channel : mChannels) {
                 channel.resetI();
             }
-
         }
 
         for (int i = 0; i < mChannels.size(); i++) {
@@ -318,10 +317,13 @@ class Jam {
                 //lastBeatPlayed = now;
                 //lastBeatPlayed += subbeatLength;
                 //split the difference?
-                lastBeatPlayed = (now + lastBeatPlayed + subbeatLength) / 2;
-                playBeatSampler(ibeat);
+                if (ibeat < beats * subbeats * measures) {
+                    lastBeatPlayed = (now + lastBeatPlayed + subbeatLength) / 2;
+                    playBeatSampler(ibeat);
+                }
 
-                if (ibeat + 1 == beats * subbeats * measures) {
+                ibeat++;
+                if (ibeat >= beats * subbeats * measures) {
                     ibeat = 0;
                     onNewLoop();
 
@@ -329,10 +331,6 @@ class Jam {
                         iv.postInvalidate();
                     }
                 }
-                else {
-                    ibeat++;
-                }
-
 
                 for (View iv : viewsToInvalidateOnBeat) {
                     iv.postInvalidate();

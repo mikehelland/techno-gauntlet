@@ -408,7 +408,23 @@ class Channel {
         sb.append(mSoundSet.getURL());
         sb.append("\", \"surfaceURL\" : \"");
         sb.append(getSurfaceURL());
-        sb.append("\", \"scale\": \"");
+        sb.append("\", \"volume\": ");
+        sb.append(volume);
+        if (!enabled)
+            sb.append(", \"mute\": true");
+
+        if (getSurfaceURL().equals("PRESET_SEQUENCER")) {
+            getTrackData(sb);
+        } else {
+            getNoteData(sb);
+        }
+
+        sb.append("}");
+    }
+
+    void getNoteData(StringBuilder sb) {
+
+        sb.append(", \"scale\": \"");
         sb.append(mJam.getScaleString());
         sb.append("\", \"ascale\": [");
         sb.append(mJam.getScaleString());
@@ -416,10 +432,6 @@ class Channel {
         sb.append(mJam.getKey());
         sb.append(", \"octave\": ");
         sb.append(getOctave());
-        sb.append(", \"volume\": ");
-        sb.append(volume);
-        if (!enabled)
-            sb.append(", \"mute\": true");
         sb.append(", \"notes\" : [");
 
         boolean first = true;
@@ -441,35 +453,32 @@ class Channel {
             sb.append("}");
         }
         sb.append("]");
+    }
 
-        if (!mSoundSet.isChromatic()) {
-            sb.append(", \"tracks\": [");
+    void getTrackData(StringBuilder sb) {
+        sb.append(", \"tracks\": [");
 
-            ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();
-            for (int p = 0; p < sounds.size(); p++) {
+        ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();
+        for (int p = 0; p < sounds.size(); p++) {
 
-                sb.append("{\"name\": \"");
-                sb.append(sounds.get(p).getName());
-                sb.append("\", \"sound\": \"");
-                sb.append(sounds.get(p).getURL());
-                sb.append("\", \"data\": [");
-                for (int i = 0; i < pattern[p].length; i++) {
-                    sb.append(pattern[p][i] ? 1 : 0);
-                    if (i < pattern[p].length - 1)
-                        sb.append(",");
-                }
-                sb.append("]}");
-
-                if (p < sounds.size() - 1)
+            sb.append("{\"name\": \"");
+            sb.append(sounds.get(p).getName());
+            sb.append("\", \"sound\": \"");
+            sb.append(sounds.get(p).getURL());
+            sb.append("\", \"data\": [");
+            for (int i = 0; i < pattern[p].length; i++) {
+                sb.append(pattern[p][i] ? 1 : 0);
+                if (i < pattern[p].length - 1)
                     sb.append(",");
-
             }
+            sb.append("]}");
 
-            sb.append("]");
+            if (p < sounds.size() - 1)
+                sb.append(",");
+
         }
 
-        sb.append("}");
-
+        sb.append("]");
     }
 
     void playBeat(int subbeat) {

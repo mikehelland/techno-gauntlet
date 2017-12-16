@@ -67,4 +67,62 @@ class BassSamplerChannel {
         return sb.toString();
     }
 
+    static String getSlapSoundSetJSON(Context context) {
+
+        int i = 0;
+        int[] rids = new int[25];
+
+        rids[i++] = R.raw.slapa1;
+        rids[i++] = R.raw.slapbf1;
+        rids[i++] = R.raw.slapb1;
+        rids[i++] = R.raw.slapc1;
+        rids[i++] = R.raw.slapcs1;
+        rids[i++] = R.raw.slapd1;
+        rids[i++] = R.raw.slapds1;
+        rids[i++] = R.raw.slape1;
+        rids[i++] = R.raw.slapf1;
+        rids[i++] = R.raw.slapfs1;
+        rids[i++] = R.raw.slapg1;
+        rids[i++] = R.raw.slapgs1;
+        rids[i++] = R.raw.slapa2;
+        rids[i++] = R.raw.slapbf2;
+        rids[i++] = R.raw.slapb2;
+        rids[i++] = R.raw.slapc2;
+        rids[i++] = R.raw.slapcs2;
+        rids[i++] = R.raw.slapd2;
+        rids[i++] = R.raw.slapds2;
+        rids[i++] = R.raw.slape2;
+        rids[i++] = R.raw.slapf2;
+        rids[i++] = R.raw.slapfs2;
+        rids[i++] = R.raw.slapg2;
+        rids[i++] = R.raw.slapgs2;
+        rids[i++] = R.raw.slapa3;
+
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"");
+        sb.append("Slap Bass\", \"url\": \"http://openmusic.gallery/data/413\", ");
+        sb.append("\"highNote\": 45, \"lowNote\": 21, \"octave\": 2, ");
+        sb.append("\"data\": [");
+
+        Resources res = context.getResources();
+        String resourceName;
+        for (int j = 0; j < i; j++) {
+
+            resourceName = res.getResourceName(rids[j]);
+            resourceName = resourceName.substring(resourceName.lastIndexOf("/") + 1);
+            sb.append("{\"url\": \"PRESET_" + resourceName + "\", \"preset_id\": ");
+            sb.append(rids[j]);
+            sb.append("}");
+
+            if (j < i - 1) {
+                sb.append(", \n");
+            }
+
+        }
+
+        sb.append("]}");
+        Log.d("MGH", sb.toString());
+        return sb.toString();
+    }
 }

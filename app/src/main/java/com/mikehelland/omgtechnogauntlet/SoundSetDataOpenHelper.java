@@ -39,6 +39,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
         setupOscillatorSoundSet(db);
         setupBassSoundSet(db);
+        setupSlapBassSoundSet(db);
         setupSamplerSoundSet(db);
         setupRockDrumsSoundSet(db);
         setupHipHopDrumsSoundSet(db);
@@ -96,6 +97,21 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("name", "Electric Bass");
         data.put("url", "PRESET_BASS");
         data.put("omg_id", "PRESET_BASS");
+        data.put("type", "BASSLINE");
+        data.put("chromatic", true);
+        data.put("data", json);
+        data.put("time", System.currentTimeMillis() / 1000);
+        db.insert("soundsets", null, data);
+
+    }
+
+    private void setupSlapBassSoundSet(SQLiteDatabase db) {
+        String json = BassSamplerChannel.getSlapSoundSetJSON(mContext);
+
+        ContentValues data = new ContentValues();
+        data.put("name", "Slap Bass");
+        data.put("url", "http://openmusic.gallery/data/413");
+        data.put("omg_id", "PRESET_SLAP_BASS");
         data.put("type", "BASSLINE");
         data.put("chromatic", true);
         data.put("data", json);
