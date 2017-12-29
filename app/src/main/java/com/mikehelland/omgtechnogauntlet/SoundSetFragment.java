@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -131,7 +132,9 @@ public class SoundSetFragment extends OMGFragment {
                         if (mCallback != null)
                             mCallback.onChoice(mChannel.getSoundSet());
 
-                        getActivity().getFragmentManager().popBackStack();
+                        Activity activity = getActivity();
+                        if (activity != null)
+                            activity.getFragmentManager().popBackStack();
 
                         mPool.onAllLoadsFinishedCallback = oldPoolCallback;
                     }

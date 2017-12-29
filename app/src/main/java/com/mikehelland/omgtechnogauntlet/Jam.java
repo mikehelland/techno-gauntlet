@@ -594,13 +594,13 @@ class Jam {
 
         DrumMonkey monkey = new DrumMonkey(this);
 
-        if (rand.nextBoolean()) {
-            monkey.makePercussionFill();
+        if (channel.getSoundSetName().toLowerCase().indexOf("kit") > -1
+                || rand.nextBoolean()) {
+            //todo makeDrumBeatFromMelody is a possibility
+            monkey.makeDrumBeats();
         }
         else {
-            //todo makeDrumBeatFromMelody is a possibility
-
-            monkey.makeDrumBeats();
+            monkey.makePercussionFill();
         }
         channel.setPattern(monkey.getPattern());
 

@@ -8,32 +8,30 @@ import java.util.Random;
  * Date: 11/15/13
  * Time: 1:56 PM
  */
-public class DrumMonkey {
+class DrumMonkey {
 
 
 
-    protected boolean[][] pattern;
+    boolean[][] pattern;
 
-    protected int beats;
-    protected int subbeats;
+    int beats;
+    int subbeats;
+    int measures;
 
-    protected Random rand;
+    Random rand;
 
-    protected String kitName = "";
-
-
-
-    public DrumMonkey(Jam jam) {
+    DrumMonkey(Jam jam) {
 
         rand = jam.getRand();
 
         beats = jam.getTotalBeats();
         subbeats = jam.getSubbeats();
-        pattern = new boolean[8][beats * subbeats];
+        measures = jam.getMeasures();
 
+        pattern = new boolean[8][measures * beats * subbeats];
     }
 
-    public static boolean[] default_kick = new boolean[] {
+    static boolean[] default_kick = new boolean[] {
             true, false, false, false,
             false, false, false, false,
             true, false, false, false,
@@ -43,7 +41,7 @@ public class DrumMonkey {
             true, false, false, false,
             false, false, false, false,
     };
-    public static boolean[] default_clap = new boolean[] {
+    static boolean[] default_clap = new boolean[] {
             false, false, false, false,
             true, false, false, false,
             false, false, false, false,
@@ -53,7 +51,7 @@ public class DrumMonkey {
             false, false, false, false,
             false, false, false, false,
     };
-    public static boolean[] default_hithat = new boolean[] {
+    static boolean[] default_hithat = new boolean[] {
             true, false, false, false,
             true, false, false, false,
             true, false, false, false,
@@ -130,17 +128,21 @@ public class DrumMonkey {
     }
 
 
-    public void makeHiHatBeats(boolean defaultPattern) {
+    void makeHiHatBeats(boolean defaultPattern) {
 
         boolean[][] hihats = new boolean[][] {pattern[2], pattern[3]};
 
         int openhh = rand.nextInt(3) > 0 ? 0 : 1;
         int opensubs = rand.nextInt(3) > 0 ? 0 : 1;
         int tmpopensubs;
+        int subbeatOffset;
 
-        for (int i = 0; i < hihats[0].length; i++) {
-            hihats[0][i] = defaultPattern && default_hithat[i];
-            hihats[1][i] = false;
+        for (int measure = 0; measure < 0; measure++) {
+            subbeatOffset = measure * beats* subbeats;
+            for (int i = 0; i < beats* subbeats; i++) {
+                hihats[0][i + subbeatOffset] = defaultPattern && default_hithat[i];
+                hihats[1][i + subbeatOffset] = false;
+            }
         }
 
         if (defaultPattern)
@@ -148,23 +150,22 @@ public class DrumMonkey {
 
 
         int downbeat;
-        for (int i = 0; i < 4; i++) {
-            downbeat = i * 4;
-            hihats[openhh][downbeat] = rand.nextInt(20) > 0;
-            hihats[openhh][downbeat + 16] = rand.nextInt(20) > 0;
+        for (int measure = 0; measure < measures; measure++) {
+            subbeatOffset = measure * beats* subbeats;
+            for (int i = 0; i < beats; i++) {
+                downbeat = i * subbeats;
 
-            if (rand.nextBoolean()) {
-                tmpopensubs = (opensubs == 1 && rand.nextBoolean()) ? 1 : 0;
-                hihats[tmpopensubs][downbeat + 2] = true;
-                hihats[tmpopensubs][downbeat + 2 + 16] = true;
+                hihats[openhh][downbeat + subbeatOffset] = rand.nextInt(20) > 0;
 
                 if (rand.nextBoolean()) {
-                    hihats[opensubs][downbeat + 1] = true;
-                    hihats[opensubs][downbeat + 3] = true;
-                    hihats[opensubs][downbeat + 1 + 16] = true;
-                    hihats[opensubs][downbeat + 3 + 16] = true;
-                }
+                    tmpopensubs = (opensubs == 1 && rand.nextBoolean()) ? 1 : 0;
+                    hihats[tmpopensubs][downbeat + 2 + subbeatOffset] = true;
 
+                    if (rand.nextBoolean()) {
+                        hihats[opensubs][downbeat + 1 + subbeatOffset] = true;
+                        hihats[opensubs][downbeat + 3 + subbeatOffset] = true;
+                    }
+                }
             }
         }
     }
@@ -184,8 +185,8 @@ public class DrumMonkey {
         for (int i = 0; i < kick.length; i++) {
             kick[i] = pattern == 0 ? (rand.nextBoolean() && rand.nextBoolean()) :
                       pattern <  5  ? i % subbeats == 0 :
-                      pattern <  9 ? i % 8 == 0 :
-                              (i == 0 || i == 8 || i == 16);
+                      pattern <  9 ? i % beats * measures == 0 :
+                              (i == 0 || i == beats * measures || i == beats * subbeats);
         }
     }
     public void makeClapBeats(boolean defaultPattern) {
@@ -207,7 +208,7 @@ public class DrumMonkey {
 
             clap[i] = pattern != 0 && (
                 (snareCutTime && i % (2 * subbeats) == subbeats) ||
-                        (!snareCutTime && i % (4 * subbeats) == (2 * subbeats))
+                        (!snareCutTime && i % (beats * subbeats) == (2 * subbeats))
 
             );
 
@@ -260,17 +261,17 @@ public class DrumMonkey {
         boolean sparse = rand.nextBoolean();
         boolean on;
         int tom;
-        for (int i = start; i < 16; i++) {
+        for (int i = start; i < beats * subbeats; i++) {
 
             on = (sparse && rand.nextBoolean()) ||
                     (!sparse && (rand.nextBoolean() || rand.nextBoolean()));
             tom = rand.nextInt(3);
 
-            if (everyBar) {
-                toms[tom][i] = on;
+            for (int measure = 0; measure < measures; measure++) {
+                if (everyBar || measure + 1 == measures) {
+                    toms[tom][i] = on;
+                }
             }
-
-            toms[tom][i + 16] = on;
         }
 
     }
@@ -288,15 +289,16 @@ public class DrumMonkey {
                 pattern[3], pattern[4]};
         boolean on;
         int tom;
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < beats * subbeats; i++) {
 
             on = (fillLevel == 1 && (rand.nextBoolean() && rand.nextBoolean())) ||
                     (fillLevel == 2 && rand.nextBoolean()) ||
                     (fillLevel == 3 && (rand.nextBoolean() || rand.nextBoolean()));
             tom = rand.nextInt(5);
 
-            toms[tom][i] = on;
-            toms[tom][i + 16] = on;
+            for (int measure = 0; measure < measures; measure++) {
+                toms[tom][i + measure * beats * subbeats] = on;
+            }
         }
 
     }
