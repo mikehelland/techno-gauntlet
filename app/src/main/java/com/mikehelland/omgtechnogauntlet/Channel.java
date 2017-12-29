@@ -380,6 +380,15 @@ class Channel {
         highNote = mSoundSet.getHighNote();
         lowNote = mSoundSet.getLowNote();
 
+        if (isAScale) {
+            int bottomC = (lowNote % 12 == 0) ? lowNote :
+                    (lowNote + (lowNote % 12));
+            int highC = highNote - (highNote % 12);
+            int octaves = (bottomC + highC) / 12;
+            octaves = (octaves % 2 == 0) ? octaves : (octaves + 1);
+            octave = Math.min(highC / 12, Math.max(bottomC / 12, octaves / 2));
+        }
+
         ids = new int[mSoundSet.getSounds().size()];
 
     }
