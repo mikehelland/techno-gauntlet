@@ -850,7 +850,7 @@ class Jam {
     Channel newChannel(long soundsetId) {
         final Channel channel = new Channel(mContext, this, pool);
 
-        SoundSetDataOpenHelper helper = new SoundSetDataOpenHelper(mContext);
+        SoundSetDataOpenHelper helper = ((Main)mContext).getDatabase().getSoundSetData();
         channel.prepareSoundSet(helper.getSoundSetById(soundsetId));
 
         new Thread(new Runnable() {

@@ -343,7 +343,7 @@ class Channel {
     }
 
     void prepareSoundSetFromURL(String url) {
-        SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(context);
+        SoundSetDataOpenHelper dataHelper = ((Main)context).getDatabase().getSoundSetData();
         SoundSet soundSet = dataHelper.getSoundSetByURL(url);
         if (soundSet != null) {
             prepareSoundSet(soundSet);

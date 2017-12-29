@@ -4,6 +4,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Build;
+import android.util.Log;
 //import com.monadpad.tonezart.PcmWriter;
 
 
@@ -17,6 +18,7 @@ public class Dac extends UGen {
 
     private boolean playing = true;
     private boolean finishing = false;
+    private boolean isOpen = false;
 
 	public Dac() {
 		localBuffer = new float[CHUNK_SIZE];
@@ -48,16 +50,26 @@ public class Dac extends UGen {
 	}
 	
 	public void open() {
-		track.play();
+		try {
+			track.play();
+			isOpen = true;
+		}
+		catch (IllegalStateException exp) {
+            Log.e("MGH DAC", "Could not open AudioTrack");
+            isOpen = false;
+        }
 	}
 
 	public void setVolume(float gain) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+		if (isOpen && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			track.setVolume(gain);
 		}
 	}
 	
 	public void tick() {
+
+	    if (!isOpen)
+	        return;
 
         if (finishing) {
             playing = false;

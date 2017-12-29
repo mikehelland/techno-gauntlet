@@ -313,7 +313,7 @@ class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void sendSoundSets() {
-        SoundSetDataOpenHelper data = new SoundSetDataOpenHelper(mContext);
+        SoundSetDataOpenHelper data = ((Main)mContext).getDatabase().getSoundSetData();
         Cursor cursor = data.getCursor();
         StringBuilder value = new StringBuilder();
         int idColumn = cursor.getColumnIndex("_id");

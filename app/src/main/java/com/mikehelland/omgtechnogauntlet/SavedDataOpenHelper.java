@@ -9,8 +9,11 @@ import android.util.Log;
 
 class SavedDataOpenHelper extends SQLiteOpenHelper {
 
+    private SQLiteDatabase mDB;
+
     SavedDataOpenHelper(Context context) {
         super(context, "OMG_SAVES", null, 5);
+        mDB = getWritableDatabase();
     }
 
     @Override
@@ -57,39 +60,36 @@ class SavedDataOpenHelper extends SQLiteOpenHelper {
     }
 
     Cursor getSavedCursor() {
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM saves ORDER BY time DESC", null);
-        //db.close();
+        Cursor cursor = mDB.rawQuery("SELECT * FROM saves ORDER BY time DESC", null);
 
         return cursor;
     }
 
     public String getLastSaved() {
         String ret = "";
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM saves ORDER BY time DESC LIMIT 1", null);
+        Cursor cursor = mDB.rawQuery("SELECT * FROM saves ORDER BY time DESC LIMIT 1", null);
         if (cursor.getCount() == 1) {
             cursor.moveToFirst();
             ret = cursor.getString(cursor.getColumnIndex("data"));
         }
         cursor.close();
-        db.close();
         return ret;
     }
 
     void delete(long id) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.delete("saves", "_id=?", new String[] {Long.toString(id)});
-        db.close();
+        mDB.delete("saves", "_id=?", new String[] {Long.toString(id)});
     }
 
     String getJamJson(long id) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT data FROM saves WHERE _id=" + id, null);
+        Cursor cursor = mDB.rawQuery("SELECT data FROM saves WHERE _id=" + id, null);
         cursor.moveToFirst();
         String json = cursor.getString(0);
         cursor.close();
-        db.close();
         return json;
+    }
+
+    void cleanUp() {
+        mDB.close();
+        this.close();
     }
 }

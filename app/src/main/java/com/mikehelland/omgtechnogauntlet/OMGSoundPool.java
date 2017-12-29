@@ -124,4 +124,11 @@ class OMGSoundPool extends SoundPool {
 
         return loadedUrls.get(url);
     }
+
+    void cleanUp() {
+        if (mIsDspRunning) {
+            mDspThread.interrupt();
+        }
+        this.release();
+    }
 }

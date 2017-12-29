@@ -68,7 +68,7 @@ public class WelcomeFragment extends OMGFragment {
         Context context = getActivity();
 
         ListView listView = (ListView)mView.findViewById(R.id.saved_list);
-        mCursor = new SavedDataOpenHelper(context).getSavedCursor();
+        mCursor = ((Main)context).getDatabase().getSavedData().getSavedCursor();
 
         SimpleCursorAdapter curA = new SavedDataAdapter(context,
                 R.layout.saved_row,

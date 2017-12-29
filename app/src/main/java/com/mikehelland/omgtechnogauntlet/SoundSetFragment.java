@@ -102,11 +102,11 @@ public class SoundSetFragment extends OMGFragment {
             setup();
     }
 
-    public void setup() {
+    private void setup() {
 
         final Context context = getActivity();
 
-        final SoundSetDataOpenHelper openHelper = new SoundSetDataOpenHelper(context);
+        SoundSetDataOpenHelper openHelper = ((Main)context).getDatabase().getSoundSetData();
         mCursor = openHelper.getCursor();
 
         final SoundSetAdapter curA = new SoundSetAdapter(context,
@@ -129,8 +129,6 @@ public class SoundSetFragment extends OMGFragment {
                 mPool.onAllLoadsFinishedCallback = new Runnable() {
                     @Override
                     public void run() {
-                        if (mCallback != null)
-                            mCallback.onChoice(mChannel.getSoundSet());
 
                         Activity activity = getActivity();
                         if (activity != null)
@@ -141,6 +139,8 @@ public class SoundSetFragment extends OMGFragment {
                 };
 
                 mChannel.prepareSoundSet(new SoundSet(mCursor));
+                if (mCallback != null)
+                    mCallback.onChoice(mChannel.getSoundSet());
 
                 new Thread(new Runnable() {
                     @Override
@@ -278,8 +278,7 @@ public class SoundSetFragment extends OMGFragment {
     private void delete(int i) {
         mCursor.moveToPosition(i);
         long id = mCursor.getLong(mCursor.getColumnIndex("_id"));
-        SoundSetDataOpenHelper dataHelper = new SoundSetDataOpenHelper(getActivity());
-        dataHelper.delete(id);
+        ((Main)getActivity()).getDatabase().getSoundSetData().delete(id);
     }
 
 }

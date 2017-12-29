@@ -14,22 +14,24 @@ import org.json.JSONObject;
 class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     private String cErrorMessage = "";
+    private SQLiteDatabase mDB;
 
     private Context mContext;
     SoundSetDataOpenHelper(Context context) {
         super(context, "OMG_TECHNO_GAUNTLET", null, 1);
         Log.d("MGH", "datahelper constructor");
         mContext = context;
+
+        mDB = getWritableDatabase();
     }
 
     void updatePresetResource() {
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase db = mDB;
         setupBassSoundSet(db);
         setupSlapBassSoundSet(db);
         setupSamplerSoundSet(db);
         setupRockDrumsSoundSet(db);
         setupHipHopDrumsSoundSet(db);
-        db.close();
     }
 
     @Override
@@ -262,9 +264,8 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     Cursor getCursor() {
 
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase db = mDB;
         Cursor cursor = db.rawQuery("SELECT * FROM soundsets ORDER BY _id DESC", null);
-        //db.close();
 
         Log.d("MGH", "opening cursor");
         Log.d("MGH", Integer.toString(cursor.getCount()));
@@ -275,20 +276,19 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     public String getLastSaved() {
         String ret = "";
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase db = mDB;
         Cursor cursor = db.rawQuery("SELECT * FROM soundsets ORDER BY time DESC LIMIT 1", null);
         if (cursor.getCount() == 1) {
             cursor.moveToFirst();
             ret = cursor.getString(cursor.getColumnIndex("data"));
         }
         cursor.close();
-        db.close();
         return ret;
     }
 
     SoundSet addSoundSet(ContentValues data) {
 
-        final SQLiteDatabase db = getWritableDatabase();
+        final SQLiteDatabase db = mDB;
         Cursor existing = db.rawQuery(
                 "SELECT _id FROM soundsets WHERE url='" + data.getAsString("url") + "'", null);
         if (existing.getCount() > 0) {
@@ -301,7 +301,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
             data.put("_id", db.insert("soundsets", null, data));
         }
         existing.close();
-        db.close();
         return new SoundSet(data);
     }
 
@@ -309,7 +308,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
         SoundSet soundset = null;
 
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase db = mDB;
         Cursor cursor = db.rawQuery("SELECT * FROM soundsets WHERE " + where, null);
 
         if (cursor.getCount() == 0) {
@@ -328,7 +327,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
         return soundset;
     }
 
@@ -354,9 +352,12 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     }
 
     void delete(long id) {
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase db = mDB;
         db.delete("soundsets", "_id=?", new String[] {Long.toString(id)});
-        db.close();
     }
 
+    void cleanUp() {
+        mDB.close();
+        this.close();
+    }
 }

@@ -18,7 +18,7 @@ public class Main extends Activity {
     OMGSoundPool mPool = new OMGSoundPool(this, 32, AudioManager.STREAM_MUSIC, 100);
     BluetoothManager mBtf;
     Jam.StateChangeCallback mJamCallback;
-
+    DatabaseContainer mDatabase;
 
     private WelcomeFragment mWelcomeFragment;
 
@@ -26,12 +26,7 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //deleteDatabase("OMG_TECHNO_GAUNTLET"); // soundsets
-        SoundSetDataOpenHelper soundsetData = new SoundSetDataOpenHelper(this);
-        soundsetData.updatePresetResource();
-
-        //deleteDatabase("OMG_SURFACES");
-        //deleteDatabase("OMG_BT_DEVICE");
+        mDatabase = new DatabaseContainer(this);
 
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|
@@ -92,6 +87,8 @@ public class Main extends Activity {
         mJam.pause();
         mJam.finish();
         mBtf.cleanUp();
+        mDatabase.close();
+        mPool.cleanUp();
     }
 
     @Override
@@ -221,4 +218,5 @@ public class Main extends Activity {
 
     }
 
+    DatabaseContainer getDatabase() {return mDatabase;}
 }
