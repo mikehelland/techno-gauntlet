@@ -10,6 +10,8 @@ import java.util.HashMap;
 
 class OMGSoundPool extends SoundPool {
 
+    private volatile boolean isLoading = false;
+
     private boolean isInitialized = false;
     private boolean isLoaded = false;
     private boolean cancelLoading = false;
@@ -82,6 +84,10 @@ class OMGSoundPool extends SoundPool {
     }
 
     void loadSounds() {
+        if (isLoading)
+            return;
+
+        isLoading = true;
 
         // used by the onLoadListener
         soundsToLoad = mSoundsToLoad.size();
@@ -116,6 +122,7 @@ class OMGSoundPool extends SoundPool {
 
             mSoundsToLoad.remove(0);
         }
+        isLoading = false;
     }
 
     int getPoolId(String url) {

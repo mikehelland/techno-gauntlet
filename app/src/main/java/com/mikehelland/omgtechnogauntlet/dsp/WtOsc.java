@@ -1,7 +1,5 @@
 package com.mikehelland.omgtechnogauntlet.dsp;
 
-import android.util.FloatMath;
-
 public class WtOsc extends UGen {
 	public static final int BITS = 8;
 	public static final int ENTRIES = 1<<(BITS-1);
