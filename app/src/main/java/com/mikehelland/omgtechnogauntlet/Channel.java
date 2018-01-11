@@ -283,8 +283,6 @@ class Channel {
 
     private void startRecordingNote(Note note) {
 
-        Log.d("MGH recording", "start");
-
         DebugTouch debugTouch = new DebugTouch();
         debugTouch.mode = "START";
         debugTouchData.add(debugTouch);

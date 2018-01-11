@@ -85,6 +85,12 @@ public class Main extends Activity {
         if (!mPool.isLoaded())
             mPool.cancelLoading();
         mJam.pause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("MGH MAIN", "onDestroy");
         mJam.finish();
         mBtf.cleanUp();
         mDatabase.close();

@@ -8,8 +8,8 @@ android {
         applicationId "com.mikehelland.omgtechnogauntlet"
         minSdkVersion 13
         targetSdkVersion 24
-        versionCode 5
-        versionName "1.6"
+        versionCode 6
+        versionName "1.61"
     }
     buildTypes {
         release {

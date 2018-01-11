@@ -103,7 +103,8 @@ class CommandProcessor extends BluetoothDataCallback {
         }
 
         if (name.equals("SET_ARPEGGIATOR")) {
-            mChannel.setArpeggiator(Integer.parseInt(value));
+            if (mChannel != null)
+                mChannel.setArpeggiator(Integer.parseInt(value));
         }
 
         if (name.equals(JAMINFO_KEY)) onSetKey(value);
