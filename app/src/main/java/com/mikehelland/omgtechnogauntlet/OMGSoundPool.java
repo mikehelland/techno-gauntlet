@@ -93,6 +93,8 @@ class OMGSoundPool extends SoundPool {
         soundsToLoad = mSoundsToLoad.size();
 
         if (soundsToLoad == 0) {
+            isLoading = false;
+
             // because the listener won't fire without sounds to load
             if (onAllLoadsFinishedCallback != null) {
                 onAllLoadsFinishedCallback.run();

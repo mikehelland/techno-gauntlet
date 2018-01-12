@@ -260,7 +260,9 @@ public class DrumView extends View {
 
         for (int i = 0; i < tall; i++) {
             for (int j = 0; j < wide; j++) {
-                data[i][j] = mChannel.pattern[i][j * subbeats];
+                if (i < mChannel.pattern.length &&
+                        j * subbeats < mChannel.pattern[i].length)
+                    data[i][j] = mChannel.pattern[i][j * subbeats];
             }
         }
     }
