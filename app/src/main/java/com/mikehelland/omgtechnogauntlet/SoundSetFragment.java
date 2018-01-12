@@ -206,19 +206,26 @@ public class SoundSetFragment extends OMGFragment {
                                 mPool.onAllLoadsFinishedCallback = new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (mCallback != null)
-                                            mCallback.onChoice(mChannel.getSoundSet());
 
-                                        getActivity().getFragmentManager().popBackStack();
+                                        Activity activity = getActivity();
+                                        if (activity != null)
+                                            activity.getFragmentManager().popBackStack();
 
                                         mPool.onAllLoadsFinishedCallback = oldPoolCallback;
                                     }
                                 };
 
                                 mChannel.prepareSoundSet(soundSet);
+                                if (mCallback != null)
+                                    mCallback.onChoice(mChannel.getSoundSet());
 
-                                mPool.loadSounds();
-                                mChannel.loadSoundSetIds();
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mPool.loadSounds();
+                                        mChannel.loadSoundSetIds();
+                                    }
+                                }).start();
                             }
                         });
                     }
