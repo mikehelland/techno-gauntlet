@@ -434,7 +434,9 @@ public class GuitarView extends View {
 
             draw_y = getHeight() / 2;
             if (!draw_note.isRest()) {
-                draw_y = (frets - 1 - noteMapping[draw_note.getInstrumentNote()]) * boxHeight;
+                if (draw_note.getInstrumentNote() >= 0 && draw_note.getInstrumentNote() < noteMapping.length) {
+                    draw_y = (frets - 1 - noteMapping[draw_note.getInstrumentNote()]) * boxHeight;
+                }
             }
 
             draw_x = draw_beatWidth * (float)beatsUsed * 4.0f;
