@@ -5,6 +5,7 @@ import android.content.Context;
 class DatabaseContainer {
     SoundSetDataOpenHelper mSoundSetData;
     SavedDataOpenHelper mSavedData;
+    final BluetoothDeviceDataHelper mBluetoothDeviceData;
 
     DatabaseContainer(Context context) {
 
@@ -17,11 +18,13 @@ class DatabaseContainer {
 
         mSavedData = new SavedDataOpenHelper(context);
 
+        mBluetoothDeviceData = new BluetoothDeviceDataHelper(context);
     }
 
     void close() {
         mSoundSetData.cleanUp();
         mSavedData.cleanUp();
+        mBluetoothDeviceData.cleanUp();
     }
 
     SoundSetDataOpenHelper getSoundSetData() {

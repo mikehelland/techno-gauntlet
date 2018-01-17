@@ -276,10 +276,12 @@ public class SoundSetFragment extends OMGFragment {
             }
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Remove this SoundSet?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
-
+        Activity activity = getActivity();
+        if (activity != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Remove this SoundSet?").setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show();
+        }
     }
 
     private void delete(int i) {

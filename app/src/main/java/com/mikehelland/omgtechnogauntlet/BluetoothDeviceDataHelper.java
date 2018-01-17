@@ -6,13 +6,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 class BluetoothDeviceDataHelper extends SQLiteOpenHelper {
 
+    private SQLiteDatabase mDB;
+
     BluetoothDeviceDataHelper(Context context) {
         super(context, "OMG_BT_DEVICE", null, 1);
-        Log.d("MGH", "datahelper constructor");
+        mDB = getWritableDatabase();
     }
 
     @Override
@@ -27,13 +28,16 @@ class BluetoothDeviceDataHelper extends SQLiteOpenHelper {
     }
 
     void addBrainDevice(BluetoothDevice device) {
-        SQLiteDatabase db = getWritableDatabase();
+
+        SQLiteDatabase db = mDB;
 
         ContentValues data = new ContentValues();
         data.put("brain", true);
 
         Cursor cursor = db.rawQuery("SELECT * FROM devices WHERE mac = '" + device.getAddress() + "'", null);
-        if (cursor.getCount() > 0) {
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        if (exists) {
             db.update("devices", data, "mac = '" + device.getAddress() + "'", null);
             return;
         }
@@ -42,13 +46,15 @@ class BluetoothDeviceDataHelper extends SQLiteOpenHelper {
         data.put("mac", device.getAddress());
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("devices", null, data);
-        db.close();
     }
 
     Cursor getBrainsCursor() {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM devices WHERE brain ORDER BY _id DESC", null);
+        Cursor cursor = mDB.rawQuery("SELECT * FROM devices WHERE brain ORDER BY _id DESC", null);
         return cursor;
     }
 
+    void cleanUp() {
+        mDB.close();
+        this.close();
+    }
 }

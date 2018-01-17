@@ -84,7 +84,7 @@ public class BluetoothBrainFragment extends OMGFragment {
     }
 
     private Cursor getBrainsCursor() {
-        BluetoothDeviceDataHelper data = new BluetoothDeviceDataHelper(getActivity());
+        BluetoothDeviceDataHelper data = ((Main)getActivity()).getDatabase().mBluetoothDeviceData;
         return data.getBrainsCursor();
     }
 
@@ -126,7 +126,7 @@ public class BluetoothBrainFragment extends OMGFragment {
     }
 
     private void addDevice(BluetoothDevice device) {
-        BluetoothDeviceDataHelper data = new BluetoothDeviceDataHelper(getActivity());
+        BluetoothDeviceDataHelper data = ((Main)getActivity()).getDatabase().mBluetoothDeviceData;
         data.addBrainDevice(device);
     }
 

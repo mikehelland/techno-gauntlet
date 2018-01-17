@@ -299,8 +299,6 @@ class Channel {
     }
 
     private void stopRecording() {
-        if (recordingNote == null)
-            return;
 
         DebugTouch debugTouch = new DebugTouch();
         debugTouch.mode = "STOP";
@@ -318,9 +316,14 @@ class Channel {
         double beats = (subbeat - recordingStartedAtSubbeat) / dsubbeats;
         double startBeat = recordingStartedAtSubbeat / dsubbeats;
 
-        recordingNote.setBeats(beats);
+        synchronized (this) {
+            if (recordingNote == null)
+                return;
 
-        mNoteList.overwrite(recordingNote, startBeat);
+            recordingNote.setBeats(beats);
+
+            mNoteList.overwrite(recordingNote, startBeat);
+        }
 
         recordingNote = null;
         recordingStartedAtSubbeat = -1;
