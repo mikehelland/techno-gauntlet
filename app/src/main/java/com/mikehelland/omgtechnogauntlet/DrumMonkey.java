@@ -12,15 +12,18 @@ class DrumMonkey {
 
 
 
-    boolean[][] pattern;
+    private boolean[][] pattern;
 
-    int beats;
-    int subbeats;
-    int measures;
+    private int beats;
+    private int subbeats;
+    private int measures;
 
-    Random rand;
+    private Random rand;
 
-    DrumMonkey(Jam jam) {
+    private Channel mChannel;
+
+    DrumMonkey(Jam jam, Channel channel) {
+        mChannel = channel;
 
         rand = jam.getRand();
 
@@ -28,29 +31,15 @@ class DrumMonkey {
         subbeats = jam.getSubbeats();
         measures = jam.getMeasures();
 
-        pattern = new boolean[8][measures * beats * subbeats];
+        int sounds = 8;
+        if (channel.getSoundSet() != null
+                && channel.getSoundSet().getSounds().size() > 8) {
+            sounds = channel.getSoundSet().getSounds().size();
+        }
+        //256 is hard coded high limit of 8 measures with 8 beats and 4 subbeats
+        pattern = new boolean[sounds][256]; //[measures * beats * subbeats];
     }
 
-    static boolean[] default_kick = new boolean[] {
-            true, false, false, false,
-            false, false, false, false,
-            true, false, false, false,
-            false, false, false, false,
-            true, false, false, false,
-            false, false, false, false,
-            true, false, false, false,
-            false, false, false, false,
-    };
-    static boolean[] default_clap = new boolean[] {
-            false, false, false, false,
-            true, false, false, false,
-            false, false, false, false,
-            true, false, false, false,
-            false, false, false, false,
-            true, false, false, false,
-            false, false, false, false,
-            false, false, false, false,
-    };
     static boolean[] default_hithat = new boolean[] {
             true, false, false, false,
             true, false, false, false,
@@ -128,7 +117,7 @@ class DrumMonkey {
     }
 
 
-    void makeHiHatBeats(boolean defaultPattern) {
+    private void makeHiHatBeats(boolean defaultPattern) {
 
         boolean[][] hihats = new boolean[][] {pattern[2], pattern[3]};
 
@@ -137,7 +126,7 @@ class DrumMonkey {
         int tmpopensubs;
         int subbeatOffset;
 
-        for (int measure = 0; measure < 0; measure++) {
+        for (int measure = 0; measure < measures; measure++) {
             subbeatOffset = measure * beats* subbeats;
             for (int i = 0; i < beats* subbeats; i++) {
                 hihats[0][i + subbeatOffset] = defaultPattern && default_hithat[i];
@@ -170,12 +159,12 @@ class DrumMonkey {
         }
     }
 
-    public void makeKickBeats(boolean defaultPattern) {
+    void makeKickBeats(boolean defaultPattern) {
 
         boolean[] kick = pattern[0];
         if (defaultPattern) {
             for (int i = 0; i < kick.length; i++) {
-                kick[i] = default_kick[i];
+                kick[i] = i % (subbeats * 2) == 0;
             }
             return;
         }
@@ -189,12 +178,12 @@ class DrumMonkey {
                               (i == 0 || i == beats * measures || i == beats * subbeats);
         }
     }
-    public void makeClapBeats(boolean defaultPattern) {
+    void makeClapBeats(boolean defaultPattern) {
 
         boolean[] clap = pattern[1];
         if (defaultPattern) {
             for (int i = 0; i < clap.length; i++) {
-                clap[i] = default_clap[i];
+                clap[i] =  (i - subbeats) % (beats * subbeats / 2) == 0;
             }
             return;
         }
@@ -217,7 +206,7 @@ class DrumMonkey {
     }
 
 
-    public void makeDrumBeats() {
+    void makeDrumBeats() {
 
         clearPattern();
 
@@ -229,7 +218,7 @@ class DrumMonkey {
 
     }
 
-    public void makeTomBeats() {
+    private void makeTomBeats() {
 
         //maybe none?
         if (rand.nextBoolean())
@@ -242,13 +231,15 @@ class DrumMonkey {
 
         boolean[][] toms = new boolean[][] {pattern[5], pattern[6], pattern[7]};
 
-        for (int ib = 0; ib < 4; ib++) {
-
+        for (int ib = 0; ib < measures * beats * subbeats; ib++) {
+            if (rand.nextBoolean()) {
+                toms[rand.nextInt(4)][ib] = true;
+            }
         }
 
     }
 
-    public void makeTomFill() {
+    private void makeTomFill() {
 
         boolean everyBar = rand.nextBoolean();
         boolean[][] toms = new boolean[][] {pattern[5], pattern[6], pattern[7]};
@@ -276,7 +267,7 @@ class DrumMonkey {
 
     }
 
-    public void makePercussionFill() {
+    void makePercussionFill() {
 
         clearPattern();
 
@@ -304,7 +295,7 @@ class DrumMonkey {
     }
 
 
-    public void clearPattern() {
+    private void clearPattern() {
         for (int i = 0; i < pattern.length; i++) {
             for (int j = 0; j < pattern[i].length; j++) {
                 pattern[i][j] = false;
@@ -313,7 +304,7 @@ class DrumMonkey {
     }
 
 
-    public boolean[][] getPattern() {
+    boolean[][] getPattern() {
         return pattern;
     }
 }

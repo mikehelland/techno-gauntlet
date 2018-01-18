@@ -65,6 +65,7 @@ public class SaveToOMG {
         {
             // Error
             Log.e("MGH SaveToOMG IO", e.getMessage());
+            e.printStackTrace();
         }
 
         return id;

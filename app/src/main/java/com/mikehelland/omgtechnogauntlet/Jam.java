@@ -592,7 +592,7 @@ class Jam {
 
     private void monkeyWithDrums(Channel channel) {
 
-        DrumMonkey monkey = new DrumMonkey(this);
+        DrumMonkey monkey = new DrumMonkey(this, channel);
 
         if (channel.getSoundSetName().toLowerCase().indexOf("kit") > -1
                 || rand.nextBoolean()) {

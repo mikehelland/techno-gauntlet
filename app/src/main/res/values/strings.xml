@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">OMG Techno Gauntlet</string>
+    <string name="app_name">Techno Gauntlet</string>
     <string name="hi_make_music">Let\'s make music!</string>
     <string name="gettags">Descriptive hash tags</string>
     <string name="tags_dialog_title">Add #tags</string>

@@ -69,7 +69,7 @@ class Channel {
         mSoundSet.setURL("");
         mSoundSet.setChromatic(false);
 
-        pattern = new boolean[8][mJam.getTotalSubbeats()];
+        pattern = new boolean[8][256]; // use a high limit [mJam.getTotalSubbeats()];
 
         setup();
     }
@@ -365,7 +365,7 @@ class Channel {
         int soundCount = mSoundSet.getSounds().size();
         int totalSubbeats = mJam.getTotalSubbeats();
         if (pattern == null || pattern.length != soundCount) {
-            pattern = new boolean[soundCount][totalSubbeats];
+            pattern = new boolean[soundCount][256]; //[totalSubbeats];
         }
 
         for (SoundSet.Sound sound : mSoundSet.getSounds()) {
@@ -476,9 +476,9 @@ class Channel {
             sb.append("\", \"sound\": \"");
             sb.append(sounds.get(p).getURL());
             sb.append("\", \"data\": [");
-            for (int i = 0; i < pattern[p].length; i++) {
+            for (int i = 0; i < mJam.getTotalSubbeats(); i++) {
                 sb.append(pattern[p][i] ? 1 : 0);
-                if (i < pattern[p].length - 1)
+                if (i < mJam.getTotalSubbeats() - 1)
                     sb.append(",");
             }
             sb.append("]}");
@@ -525,11 +525,17 @@ class Channel {
 
     private void playDrumBeat(int subbeat) {
         if (enabled) {
+            //TODO this crashes when, say a 1 beat pattern is played in a jam with more than 1 beat
+            // the only real way fix it is change the pattern to the right length at a synchronized time
             for (int i = 0; i < pattern.length; i++) {
-                if (pattern[i][subbeat]) {
-
-                    if (i < ids.length)
-                        playingId = mPool.play(ids[i], volume, volume, 10, 0, 1);
+                try {
+                    if (pattern[i][subbeat]) {
+                        if (i < ids.length)
+                            playingId = mPool.play(ids[i], volume, volume, 10, 0, 1);
+                    }
+                }
+                catch (Exception excp) {
+                    excp.printStackTrace();
                 }
             }
         }
