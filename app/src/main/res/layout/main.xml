@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-              android:id="@+id/main_layout">
+              >
+
+    <TextView
+        android:id="@+id/beatview_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="36sp"
+        android:textAlignment="center"
+        android:text="@string/play"/>
+
+    <com.mikehelland.omgtechnogauntlet.BeatView
+        android:layout_alignParentTop="true"
+        android:id="@+id/main_beatview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/beatview_text" />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
@@ -13,5 +28,13 @@
         android:visibility="invisible"
         />
 
-</FrameLayout>
+    <FrameLayout
+        android:layout_below="@id/main_beatview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/main_layout">
+
+    </FrameLayout>
+
+</RelativeLayout>
 

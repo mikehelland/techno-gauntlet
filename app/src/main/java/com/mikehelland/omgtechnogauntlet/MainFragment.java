@@ -297,21 +297,6 @@ public class MainFragment extends OMGFragment {
             }
         });
 
-        playButton = (Button)mView.findViewById(R.id.play_button);
-        playButton.setText(mJam.isPlaying() ? "Stop" : "Play");
-
-
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mJam.isPlaying()) {
-                    mJam.pause();
-                }
-                else {
-                    play();
-                }
-            }
-        });
 
         Button mixerButton = (Button)mView.findViewById(R.id.mixer_button);
         mixerButton.setOnClickListener(new View.OnClickListener() {
@@ -449,18 +434,6 @@ public class MainFragment extends OMGFragment {
 
             @Override
             void newState(final String state, Object... args) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (state.equals("STOP"))
-                                playButton.setText(R.string.play);
-
-                            if (state.equals("PLAY"))
-                                playButton.setText(R.string.stop);
-                        }
-                    });
-                }
             }
 
 

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Main extends Activity {
@@ -21,6 +22,9 @@ public class Main extends Activity {
     DatabaseContainer mDatabase;
 
     private WelcomeFragment mWelcomeFragment;
+
+    private BeatView mBeatView;
+    private TextView mBeatTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,25 @@ public class Main extends Activity {
         setContentView(R.layout.main);
 
         mJam = new Jam(this, mPool);
+
+        mBeatView = (BeatView)findViewById(R.id.main_beatview);
+        mBeatView.setJam(mJam);
+        mBeatTextView = (TextView)findViewById(R.id.beatview_text);
+        mJam.addInvalidateOnBeatListener(mBeatView);
+
+        mJam.addStateChangeListener(mMainJamListener);
+
+        mBeatView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mJam.isPlaying()) {
+                    mJam.pause();
+                }
+                else {
+                    mJam.kickIt();
+                }
+            }
+        });
 
         setupBluetooth();
 
@@ -228,4 +251,63 @@ public class Main extends Activity {
     }
 
     DatabaseContainer getDatabase() {return mDatabase;}
+    BeatView getBeatView() {return mBeatView;}
+    TextView getBeatTextView() {return mBeatTextView;}
+
+    void setBeatViewText(String text) {
+        mBeatTextView.setText(text);
+    }
+    void setBeatViewText(int id) {
+        mBeatTextView.setText(id);
+    }
+
+    private Jam.StateChangeCallback mMainJamListener = new Jam.StateChangeCallback() {
+
+        @Override
+        void newState(final String stateChange, Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if ("STOP".equals(stateChange)) {
+                        mBeatTextView.setText(R.string.play);
+                    }
+                    else if ("PLAY".equals(stateChange)) {
+                        mBeatTextView.setText(R.string.stop);
+                    }
+                    mBeatView.invalidate();
+                }
+            });
+         }
+
+        @Override
+        void onSubbeatLengthChange(int length, String source) {
+
+        }
+
+        @Override
+        void onKeyChange(int key, String source) {
+
+        }
+
+        @Override
+        void onScaleChange(String scale, String source) {
+
+        }
+
+        @Override
+        void onChordProgressionChange(int[] chords) {
+
+        }
+
+        @Override
+        void onNewChannel(Channel channel) {
+
+        }
+
+        @Override
+        void onChannelEnabledChanged(int channelNumber, boolean enabled, String source) {
+
+        }
+
+    };
 }

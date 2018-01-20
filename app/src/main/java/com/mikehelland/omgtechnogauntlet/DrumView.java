@@ -122,7 +122,7 @@ public class DrumView extends View {
 
         boolean on;
 
-        if (mJam != null && mJam.isPlaying()) {
+        if (mJam != null && !mJam.isPaused()) {
             if (firstRowButton > -1) {
                 int i = 1 + (mJam.getCurrentSubbeat() % wide);
                 int j = mJam.getCurrentSubbeat() / wide ;

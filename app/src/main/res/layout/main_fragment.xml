@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:text="Play"
         android:layout_toLeftOf="@id/main_banana"
+        android:visibility="invisible"
         />
 
 
@@ -34,15 +35,15 @@
         />
 
 
-    <ImageView
-        android:src="@drawable/bluetooth"
+    <Button
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_toLeftOf="@id/mixer_button"
         android:id="@+id/bt_button"
+        android:text="Sync"
         >
 
-    </ImageView>
+    </Button>
 
 
     <ImageView

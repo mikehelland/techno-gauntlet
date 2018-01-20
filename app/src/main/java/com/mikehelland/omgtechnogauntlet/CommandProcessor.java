@@ -133,7 +133,10 @@ class CommandProcessor extends BluetoothDataCallback {
 
         if (name.equals("ON_NEW_LOOP")) {
             if (mSync) {
-                mJam.syncNow();
+                mJam.finish();
+                mJam.setSubbeatLength(mPeerJam.getSubbeatLength());
+                mJam.kickIt();
+
                 mSync = false;
             }
             return;

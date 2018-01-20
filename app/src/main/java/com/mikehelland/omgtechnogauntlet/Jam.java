@@ -39,6 +39,7 @@ class Jam {
     private MelodyMaker mm;
 
     private boolean playing = false;
+    private boolean mIsPaused = true;
 
     private int progressionI = -1;
 
@@ -117,7 +118,7 @@ class Jam {
             playbackThread = new PlaybackThread();
             playbackThread.start();
         }
-
+        mIsPaused = false;
         runCallbacks("PLAY");
     }
 
@@ -322,7 +323,7 @@ class Jam {
                     if (!hasSlept) {
                         hasSlept = true;
                         try {
-                            sleep(subbeatLength / 10 * 6);
+                            sleep(subbeatLength - 50);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -334,7 +335,7 @@ class Jam {
                 hasSlept = false;
 
                 Log.d("MGH ticks since", "" + mghTicks);
-                Log.d("MGH off by", now - lastBeatPlayed + subbeatLength + "");
+                Log.d("MGH off by", now - lastBeatPlayed + "");
                 mghTicks = 0;
 
                 if (ibeat < beats * subbeats * measures) {
@@ -409,6 +410,7 @@ class Jam {
     }
 
     void pause() {
+        mIsPaused = true;
         cancelPlaybackThread = true;
 
         for (Channel channel : mChannels) {
@@ -419,6 +421,7 @@ class Jam {
     }
 
     void finish() {
+        mIsPaused = true;
         for (Channel channel : mChannels) {
             channel.finish();
         }
@@ -936,4 +939,6 @@ class Jam {
     void syncNow() {
         mSyncTime = System.currentTimeMillis();
     }
+
+    boolean isPaused() {return mIsPaused;}
 }
