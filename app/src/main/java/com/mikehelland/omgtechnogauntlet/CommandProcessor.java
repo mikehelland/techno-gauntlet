@@ -23,6 +23,8 @@ class CommandProcessor extends BluetoothDataCallback {
 
     private Context mContext;
 
+    private boolean mSync = false;
+
     void setup(Context context, BluetoothConnection connection, Jam jam, Channel channel) {
         mContext = context;
         mJam = jam;
@@ -125,6 +127,14 @@ class CommandProcessor extends BluetoothDataCallback {
             int channelI = Integer.parseInt(value);
             if (channelI < mJam.getChannels().size()) {
                 mJam.getChannels().get(channelI).clearNotes();
+            }
+            return;
+        }
+
+        if (name.equals("ON_NEW_LOOP")) {
+            if (mSync) {
+                mJam.syncNow();
+                mSync = false;
             }
             return;
         }
@@ -285,6 +295,10 @@ class CommandProcessor extends BluetoothDataCallback {
         }
     }
 
+    boolean isSynced() {
+        return mSync;
+    }
+
     static abstract class OnPeerChangeListener {
         abstract void onChange(JamInfo jam);
     }
@@ -384,5 +398,9 @@ class CommandProcessor extends BluetoothDataCallback {
 
     static String getChannelEnabledCommand(int channelNumber, boolean enabled) {
         return "CHANNEL_ENABLED=" + (enabled?"1,":"0,") + channelNumber;
+    }
+
+    void setSync(boolean sync) {
+        mSync = sync;
     }
 }

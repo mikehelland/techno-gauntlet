@@ -125,6 +125,9 @@ public class Main extends Activity {
             void newState(String state, Object... args) {
                 if (state.equals("PLAY") || state.equals("STOP"))
                     mBtf.sendCommandToDevices(state, null);
+
+                if (state.equals("ON_NEW_LOOP"))
+                    mBtf.sendCommandToDevices(state, null);
             }
 
             @Override

@@ -11,8 +11,10 @@ import android.content.IntentFilter;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class BluetoothManager {
 
@@ -33,7 +35,7 @@ class BluetoothManager {
 
     private BluetoothReadyCallback readyCallback;
 
-    private ArrayList<BluetoothConnection> connectionThreads = new ArrayList<>();
+    private CopyOnWriteArrayList<BluetoothConnection> connectionThreads = new CopyOnWriteArrayList<>();
     private BluetoothAcceptThread acceptThread;
 
     private String partialTransmission = "";
@@ -213,7 +215,7 @@ class BluetoothManager {
         return list;
     }
 
-    ArrayList<BluetoothConnection> getConnections() {
+    List<BluetoothConnection> getConnections() {
         return connectionThreads;
     }
 

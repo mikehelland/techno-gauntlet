@@ -49,6 +49,8 @@ class Jam {
 
     private List<StateChangeCallback> mStateChangeListeners = new ArrayList<>();
 
+    private long mSyncTime = 0L;
+
     Jam(Context context, OMGSoundPool pool) {
 
         this.pool = pool;
@@ -239,7 +241,7 @@ class Jam {
                 mChannels.add(channel);
             }
 
-            onNewLoop();
+            onNewLoop(System.currentTimeMillis());
 
             good = true;
 
@@ -292,16 +294,20 @@ class Jam {
 
             playing = true;
             progressionI = -1; // gets incremented by onNewLoop
-            onNewLoop();
+            onNewLoop(System.currentTimeMillis());
 
             long lastBeatPlayed = System.currentTimeMillis() - subbeatLength;
             long now;
 
+            long mghTicks = 0;
+
+            boolean hasSlept = false;
             ibeat = 0;
             long timeUntilNext;
             while (!cancelPlaybackThread) {
 
                 now = System.currentTimeMillis();
+
                 timeSinceLast = now - lastBeatPlayed;
 
                 timeUntilNext = lastBeatPlayed + subbeatLength;
@@ -309,23 +315,43 @@ class Jam {
                     timeUntilNext += (int)(subbeatLength * shuffle);
                 }
 
-                if (now < timeUntilNext) {
+                if (mSyncTime == 0 && now < timeUntilNext) {
                     pollFinishedNotes(now);
+                    mghTicks++;
+
+                    if (!hasSlept) {
+                        hasSlept = true;
+                        try {
+                            sleep(subbeatLength / 10 * 6);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     continue;
                 }
 
-                //lastBeatPlayed = now;
-                //lastBeatPlayed += subbeatLength;
-                //split the difference?
+                hasSlept = false;
+
+                Log.d("MGH ticks since", "" + mghTicks);
+                Log.d("MGH off by", now - lastBeatPlayed + subbeatLength + "");
+                mghTicks = 0;
+
                 if (ibeat < beats * subbeats * measures) {
-                    lastBeatPlayed = (now + lastBeatPlayed + subbeatLength) / 2;
+                    lastBeatPlayed += subbeatLength;
                     playBeatSampler(ibeat);
                 }
 
                 ibeat++;
+
+                if (mSyncTime > 0) {
+                    ibeat = 1;
+                    lastBeatPlayed = mSyncTime;// + subbeatLength;
+                    mSyncTime = 0;
+                }
                 if (ibeat >= beats * subbeats * measures) {
                     ibeat = 0;
-                    onNewLoop();
+                    onNewLoop(now);
 
                     for (View iv : viewsToInvalidateOnNewMeasure) {
                         iv.postInvalidate();
@@ -335,7 +361,6 @@ class Jam {
                 for (View iv : viewsToInvalidateOnBeat) {
                     iv.postInvalidate();
                 }
-
             }
 
             playing = false;
@@ -362,7 +387,7 @@ class Jam {
 
     private int[] progression = {0};
 
-    private void onNewLoop() {
+    private void onNewLoop(Long now) {
 
         progressionI++;
 
@@ -373,6 +398,7 @@ class Jam {
 
         updateChord(chord);
 
+        runCallbacks("ON_NEW_LOOP");
     }
 
     private void updateChord(int chord) {
@@ -905,5 +931,9 @@ class Jam {
                 }
             }
         }
+    }
+
+    void syncNow() {
+        mSyncTime = System.currentTimeMillis();
     }
 }

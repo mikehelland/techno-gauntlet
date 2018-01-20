@@ -229,6 +229,7 @@ public class BluetoothBrainFragment extends OMGFragment {
         controls.findViewById(R.id.bt_brain_connect_button).setVisibility(View.GONE);
         ((ImageView)controls.findViewById(R.id.img_device)).setImageResource(R.drawable.device_blue);
         controls.findViewById(R.id.peer_jam_controls).setVisibility(View.VISIBLE);
+        controls.findViewById(R.id.sync_button).setVisibility(View.VISIBLE);
 
         controls.findViewById(R.id.tempo_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,6 +243,21 @@ public class BluetoothBrainFragment extends OMGFragment {
             public void onClick(View view) {
                 mJam.setKey(cp.getJam().getKey());
                 mJam.setScale(cp.getJam().getScale());
+            }
+        });
+
+        final Button syncButton = (Button)controls.findViewById(R.id.sync_button);
+        syncButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (cp.isSynced()) {
+                    cp.setSync(false);
+                    syncButton.setText("Sync Beats");
+                }
+                else {
+                    cp.setSync(true);
+                    syncButton.setText("Unsync Beats");
+                }
             }
         });
     }
@@ -259,5 +275,6 @@ public class BluetoothBrainFragment extends OMGFragment {
         ((ImageView)controls.findViewById(R.id.img_device)).setImageResource(R.drawable.device);
         controls.findViewById(R.id.bt_brain_connect_button).setVisibility(View.VISIBLE);
         controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
+        controls.findViewById(R.id.sync_button).setVisibility(View.GONE);
     }
 }
