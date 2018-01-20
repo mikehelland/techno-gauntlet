@@ -248,26 +248,29 @@ class CommandProcessor extends BluetoothDataCallback {
     }
 
     private String getDrumbeatInfo(Channel channel) {
-        String info = "";
+        StringBuilder info = new StringBuilder();
+        int subbeatTotal = mJam.getTotalSubbeats();
         int channels = Math.min(channel.pattern.length, channel.getSoundSet().getSounds().size());
         for (int i = 0; i < channels; i++) {
 
-            info += channel.getSoundSet().getSounds().get(i).getName() + "|";
+            info.append(channel.getSoundSet().getSounds().get(i).getName()).append("|");
 
-            for (int j = 0; j < channel.pattern[i].length; j++) {
+            for (int j = 0; j < subbeatTotal; j++) {
+                if (j >= channel.pattern.length)
+                    break;
 
-                info += channel.pattern[i][j] ? "1" : "0";
+                info.append(channel.pattern[i][j] ? "1" : "0");
                 if (j < channel.pattern[i].length - 1) {
-                    info += "|";
+                    info.append("|");
                 }
 
             }
 
             if (i < channel.pattern.length - 1) {
-                info += ",";
+                info.append(",");
             }
         }
-        return info;
+        return info.toString();
     }
 
     private void onSetKey(String key) {
