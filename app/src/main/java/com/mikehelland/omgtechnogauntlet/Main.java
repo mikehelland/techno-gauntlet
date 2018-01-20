@@ -224,6 +224,9 @@ public class Main extends Activity {
 
                 Jam oldJam = mJam;
                 mJam = jam;
+                mJam.addStateChangeListener(mMainJamListener);
+                mJam.addInvalidateOnBeatListener(mBeatView);
+                mBeatView.setJam(mJam);
 
                 mPool.loadSounds();
                 jam.loadSoundSets();
@@ -251,15 +254,6 @@ public class Main extends Activity {
     }
 
     DatabaseContainer getDatabase() {return mDatabase;}
-    BeatView getBeatView() {return mBeatView;}
-    TextView getBeatTextView() {return mBeatTextView;}
-
-    void setBeatViewText(String text) {
-        mBeatTextView.setText(text);
-    }
-    void setBeatViewText(int id) {
-        mBeatTextView.setText(id);
-    }
 
     private Jam.StateChangeCallback mMainJamListener = new Jam.StateChangeCallback() {
 

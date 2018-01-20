@@ -53,6 +53,6 @@ public class BeatView extends View {
 
     void setJam(Jam jam) {
         mJam = jam;
-        invalidate();
+        postInvalidate();
     }
 }

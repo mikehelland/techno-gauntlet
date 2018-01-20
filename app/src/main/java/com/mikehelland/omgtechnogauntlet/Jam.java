@@ -300,7 +300,7 @@ class Jam {
             long lastBeatPlayed = System.currentTimeMillis() - subbeatLength;
             long now;
 
-            long mghTicks = 0;
+            //long ticks = 0;
 
             boolean hasSlept = false;
             ibeat = 0;
@@ -318,7 +318,7 @@ class Jam {
 
                 if (mSyncTime == 0 && now < timeUntilNext) {
                     pollFinishedNotes(now);
-                    mghTicks++;
+                    //ticks++;
 
                     if (!hasSlept) {
                         hasSlept = true;
@@ -334,9 +334,9 @@ class Jam {
 
                 hasSlept = false;
 
-                Log.d("MGH ticks since", "" + mghTicks);
-                Log.d("MGH off by", now - lastBeatPlayed + "");
-                mghTicks = 0;
+                //Log.d("MGH ticks since", "" + mghTicks);
+                //Log.d("MGH off by", now - lastBeatPlayed + "");
+                //ticks = 0;
 
                 if (ibeat < beats * subbeats * measures) {
                     lastBeatPlayed += subbeatLength;
@@ -347,7 +347,7 @@ class Jam {
 
                 if (mSyncTime > 0) {
                     ibeat = 1;
-                    lastBeatPlayed = mSyncTime;// + subbeatLength;
+                    lastBeatPlayed = mSyncTime + subbeatLength;
                     mSyncTime = 0;
                 }
                 if (ibeat >= beats * subbeats * measures) {
@@ -395,11 +395,13 @@ class Jam {
         if (progressionI >= progression.length || progressionI < 0) {
             progressionI = 0;
         }
+
+        runCallbacks("ON_NEW_LOOP");
+
         int chord = progression[progressionI];
 
         updateChord(chord);
 
-        runCallbacks("ON_NEW_LOOP");
     }
 
     private void updateChord(int chord) {

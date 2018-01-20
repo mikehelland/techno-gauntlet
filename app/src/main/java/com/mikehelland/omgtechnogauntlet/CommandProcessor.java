@@ -133,10 +133,14 @@ class CommandProcessor extends BluetoothDataCallback {
 
         if (name.equals("ON_NEW_LOOP")) {
             if (mSync) {
-                mJam.finish();
-                mJam.setSubbeatLength(mPeerJam.getSubbeatLength());
-                mJam.kickIt();
-
+                //mJam.pause();
+                //mJam.setSubbeatLength(mPeerJam.getSubbeatLength());
+                if (mJam.isPaused()) {
+                    mJam.kickIt();
+                }
+                else {
+                    mJam.syncNow();
+                }
                 mSync = false;
             }
             return;
@@ -259,7 +263,7 @@ class CommandProcessor extends BluetoothDataCallback {
             info.append(channel.getSoundSet().getSounds().get(i).getName()).append("|");
 
             for (int j = 0; j < subbeatTotal; j++) {
-                if (j >= channel.pattern.length)
+                if (j >= channel.pattern[i].length)
                     break;
 
                 info.append(channel.pattern[i][j] ? "1" : "0");
@@ -292,7 +296,9 @@ class CommandProcessor extends BluetoothDataCallback {
         if (mOnPeerChangeListener != null) mOnPeerChangeListener.onChange(mPeerJam);
     }
     private void onSetChannels(String channelInfo) {
-        channelInfo.split("");
+        if (channelInfo != null) {
+            channelInfo.split("");
+        }
     }
 
     private void assurePeerJam() {
