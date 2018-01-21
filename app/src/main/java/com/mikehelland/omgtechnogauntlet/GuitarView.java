@@ -163,8 +163,8 @@ public class GuitarView extends View {
     public void onDraw(Canvas canvas) {
 
         if (!mJam.isPaused()) {
-            float beatBoxWidth = getWidth() / mJam.getTotalBeats();
-            float beatBoxStart = (float)Math.floor(mJam.getCurrentSubbeat() / mJam.getSubbeats()) * beatBoxWidth;
+            float beatBoxWidth = ((float)getWidth()) / mJam.getTotalBeats();
+            float beatBoxStart = mJam.getCurrentSubbeat() / mJam.getSubbeats() * beatBoxWidth;
 
             canvas.drawRect(beatBoxStart, 0, beatBoxStart + beatBoxWidth, getHeight(), paintYellow);
         }

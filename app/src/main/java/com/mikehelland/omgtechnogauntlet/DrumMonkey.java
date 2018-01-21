@@ -27,7 +27,7 @@ class DrumMonkey {
 
         rand = jam.getRand();
 
-        beats = jam.getTotalBeats();
+        beats = jam.getBeats();
         subbeats = jam.getSubbeats();
         measures = jam.getMeasures();
 
@@ -129,7 +129,7 @@ class DrumMonkey {
         for (int measure = 0; measure < measures; measure++) {
             subbeatOffset = measure * beats* subbeats;
             for (int i = 0; i < beats* subbeats; i++) {
-                hihats[0][i + subbeatOffset] = defaultPattern && default_hithat[i];
+                hihats[0][i + subbeatOffset] = defaultPattern && default_hithat[i % default_hithat.length];
                 hihats[1][i + subbeatOffset] = false;
             }
         }
