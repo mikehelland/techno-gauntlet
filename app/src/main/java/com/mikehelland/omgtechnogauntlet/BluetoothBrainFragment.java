@@ -126,8 +126,11 @@ public class BluetoothBrainFragment extends OMGFragment {
     }
 
     private void addDevice(BluetoothDevice device) {
-        BluetoothDeviceDataHelper data = ((Main)getActivity()).getDatabase().mBluetoothDeviceData;
-        data.addBrainDevice(device);
+        Main activity = (Main)getActivity();
+        if (activity != null) {
+            BluetoothDeviceDataHelper data = activity.getDatabase().mBluetoothDeviceData;
+            data.addBrainDevice(device);
+        }
     }
 
     private void setupDeviceButton(LayoutInflater inflater, ViewGroup container, final BluetoothDevice device) {
