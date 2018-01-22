@@ -12,12 +12,12 @@ import com.mikehelland.omgtechnogauntlet.dsp.WtOsc;
  * Date: 11/15/13
  * Time: 1:56 PM
  */
-public class Oscillator { //DialpadChannel extends Channel {
+class Oscillator { //DialpadChannel extends Channel {
 
     private boolean envActive = false;
     private final WtOsc ugOscA1 = new WtOsc();
     final ExpEnv ugEnvA = new ExpEnv();
-    public final Dac ugDac = new Dac();
+    final Dac ugDac = new Dac();
     private final Delay ugDelay = new Delay(UGen.SAMPLE_RATE / 2);
     private final Flange ugFlange = new Flange(UGen.SAMPLE_RATE / 64, 0.25f);
     private boolean delayed = false;
@@ -25,7 +25,7 @@ public class Oscillator { //DialpadChannel extends Channel {
 
     private Note lastPlayedNote;
 
-    public Oscillator(OscillatorSettings settings) {
+    Oscillator(OscillatorSettings settings) {
 
         boolean delay = settings.delay;
         boolean flange = settings.flange;
@@ -77,7 +77,7 @@ public class Oscillator { //DialpadChannel extends Channel {
     }
 
 
-    public int playNote(Note note, boolean multiTouch) {
+    int playNote(Note note, boolean multiTouch) {
         //super.playNote(note);
 
         if (lastPlayedNote != null)
@@ -105,16 +105,16 @@ public class Oscillator { //DialpadChannel extends Channel {
 
 
 
-    public void mute() {
+    void mute() {
         envActive = false;
         ugEnvA.setActive(false);
     }
-    public void unmute() {
+    void unmute() {
         envActive = true;
         ugEnvA.setActive(true);
     }
 
-    public static float buildFrequencyFromMapped(float mapped) {
+    private static float buildFrequencyFromMapped(float mapped) {
         return (float)Math.pow(2, (mapped-69.0f)/12.0f) * 440.0f;
     }
 

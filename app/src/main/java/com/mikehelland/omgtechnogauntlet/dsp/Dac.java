@@ -60,9 +60,10 @@ public class Dac extends UGen {
         }
 	}
 
-	public void setVolume(float gain) {
+	public void setVolume(float left, float right) {
 		if (isOpen && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			track.setVolume(gain);
+			//track.setVolume(gain);
+			track.setStereoVolume(left, right);
 		}
 	}
 	

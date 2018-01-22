@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class Jam {
 
@@ -43,8 +44,8 @@ class Jam {
 
     private int progressionI = -1;
 
-    private ArrayList<View> viewsToInvalidateOnBeat = new ArrayList<>();
-    private ArrayList<View> viewsToInvalidateOnNewMeasure = new ArrayList<>();
+    private List<View> viewsToInvalidateOnBeat = new CopyOnWriteArrayList<>();
+    private List<View> viewsToInvalidateOnNewMeasure = new CopyOnWriteArrayList<>();
 
     private int currentChord = 0;
 
@@ -820,7 +821,9 @@ class Jam {
         if (part.has("volume")) {
             jamChannel.setVolume((float)part.getDouble("volume"));
         }
-        //todo pan
+        if (part.has("pan")) {
+            jamChannel.setPan((float)part.getDouble("pan"));
+        }
 
         if (jamChannel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
             loadDrums(jamChannel, part);

@@ -58,6 +58,9 @@ class Channel {
 
     boolean[][] pattern;
     private float volume = 0.75f;
+    private float leftVolume = 0.75f;
+    private float rightVolume = 0.75f;
+    private float pan = 0f;
 
     public Channel(Context context, Jam jam, OMGSoundPool pool) {
         mPool = pool;
@@ -143,10 +146,8 @@ class Channel {
         int noteHandle = -1;
         if (!note.isRest()) {
             int noteToPlay = note.getInstrumentNote();
-            //Log.d("MGH noteToPlay", Integer.toString(noteToPlay));
-
             if (noteToPlay >= 0 && noteToPlay < ids.length) {
-                noteHandle = mPool.play(ids[noteToPlay], volume, volume, 1, 0, 1);
+                noteHandle = mPool.play(ids[noteToPlay], leftVolume, rightVolume, 1, 0, 1);
                 playingId = noteHandle;
             }
 
@@ -420,6 +421,8 @@ class Channel {
         sb.append(getSurfaceURL());
         sb.append("\", \"volume\": ");
         sb.append(volume);
+        sb.append(", \"pan\": ");
+        sb.append(pan);
         if (!enabled)
             sb.append(", \"mute\": true");
 
@@ -531,7 +534,7 @@ class Channel {
                 try {
                     if (pattern[i][subbeat]) {
                         if (i < ids.length)
-                            playingId = mPool.play(ids[i], volume, volume, 10, 0, 1);
+                            playingId = mPool.play(ids[i], leftVolume, rightVolume, 10, 0, 1);
                     }
                 }
                 catch (Exception excp) {
@@ -626,12 +629,24 @@ class Channel {
     }
     void setVolume(float volume) {
         this.volume = volume;
-
-        if (mSoundSet != null && mSoundSet.isOscillator()) {
-            mSoundSet.getOscillator().ugDac.setVolume(volume);
-        }
+        calculateStereoVolume();
     }
     float getVolume() {
         return volume;
+    }
+    void setPan(float pan) {
+        this.pan = pan;
+        calculateStereoVolume();
+    }
+    float getPan() {return pan;}
+    private void calculateStereoVolume() {
+        float cross = (pan + 1) / 2;
+        final double halfPi = Math.PI / 2;
+        leftVolume = volume * (float)Math.sin((1 - cross) * halfPi);
+        rightVolume = volume * (float)Math.sin(cross * halfPi);
+
+        if (mSoundSet != null && mSoundSet.isOscillator()) {
+            mSoundSet.getOscillator().ugDac.setVolume(leftVolume, rightVolume);
+        }
     }
 }

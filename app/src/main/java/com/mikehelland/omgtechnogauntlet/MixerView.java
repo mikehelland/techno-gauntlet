@@ -99,7 +99,7 @@ public class MixerView extends View {
 
             muteButtonWidth = paintText.measureText(" Mute ");
             volumeStart = muteButtonWidth + controlMargin;
-            volumeWidth = (width - volumeStart) * 0.75f - 2 * controlMargin;
+            volumeWidth = (width - volumeStart) * 0.65f - 2 * controlMargin;
             panStart = volumeStart + volumeWidth + controlMargin;
             panWidth = width - panStart - controlMargin;
         }
@@ -188,6 +188,7 @@ public class MixerView extends View {
         mChannel = channel;
 
         volume = channel.getVolume();
+        pan = channel.getPan();
 
         setChannelName(name);
 
@@ -200,6 +201,7 @@ public class MixerView extends View {
         }
         else if (touchingArea == TOUCHING_AREA_PAN) {
             pan = Math.max(-1.0f, Math.min(1.0f, ((x - panStart) / panWidth - 0.5f) * 2));
+            mChannel.setPan(pan);
         }
     }
 
