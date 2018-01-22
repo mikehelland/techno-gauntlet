@@ -35,7 +35,7 @@ public class SoundSetListItemView extends View {
     private Jam mJam;
     private Main mActivity;
 
-    private NoteList mList;;
+    private NoteList mList;
 
     private Bitmap images[];
 

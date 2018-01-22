@@ -90,9 +90,8 @@ public class BeatsFragment extends OMGFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 if (b) {
-                    int newbpm = i;
-                    shuffleText.setText(Integer.toString(newbpm) + "% shuffle");
-                    mJam.setShuffle(newbpm / 100.0f);
+                    shuffleText.setText(Integer.toString(i) + "% shuffle");
+                    mJam.setShuffle(i / 100.0f);
                 }
             }
 
