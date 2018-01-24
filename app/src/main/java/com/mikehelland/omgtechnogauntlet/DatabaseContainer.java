@@ -11,7 +11,7 @@ class DatabaseContainer {
 
         //deleteDatabase("OMG_TECHNO_GAUNTLET"); // soundsets
         //deleteDatabase("OMG_SURFACES");
-        //deleteDatabase("OMG_BT_DEVICE");
+        //context.deleteDatabase("OMG_BT_DEVICE");
 
         mSoundSetData = new SoundSetDataOpenHelper(context);
         mSoundSetData.updatePresetResource();
