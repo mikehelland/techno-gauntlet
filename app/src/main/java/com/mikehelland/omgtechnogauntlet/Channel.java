@@ -415,7 +415,9 @@ class Channel {
         sb.append("{\"type\" : \"PART");
         sb.append("\", \"soundsetName\": \"");
         sb.append(getSoundSetName());
-        sb.append("\", \"soundsetURL\": \"");
+        sb.append("\", \"soundFont\": ");
+        sb.append(mSoundSet.isSoundFont() ? "true" : "false");
+        sb.append(", \"soundsetURL\": \"");
         sb.append(mSoundSet.getURL());
         sb.append("\", \"surfaceURL\" : \"");
         sb.append(getSurfaceURL());

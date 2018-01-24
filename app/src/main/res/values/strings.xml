@@ -234,7 +234,8 @@
     </string-array>
 
     <string name="soundfont_json">
-        \"type\": \"SOUNDSET\",
+\"type\": \"SOUNDSET\",
+\"soundFont\": true,
 \"lowNote\": 21,
 \"postfix\": \"\",
 \"chromatic\": true,

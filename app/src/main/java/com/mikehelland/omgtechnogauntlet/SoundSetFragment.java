@@ -285,7 +285,8 @@ public class SoundSetFragment extends OMGFragment {
 
         url = url + soundfontName + "-mp3/";
 
-        String soundfontJSON = "{\"name\": \"" + soundfontName + "\", \"prefix\": \"" + url +"\"," +
+        String soundfontJSON = "{\"name\": \"" + librarySpinner.getSelectedItem().toString() + "_" +
+                soundfontName + "\", \"prefix\": \"" + url +"\"," +
                 getActivity().getResources().getString(R.string.soundfont_json);
 
 

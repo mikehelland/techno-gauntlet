@@ -31,6 +31,8 @@ class SoundSet {
 
     private String mDefaultSurface = "";
 
+    private boolean mIsSoundFont = false;
+
     SoundSet() {}
 
     SoundSet(Cursor cursor) {
@@ -65,6 +67,7 @@ class SoundSet {
             }
 
             mName = soundSet.getString("name");
+            mIsSoundFont = soundSet.has("soundFont") && soundSet.getBoolean("soundFont");
 
             mChromatic = soundSet.has("chromatic") && soundSet.getBoolean("chromatic");
             if (soundSet.has("lowNote")) {
@@ -190,6 +193,10 @@ class SoundSet {
 
     String getDefaultSurface() {
         return mDefaultSurface;
+    }
+
+    boolean isSoundFont() {
+        return mIsSoundFont;
     }
 
     class Sound {
