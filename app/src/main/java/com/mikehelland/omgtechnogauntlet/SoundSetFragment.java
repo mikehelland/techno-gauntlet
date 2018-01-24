@@ -107,6 +107,9 @@ public class SoundSetFragment extends OMGFragment {
     private void setup() {
 
         final Context context = getActivity();
+        if (context == null) {
+            return;
+        }
 
         SoundSetDataOpenHelper openHelper = ((Main)context).getDatabase().getSoundSetData();
         mCursor = openHelper.getCursor();

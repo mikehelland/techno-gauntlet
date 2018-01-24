@@ -50,6 +50,9 @@ public class SurfaceFragment extends OMGFragment {
         getActivityMembers();
 
         final Context context = getActivity();
+        if (context == null) {
+            return;
+        }
 
         final SufacesDataHelper openHelper = new SufacesDataHelper(context);
         final SQLiteDatabase db = openHelper.getWritableDatabase();
