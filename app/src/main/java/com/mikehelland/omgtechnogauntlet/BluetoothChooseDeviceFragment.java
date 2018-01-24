@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -70,7 +71,10 @@ public class BluetoothChooseDeviceFragment extends OMGFragment {
 
         if (mCallback != null) {
             mCallback.run(mPairedList.get(i));
-            getActivity().getFragmentManager().popBackStack();
+            Activity activity = getActivity();
+            if (activity != null) {
+                getActivity().getFragmentManager().popBackStack();
+            }
         }
     }
 

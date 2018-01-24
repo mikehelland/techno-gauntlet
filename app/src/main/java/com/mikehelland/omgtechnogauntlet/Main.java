@@ -45,9 +45,6 @@ public class Main extends Activity {
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
         mBeatView.setJam(mJam);
         mJam.addInvalidateOnBeatListener(mBeatView);
-
-        mJam.addStateChangeListener(mMainJamListener);
-
         mBeatView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -228,7 +225,6 @@ public class Main extends Activity {
 
                 Jam oldJam = mJam;
                 mJam = jam;
-                mJam.addStateChangeListener(mMainJamListener);
                 mJam.addInvalidateOnBeatListener(mBeatView);
                 mBeatView.setJam(mJam);
 
@@ -258,48 +254,4 @@ public class Main extends Activity {
     }
 
     DatabaseContainer getDatabase() {return mDatabase;}
-
-    private Jam.StateChangeCallback mMainJamListener = new Jam.StateChangeCallback() {
-
-        @Override
-        void newState(final String stateChange, Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //mBeatView.invalidate();
-                }
-            });
-         }
-
-        @Override
-        void onSubbeatLengthChange(int length, String source) {
-
-        }
-
-        @Override
-        void onKeyChange(int key, String source) {
-
-        }
-
-        @Override
-        void onScaleChange(String scale, String source) {
-
-        }
-
-        @Override
-        void onChordProgressionChange(int[] chords) {
-
-        }
-
-        @Override
-        void onNewChannel(Channel channel) {
-
-        }
-
-        @Override
-        void onChannelEnabledChanged(int channelNumber, boolean enabled, String source) {
-
-        }
-
-    };
 }
