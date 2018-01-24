@@ -394,7 +394,5 @@ class SoundSetDownloader {
 
         soundset.put("data", result);
         return soundset;
-
-
-    }
+   }
 }
