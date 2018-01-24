@@ -170,11 +170,14 @@ public class SoundSetFragment extends OMGFragment {
 
     public void setupOMGTab() {
 
-        new SoundSetListDownloader(getActivity(), new SoundSetListDownloader.DownloaderCallback() {
+        final Context context = getActivity();
+        if (context == null) {
+            return;
+        }
+        new SoundSetListDownloader(context, new SoundSetListDownloader.DownloaderCallback() {
             @Override
             void run(final MatrixCursor cursor) {
 
-                final Context context = getActivity();
                 final SoundSetAdapter curA = new SoundSetAdapter(context,
                         R.layout.saved_row,
                         cursor, new String[]{"name"},

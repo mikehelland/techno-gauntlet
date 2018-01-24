@@ -92,6 +92,9 @@ public class DrumView extends View {
     }
 
     public void onDraw(Canvas canvas) {
+        if (tall == 0) {
+            return;
+        }
 
         if (height != getHeight()) {
             int width = getWidth();
