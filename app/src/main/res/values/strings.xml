@@ -94,12 +94,12 @@
     <string name="disconnected">Disconnected!</string>
 
     <string-array name="soundfont_libs">
-        <item>FluidR3 GM</item>
         <item>MusyngKite</item>
+        <item>FluidR3</item>
     </string-array>
     <string-array name="soundfont_urls">
-        <item>http://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/</item>
         <item>http://gleitz.github.io/midi-js-soundfonts/MusyngKite/</item>
+        <item>http://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/</item>
     </string-array>
 
     <string-array name="soundfonts">

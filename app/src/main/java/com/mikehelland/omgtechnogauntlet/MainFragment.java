@@ -19,8 +19,6 @@ public class MainFragment extends OMGFragment {
 
     private View mView;
 
-    private Button playButton;
-
     private Button mKeyButton;
     private ChordsView mChordsButton;
 
@@ -72,7 +70,12 @@ public class MainFragment extends OMGFragment {
         mContainer.addView(controls, mContainer.getChildCount() - 1);
 
         Button button = ((Button)controls.findViewById(R.id.track_button));
-        button.setText(channel.getSoundSetName());
+        String name = channel.getSoundSetName();
+        int paransIndex = name.indexOf(" (");
+        if (paransIndex > -1) {
+            name = name.substring(0, paransIndex);
+        }
+        button.setText(name);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

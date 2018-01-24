@@ -57,7 +57,7 @@ public class SoundSetFragment extends OMGFragment {
 
         TabHost.TabSpec spec3 = tabHost.newTabSpec("tag3");
         spec3.setContent(R.id.tab3);
-        spec3.setIndicator("Open SoundFonts");
+        spec3.setIndicator("Open Source SoundFonts");
         tabHost.addTab(spec3);
 
         TextView textView = (TextView)tabHost.getTabWidget().getChildAt(0)
@@ -130,22 +130,13 @@ public class SoundSetFragment extends OMGFragment {
 
                 mCursor.moveToPosition(i);
 
-                final Runnable oldPoolCallback = mPool.onAllLoadsFinishedCallback;
-                mPool.onAllLoadsFinishedCallback = new Runnable() {
-                    @Override
-                    public void run() {
-
-                        Activity activity = getActivity();
-                        if (activity != null)
-                            activity.getFragmentManager().popBackStack();
-
-                        mPool.onAllLoadsFinishedCallback = oldPoolCallback;
-                    }
-                };
-
                 mChannel.prepareSoundSet(new SoundSet(mCursor));
                 if (mCallback != null)
                     mCallback.onChoice(mChannel.getSoundSet());
+
+                Activity activity = getActivity();
+                if (activity != null)
+                    activity.getFragmentManager().popBackStack();
 
                 new Thread(new Runnable() {
                     @Override
@@ -154,10 +145,7 @@ public class SoundSetFragment extends OMGFragment {
                         mChannel.loadSoundSetIds();
                     }
                 }).start();
-
             }
-
-
         });
 
         soundsetList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -285,8 +273,8 @@ public class SoundSetFragment extends OMGFragment {
 
         url = url + soundfontName + "-mp3/";
 
-        String soundfontJSON = "{\"name\": \"" + librarySpinner.getSelectedItem().toString() + "_" +
-                soundfontName + "\", \"prefix\": \"" + url +"\"," +
+        String soundfontJSON = "{\"name\": \"" + soundfontName.replace("_", " ") +
+                " (" + librarySpinner.getSelectedItem().toString() + ")\", \"prefix\": \"" + url +"\"," +
                 getActivity().getResources().getString(R.string.soundfont_json);
 
 
@@ -306,22 +294,13 @@ public class SoundSetFragment extends OMGFragment {
             return;
         }
 
-        final Runnable oldPoolCallback = mPool.onAllLoadsFinishedCallback;
-        mPool.onAllLoadsFinishedCallback = new Runnable() {
-            @Override
-            public void run() {
-
-                Activity activity = getActivity();
-                if (activity != null)
-                    activity.getFragmentManager().popBackStack();
-
-                mPool.onAllLoadsFinishedCallback = oldPoolCallback;
-            }
-        };
-
         mChannel.prepareSoundSet(soundSet);
         if (mCallback != null)
             mCallback.onChoice(mChannel.getSoundSet());
+
+        Activity activity = getActivity();
+        if (activity != null)
+            activity.getFragmentManager().popBackStack();
 
         new Thread(new Runnable() {
             @Override

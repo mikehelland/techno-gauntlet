@@ -367,6 +367,10 @@ class Jam {
 
             playing = false;
 
+            for (View iv : viewsToInvalidateOnBeat) {
+                iv.postInvalidate();
+            }
+
         }
 
         void pollFinishedNotes(long now) {

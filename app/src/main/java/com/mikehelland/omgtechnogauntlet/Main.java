@@ -44,7 +44,6 @@ public class Main extends Activity {
 
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
         mBeatView.setJam(mJam);
-        mBeatTextView = (TextView)findViewById(R.id.beatview_text);
         mJam.addInvalidateOnBeatListener(mBeatView);
 
         mJam.addStateChangeListener(mMainJamListener);
@@ -81,6 +80,11 @@ public class Main extends Activity {
                 }
 
                 progressBar.incrementProgressBy(1);
+
+                if (!mBeatView.isShowingLoadProgress()) {
+                    mBeatView.showLoadProgress(mPool.soundsToLoad);
+                }
+                mBeatView.incrementProgress();
 
                 mPool.soundsToLoad--;
                 if (mPool.soundsToLoad <= 0) {
@@ -262,13 +266,7 @@ public class Main extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if ("STOP".equals(stateChange)) {
-                        mBeatTextView.setText(R.string.play);
-                    }
-                    else if ("PLAY".equals(stateChange)) {
-                        mBeatTextView.setText(R.string.stop);
-                    }
-                    mBeatView.invalidate();
+                    //mBeatView.invalidate();
                 }
             });
          }

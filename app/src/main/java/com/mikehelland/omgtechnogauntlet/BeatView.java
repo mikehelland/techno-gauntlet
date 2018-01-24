@@ -14,8 +14,16 @@ public class BeatView extends View {
     private Paint paintGreen;
     private Paint paintWhite;
     private Paint paintGrey;
+    private Paint paintBlue;
 
     private int beats = 4;
+
+    private boolean mShowingLoadProgress = false;
+    private int mProgressMax = 1;
+    private int mProgressI = 0;
+
+    private String mText = "";
+    private boolean mIsHeightSet = false;
 
     public BeatView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -31,14 +39,25 @@ public class BeatView extends View {
         paintWhite.setARGB(200, 255, 255, 255);
         paintWhite.setStyle(Paint.Style.FILL_AND_STROKE);
 
+        paintWhite.setTextAlign(Paint.Align.CENTER);
+
         paintGrey = new Paint();
         paintGrey.setARGB(100, 255, 255, 255);
         paintGrey.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        paintBlue = new Paint();
+        paintBlue.setARGB(100, 128, 128, 255);
+        paintBlue.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 
     public void onDraw(Canvas canvas) {
         if (mJam == null)
             return;
+
+        if (!mIsHeightSet) {
+            paintWhite.setTextSize(getHeight() * 0.80f);
+            mIsHeightSet = true;
+        }
 
         beats = mJam.getBeats();
         float boxWidth = ((float)getWidth()) / mJam.getTotalBeats();
@@ -48,20 +67,46 @@ public class BeatView extends View {
         }
         canvas.drawLine(0, getHeight() - 2, getWidth(), getHeight() - 2, paintWhite);
 
+        if (mShowingLoadProgress) {
+            canvas.drawRect(0, 0, getWidth() * ((float)mProgressI / mProgressMax), getHeight(), paintBlue);
+            mText = "Loading Sounds...";
+        }
+        else if (mJam.isPaused()){
+            canvas.drawRect(0, 0, getWidth(), getHeight(), paintRed);
+            mText = "Play";
+        }
         if (!mJam.isPaused()) {
             float beatBoxWidth = ((float)getWidth()) / mJam.getTotalBeats();
             float beatBoxStart = mJam.getCurrentSubbeat() / mJam.getSubbeats() * beatBoxWidth;
 
             canvas.drawRect(beatBoxStart, 0, beatBoxStart + beatBoxWidth, getHeight(), paintGreen);
-        }
-        else {
-            canvas.drawRect(0, 0, getWidth(), getHeight(), paintRed);
+            if (!mShowingLoadProgress) {
+                mText = "Stop";
+            }
         }
 
+        canvas.drawText(mText, getWidth() / 2, getHeight() - getHeight() * 0.2f, paintWhite);
     }
 
     void setJam(Jam jam) {
         mJam = jam;
+        postInvalidate();
+    }
+
+    boolean isShowingLoadProgress() {return mShowingLoadProgress;}
+
+    void showLoadProgress(int max) {
+        mProgressMax = max;
+        mProgressI = 0;
+        mShowingLoadProgress = true;
+    }
+
+    void incrementProgress() {
+        mProgressI++;
+        if (mProgressI >= mProgressMax) {
+            mProgressI = 0;
+            mShowingLoadProgress = false;
+        }
         postInvalidate();
     }
 }
