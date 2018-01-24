@@ -65,26 +65,25 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Download a custom SoundSet:"/>
+                        android:text="Choose an Open Source Sound Library"/>
 
-                    <EditText
-                        android:text=""
-                        android:id="@+id/custom_url_edittext"
-                        android:hint="Paste URL Here"
+
+                    <Spinner
+                        android:id="@+id/soundfont_library_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:inputType="text"
-                        android:imeOptions="actionDone"
-                        android:singleLine="true"/>
+                        android:entries="@array/soundfont_libs"></Spinner>
 
-                    <Button
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Load Custom URL"
-                        android:id="@+id/custom_url_button"
-                        android:imeOptions="actionDone"/>
+                        android:text="Choose a Soundfont from the Libary"/>
 
+                    <ListView
+                        android:id="@+id/soundfont_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:entries="@array/soundfonts"></ListView>
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>

@@ -16,8 +16,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * User: m
@@ -55,7 +57,7 @@ public class SoundSetFragment extends OMGFragment {
 
         TabHost.TabSpec spec3 = tabHost.newTabSpec("tag3");
         spec3.setContent(R.id.tab3);
-        spec3.setIndicator("Custom ...");
+        spec3.setIndicator("Open SoundFonts");
         tabHost.addTab(spec3);
 
         TextView textView = (TextView)tabHost.getTabWidget().getChildAt(0)
@@ -163,12 +165,7 @@ public class SoundSetFragment extends OMGFragment {
             }
         });
 
-        mView.findViewById(R.id.custom_url_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                downloadCustomUrl();
-            }
-        });
+        setupSoundfontTab();
     }
 
     public void setupOMGTab() {
@@ -196,38 +193,9 @@ public class SoundSetFragment extends OMGFragment {
                         new SoundSetDownloader(getActivity(), url, new SoundSetDownloader.DownloaderCallback() {
 
                             public void run(SoundSet soundSet) {
-
-                                if (soundSet == null){
-                                    Log.d("MGH", "Not a valid soundset");
-                                    return;
-                                }
-
-                                final Runnable oldPoolCallback = mPool.onAllLoadsFinishedCallback;
-                                mPool.onAllLoadsFinishedCallback = new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                        Activity activity = getActivity();
-                                        if (activity != null)
-                                            activity.getFragmentManager().popBackStack();
-
-                                        mPool.onAllLoadsFinishedCallback = oldPoolCallback;
-                                    }
-                                };
-
-                                mChannel.prepareSoundSet(soundSet);
-                                if (mCallback != null)
-                                    mCallback.onChoice(mChannel.getSoundSet());
-
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mPool.loadSounds();
-                                        mChannel.loadSoundSetIds();
-                                    }
-                                }).start();
+                                onSoundSetFilesDownloaded(soundSet);
                             }
-                        });
+                        }).download();
                     }
                 });
 
@@ -290,4 +258,71 @@ public class SoundSetFragment extends OMGFragment {
         ((Main)getActivity()).getDatabase().getSoundSetData().delete(id);
     }
 
+    private void setupSoundfontTab() {
+
+        final String[] soundfonts = getActivity().getResources().getStringArray(R.array.soundfonts);
+
+        ListView list = (ListView)mView.findViewById(R.id.soundfont_list);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                loadSoundfont(soundfonts[i]);
+            }
+        });
+    }
+
+    private void loadSoundfont(String soundfontName) {
+        final String[] soundfontURLs = getActivity().getResources().getStringArray(R.array.soundfont_urls);
+
+        Spinner librarySpinner = (Spinner)mView.findViewById(R.id.soundfont_library_spinner);
+        String url = soundfontURLs[librarySpinner.getSelectedItemPosition()];
+
+        url = url + soundfontName + "-mp3/";
+
+        String soundfontJSON = "{\"name\": \"" + soundfontName + "\", \"prefix\": \"" + url +"\"," +
+                getActivity().getResources().getString(R.string.soundfont_json);
+
+
+        Toast.makeText(getActivity(), url, Toast.LENGTH_LONG).show();
+        new SoundSetDownloader(getActivity(), url, new SoundSetDownloader.DownloaderCallback() {
+            @Override
+            void run(SoundSet soundSet) {
+                onSoundSetFilesDownloaded(soundSet);
+            }
+        }).installSoundSet(soundfontJSON);
+
+    }
+
+    private void onSoundSetFilesDownloaded(SoundSet soundSet) {
+        if (soundSet == null){
+            Log.d("MGH", "Not a valid soundset");
+            return;
+        }
+
+        final Runnable oldPoolCallback = mPool.onAllLoadsFinishedCallback;
+        mPool.onAllLoadsFinishedCallback = new Runnable() {
+            @Override
+            public void run() {
+
+                Activity activity = getActivity();
+                if (activity != null)
+                    activity.getFragmentManager().popBackStack();
+
+                mPool.onAllLoadsFinishedCallback = oldPoolCallback;
+            }
+        };
+
+        mChannel.prepareSoundSet(soundSet);
+        if (mCallback != null)
+            mCallback.onChoice(mChannel.getSoundSet());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mPool.loadSounds();
+                mChannel.loadSoundSetIds();
+            }
+        }).start();
+
+    }
 }

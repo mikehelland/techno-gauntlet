@@ -31,8 +31,10 @@ class SoundSetDownloader {
     private String mURL;
 
     private SoundSet mSoundSet = null;
+    final private Context context;
 
     SoundSetDownloader(Context context, String url, DownloaderCallback callback) {
+        this.context = context;
 
         mCallback = callback;
         mProgressDialog = new ProgressDialog(context);
@@ -42,20 +44,16 @@ class SoundSetDownloader {
         mProgressDialog.setCancelable(true);
 
         mURL = url;
-
-        final DownloadSoundSetJSON downloadTask = new DownloadSoundSetJSON(context);
-        downloadTask.execute(url);
     }
 
+    void download() {
+        final DownloadSoundSetJSON downloadTask = new DownloadSoundSetJSON();
+        downloadTask.execute(mURL);
+    }
 
     private class DownloadSoundSetJSON extends AsyncTask<String, Integer, String> {
 
-        private Context context;
         //private PowerManager.WakeLock mWakeLock;
-
-        DownloadSoundSetJSON(Context context) {
-            this.context = context;
-        }
 
         @Override
         protected String doInBackground(String... surl) {
@@ -147,59 +145,7 @@ class SoundSetDownloader {
             //mWakeLock.release();
             mProgressDialog.dismiss();
 
-            ContentValues soundset = processSoundSetJSON(result);
-            if (soundset != null) {
-                SoundSetDataOpenHelper soundsetDataHelper = ((Main)context).getDatabase().getSoundSetData();
-                mSoundSet = soundsetDataHelper.addSoundSet(soundset);
-
-                String soundsetDirectoryPath = context.getFilesDir() + "/" +
-                        Long.toString(mSoundSet.getID()) + "/";
-                //String soundsetDirectoryPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
-                new File(soundsetDirectoryPath).mkdirs();
-
-                DownloadSoundSetFiles downloader = new DownloadSoundSetFiles(context, mJSON,
-                        soundsetDirectoryPath);
-                downloader.execute();
-
-            }
-
-        }
-
-        private JSONObject mJSON;
-        protected ContentValues processSoundSetJSON(String result) {
-
-            ContentValues soundset = new ContentValues();
-            soundset.put("url", mURL);
-
-            // now, process the json
-            if (result == null) {
-                Toast.makeText(context, "Download error", Toast.LENGTH_LONG).show();
-                return null;
-            }
-            try {
-                JSONObject jsonSoundSet = new JSONObject(result);
-                if (jsonSoundSet.has("name") &&
-                        jsonSoundSet.has("type") &&
-                        jsonSoundSet.getString("type").equals("SOUNDSET") &&
-                        jsonSoundSet.has("data")) {
-
-                    mJSON = jsonSoundSet;
-                    soundset.put("name", jsonSoundSet.getString("name"));
-
-                } else {
-                    Toast.makeText(context, "Not a valid SOUNDSET", Toast.LENGTH_LONG).show();
-                    return null;
-                }
-
-            } catch (JSONException jsonex) {
-                Toast.makeText(context, "JSON Error " + jsonex.getMessage(), Toast.LENGTH_LONG).show();
-                return null;
-            }
-
-            soundset.put("data", result);
-            return soundset;
-
-
+            installSoundSet(result);
         }
     }
 
@@ -212,12 +158,12 @@ class SoundSetDownloader {
         private Context context;
         private PowerManager.WakeLock mWakeLock;
 
-        private JSONObject mJSON;
+        private String mJSON;
 
         private String mDownloadPath;
 
-        DownloadSoundSetFiles(Context context, JSONObject jsonObject, String downloadpath) {
-            mJSON = jsonObject;
+        DownloadSoundSetFiles(Context context, String json, String downloadpath) {
+            mJSON = json;
             mDownloadPath = downloadpath;
             this.context = context;
         }
@@ -227,10 +173,11 @@ class SoundSetDownloader {
 
             String resultList = "";
             try {
-                JSONArray data = mJSON.getJSONArray("data");
+                JSONObject jsonO = new JSONObject(mJSON);
+                JSONArray data = jsonO.getJSONArray("data");
 
-                String prefix = mJSON.has("prefix") ? mJSON.getString("prefix") : "";
-                String postfix = mJSON.has("postfix") ? mJSON.getString("postfix") : "";
+                String prefix = jsonO.has("prefix") ? jsonO.getString("prefix") : "";
+                String postfix = jsonO.has("postfix") ? jsonO.getString("postfix") : "";
                 itotaldownloads = data.length();
                 String results;
                 Log.d("MGH", "do in background start");
@@ -393,5 +340,61 @@ class SoundSetDownloader {
 
     static abstract class DownloaderCallback {
         abstract void run(SoundSet soundSet);
+    }
+
+    void installSoundSet(String json) {
+        ContentValues soundset = processSoundSetJSON(json);
+
+        if (soundset != null) {
+            SoundSetDataOpenHelper soundsetDataHelper = ((Main)context).getDatabase().getSoundSetData();
+            mSoundSet = soundsetDataHelper.addSoundSet(soundset);
+
+            String soundsetDirectoryPath = context.getFilesDir() + "/" +
+                    Long.toString(mSoundSet.getID()) + "/";
+            new File(soundsetDirectoryPath).mkdirs();
+
+            DownloadSoundSetFiles downloader = new DownloadSoundSetFiles(context, json,
+                    soundsetDirectoryPath);
+            downloader.execute();
+
+        }
+
+    }
+
+    private ContentValues processSoundSetJSON(String result) {
+
+        ContentValues soundset = new ContentValues();
+        soundset.put("url", mURL);
+
+        // now, process the json
+        if (result == null) {
+            Toast.makeText(context, "Download error", Toast.LENGTH_LONG).show();
+            return null;
+        }
+        try {
+            JSONObject jsonSoundSet = new JSONObject(result);
+            if (jsonSoundSet.has("name") &&
+                    jsonSoundSet.has("type") &&
+                    jsonSoundSet.getString("type").equals("SOUNDSET") &&
+                    jsonSoundSet.has("data")) {
+
+                soundset.put("name", jsonSoundSet.getString("name"));
+
+            } else {
+                Toast.makeText(context, "Not a valid SOUNDSET", Toast.LENGTH_LONG).show();
+                return null;
+            }
+
+        } catch (JSONException jsonex) {
+            Toast.makeText(context, "JSON Error " + jsonex.getMessage(), Toast.LENGTH_LONG).show();
+            jsonex.printStackTrace();
+            Log.d("MGH loadsoundfont", result);
+            return null;
+        }
+
+        soundset.put("data", result);
+        return soundset;
+
+
     }
 }

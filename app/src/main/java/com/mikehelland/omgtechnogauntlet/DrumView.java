@@ -40,6 +40,7 @@ public class DrumView extends View {
 
     private String[][] captions;
     private float[][] captionWidths;
+    private int captionHeight;
 
     private Paint paintBeat;
 
@@ -138,29 +139,30 @@ public class DrumView extends View {
             }
         }
 
-        for (int j = 0; j < tall; j++) {
-
+        captionHeight = height / captions.length;
+        for (int j = 0; j < captions.length; j++) {
             if (j < captions.length) {
 
                 if (firstRowButton == j) {
-                    canvas.drawRect(marginX,  j * boxHeight + marginY,
-                            boxWidth - marginX, j * boxHeight + boxHeight - marginY,
+                    canvas.drawRect(marginX,  j * captionHeight + marginY,
+                            boxWidth - marginX, j * captionHeight + captionHeight - marginY,
                             paint);
                 }
 
                 if (captionWidths[j].length == 1) {
                     canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
-                            j * boxHeight + boxHeight / 2 + 6, blackPaint);
+                            j * captionHeight + captionHeight / 2 + 6, blackPaint);
                 }
                 else {
                     canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
-                            j * boxHeight + boxHeight / 2 - adjustUp, blackPaint);
+                            j * captionHeight + captionHeight / 2 - adjustUp, blackPaint);
                     canvas.drawText(captions[j][1], boxWidth / 2 - captionWidths[j][1] / 2,
-                            j * boxHeight + boxHeight / 2 + adjustDown, blackPaint);
+                            j * captionHeight + captionHeight / 2 + adjustDown, blackPaint);
                 }
             }
+        }
 
-
+        for (int j = 0; j < tall; j++) {
             for (int i = 0; i < wide; i++) {
 
                 on = (firstRowButton == -1) ? data[j][i] : trackData[i + j * wide];
@@ -195,7 +197,7 @@ public class DrumView extends View {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
             if (boxX == 0) {
-                handleFirstColumn(boxY);
+                handleFirstColumn((int)Math.floor(event.getY() / captionHeight));
             }
             else {
                 handleTouch(boxX - 1, boxY);
