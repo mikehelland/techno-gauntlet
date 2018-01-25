@@ -124,8 +124,13 @@ public class BluetoothConnectFragment extends OMGFragment {
     }
 
     private void setupDataCallBackForConnection(BluetoothConnection connection) {
-        CommandProcessor cp = new CommandProcessor();
-        cp.setup(getActivity(), connection, mJam, null);
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        CommandProcessor cp = new CommandProcessor(activity);
+        cp.setup(connection, mJam, null);
         connection.setDataCallback(cp);
     }
 }

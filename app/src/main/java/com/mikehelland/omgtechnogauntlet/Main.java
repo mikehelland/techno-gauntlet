@@ -186,8 +186,8 @@ public class Main extends Activity {
             public void newStatus(final String status) {}
             @Override
             public void onConnected(BluetoothConnection connection) {
-                final CommandProcessor cp = new CommandProcessor();
-                cp.setup(Main.this, connection, mJam, null);
+                final CommandProcessor cp = new CommandProcessor(Main.this);
+                cp.setup(connection, mJam, null);
                 connection.setDataCallback(cp);
             }
 
@@ -223,8 +223,8 @@ public class Main extends Activity {
                 //pretty lousy spot for this
                 CommandProcessor cp;
                 for (BluetoothConnection connection : mBtf.getConnections()) {
-                    cp = new CommandProcessor();
-                    cp.setup(Main.this, connection, jam, null);
+                    cp = new CommandProcessor(Main.this);
+                    cp.setup(connection, jam, null);
                     connection.setDataCallback(cp);
                 }
                 oldJam.pause();

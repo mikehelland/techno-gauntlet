@@ -21,12 +21,15 @@ class CommandProcessor extends BluetoothDataCallback {
     private JamInfo mPeerJam;
     private OnPeerChangeListener mOnPeerChangeListener;
 
-    private Context mContext;
+    final private Context mContext;
 
     private boolean mSync = false;
 
-    void setup(Context context, BluetoothConnection connection, Jam jam, Channel channel) {
+    CommandProcessor(Context context) {
         mContext = context;
+    }
+
+    void setup(BluetoothConnection connection, Jam jam, Channel channel) {
         mJam = jam;
         mConnection = connection;
 

@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -49,7 +48,7 @@ class Jam {
 
     private int currentChord = 0;
 
-    private List<StateChangeCallback> mStateChangeListeners = new ArrayList<>();
+    private List<StateChangeCallback> mStateChangeListeners = new CopyOnWriteArrayList<>();
 
     private long mSyncTime = 0L;
 

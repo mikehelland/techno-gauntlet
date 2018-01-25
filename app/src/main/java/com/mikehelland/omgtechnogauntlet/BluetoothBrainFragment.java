@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothDevice;
@@ -100,14 +101,20 @@ public class BluetoothBrainFragment extends OMGFragment {
     }
 
     private CommandProcessor setupDataCallBackForConnection(BluetoothConnection connection) {
-        CommandProcessor cp = new CommandProcessor();
+        //todo this really shouldn't be done here
+        // this should be done globally since this fragment could be gone
+        Activity activity = getActivity();
+        if (activity == null) {
+            return null;
+        }
+        CommandProcessor cp = new CommandProcessor(activity);
 
         View controls = mViewMap.get(connection.getDevice().getAddress());
         if (controls != null) {
             cp.setOnPeerChangeListener(makeOnChangeListener(controls));
         }
 
-        cp.setup(getActivity(), connection, mJam, null);
+        cp.setup(connection, mJam, null);
         connection.setDataCallback(cp);
         return cp;
     }
@@ -181,7 +188,7 @@ public class BluetoothBrainFragment extends OMGFragment {
                 final CommandProcessor cp = setupDataCallBackForConnection(connection);
                 if (mViewMap.containsKey(connection.getDevice().getAddress())) {
                     final View freshView = mViewMap.get(connection.getDevice().getAddress());
-                    if (getActivity() != null) {
+                    if (cp != null && getActivity() != null) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
