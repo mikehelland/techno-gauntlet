@@ -267,6 +267,10 @@ public class BluetoothBrainFragment extends OMGFragment {
 
     private void setPanelInfo(View controls, JamInfo jam) {
 
+        if (jam == null) {
+            return;
+        }
+
         ((Button)controls.findViewById(R.id.tempo_button)).
                 setText(String.format("%s bpm", Integer.toString(JamInfo.getBPM(jam))));
         ((Button)controls.findViewById(R.id.key_button)).

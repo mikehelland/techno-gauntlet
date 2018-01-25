@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,17 +66,9 @@ public class Main extends Activity {
         ft.add(R.id.main_layout, mWelcomeFragment);
         ft.commit();
 
-        final ProgressBar progressBar = (ProgressBar)findViewById(R.id.loading_progress);
         mPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int i, int i1) {
-                if (progressBar.getVisibility() == View.INVISIBLE) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    progressBar.setMax(mPool.soundsToLoad);
-                }
-
-                progressBar.incrementProgressBy(1);
-
                 if (!mBeatView.isShowingLoadProgress()) {
                     mBeatView.showLoadProgress(mPool.soundsToLoad);
                 }
@@ -87,8 +78,6 @@ public class Main extends Activity {
                 if (mPool.soundsToLoad <= 0) {
 
                     mPool.setLoaded(true);
-                    progressBar.setProgress(0);
-                    progressBar.setVisibility(View.INVISIBLE);
 
                     if (!mPool.isCanceled() && mPool.onAllLoadsFinishedCallback != null)
                         mPool.onAllLoadsFinishedCallback.run();

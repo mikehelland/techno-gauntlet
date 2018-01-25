@@ -274,6 +274,10 @@ public class DrumView extends View {
 
 
     void handleFirstColumn(int y)  {
+        if (y < 0 || y >= captions.length) {
+            return;
+        }
+
         if (firstRowButton == y) {
             firstRowButton = -1;
             wide = mJam.getTotalBeats();

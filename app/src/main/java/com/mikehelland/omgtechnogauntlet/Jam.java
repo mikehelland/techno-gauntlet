@@ -27,7 +27,7 @@ class Jam {
 
     private float shuffle = 0;
 
-    private ArrayList<Channel> mChannels = new ArrayList<>();
+    private List<Channel> mChannels = new CopyOnWriteArrayList<>();
 
     private OMGSoundPool pool;
 
@@ -263,7 +263,7 @@ class Jam {
 
     }
 
-    ArrayList<Channel> getChannels() {
+    List<Channel> getChannels() {
         return mChannels;
     }
 

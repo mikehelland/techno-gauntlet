@@ -119,8 +119,7 @@
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="0px"
-            android:layout_weight="0.66"
+            android:layout_height="wrap_content"
             android:id="@+id/add_channel_button"
             android:text="+ Add Channel"/>
 

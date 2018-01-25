@@ -109,6 +109,10 @@ class OMGSoundPool extends SoundPool {
         while (mSoundsToLoad.size() > 0) {
             sound = mSoundsToLoad.get(0);
 
+            if (sound == null) {
+                break; //something is wrong
+            }
+
             if (!loadedUrls.containsKey(sound.getURL())) {
                 if (sound.isPreset()) {
                     preset_id = sound.getPresetId();
