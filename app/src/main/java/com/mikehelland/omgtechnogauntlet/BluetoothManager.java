@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,13 +79,14 @@ class BluetoothManager {
         if (!isBlueToothOn()) return;
         newStatus(callback, STATUS_ACCEPTING_CONNECTIONS);
 
-        acceptThread = new BluetoothAcceptThread(this, callback);
+        acceptThread = new BluetoothAcceptThread(this);
+        acceptThread.addCallback(callback);
         acceptThread.start();
     }
 
-    void newAcceptThreadCallback(BluetoothConnectCallback callback) {
-        if (acceptThread != null) {
-            acceptThread.newCallback(callback);
+    void addAcceptThreadCallback(BluetoothConnectCallback callback) {
+        if (acceptThread != null && callback != null)  {
+            acceptThread.addCallback(callback);
         }
     }
 
@@ -145,8 +145,8 @@ class BluetoothManager {
         connectionThreads.removeAll(toRemove);
     }
 
-    void newConnection(BluetoothDevice device, BluetoothSocket socket, BluetoothConnectCallback callback){
-        BluetoothConnection ct = new BluetoothConnection(device, this, socket, callback);
+    void newConnection(BluetoothDevice device, BluetoothSocket socket, List<BluetoothConnectCallback> callbacks){
+        BluetoothConnection ct = new BluetoothConnection(device, this, socket, callbacks);
         connectionThreads.add(ct);
 
         // if you don't add to the arrayList before you start
@@ -156,22 +156,19 @@ class BluetoothManager {
 
     void cleanUp() {
         cleaningUp = true;
-        Log.d("MGH bt cleanup", "start");
         if (acceptThread != null) {
             acceptThread.stopAccepting();
             acceptThread = null;
         }
-        Log.d("MGH bt cleanup", "acceptThread null");
 
         for (BluetoothConnection ct : connectionThreads) {
             ct.resetConnections();
         }
         connectionThreads.clear();
-        Log.d("MGH bt cleanup", "connections cleared");
     }
 
     void newStatus(BluetoothConnectCallback callback, String newString) {
-        Log.d("MGH newStatus", newString);
+        //Log.d("MGH newStatus", newString);
 
         if (callback != null) {
             callback.newStatus(newString);
@@ -206,12 +203,10 @@ class BluetoothManager {
         }
     }
 
-    ArrayList<BluetoothDevice> getPairedDevices() {
+    List<BluetoothDevice> getPairedDevices() {
         Set<BluetoothDevice> set = mBluetooth.getBondedDevices();
         ArrayList<BluetoothDevice> list = new ArrayList<>();
-        for (BluetoothDevice device : set) {
-            list.add(device);
-        }
+        list.addAll(set);
         return list;
     }
 

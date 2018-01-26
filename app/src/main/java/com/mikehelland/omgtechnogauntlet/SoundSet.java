@@ -129,7 +129,7 @@ class SoundSet {
 
         }
         catch (JSONException exp) {
-            Log.d("MGH", exp.getMessage());
+            Log.e("MGH", exp.getMessage());
             mIsValid = false;
             return false;
         }

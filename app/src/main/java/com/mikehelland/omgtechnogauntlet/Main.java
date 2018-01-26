@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class Main extends Activity {
@@ -23,7 +22,6 @@ public class Main extends Activity {
     private WelcomeFragment mWelcomeFragment;
 
     private BeatView mBeatView;
-    private TextView mBeatTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,7 +92,6 @@ public class Main extends Activity {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("MGH Main", "onPause");
         if (!mPool.isLoaded())
             mPool.cancelLoading();
         mJam.pause();
@@ -103,7 +100,6 @@ public class Main extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("MGH MAIN", "onDestroy");
         mJam.finish();
         mBtf.cleanUp();
         mDatabase.close();
@@ -186,6 +182,7 @@ public class Main extends Activity {
             public void newStatus(final String status) {}
             @Override
             public void onConnected(BluetoothConnection connection) {
+                Log.d("MGH Main", "new CommandProcessor, makeConnectCallback()");
                 final CommandProcessor cp = new CommandProcessor(Main.this);
                 cp.setup(connection, mJam, null);
                 connection.setDataCallback(cp);
@@ -223,9 +220,15 @@ public class Main extends Activity {
                 //pretty lousy spot for this
                 CommandProcessor cp;
                 for (BluetoothConnection connection : mBtf.getConnections()) {
-                    cp = new CommandProcessor(Main.this);
-                    cp.setup(connection, jam, null);
-                    connection.setDataCallback(cp);
+                    cp = (CommandProcessor)connection.getDataCallback();
+                    if (cp == null) {
+                        cp = new CommandProcessor(Main.this);
+                        cp.setup(connection, jam, null);
+                        connection.setDataCallback(cp);
+                    }
+                    else {
+                        cp.setup(connection, jam, null);
+                    }
                 }
                 oldJam.pause();
                 oldJam.finish();

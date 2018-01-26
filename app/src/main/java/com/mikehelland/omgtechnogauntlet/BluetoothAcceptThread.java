@@ -2,22 +2,25 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
-import android.util.Log;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class BluetoothAcceptThread  extends Thread {
 
     private BluetoothServerSocket mServerSocket;
 
-    private BluetoothConnectCallback mCallback;
+    private List<BluetoothConnectCallback> mCallbacks = new CopyOnWriteArrayList<>();
     private BluetoothManager mBluetoothManager;
 
     private boolean isAccepting;
 
-    BluetoothAcceptThread (BluetoothManager bt, BluetoothConnectCallback callback){
-        mCallback = callback;
+    BluetoothAcceptThread (BluetoothManager bt) {
         mBluetoothManager = bt;
+    }
+
+    public void run(){
         BluetoothServerSocket tmp = null;
 
         if (mServerSocket != null) {
@@ -30,16 +33,14 @@ class BluetoothAcceptThread  extends Thread {
         }
 
         try {
-            tmp =  bt.getAdapter().listenUsingRfcommWithServiceRecord("OMG BANANAS", bt.getUUID());
+            tmp =  mBluetoothManager.getAdapter().listenUsingRfcommWithServiceRecord("OMG BANANAS",
+                    mBluetoothManager.getUUID());
 
         }    catch (IOException e) {
-            bt.newStatus(callback, "IOException in listenUsingRfcomm");
+            newStatus("IOException in listenUsingRfcomm");
         }
         mServerSocket = tmp;
         isAccepting = true;
-    }
-
-    public void run(){
 
         if (mServerSocket == null) {
             return;
@@ -51,20 +52,19 @@ class BluetoothAcceptThread  extends Thread {
                 socket = mServerSocket.accept();
             } catch (IOException e){
                 if (isAccepting)
-                    mBluetoothManager.newStatus(mCallback, "IOException in accept()");
+                    newStatus("IOException in accept()");
 
                 break;
             }
 
             if (socket != null){
-                mBluetoothManager.newStatus(mCallback, "Connecting...");
-                mBluetoothManager.newConnection(socket.getRemoteDevice(), socket, mCallback);
+                newStatus("Connecting...");
+                mBluetoothManager.newConnection(socket.getRemoteDevice(), socket, mCallbacks);
             }
 
         }
 
         cleanUp();
-        Log.d("MGH accept thread", "finish up");
     }
 
     void stopAccepting() {
@@ -73,7 +73,6 @@ class BluetoothAcceptThread  extends Thread {
     }
 
     private void cleanUp() {
-        Log.d("MGH accept thread", "close socket");
         if (mServerSocket != null) {
             try {
                 mServerSocket.close();
@@ -84,7 +83,21 @@ class BluetoothAcceptThread  extends Thread {
         }
     }
 
-    void newCallback(BluetoothConnectCallback callback) {
-        mCallback = callback;
+    void addCallback(BluetoothConnectCallback callback) {
+        if (callback != null) {
+            mCallbacks.add(callback);
+        }
+    }
+
+    void removeCallback(BluetoothConnectCallback callback) {
+        mCallbacks.remove(callback);
+    }
+
+    private void newStatus(String status) {
+        for (BluetoothConnectCallback callback : mCallbacks) {
+            if (callback != null) {
+                callback.newStatus(status);
+            }
+        }
     }
 }

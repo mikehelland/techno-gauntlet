@@ -1,7 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.animation.ObjectAnimator;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -31,11 +30,8 @@ public class HeadBob {
 
 
     public void start(int beatMS) {
-        Log.d("MGH", "headbob starting");
-
         anim.setDuration(beatMS);
         anim.start();
-
     }
 
     public void setHeadHeight(float f) {

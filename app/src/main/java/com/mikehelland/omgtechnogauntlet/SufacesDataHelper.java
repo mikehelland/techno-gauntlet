@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 class SufacesDataHelper extends SQLiteOpenHelper {
 
@@ -58,11 +57,6 @@ class SufacesDataHelper extends SQLiteOpenHelper {
     Cursor getSavedCursor(SQLiteDatabase db) {
 
         Cursor cursor = db.rawQuery("SELECT * FROM surfaces ORDER BY time DESC", null);
-        //db.close();
-
-        Log.d("MGH", "opening cursor");
-        Log.d("MGH", Integer.toString(cursor.getCount()));
-
         return cursor;
 
     }

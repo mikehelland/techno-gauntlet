@@ -13,12 +13,12 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class SaveToOMG {
+class SaveToOMG {
 
-    public SaveToOMG() {
+    SaveToOMG() {
     }
 
-    private long doHttp(String saveUrl, String type, String data) {
+    private static long doHttp(String saveUrl, String data) {
         long id = -1;
 
         try
@@ -30,33 +30,28 @@ public class SaveToOMG {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestMethod("POST");
 
-            //OutputStreamWriter request = new OutputStreamWriter(connection.getOutputStream());
             OutputStream request = connection.getOutputStream();
 
-            Log.d("MGH save omg data", data);
-            //request.write(URLEncoder.encode(jsonParam.toString(),"UTF-8"));
             byte[] bytes = data.getBytes("UTF-8");
             request.write(bytes);
             request.flush();
 
-            String line = "";
+            String line;
             InputStreamReader isr = new InputStreamReader(connection.getInputStream());
             BufferedReader reader = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
             while ((line = reader.readLine()) != null)
             {
-                sb.append(line + "\n");
+                sb.append(line);
+                sb.append("\n");
             }
 
             request.close();
 
-            // Response from server after login process will be stored in response variable.
             String response = sb.toString();
 
             id = getIdFromResponse(response);
 
-            // You can perform UI operations here
-            Log.d("MGH server response", response);
             isr.close();
             reader.close();
 
@@ -69,15 +64,13 @@ public class SaveToOMG {
         }
 
         return id;
-
-        //return 0;
     }
 
-    public void execute(String saveUrl, String type, String data, OMGCallback callback) {
+    void execute(String saveUrl, String type, String data, OMGCallback callback) {
         new SendJam(callback).execute(saveUrl, type, data);
     }
 
-    private class SendJam extends AsyncTask<String, Void, String> {
+    private static class SendJam extends AsyncTask<String, Void, String> {
 
         private OMGCallback mCallback;
 
@@ -89,7 +82,7 @@ public class SaveToOMG {
 
         protected String doInBackground(String... args) {
 
-            id = doHttp(args[0], args[1], args[2]);
+            id = doHttp(args[0], args[2]);
             return null;
         }
 
@@ -103,7 +96,7 @@ public class SaveToOMG {
         }
     }
 
-    private long getIdFromResponse(String responseString) {
+    private static long getIdFromResponse(String responseString) {
         long ret = -1;
         try {
             JSONObject response = new JSONObject(responseString);

@@ -89,7 +89,7 @@ public class SoundSetListDownloader {
                 // expect HTTP 200 OK, so we don't mistakenly save error report
                 // instead of the file
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    Log.d("MGH", "Server returned HTTP " + connection.getResponseCode()
+                    Log.e("MGH", "Server returned HTTP " + connection.getResponseCode()
                             + " " + connection.getResponseMessage());
                     return null;
                 }

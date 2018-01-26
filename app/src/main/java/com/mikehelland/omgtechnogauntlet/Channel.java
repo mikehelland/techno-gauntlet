@@ -1,7 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -577,7 +576,6 @@ class Channel {
     }
 
     void setPattern(boolean[][] pattern) {
-        Log.d("MGH", "set pattern " + pattern.length);
         this.pattern = pattern;
     }
 

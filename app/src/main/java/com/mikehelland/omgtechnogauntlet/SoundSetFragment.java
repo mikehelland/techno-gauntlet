@@ -290,7 +290,7 @@ public class SoundSetFragment extends OMGFragment {
 
     private void onSoundSetFilesDownloaded(SoundSet soundSet) {
         if (soundSet == null){
-            Log.d("MGH", "Not a valid soundset");
+            Log.e("MGH", "Not a valid soundset");
             return;
         }
 

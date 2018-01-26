@@ -7,6 +7,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class BluetoothConnection extends Thread {
     private BluetoothDevice mDevice;
@@ -14,7 +16,7 @@ class BluetoothConnection extends Thread {
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
     private final BluetoothSocket socket;
-    private BluetoothConnectCallback mConnectedCallback;
+    private List<BluetoothConnectCallback> mConnectedCallbacks = new CopyOnWriteArrayList<>();
     private BluetoothDataCallback mDataCallback;
 
     private boolean disconnected = false;
@@ -22,9 +24,9 @@ class BluetoothConnection extends Thread {
     private final static String TAG = "MGH bluetoothconnection";
     
     BluetoothConnection(BluetoothDevice device, BluetoothManager bluetoothFactory,
-                               BluetoothSocket socket, BluetoothConnectCallback callback){
+                               BluetoothSocket socket, List<BluetoothConnectCallback> callbacks){
         this.bluetoothFactory = bluetoothFactory;
-        mConnectedCallback = callback;
+        mConnectedCallbacks.addAll(callbacks);
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
         this.socket = socket;
@@ -34,8 +36,7 @@ class BluetoothConnection extends Thread {
             tmpIn = socket.getInputStream();
             tmpOut = socket.getOutputStream();
         } catch (IOException e) {
-            bluetoothFactory.newStatus(mConnectedCallback, BluetoothManager.STATUS_IO_OPEN_STREAMS);
-            Log.d(TAG, e.getMessage());
+            newStatus(BluetoothManager.STATUS_IO_OPEN_STREAMS);
         }
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
@@ -44,8 +45,7 @@ class BluetoothConnection extends Thread {
 
     public void run(){
 
-        if (mConnectedCallback != null)
-            mConnectedCallback.onConnected(this);
+        onConnected();
 
         int bytes;
         boolean hasData;
@@ -60,15 +60,12 @@ class BluetoothConnection extends Thread {
                 if (bytes > 0) {
                     hasData = true;
                 }
-                else {
-                    Log.d("MGH", "InStream read but zero bytes");
-                }
             } catch (IOException e){
-                Log.d(TAG, e.getMessage());
+                Log.e(TAG, e.getMessage());
 
                 if (!bluetoothFactory.cleaningUp) {
-                    bluetoothFactory.newStatus(mConnectedCallback, BluetoothManager.STATUS_IO_CONNECTED_THREAD);
-                    mConnectedCallback.onDisconnected(this);
+                    newStatus(BluetoothManager.STATUS_IO_CONNECTED_THREAD);
+                    onDisconnected();
                 }
                 break;
             }
@@ -102,11 +99,11 @@ class BluetoothConnection extends Thread {
     }
 
     private void writeString(String toWrite){
-        Log.d("MGH bt writeString", toWrite);
+        //Log.d("MGH bt writeString", toWrite);
         try {
             mmOutStream.write(toWrite.getBytes());
         } catch (IOException e) {
-            Log.d(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -115,21 +112,19 @@ class BluetoothConnection extends Thread {
         try {
             mmOutStream.close();
         } catch (IOException e) {
-            Log.d(TAG, e.getMessage());
+            e.printStackTrace();
         }
         try {
             mmInStream.close();
         } catch (IOException e) {
-            Log.d(TAG, e.getMessage());
+            e.printStackTrace();
         }
         try {
             socket.close();
-            Log.d("MGH", "connection socket closed");
         }
         catch (IOException e) {
-            Log.d(TAG, e.getMessage());
+            e.printStackTrace();
         }
-
     }
 
     public BluetoothDevice getDevice() {
@@ -143,7 +138,34 @@ class BluetoothConnection extends Thread {
     BluetoothDataCallback getDataCallback() {
         return mDataCallback;
     }
-    void setConnectedCallback(BluetoothConnectCallback callback) {
-        mConnectedCallback = callback;
+    void addConnectedCallback(BluetoothConnectCallback callback) {
+        mConnectedCallbacks.add(callback);
+    }
+
+    private void newStatus(String status) {
+        for (BluetoothConnectCallback callback : mConnectedCallbacks) {
+            if (callback != null) {
+                callback.newStatus(status);
+            }
+        }
+    }
+
+    private void onConnected() {
+        if (mConnectedCallbacks != null) {
+            for (BluetoothConnectCallback callback : mConnectedCallbacks) {
+                if (callback != null) {
+                    callback.onConnected(this);
+                }
+            }
+        }
+    }
+    private void onDisconnected() {
+        if (mConnectedCallbacks != null) {
+            for (BluetoothConnectCallback callback : mConnectedCallbacks) {
+                if (callback != null) {
+                    callback.onDisconnected(this);
+                }
+            }
+        }
     }
 }

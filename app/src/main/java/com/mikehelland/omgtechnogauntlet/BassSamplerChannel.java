@@ -2,7 +2,6 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Log;
 
 /**
  * User: m
@@ -52,7 +51,7 @@ class BassSamplerChannel {
 
             resourceName = res.getResourceName(rids[j]);
             resourceName = resourceName.substring(resourceName.lastIndexOf("/") + 1);
-            sb.append("{\"url\": \"PRESET_" + resourceName + "\", \"preset_id\": ");
+            sb.append("{\"url\": \"PRESET_").append(resourceName).append("\", \"preset_id\": ");
             sb.append(rids[j]);
             sb.append("}");
 
@@ -63,7 +62,6 @@ class BassSamplerChannel {
         }
 
         sb.append("]}");
-        Log.d("MGH", sb.toString());
         return sb.toString();
     }
 
@@ -111,7 +109,7 @@ class BassSamplerChannel {
 
             resourceName = res.getResourceName(rids[j]);
             resourceName = resourceName.substring(resourceName.lastIndexOf("/") + 1);
-            sb.append("{\"url\": \"PRESET_" + resourceName + "\", \"preset_id\": ");
+            sb.append("{\"url\": \"PRESET_").append(resourceName).append("\", \"preset_id\": ");
             sb.append(rids[j]);
             sb.append("}");
 
@@ -122,7 +120,6 @@ class BassSamplerChannel {
         }
 
         sb.append("]}");
-        Log.d("MGH", sb.toString());
         return sb.toString();
     }
 }

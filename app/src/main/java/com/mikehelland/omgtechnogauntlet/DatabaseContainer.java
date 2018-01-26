@@ -3,8 +3,8 @@ package com.mikehelland.omgtechnogauntlet;
 import android.content.Context;
 
 class DatabaseContainer {
-    SoundSetDataOpenHelper mSoundSetData;
-    SavedDataOpenHelper mSavedData;
+    final private SoundSetDataOpenHelper mSoundSetData;
+    final private SavedDataOpenHelper mSavedData;
     final BluetoothDeviceDataHelper mBluetoothDeviceData;
 
     DatabaseContainer(Context context) {

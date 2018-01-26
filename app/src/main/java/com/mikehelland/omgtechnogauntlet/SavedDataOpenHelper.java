@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 class SavedDataOpenHelper extends SQLiteOpenHelper {
 
@@ -27,8 +26,6 @@ class SavedDataOpenHelper extends SQLiteOpenHelper {
 
 
         if (oldVersion == 1) {
-
-            Log.d("MGH", "UPGRADE! converting table!");
 
             db.execSQL("CREATE TABLE saves (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "tags TEXT, data TEXT, time INTEGER)");

@@ -138,7 +138,7 @@ public class Fretboard {
 
         }
         catch (JSONException exp) {
-            Log.d("MGH Fretboard bad json", exp.getMessage());
+            Log.e("MGH Fretboard bad json", exp.getMessage());
             exp.printStackTrace();
             return false;
         }
@@ -154,10 +154,6 @@ public class Fretboard {
                     mapElement.scaledNote = mapElement.basicNote;
                     mapElement.instrumentNote = mapElement.basicNote;
                 }
-
-                Log.d("MGH mapped basic note", Integer.toString(mapElement.basicNote));
-                Log.d("MGH mapped scaled note", Integer.toString(mapElement.scaledNote));
-                Log.d("MGH mapped inst note", Integer.toString(mapElement.instrumentNote));
             }
         }
 
@@ -182,8 +178,6 @@ public class Fretboard {
                 touch.onFret = (int) (touch.y / fretHeight);
                 touch.onString = (int) (touch.x / stringWidth);
                 touches.add(touch);
-                Log.d("MGH touchfret", Integer.toString(touch.onFret));
-                Log.d("MGH touchstring", Integer.toString(touch.onString));
 
                 //touch.channelId = mChannel.startChannel(base + touch.fretMapping(fretMap));
 

@@ -3,7 +3,6 @@ package com.mikehelland.omgtechnogauntlet;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,9 +92,6 @@ public class BluetoothConnectFragment extends OMGFragment {
                                     0, 0, 0);
                         }
                     });
-                }
-                else {
-                    Log.w("MGH bt newStatus", "activity is null");
                 }
             }
 

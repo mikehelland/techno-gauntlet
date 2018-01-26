@@ -224,10 +224,8 @@ class Jam {
                 JSONObject part = parts.getJSONObject(ip);
                 String type = part.getString("type");
 
-                //todo get rid of this, only good for old saved songs, prelaunch
+                //only good for old saved songs, prelaunch maybe remove it
                 if ("CHORDPROGRESSION".equals(type)) {
-                    Log.d("MGH", "loading chord progression");
-                    Log.d("MGH", part.toString());
                     JSONArray chordsData = part.getJSONArray("data");
                     int[] newChords = new int[chordsData.length()];
                     for (int ic = 0; ic < chordsData.length(); ic++) {
@@ -247,7 +245,7 @@ class Jam {
             good = true;
 
         } catch (final JSONException e) {
-            Log.d("MGH loaddata exception", e.getMessage());
+            Log.e("MGH loaddata exception", e.getMessage());
             ((Main)mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

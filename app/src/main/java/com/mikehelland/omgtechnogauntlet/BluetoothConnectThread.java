@@ -2,9 +2,10 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.util.Log;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by m on 10/10/17.
@@ -26,7 +27,7 @@ class BluetoothConnectThread extends Thread {
             tmp = device.createRfcommSocketToServiceRecord(mBT.getUUID());
         } catch (IOException e) {
             mBT.newStatus(mConnectCallback, "IOException in createRfcommSocket");
-            Log.d("MGH bt error", e.getMessage());}
+        }
         mSocket = tmp;
     }
 
@@ -39,17 +40,19 @@ class BluetoothConnectThread extends Thread {
             good = true;
 
         } catch (IOException connectException) {
-            Log.d("MGH bt error", connectException.getMessage());
             mBT.newStatus(mConnectCallback, BluetoothManager.STATUS_IO_CONNECT_THREAD);
         }
-        if (good)
-            mBT.newConnection(mDevice, mSocket, mConnectCallback);
+        if (good) {
+            List<BluetoothConnectCallback> callbacks = new CopyOnWriteArrayList<>();
+            callbacks.add(mConnectCallback);
+            mBT.newConnection(mDevice, mSocket, callbacks);
+        }
         else {
             try {
                 mSocket.close();
             }
             catch (IOException e) {
-                Log.d("MGH bt error", e.getMessage());
+                e.printStackTrace();
             }
         }
     }

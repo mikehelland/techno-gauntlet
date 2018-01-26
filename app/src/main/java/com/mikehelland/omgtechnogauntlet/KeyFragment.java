@@ -1,7 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +72,6 @@ public class KeyFragment extends OMGFragment {
         scalesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("MGH Item Selected", Integer.toString(i));
                 mJam.setScale(i);
 
                 mainFragment.updateKeyUI();

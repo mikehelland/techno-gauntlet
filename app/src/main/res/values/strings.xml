@@ -332,4 +332,6 @@
 
 ]}
     </string>
+    <string name="syncbeats">Sync Beats</string>
+    <string name="unsyncbeats">Unsync Beats</string>
 </resources>

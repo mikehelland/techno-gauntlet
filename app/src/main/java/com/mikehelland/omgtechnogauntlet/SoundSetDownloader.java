@@ -90,7 +90,7 @@ class SoundSetDownloader {
                 // expect HTTP 200 OK, so we don't mistakenly save error report
                 // instead of the file
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    Log.d("MGH", "Server returned HTTP " + connection.getResponseCode()
+                    Log.e("MGH", "Server returned HTTP " + connection.getResponseCode()
                             + " " + connection.getResponseMessage());
                     return null;
                 }
@@ -110,7 +110,7 @@ class SoundSetDownloader {
                 }
 
             } catch (Exception e) {
-                Log.e("MGH", Log.getStackTraceString(e));
+                e.printStackTrace();
                 return e.toString();
             } finally {
                 try {
@@ -180,11 +180,8 @@ class SoundSetDownloader {
                 String postfix = jsonO.has("postfix") ? jsonO.getString("postfix") : "";
                 itotaldownloads = data.length();
                 String results;
-                Log.d("MGH", "do in background start");
 
                 for (int i = 0; i < data.length(); i++) {
-
-                    Log.d("MGH", "do download "  + Integer.toString(i));
 
                     publishProgress(-100);
 
@@ -202,8 +199,7 @@ class SoundSetDownloader {
                 }
             }
             catch (JSONException jsonexp) {
-                Log.d("MGH", "JSON parsing problem");
-                Log.e("MGH", Log.getStackTraceString(jsonexp));
+                jsonexp.printStackTrace();
             }
 
             if (resultList.length() > 0)
@@ -218,12 +214,9 @@ class SoundSetDownloader {
             OutputStream output = null;
             HttpURLConnection connection = null;
             try {
-                //Thread.currentThread().sleep(2000);
 
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
-
-                Log.d("MGH", "do in background connected");
 
                 // expect HTTP 200 OK, so we don't mistakenly save error report
                 // instead of the file
@@ -237,7 +230,6 @@ class SoundSetDownloader {
                 int fileLength = connection.getContentLength();
 
                 // download the file
-
                 input = connection.getInputStream();
 
                 String fileName = url.toString();
@@ -245,17 +237,14 @@ class SoundSetDownloader {
                 if (extension.lastIndexOf("?") > -1)
                     extension = extension.substring(0, extension.lastIndexOf("?"));
 
-                Log.d("MGH", "downlading url: " + url);
-                Log.d("MGH", mDownloadPath + Integer.toString(position) + extension);
+                Log.v("MGH", "downlading url: " + url);
+                Log.v("MGH", mDownloadPath + Integer.toString(position) + extension);
 
                 output = new FileOutputStream(mDownloadPath + Integer.toString(position)); //+ extension);
 
                 byte data[] = new byte[4096];
                 long total = 0;
                 int count;
-
-                Log.d("MGH", "starting read");
-
 
                 while ((count = input.read(data)) != -1) {
                     // allow canceling with back button
@@ -269,10 +258,8 @@ class SoundSetDownloader {
                         publishProgress((int) (total * 100 / fileLength));
                     output.write(data, 0, count);
                 }
-
-                Log.d("MGH", "done with loop");
             } catch (IOException e) {
-                Log.e("MGH", Log.getStackTraceString(e));
+                e.printStackTrace();
                 return e.getMessage();
             } finally {
                 try {
@@ -281,7 +268,7 @@ class SoundSetDownloader {
                     if (input != null)
                         input.close();
                 } catch (IOException ignored) {
-                    Log.e("MGH", Log.getStackTraceString(ignored));
+                    ignored.printStackTrace();
                     return ignored.getMessage();
 
                 }
@@ -388,7 +375,7 @@ class SoundSetDownloader {
         } catch (JSONException jsonex) {
             Toast.makeText(context, "JSON Error " + jsonex.getMessage(), Toast.LENGTH_LONG).show();
             jsonex.printStackTrace();
-            Log.d("MGH loadsoundfont", result);
+            Log.e("MGH err loadsoundfont", result);
             return null;
         }
 

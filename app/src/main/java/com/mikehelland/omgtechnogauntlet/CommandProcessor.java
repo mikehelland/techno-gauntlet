@@ -2,7 +2,6 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
 /**
  * Created by m on 7/31/16.
@@ -42,8 +41,7 @@ class CommandProcessor extends BluetoothDataCallback {
     @Override
     public void newData(String name, String value) {
 
-        Log.d("MGH BT newdata", name);
-        Log.d("MGH BT newdata", value != null ? value : "");
+        //Log.d("MGH BT newdata", name + (value != null ? ("=" + value) : ""));
 
         if (name.equals("SET_SUBBEATLENGTH")) {
             mJam.setSubbeatLength(Integer.parseInt(value), mConnection.getDevice().getAddress());
@@ -165,8 +163,6 @@ class CommandProcessor extends BluetoothDataCallback {
             note.setRest(true);
         }
 
-        Log.d("MGH connection playnote", Integer.toString(basicNoteNumber));
-
         mChannel.playLiveNote(note);
     }
 
@@ -237,7 +233,6 @@ class CommandProcessor extends BluetoothDataCallback {
         mConnection.sendNameValuePair("FRETBOARD_INFO", fretboardInfo);
 
         String noteInfo = getNoteInfo(channel) + ";";
-        Log.d("MGH note info", noteInfo);
         mConnection.sendNameValuePair("NOTE_INFO", noteInfo);
     }
 
@@ -393,7 +388,7 @@ class CommandProcessor extends BluetoothDataCallback {
             mJam.getChannels().get(channel).setVolume(volume);
         }
         catch (Exception e) {
-            Log.d("MGH set channel volume", e.getMessage());
+            e.printStackTrace();
         }
     }
     private void setChannelEnabled(String params) {
@@ -406,7 +401,7 @@ class CommandProcessor extends BluetoothDataCallback {
 
         }
         catch (Exception e) {
-            Log.d("MGH set channel volume", e.getMessage());
+            e.printStackTrace();
         }
     }
 

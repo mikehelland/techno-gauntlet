@@ -19,7 +19,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     private Context mContext;
     SoundSetDataOpenHelper(Context context) {
         super(context, "OMG_TECHNO_GAUNTLET", null, 1);
-        Log.d("MGH", "datahelper constructor");
         mContext = context;
 
         mDB = getWritableDatabase();
@@ -36,7 +35,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d("MGH", "onCreate soundsets table");
         db.execSQL("CREATE TABLE soundsets (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "name TEXT, data TEXT, url TEXT, type TEXT, chromatic BOOLEAN, time INTEGER, omg_id TEXT)");
         setupDefaultSoundSets(db);
@@ -263,15 +261,10 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
 
     Cursor getCursor() {
-
         SQLiteDatabase db = mDB;
         Cursor cursor = db.rawQuery("SELECT * FROM soundsets ORDER BY _id DESC", null);
 
-        Log.d("MGH", "opening cursor");
-        Log.d("MGH", Integer.toString(cursor.getCount()));
-
         return cursor;
-
     }
 
     public String getLastSaved() {
@@ -313,7 +306,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
         if (cursor.getCount() == 0) {
             cErrorMessage = "Couldn't find Sound Set in the database";
-            Log.e("MGH querysoundset fail", where);
             showToast();
         }
         else {
