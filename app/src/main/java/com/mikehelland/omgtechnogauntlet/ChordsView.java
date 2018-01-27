@@ -2,7 +2,6 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -29,7 +28,7 @@ public class ChordsView extends View {
 
     private Jam mJam;
 
-    private Bitmap images[];
+    final private Bitmap images[];
 
     private int[] chords;
     private int[] scale;
@@ -47,15 +46,7 @@ public class ChordsView extends View {
         paintCurrentBeat.setShadowLayer(4, 0, 0, 0xFFFFFFFF);
         paintCurrentBeat.setStyle(Paint.Style.FILL_AND_STROKE);
 
-        images = new Bitmap[8];
-        images[0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_one);
-        images[1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_two);
-        images[2] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_three);
-        images[3] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_four);
-        images[4] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_flatfive);
-        images[5] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_five);
-        images[6] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_six);
-        images[7] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_seven);
+        images = ((Main)context).getImages().getChordImages();
 
         setBackgroundColor(Color.WHITE);
     }

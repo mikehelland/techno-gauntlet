@@ -5,7 +5,6 @@ import android.app.FragmentTransaction;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,6 +23,8 @@ public class Main extends Activity {
     private WelcomeFragment mWelcomeFragment;
 
     private BeatView mBeatView;
+
+    private ImageLoader mImages;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,8 @@ public class Main extends Activity {
 
         Toast.makeText(this, "Press the MONKEY to Change!", Toast.LENGTH_SHORT).show();
         Toast.makeText(this, "Press the BANANA to Save!", Toast.LENGTH_LONG).show();
+
+        mImages = new ImageLoader(this);
     }
 
 
@@ -184,7 +187,6 @@ public class Main extends Activity {
             public void newStatus(final String status) {}
             @Override
             public void onConnected(BluetoothConnection connection) {
-                Log.d("MGH Main", "new CommandProcessor, makeConnectCallback()");
                 final CommandProcessor cp = new CommandProcessor(Main.this);
                 cp.setup(connection, mJam, null);
                 connection.setDataCallback(cp);
@@ -248,4 +250,5 @@ public class Main extends Activity {
     }
 
     DatabaseContainer getDatabase() {return mDatabase;}
+    ImageLoader getImages() {return mImages;}
 }

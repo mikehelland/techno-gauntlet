@@ -57,9 +57,7 @@ class SavedDataOpenHelper extends SQLiteOpenHelper {
     }
 
     Cursor getSavedCursor() {
-        Cursor cursor = mDB.rawQuery("SELECT * FROM saves ORDER BY time DESC", null);
-
-        return cursor;
+        return mDB.rawQuery("SELECT * FROM saves ORDER BY time DESC", null);
     }
 
     public String getLastSaved() {

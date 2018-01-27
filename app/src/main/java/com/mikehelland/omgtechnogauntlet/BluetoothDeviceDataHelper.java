@@ -7,6 +7,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class BluetoothDeviceDataHelper extends SQLiteOpenHelper {
 
     private SQLiteDatabase mDB;
@@ -48,9 +51,14 @@ class BluetoothDeviceDataHelper extends SQLiteOpenHelper {
         db.insert("devices", null, data);
     }
 
-    Cursor getBrainsCursor() {
+    List<String> getBrainMACList() {
         Cursor cursor = mDB.rawQuery("SELECT * FROM devices WHERE brain ORDER BY _id DESC", null);
-        return cursor;
+        List<String> list = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            list.add(cursor.getString(cursor.getColumnIndex("mac")));
+        }
+        cursor.close();
+        return list;
     }
 
     void cleanUp() {

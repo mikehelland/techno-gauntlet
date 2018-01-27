@@ -2,6 +2,7 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 import android.media.SoundPool;
+import android.util.Log;
 
 import com.mikehelland.omgtechnogauntlet.dsp.Dac;
 
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 class OMGSoundPool extends SoundPool {
+
+    private static final int LOADED_FILES_LIMIT = 800;
 
     private volatile boolean isLoading = false;
 
@@ -28,6 +31,8 @@ class OMGSoundPool extends SoundPool {
 
     private Context mContext;
     int soundsToLoad = 0;
+
+    private boolean mShowedFileLimit = false;
 
     OMGSoundPool(Context context, int i1, int i2, int i3) {
         super(i1, i2, i3);
@@ -113,7 +118,15 @@ class OMGSoundPool extends SoundPool {
                 break; //something is wrong
             }
 
-            if (!loadedUrls.containsKey(sound.getURL())) {
+            if (loadedUrls.size() > LOADED_FILES_LIMIT) {
+                if (!mShowedFileLimit) {
+                    Log.e("MGH OMGSoundPool", "file limit!");
+                    mShowedFileLimit = true;
+                }
+                //todo show to user
+                //todo release files?
+            }
+            else if (!loadedUrls.containsKey(sound.getURL())) {
                 if (sound.isPreset()) {
                     preset_id = sound.getPresetId();
 

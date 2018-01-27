@@ -14,6 +14,7 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainFragment extends OMGFragment {
 
@@ -27,7 +28,7 @@ public class MainFragment extends OMGFragment {
     private LayoutInflater mInflater;
     private ViewGroup mContainer;
 
-    private ArrayList<View> monkeyHeads = new ArrayList<>();
+    private List<View> monkeyHeads = new ArrayList<>();
 
     private Jam.StateChangeCallback mJamListener;
 

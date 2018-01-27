@@ -26,8 +26,7 @@ public class WelcomeFragment extends OMGFragment {
 
         getActivityMembers();
 
-        mView = inflater.inflate(R.layout.welcome,
-                container, false);
+        mView = inflater.inflate(R.layout.welcome, container, false);
 
         populateSavedListView();
 
@@ -36,7 +35,6 @@ public class WelcomeFragment extends OMGFragment {
             loadDefaultJam();
 
         }
-
 
 
         mView.findViewById(R.id.return_to_omg_bananas).setOnClickListener(new View.OnClickListener() {
@@ -50,7 +48,7 @@ public class WelcomeFragment extends OMGFragment {
         mView.findViewById(R.id.exit_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Activity activity =  getActivity();
+                Activity activity = getActivity();
                 if (activity != null && !Main.MONKEY_TEST) {
                     activity.finish();
                 }
@@ -64,11 +62,11 @@ public class WelcomeFragment extends OMGFragment {
             }
         });
 
-
         return mView;
     }
 
     private void populateSavedListView() {
+
         Context context = getActivity();
 
         ListView listView = (ListView)mView.findViewById(R.id.saved_list);
@@ -112,7 +110,7 @@ public class WelcomeFragment extends OMGFragment {
             }
         };
 
-        ((Main)getActivity()).loadJam(json);
+        ((Main) getActivity()).loadJam(json);
     }
 
     public void showFragment(Fragment f) {
@@ -162,7 +160,7 @@ public class WelcomeFragment extends OMGFragment {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                switch (which){
+                switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         removeSavedJam(i);
                         populateSavedListView();
@@ -188,5 +186,13 @@ public class WelcomeFragment extends OMGFragment {
         long id = mCursor.getLong(mCursor.getColumnIndex("_id"));
         SavedDataOpenHelper dataHelper = new SavedDataOpenHelper(getActivity());
         dataHelper.delete(id);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try{
+            mCursor.close();
+        } catch (Exception e) {e.printStackTrace();}
     }
 }

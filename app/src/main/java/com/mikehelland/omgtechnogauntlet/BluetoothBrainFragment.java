@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothDevice;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class BluetoothBrainFragment extends OMGFragment {
 
@@ -72,24 +72,20 @@ public class BluetoothBrainFragment extends OMGFragment {
     }
 
     private void setupBrainList(LayoutInflater inflater) {
-        Cursor cursor = getBrainsCursor();
+        List<String> list = getBrainMACList();
         ViewGroup viewGroup = (ViewGroup) mView.findViewById(R.id.brain_devices);
-        for (int i = 0; i < cursor.getCount(); i++) {
-            cursor.moveToPosition(i);
-
+        for (String macAddress : list) {
             for (BluetoothDevice device : mBtf.getPairedDevices()) {
-                if (cursor.getString(cursor.getColumnIndex("mac")).equals(device.getAddress())) {
+                if (macAddress.equals(device.getAddress())) {
                     setupDeviceButton(inflater, viewGroup, device);
                     break;
                 }
             }
         }
-        cursor.close();
     }
 
-    private Cursor getBrainsCursor() {
-        BluetoothDeviceDataHelper data = ((Main)getActivity()).getDatabase().mBluetoothDeviceData;
-        return data.getBrainsCursor();
+    private List<String> getBrainMACList() {
+        return ((Main)getActivity()).getDatabase().mBluetoothDeviceData.getBrainMACList();
     }
 
     private void setup() {
