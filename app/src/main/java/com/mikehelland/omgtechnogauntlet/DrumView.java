@@ -235,8 +235,10 @@ public class DrumView extends View {
         //((Main)getContext()).onModify();
 
         if (firstRowButton == -1) {
-            data[y][x] = !data[y][x];
-            mChannel.setPattern(y, x * mJam.getSubbeats(), data[y][x]);
+            if (y > -1 && y < data.length && x > -1 && x < data[y].length) {
+                data[y][x] = !data[y][x];
+                mChannel.setPattern(y, x * mJam.getSubbeats(), data[y][x]);
+            }
         }
         else {
             int i = x % wide + y * wide;
