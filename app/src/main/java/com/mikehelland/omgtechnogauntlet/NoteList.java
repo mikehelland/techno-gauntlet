@@ -28,6 +28,10 @@ public class NoteList extends ArrayList<Note> {
         for (int i = 0; i < size(); i++) {
             existingNote = get(i);
 
+            //probably a concurrency thing //todo CopyOnWriteArrayList?
+            if (existingNote == null)
+                return;
+
             // if we past it, get the last
             if (beatsUsed > beat) {
                 Note lastNote = get(i - 1);
@@ -50,6 +54,11 @@ public class NoteList extends ArrayList<Note> {
                     j = i + 1;
                     while (beatsDisplaced > 0 && j < size()) {
                         existingNote = get(j);
+
+                        //probably a concurrency thing //todo CopyOnWriteArrayList?
+                        if (existingNote == null)
+                            return;
+
                         if (existingNote.getBeats() <= beatsDisplaced) {
                             remove(j);
                         }

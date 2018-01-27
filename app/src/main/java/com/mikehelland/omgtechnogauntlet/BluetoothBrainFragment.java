@@ -57,14 +57,16 @@ public class BluetoothBrainFragment extends OMGFragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BluetoothChooseDeviceFragment f = new BluetoothChooseDeviceFragment();
-                f.setCallback(new BluetoothChooseDeviceFragment.Callback() {
-                    @Override
-                    void run(BluetoothDevice device) {
-                        addDevice(device);
-                    }
-                });
-                showFragmentDown(f);
+                if (!Main.MONKEY_TEST) {
+                    BluetoothChooseDeviceFragment f = new BluetoothChooseDeviceFragment();
+                    f.setCallback(new BluetoothChooseDeviceFragment.Callback() {
+                        @Override
+                        void run(BluetoothDevice device) {
+                            addDevice(device);
+                        }
+                    });
+                    showFragmentDown(f);
+                }
             }
         });
     }
@@ -155,7 +157,7 @@ public class BluetoothBrainFragment extends OMGFragment {
 
                 if (!connection.isDisconnected()) {
                     cp = (CommandProcessor)connection.getDataCallback();
-                    if (cp.getJam() != null) {
+                    if (cp != null && cp.getJam() != null) {
                         cp.setOnPeerChangeListener(makeOnChangeListener(controls));
                         onPanelConnected(controls, cp);
                         setPanelInfo(controls, cp.getJam());

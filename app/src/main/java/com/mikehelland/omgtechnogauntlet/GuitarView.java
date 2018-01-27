@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -161,6 +162,10 @@ public class GuitarView extends View {
 
     public void onDraw(Canvas canvas) {
 
+        if (mJam == null || mChannel == null || fretMapping == null || fretMapping.length == 0) {
+            return;
+        }
+
         if (!mJam.isPaused()) {
             float beatBoxWidth = ((float)getWidth()) / mJam.getTotalBeats();
             float beatBoxStart = mJam.getCurrentSubbeat() / mJam.getSubbeats() * beatBoxWidth;
@@ -243,6 +248,10 @@ public class GuitarView extends View {
 
     public boolean onTouchEvent(MotionEvent event) {
 
+        if (mJam == null || mChannel == null || fretMapping == null || fretMapping.length == 0) {
+            return true;
+        }
+
         if (mFretboard != null) {
             boolean result = mFretboard.onTouchEvent(event);
             invalidate();
@@ -255,6 +264,7 @@ public class GuitarView extends View {
         }
 
         int action = event.getAction();
+        int fretThatsShowing;
         if (action == MotionEvent.ACTION_DOWN) {
 
             if (mChannel.isEnabled() && !modified) {
@@ -272,10 +282,18 @@ public class GuitarView extends View {
             lastFret = touchingFret;
             Note note = new Note();
             note.setBasicNote(skipBottom + touchingFret - rootFret);
-            note.setScaledNote(fretMapping[skipBottom + touchingFret]);
-            note.setInstrumentNote(fretMapping[skipBottom + touchingFret] - lowNote);
-            mChannel.playLiveNote(note);
-            mChannel.setArpeggiator(touchingString);
+            fretThatsShowing = skipBottom + touchingFret;
+            if (fretThatsShowing > -1 && fretThatsShowing < fretMapping.length) {
+                note.setScaledNote(fretMapping[fretThatsShowing]);
+                note.setInstrumentNote(fretMapping[fretThatsShowing] - lowNote);
+                mChannel.playLiveNote(note);
+                mChannel.setArpeggiator(touchingString);
+            }
+            else {
+                Log.e("MGH GuitarView OnDraw", "Invalid fretmapping. skipBottom: " +
+                        skipBottom +", touchingFret: " + touchingFret + ", fretMapping.length: " +
+                        fretMapping.length + " in soundset: " + mChannel.getSoundSetName());
+            }
 
         }
 
@@ -292,12 +310,20 @@ public class GuitarView extends View {
                     lastFret = touchingFret;
                     Note note = new Note();
                     note.setBasicNote(skipBottom + touchingFret - rootFret);
-                    note.setScaledNote(fretMapping[skipBottom + touchingFret]);
-                    note.setInstrumentNote(fretMapping[skipBottom + touchingFret] - lowNote);
-                    if (!mJam.isPlaying() || touchingString == 0)
-                        mChannel.playLiveNote(note);
-                    else
-                        mChannel.updateLiveNote(note);
+                    fretThatsShowing = skipBottom + touchingFret;
+                    if (fretThatsShowing > -1 && fretThatsShowing < fretMapping.length) {
+                        note.setScaledNote(fretMapping[fretThatsShowing]);
+                        note.setInstrumentNote(fretMapping[fretThatsShowing] - lowNote);
+                        if (!mJam.isPlaying() || touchingString == 0)
+                            mChannel.playLiveNote(note);
+                        else
+                            mChannel.updateLiveNote(note);
+                    }
+                    else {
+                        Log.e("MGH GuitarView OnDraw", "Invalid fretmapping. skipBottom: " +
+                                skipBottom + ", touchingFret: " + touchingFret + ", fretMapping.length: " +
+                                fretMapping.length + " in soundset: " + mChannel.getSoundSetName());
+                    }
                 }
                 mChannel.setArpeggiator(touchingString);
 

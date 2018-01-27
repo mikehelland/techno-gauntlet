@@ -364,6 +364,10 @@ class CommandProcessor extends BluetoothDataCallback {
     }
 
     private String getCaptions() {
+        if (mChannel == null || mChannel.getSoundSet() == null) {
+            return "";
+        }
+
         if (mChannel.getSoundSet().isChromatic()) {
             return "";
         }

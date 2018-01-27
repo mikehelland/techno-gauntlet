@@ -51,8 +51,8 @@ public class WelcomeFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 Activity activity =  getActivity();
-                if (activity != null) {
-                    getActivity().finish();
+                if (activity != null && !Main.MONKEY_TEST) {
+                    activity.finish();
                 }
             }
         });
