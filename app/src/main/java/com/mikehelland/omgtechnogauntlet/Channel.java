@@ -1,6 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -584,7 +585,13 @@ class Channel {
     }
 
     void setPattern(int track, int subbeat, boolean value) {
-        pattern[track][subbeat] = value;
+        if (track >= pattern.length || track < 0 ||
+                subbeat >= pattern[track].length || subbeat < 0) {
+            Log.e("MGH Channel setPattern", "Illegal arguments: track=" + track + ", subbeat=" + subbeat);
+        }
+        else {
+            pattern[track][subbeat] = value;
+        }
     }
 
     void setSurface(String surfaceURL) {

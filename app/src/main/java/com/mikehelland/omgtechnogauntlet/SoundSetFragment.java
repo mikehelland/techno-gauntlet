@@ -278,7 +278,7 @@ public class SoundSetFragment extends OMGFragment {
                 getActivity().getResources().getString(R.string.soundfont_json);
 
 
-        Toast.makeText(getActivity(), url, Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), url, Toast.LENGTH_SHORT).show();
         new SoundSetDownloader(getActivity(), url, new SoundSetDownloader.DownloaderCallback() {
             @Override
             void run(SoundSet soundSet) {

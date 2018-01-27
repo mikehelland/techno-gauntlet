@@ -32,9 +32,11 @@ class SoundSetDownloader {
 
     private SoundSet mSoundSet = null;
     final private Context context;
+    final private SoundSetDataOpenHelper mDataHelper;
 
     SoundSetDownloader(Context context, String url, DownloaderCallback callback) {
         this.context = context;
+        mDataHelper = ((Main)context).getDatabase().getSoundSetData();
 
         mCallback = callback;
         mProgressDialog = new ProgressDialog(context);
@@ -155,6 +157,7 @@ class SoundSetDownloader {
 
         private int idownload = 0;
         private int itotaldownloads = 0;
+        private int isuccessfuldownloads = 0;
         private Context context;
         private PowerManager.WakeLock mWakeLock;
 
@@ -258,6 +261,7 @@ class SoundSetDownloader {
                         publishProgress((int) (total * 100 / fileLength));
                     output.write(data, 0, count);
                 }
+                isuccessfuldownloads++;
             } catch (IOException e) {
                 e.printStackTrace();
                 return e.getMessage();
@@ -315,12 +319,17 @@ class SoundSetDownloader {
         protected void onPostExecute(String result) {
             mWakeLock.release();
             mProgressDialog.dismiss();
+
+            if (isuccessfuldownloads > 0) {
+                mDataHelper.saveAsDownlaoded(mSoundSet);
+            }
+
             if (result != null)
-                Toast.makeText(context,"Download error: " + result, Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Download error: " + result.substring(0, Math.min(100, result.length())), Toast.LENGTH_LONG).show();
             else
                 Toast.makeText(context,"Sound Set downloaded", Toast.LENGTH_SHORT).show();
 
-            if (mCallback != null)
+            if (isuccessfuldownloads > 0 && mSoundSet !=null && mCallback != null)
                 mCallback.run(mSoundSet);
         }
     }
@@ -333,8 +342,7 @@ class SoundSetDownloader {
         ContentValues soundset = processSoundSetJSON(json);
 
         if (soundset != null) {
-            SoundSetDataOpenHelper soundsetDataHelper = ((Main)context).getDatabase().getSoundSetData();
-            mSoundSet = soundsetDataHelper.addSoundSet(soundset);
+            mSoundSet = mDataHelper.addSoundSet(soundset);
 
             String soundsetDirectoryPath = context.getFilesDir() + "/" +
                     Long.toString(mSoundSet.getID()) + "/";

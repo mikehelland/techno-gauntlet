@@ -18,7 +18,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     private Context mContext;
     SoundSetDataOpenHelper(Context context) {
-        super(context, "OMG_TECHNO_GAUNTLET", null, 1);
+        super(context, "OMG_TECHNO_GAUNTLET", null, 2);
         mContext = context;
 
         mDB = getWritableDatabase();
@@ -42,7 +42,11 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        if (oldVersion == 1 && newVersion == 2) {
+            Log.d("MGH datahelper", "UPGRADE!");
+            db.execSQL("ALTER TABLE soundsets ADD COLUMN downloaded INTEGER");
+            db.execSQL("UPDATE soundsets SET downloaded = 1");
+        }
     }
 
     private void setupDefaultSoundSets(SQLiteDatabase db) {
@@ -67,6 +71,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("chromatic", false);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
+        data.put("downloaded", 1);
 
         String[] columns = new String[]{"_id"};
         String[] urls = new String[]{data.getAsString("url")};
@@ -93,6 +98,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("chromatic", false);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
+        data.put("downloaded", 1);
 
         String[] columns = new String[]{"_id"};
         String[] urls = new String[]{data.getAsString("url")};
@@ -119,6 +125,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("chromatic", false);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
+        data.put("downloaded", 1);
 
         String[] columns = new String[]{"_id"};
         String[] urls = new String[]{data.getAsString("url")};
@@ -145,6 +152,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("chromatic", true);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
+        data.put("downloaded", 1);
 
         String[] columns = new String[]{"_id"};
         String[] urls = new String[]{data.getAsString("url")};
@@ -171,6 +179,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("chromatic", true);
         data.put("data", json);
         data.put("time", System.currentTimeMillis() / 1000);
+        data.put("downloaded", 1);
 
         String[] columns = new String[]{"_id"};
         String[] urls = new String[]{data.getAsString("url")};
@@ -249,6 +258,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
                 data.put("chromatic", true);
                 data.put("data", s);
                 data.put("time", System.currentTimeMillis() / 1000);
+                data.put("downloaded", 1);
                 db.insert("soundsets", null, data);
             }
 
@@ -262,7 +272,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     Cursor getCursor() {
         SQLiteDatabase db = mDB;
-        Cursor cursor = db.rawQuery("SELECT * FROM soundsets ORDER BY _id DESC", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM soundsets WHERE downloaded = 1 ORDER BY _id DESC", null);
 
         return cursor;
     }
@@ -351,5 +361,12 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     void cleanUp() {
         mDB.close();
         this.close();
+    }
+
+    void saveAsDownlaoded(SoundSet mSoundSet) {
+        String[] args = {"" + mSoundSet.getID()};
+        ContentValues newData = new ContentValues();
+        newData.put("downloaded", 1);
+        mDB.update("soundsets", newData, "_id=?", args);
     }
 }
