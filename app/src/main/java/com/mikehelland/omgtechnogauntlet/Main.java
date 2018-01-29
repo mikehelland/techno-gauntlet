@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 public class Main extends Activity {
 
-    final static boolean MONKEY_TEST = true;
+    final static boolean MONKEY_TEST = false;
 
     Jam mJam;
     OMGSoundPool mPool = new OMGSoundPool(this, 32, AudioManager.STREAM_MUSIC, 100);
@@ -198,11 +198,19 @@ public class Main extends Activity {
 
     void loadJam(String json) {
 
+        boolean allGood = true;
         int backstack = getFragmentManager().getBackStackEntryCount();
         while (backstack > 0) {
-            getFragmentManager().popBackStack();
+            try {
+                getFragmentManager().popBackStack();
+            } catch (Exception e) {
+                e.printStackTrace(); //happens maybe as we're backing out
+                allGood = false;
+            }
             backstack--;
         }
+
+        if (!allGood) return;
 
         final Jam jam = new Jam(this, mPool);
         jam.load(json);

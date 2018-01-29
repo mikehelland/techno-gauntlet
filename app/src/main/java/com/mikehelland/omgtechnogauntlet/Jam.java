@@ -929,7 +929,12 @@ class Jam {
     }
 
     private void runCallbacks(String state) {
-        StateChangeCallback callback;
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            if (callback != null) {
+                callback.newState(state);
+            }
+        }
+        /*StateChangeCallback callback;
         for (int i = mStateChangeListeners.size() - 1; i >= 0; i--) {
             callback = mStateChangeListeners.get(i);
             if (callback != null) {
@@ -939,7 +944,7 @@ class Jam {
                     callback.newState(state);
                 }
             }
-        }
+        }*/
     }
 
     void syncNow() {

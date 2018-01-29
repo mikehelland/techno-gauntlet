@@ -36,7 +36,8 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE soundsets (_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "name TEXT, data TEXT, url TEXT, type TEXT, chromatic BOOLEAN, time INTEGER, omg_id TEXT)");
+                "name TEXT, data TEXT, url TEXT, type TEXT, chromatic BOOLEAN, " +
+                "time INTEGER, omg_id TEXT, downloaded INTEGER)");
         setupDefaultSoundSets(db);
     }
 

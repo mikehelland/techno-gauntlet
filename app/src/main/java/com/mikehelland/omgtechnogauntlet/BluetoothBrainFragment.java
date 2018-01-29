@@ -32,7 +32,11 @@ public class BluetoothBrainFragment extends OMGFragment {
         mBtf.whenReady(new BluetoothReadyCallback() {
             @Override
             public void onReady() {
-                getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity();
+                if (activity == null) {
+                    return;
+                }
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         setup();

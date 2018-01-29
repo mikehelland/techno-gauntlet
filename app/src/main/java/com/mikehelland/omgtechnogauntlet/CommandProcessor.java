@@ -44,6 +44,7 @@ class CommandProcessor extends BluetoothDataCallback {
         //Log.d("MGH BT newdata", name + (value != null ? ("=" + value) : ""));
 
         if (name.equals("SET_SUBBEATLENGTH")) {
+            if (value == null) return;
             mJam.setSubbeatLength(Integer.parseInt(value), mConnection.getDevice().getAddress());
             return;
         }
@@ -56,6 +57,7 @@ class CommandProcessor extends BluetoothDataCallback {
             return;
         }
         if (name.equals("SET_KEY")) {
+            if (value == null) return;
             mJam.setKey(Integer.parseInt(value), mConnection.getDevice().getAddress());
             return;
         }
@@ -65,6 +67,7 @@ class CommandProcessor extends BluetoothDataCallback {
         }
 
         if (name.equals("SET_CHANNEL")) {
+            if (value == null) return;
             int channelI = Integer.parseInt(value);
             if (channelI < mJam.getChannels().size()) {
                 mChannel = mJam.getChannels().get(channelI);
@@ -74,6 +77,7 @@ class CommandProcessor extends BluetoothDataCallback {
         }
 
         if (name.equals("SET_CHORD")) {
+            if (value == null) return;
             int chordI = Integer.parseInt(value);
             int[] chords = {chordI};
             mJam.setChordProgression(chords);
@@ -86,6 +90,7 @@ class CommandProcessor extends BluetoothDataCallback {
         }
 
         if (name.equals("CHANNEL_PLAY_NOTE")) {
+            if (value == null) return;
             channelPlayNote(value);
             return;
         }
@@ -106,25 +111,51 @@ class CommandProcessor extends BluetoothDataCallback {
         }
 
         if (name.equals("SET_ARPEGGIATOR")) {
+            if (value == null) return;
             if (mChannel != null)
                 mChannel.setArpeggiator(Integer.parseInt(value));
         }
 
-        if (name.equals(JAMINFO_KEY)) onSetKey(value);
-        if (name.equals(JAMINFO_SCALE)) onSetScale(value);
-        if (name.equals(JAMINFO_SUBBEATLENGTH)) onSetSubbeatLength(value);
-        if (name.equals("JAMINFO_CHANNELS")) onSetChannels(value);
+        if (name.equals(JAMINFO_KEY)) {
+            if (value == null) return;
+            onSetKey(value);
+        }
+        if (name.equals(JAMINFO_SCALE)) {
+            if (value == null) return;
+            onSetScale(value);
+        }
+        if (name.equals(JAMINFO_SUBBEATLENGTH)) {
+            if (value == null) return;
+            onSetSubbeatLength(value);
+        }
+        if (name.equals("JAMINFO_CHANNELS")) {
+            if (value == null) return;
+            onSetChannels(value);
+        }
 
         if (name.equals("GET_SAVED_JAMS")) sendSavedJams();
         if (name.equals("GET_SOUNDSETS")) sendSoundSets();
 
-        if (name.equals("ADD_CHANNEL")) addChannel(Long.parseLong(value));
-        if (name.equals("LOAD_JAM")) loadJam(Long.parseLong(value));
+        if (name.equals("ADD_CHANNEL")) {
+            if (value == null) return;
+            addChannel(Long.parseLong(value));
+        }
+        if (name.equals("LOAD_JAM")) {
+            if (value == null) return;
+            loadJam(Long.parseLong(value));
+        }
 
-        if (name.equals("SET_CHANNEL_VOLUME")) setChannelVolume(value);
-        if (name.equals("SET_CHANNEL_ENABLED")) setChannelEnabled(value);
+        if (name.equals("SET_CHANNEL_VOLUME")) {
+            if (value == null) return;
+            setChannelVolume(value);
+        }
+        if (name.equals("SET_CHANNEL_ENABLED")) {
+            if (value == null) return;
+            setChannelEnabled(value);
+        }
 
         if (name.equals("CLEAR_CHANNEL")) {
+            if (value == null) return;
             int channelI = Integer.parseInt(value);
             if (channelI < mJam.getChannels().size()) {
                 mJam.getChannels().get(channelI).clearNotes();
