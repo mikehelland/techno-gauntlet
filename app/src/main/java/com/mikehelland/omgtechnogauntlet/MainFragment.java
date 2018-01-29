@@ -296,6 +296,7 @@ public class MainFragment extends OMGFragment {
         mView.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (Main.MONKEY_TEST) return;
                 Fragment f = new BluetoothBrainFragment();
                 showFragmentDown(f);
             }

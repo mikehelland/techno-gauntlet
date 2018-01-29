@@ -581,6 +581,9 @@ class Channel {
     }
 
     boolean[] getTrack(int track)  {
+        if (pattern == null || track < 0 || track >= pattern.length) {
+            return new boolean[256];
+        }
         return pattern[track];
     }
 

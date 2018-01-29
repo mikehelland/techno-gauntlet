@@ -246,15 +246,19 @@ public class BluetoothBrainFragment extends OMGFragment {
         controls.findViewById(R.id.tempo_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mJam.setSubbeatLength(cp.getJam().getSubbeatLength());
+                if (cp != null && cp.getJam() != null) {
+                    mJam.setSubbeatLength(cp.getJam().getSubbeatLength());
+                }
             }
         });
 
         controls.findViewById(R.id.key_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mJam.setKey(cp.getJam().getKey());
-                mJam.setScale(cp.getJam().getScale());
+                if (cp != null && cp.getJam() != null) {
+                    mJam.setKey(cp.getJam().getKey());
+                    mJam.setScale(cp.getJam().getScale());
+                }
             }
         });
 

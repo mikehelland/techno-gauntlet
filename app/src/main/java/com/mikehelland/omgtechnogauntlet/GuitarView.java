@@ -162,7 +162,7 @@ public class GuitarView extends View {
 
     public void onDraw(Canvas canvas) {
 
-        if (mJam == null || mChannel == null || fretMapping == null || fretMapping.length == 0) {
+        if (frets == 0 || mJam == null || mChannel == null || fretMapping == null || fretMapping.length == 0) {
             return;
         }
 
@@ -192,10 +192,15 @@ public class GuitarView extends View {
         }
 
         int noteNumber;
-
+        int index;
         for (int fret = 1 ; fret <= showingFrets; fret++) {
-
-            noteNumber = fretMapping[fret - 1 + skipBottom + zoomingSkipBottom];
+            index = fret - 1 + skipBottom + zoomingSkipBottom;
+            if (index < 0 || index >= fretMapping.length) {
+                Log.e("MGH GuitarView onDraw", "Invalid note Index: " +
+                        "fret: " + fret + ", skipBottom: " + skipBottom + ", zoomingSkipBottom: " + zoomingSkipBottom);
+                continue;
+            }
+            noteNumber = fretMapping[index];
 
             if (noteNumber % 12 == key) {
                 canvas.drawRect(width / 4, height - fret * boxHeight,

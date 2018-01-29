@@ -92,7 +92,7 @@ public class DrumView extends View {
     }
 
     public void onDraw(Canvas canvas) {
-        if (tall == 0) {
+        if (mJam == null || mChannel == null || tall == 0 || wide == -1) {
             return;
         }
 
@@ -142,31 +142,36 @@ public class DrumView extends View {
             }
         }
 
-        captionHeight = height / captions.length;
-        for (int j = 0; j < captions.length; j++) {
-            if (j < captions.length) {
+        if (captions != null && captions.length > 0 && captionWidths != null && captionWidths.length > 0) {
+            captionHeight = height / captions.length;
+            for (int j = 0; j < captions.length; j++) {
+                if (j < captions.length) {
 
-                if (firstRowButton == j) {
-                    canvas.drawRect(marginX,  j * captionHeight + marginY,
-                            boxWidth - marginX, j * captionHeight + captionHeight - marginY,
-                            paint);
-                }
+                    if (firstRowButton == j) {
+                        canvas.drawRect(marginX, j * captionHeight + marginY,
+                                boxWidth - marginX, j * captionHeight + captionHeight - marginY,
+                                paint);
+                    }
 
-                if (captionWidths[j].length == 1) {
-                    canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
-                            j * captionHeight + captionHeight / 2 + 6, blackPaint);
-                }
-                else {
-                    canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
-                            j * captionHeight + captionHeight / 2 - adjustUp, blackPaint);
-                    canvas.drawText(captions[j][1], boxWidth / 2 - captionWidths[j][1] / 2,
-                            j * captionHeight + captionHeight / 2 + adjustDown, blackPaint);
+                    if (captionWidths[j].length == 1) {
+                        canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
+                                j * captionHeight + captionHeight / 2 + 6, blackPaint);
+                    } else {
+                        canvas.drawText(captions[j][0], boxWidth / 2 - captionWidths[j][0] / 2,
+                                j * captionHeight + captionHeight / 2 - adjustUp, blackPaint);
+                        canvas.drawText(captions[j][1], boxWidth / 2 - captionWidths[j][1] / 2,
+                                j * captionHeight + captionHeight / 2 + adjustDown, blackPaint);
+                    }
                 }
             }
         }
 
         for (int j = 0; j < tall; j++) {
             for (int i = 0; i < wide; i++) {
+                if ((firstRowButton == -1 && (j >= data.length || j < 0)) ||
+                        (firstRowButton > -1 && ((i + j * wide) >= trackData.length))) {
+                    break;
+                }
 
                 on = (firstRowButton == -1) ? data[j][i] : trackData[i + j * wide];
 
@@ -190,6 +195,10 @@ public class DrumView extends View {
 
 
     public boolean onTouchEvent(MotionEvent event) {
+
+        if (mJam == null || mChannel == null || boxHeight == 0 || boxWidth == 0 || captionHeight == 0) {
+            return true;
+        }
 
         int boxX = (int)Math.floor(event.getX() / boxWidth);
         int boxY = (int)Math.floor(event.getY() / boxHeight);
@@ -276,7 +285,7 @@ public class DrumView extends View {
 
 
     void handleFirstColumn(int y)  {
-        if (y < 0 || y >= captions.length) {
+        if (mChannel == null || mChannel.pattern == null || y < 0 || y >= captions.length) {
             return;
         }
 

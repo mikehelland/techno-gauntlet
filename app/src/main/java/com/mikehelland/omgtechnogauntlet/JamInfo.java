@@ -58,10 +58,16 @@ class JamInfo {
     }
 
     static String getKeyName(JamInfo jam) {
+        if (jam == null) {
+            return "C Major";
+        }
         return keyCaptions[jam.key] + " " + scaleCaptions[jam.scaleI];
     }
 
     static int getBPM(JamInfo jam) {
+        if (jam == null) {
+            return 120;
+        }
         return 60000 / (jam.subbeatLength * jam.subbeats);
     }
 

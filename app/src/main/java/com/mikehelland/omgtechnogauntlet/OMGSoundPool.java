@@ -7,7 +7,7 @@ import android.util.Log;
 import com.mikehelland.omgtechnogauntlet.dsp.Dac;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 class OMGSoundPool extends SoundPool {
 
@@ -23,9 +23,9 @@ class OMGSoundPool extends SoundPool {
     private boolean mIsDspRunning = false;
     private ArrayList<Dac> mDacs = new ArrayList<>();
 
-    private HashMap<String, Integer> loadedUrls = new HashMap<>();
+    private ConcurrentHashMap<String, Integer> loadedUrls = new ConcurrentHashMap<>();
 
-    private ArrayList<SoundSet.Sound> mSoundsToLoad = new ArrayList<>();
+    private ConcurrentHashMap<String, SoundSet.Sound> mSoundsToLoad = new ConcurrentHashMap<>();
 
     Runnable onAllLoadsFinishedCallback = null;
 
@@ -82,8 +82,8 @@ class OMGSoundPool extends SoundPool {
 
     void addSoundToLoad(SoundSet.Sound sound) {
         if (!loadedUrls.containsKey(sound.getURL())) {
-            if (!mSoundsToLoad.contains(sound)) {
-                mSoundsToLoad.add(sound);
+            if (!mSoundsToLoad.containsKey(sound.getURL())) {
+                mSoundsToLoad.put(sound.getURL(), sound);
             }
         }
     }
@@ -110,9 +110,7 @@ class OMGSoundPool extends SoundPool {
         String path;
         int preset_id;
         int poolId;
-        SoundSet.Sound sound;
-        while (mSoundsToLoad.size() > 0) {
-            sound = mSoundsToLoad.get(0);
+        for (SoundSet.Sound sound : mSoundsToLoad.values()) {
 
             if (sound == null) {
                 break; //something is wrong
@@ -138,9 +136,8 @@ class OMGSoundPool extends SoundPool {
                 }
                 loadedUrls.put(sound.getURL(), poolId);
             }
-
-            mSoundsToLoad.remove(0);
         }
+        mSoundsToLoad.clear();
         isLoading = false;
     }
 
