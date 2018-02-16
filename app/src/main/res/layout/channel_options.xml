@@ -22,16 +22,17 @@
         android:layout_height="wrap_content"
         android:text="Sample Playback Speed:"/>
 
-    <SeekBar
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="100%"
+            android:id="@+id/reset_sample_speed"/>
+
+        <SeekBar
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/channel_speed_seekbar"
         />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="100%"
-        android:id="@+id/reset_sample_speed"/>
 
     </LinearLayout>
 

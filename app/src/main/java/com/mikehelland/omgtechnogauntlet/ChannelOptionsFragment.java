@@ -61,7 +61,8 @@ public class ChannelOptionsFragment extends OMGFragment {
         });
 
         SeekBar speedBar = (SeekBar)mView.findViewById(R.id.channel_speed_seekbar);
-        float speed = 50 * mChannel.getSampleSpeed();
+        speedBar.setMax(200);
+        float speed = 100 * mChannel.getSampleSpeed();
         speedBar.setProgress((int)speed);
         resetButton.setText(Math.round(mChannel.getSampleSpeed() * 100) + "% - Press to Reset");
 
@@ -69,21 +70,19 @@ public class ChannelOptionsFragment extends OMGFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 if (b) {
-                    float newSpeed = i / 50.0f;
+                    float newSpeed = i / 100.0f;
                     resetButton.setText(Math.round(newSpeed * 100) + "% - Press to Reset");
-                    mChannel.setSampleSpeed(newSpeed);
+                    if (newSpeed > 0) {
+                        mChannel.setSampleSpeed(newSpeed);
+                    }
                 }
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) { }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) { }
         });
 
 
