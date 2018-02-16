@@ -106,23 +106,35 @@ public class CustomSoundSetFragment extends OMGFragment {
     }
 
     private void processSoundSetList(String json) {
+        String[]  urls = new String[0];
         try {
             JSONArray list = new JSONArray(json);
-            String url;
+            urls = new String[list.length()];
             for (int i = 0; i < list.length(); i++) {
-                url = list.getString(i);
-
-                new SoundSetDownloader(getActivity(), url, new SoundSetDownloader.DownloaderCallback() {
-                    @Override
-                    void run(SoundSet soundSet) {
-                        //onSoundSetFilesDownloaded(soundSet);
-                    }
-                }).download();
-
+                urls[i] = list.getString(i);
             }
         }
         catch (JSONException je) {
 
+        }
+
+        if (urls != null && urls.length > 0) {
+            downloadSoundSetFromList(getActivity(), urls, 0);
+        }
+    }
+
+    private void downloadSoundSetFromList(final Context context, final String[] list, final int index) {
+        if (context == null) {
+            return;
+        }
+
+        if (index < list.length) {
+            new SoundSetDownloader(context, list[index], new SoundSetDownloader.DownloaderCallback() {
+                @Override
+                void run(SoundSet soundSet) {
+                    downloadSoundSetFromList(context, list, index + 1);
+                }
+            }).download();
         }
     }
 

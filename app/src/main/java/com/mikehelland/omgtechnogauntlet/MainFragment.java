@@ -102,7 +102,7 @@ public class MainFragment extends OMGFragment {
             }
         });
 
-        /*button.setOnLongClickListener(new View.OnLongClickListener() {
+        button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
 
@@ -112,7 +112,7 @@ public class MainFragment extends OMGFragment {
 
                 return false;
             }
-        });*/
+        });
 
         final Button muteButton = (Button)controls.findViewById(R.id.mute_button);
         muteButton.setOnClickListener(new View.OnClickListener() {

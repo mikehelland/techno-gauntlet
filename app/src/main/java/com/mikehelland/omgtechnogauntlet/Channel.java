@@ -61,6 +61,7 @@ class Channel {
     private float leftVolume = 0.75f;
     private float rightVolume = 0.75f;
     private float pan = 0f;
+    private float mSampleSpeed = 1;
 
     public Channel(Context context, Jam jam, OMGSoundPool pool) {
         mPool = pool;
@@ -147,7 +148,7 @@ class Channel {
         if (!note.isRest()) {
             int noteToPlay = note.getInstrumentNote();
             if (noteToPlay >= 0 && noteToPlay < ids.length) {
-                noteHandle = mPool.play(ids[noteToPlay], leftVolume, rightVolume, 1, 0, 1);
+                noteHandle = mPool.play(ids[noteToPlay], leftVolume, rightVolume, 1, 0, mSampleSpeed);
                 playingId = noteHandle;
             }
 
@@ -425,6 +426,8 @@ class Channel {
         sb.append(volume);
         sb.append(", \"pan\": ");
         sb.append(pan);
+        sb.append(", \"sampleSpeed\": ");
+        sb.append(mSampleSpeed);
         if (!enabled)
             sb.append(", \"mute\": true");
 
@@ -536,7 +539,7 @@ class Channel {
                 try {
                     if (pattern[i][subbeat]) {
                         if (i < ids.length)
-                            playingId = mPool.play(ids[i], leftVolume, rightVolume, 10, 0, 1);
+                            playingId = mPool.play(ids[i], leftVolume, rightVolume, 10, 0, mSampleSpeed);
                     }
                 }
                 catch (Exception excp) {
@@ -658,5 +661,13 @@ class Channel {
         if (mSoundSet != null && mSoundSet.isOscillator()) {
             mSoundSet.getOscillator().ugDac.setVolume(leftVolume, rightVolume);
         }
+    }
+
+    void setSampleSpeed(float sampleSpeed) {
+        mSampleSpeed = sampleSpeed;
+    }
+
+    float getSampleSpeed() {
+        return mSampleSpeed;
     }
 }

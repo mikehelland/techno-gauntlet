@@ -358,10 +358,12 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         this.close();
     }
 
-    void saveAsDownlaoded(SoundSet mSoundSet) {
+    void saveAsDownloaded(SoundSet mSoundSet) {
         String[] args = {"" + mSoundSet.getID()};
         ContentValues newData = new ContentValues();
         newData.put("downloaded", 1);
-        mDB.update("soundsets", newData, "_id=?", args);
+        if (mDB.isOpen()) {
+            mDB.update("soundsets", newData, "_id=?", args);
+        }
     }
 }

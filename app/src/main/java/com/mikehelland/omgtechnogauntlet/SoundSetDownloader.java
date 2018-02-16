@@ -321,7 +321,7 @@ class SoundSetDownloader {
             mProgressDialog.dismiss();
 
             if (isuccessfuldownloads > 0) {
-                mDataHelper.saveAsDownlaoded(mSoundSet);
+                mDataHelper.saveAsDownloaded(mSoundSet);
             }
 
             if (result != null)

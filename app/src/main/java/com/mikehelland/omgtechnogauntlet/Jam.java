@@ -825,6 +825,9 @@ class Jam {
         if (part.has("pan")) {
             jamChannel.setPan((float)part.getDouble("pan"));
         }
+        if (part.has("sampleSpeed")) {
+            jamChannel.setSampleSpeed((float)part.getDouble("sampleSpeed"));
+        }
 
         if (jamChannel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
             loadDrums(jamChannel, part);
