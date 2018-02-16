@@ -87,4 +87,14 @@ class SavedDataOpenHelper extends SQLiteOpenHelper {
         mDB.close();
         this.close();
     }
+
+    void insert(long id, String tags, String jamData) {
+        final ContentValues data = new ContentValues();
+        data.put("tags", tags);
+        data.put("data", jamData);
+        data.put("time", System.currentTimeMillis()/1000);
+        data.put("omg_id", id);
+
+        mDB.insert("saves", null, data);
+    }
 }

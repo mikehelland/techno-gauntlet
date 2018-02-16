@@ -1,9 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 
 class OMGHelper {
 
@@ -31,16 +29,7 @@ class OMGHelper {
         OMGCallback callback = new OMGCallback() {
             @Override
             public void onSuccess(long id) {
-
-                final ContentValues data = new ContentValues();
-                data.put("tags", mJam.getTags());
-                data.put("data", jamData);
-                data.put("time", System.currentTimeMillis()/1000);
-                data.put("omg_id", id);
-
-                final SQLiteDatabase db = new SavedDataOpenHelper(mContext).getWritableDatabase();
-                db.insert("saves", null, data);
-                db.close();
+                ((Main)mContext).getDatabase().getSavedData().insert(id, mJam.getTags(), jamData);
 
                 if (shareAfter) {
                     share(id);

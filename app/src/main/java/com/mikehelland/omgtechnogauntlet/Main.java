@@ -196,7 +196,7 @@ public class Main extends Activity {
         };
     }
 
-    void loadJam(String json) {
+    Jam loadJam(String json) {
 
         boolean allGood = true;
         int backstack = getFragmentManager().getBackStackEntryCount();
@@ -210,10 +210,13 @@ public class Main extends Activity {
             backstack--;
         }
 
-        if (!allGood) return;
+        if (!allGood) return null;
 
         final Jam jam = new Jam(this, mPool);
-        jam.load(json);
+        allGood = jam.load(json);
+
+        if (!allGood) return null;
+
         if (mJamCallback != null)
             jam.addStateChangeListener(mJamCallback);
 
@@ -254,7 +257,7 @@ public class Main extends Activity {
                 callback.run();
             }
         }).start();
-
+        return jam;
     }
 
     DatabaseContainer getDatabase() {return mDatabase;}

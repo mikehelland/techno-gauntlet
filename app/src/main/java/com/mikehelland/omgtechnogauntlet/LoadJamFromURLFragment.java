@@ -17,8 +17,6 @@ import android.widget.EditText;
 public class LoadJamFromURLFragment extends OMGFragment {
 
     private View mView;
-    private Channel mChannel;
-    private ChoiceCallback mCallback = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,10 +43,12 @@ public class LoadJamFromURLFragment extends OMGFragment {
     void downloadCustomUrl() {
 
         EditText editText = (EditText)mView.findViewById(R.id.custom_url_edittext);
-        String customUrl = editText.getText().toString();
+        final String customUrl = editText.getText().toString();
 
         InputMethodManager imm = (InputMethodManager)editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+        }
 
         if (customUrl.length() == 0) {
             return;
@@ -65,19 +65,16 @@ public class LoadJamFromURLFragment extends OMGFragment {
                 Main activity = (Main)getActivity();
 
                 if (activity != null) {
-                    activity.loadJam(result);
+
+                    Jam jam = activity.loadJam(result);
+                    if (jam != null) {
+                        activity.getDatabase().getSavedData().insert(0, jam.getTags(), result);
+                    }
+
                     activity.getFragmentManager().popBackStack();
                 }
             }
         });
 
     }
-    static abstract class ChoiceCallback {
-        abstract void onChoice(String result);
-    }
-
-    void setCallback(ChoiceCallback callback) {
-        mCallback = callback;
-    }
-
 }
