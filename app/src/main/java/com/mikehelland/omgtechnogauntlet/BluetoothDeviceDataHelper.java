@@ -51,6 +51,11 @@ class BluetoothDeviceDataHelper extends SQLiteOpenHelper {
         db.insert("devices", null, data);
     }
 
+    void removeBrainDevice(BluetoothDevice device) {
+        String[] args = new String[]{device.getAddress()};
+        mDB.delete("devices", "mac = $1", args);
+    }
+
     List<String> getBrainMACList() {
         Cursor cursor = mDB.rawQuery("SELECT * FROM devices WHERE brain ORDER BY _id DESC", null);
         List<String> list = new ArrayList<>();

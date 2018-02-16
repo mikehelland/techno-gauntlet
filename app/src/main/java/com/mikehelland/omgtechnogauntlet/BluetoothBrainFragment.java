@@ -61,16 +61,14 @@ public class BluetoothBrainFragment extends OMGFragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!Main.MONKEY_TEST) {
-                    BluetoothChooseDeviceFragment f = new BluetoothChooseDeviceFragment();
-                    f.setCallback(new BluetoothChooseDeviceFragment.Callback() {
-                        @Override
-                        void run(BluetoothDevice device) {
-                            addDevice(device);
-                        }
-                    });
-                    showFragmentDown(f);
-                }
+                BluetoothChooseDeviceFragment f = new BluetoothChooseDeviceFragment();
+                f.setCallback(new BluetoothChooseDeviceFragment.Callback() {
+                    @Override
+                    void run(BluetoothDevice device) {
+                        addDevice(device);
+                    }
+                });
+                showFragmentDown(f);
             }
         });
     }
@@ -144,8 +142,15 @@ public class BluetoothBrainFragment extends OMGFragment {
             data.addBrainDevice(device);
         }
     }
+    private void removeDevice(BluetoothDevice device) {
+        Main activity = (Main)getActivity();
+        if (activity != null) {
+            BluetoothDeviceDataHelper data = activity.getDatabase().mBluetoothDeviceData;
+            data.removeBrainDevice(device);
+        }
+    }
 
-    private void setupDeviceButton(LayoutInflater inflater, ViewGroup container, final BluetoothDevice device) {
+    private void setupDeviceButton(LayoutInflater inflater, final ViewGroup container, final BluetoothDevice device) {
         final BtRelativeLayout controls = (BtRelativeLayout)inflater.inflate(R.layout.bt_device_panel, container, false);
         container.addView(controls);
 
@@ -171,6 +176,14 @@ public class BluetoothBrainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 connectToDevice(device, controls);
+            }
+        });
+        controls.findViewById(R.id.bt_brain_connect_button).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                removeDevice(device);
+                container.removeView(controls);
+                return true;
             }
         });
 

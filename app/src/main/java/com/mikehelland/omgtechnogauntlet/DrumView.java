@@ -29,7 +29,7 @@ public class DrumView extends View {
     private int wide = 4;
     private int tall = 8;
 
-    private boolean[] trackData;
+    //private boolean[] trackData;
     private boolean[][] data;
     private Jam mJam;
 
@@ -82,13 +82,8 @@ public class DrumView extends View {
         paintOff.setTextSize(paintText.getTextSize());
         blackPaint.setTextSize(22);
 
-
         topPanelPaint = new Paint();
         topPanelPaint.setARGB(255, 192, 192, 255);
-
-        trackData = new boolean[32];
-
-//        setBackgroundColor(Color.BLACK);
     }
 
     public void onDraw(Canvas canvas) {
@@ -168,12 +163,19 @@ public class DrumView extends View {
 
         for (int j = 0; j < tall; j++) {
             for (int i = 0; i < wide; i++) {
-                if ((firstRowButton == -1 && (j >= data.length || j < 0)) ||
-                        (firstRowButton > -1 && ((i + j * wide) >= trackData.length))) {
-                    break;
+                if (firstRowButton == -1) {
+                    if (j >= data.length || j < 0 || i * mJam.getSubbeats() >= data[j].length) {
+                        break;
+                    }
+                }
+                else if (firstRowButton > -1) {
+                    if (firstRowButton >= data.length ||
+                            (i + j * wide) >= data[firstRowButton].length) {
+                        break;
+                    }
                 }
 
-                on = (firstRowButton == -1) ? data[j][i] : trackData[i + j * wide];
+                on = (firstRowButton == -1) ? data[j][i * mJam.getSubbeats()] : data[firstRowButton][i + j * wide];
 
                 canvas.drawRect(boxWidth + boxWidth * i + marginX,  j * boxHeight + marginY,
                         boxWidth + boxWidth * i + boxWidth - marginX, j * boxHeight + boxHeight - marginY,
@@ -244,16 +246,17 @@ public class DrumView extends View {
         //((Main)getContext()).onModify();
 
         if (firstRowButton == -1) {
+            x = x * mJam.getSubbeats();
+
             if (y > -1 && y < data.length && x > -1 && x < data[y].length) {
                 data[y][x] = !data[y][x];
-                mChannel.setPattern(y, x * mJam.getSubbeats(), data[y][x]);
             }
         }
         else {
             int i = x % wide + y * wide;
 
-            if (i >= 0 && trackData.length > i) {
-                mChannel.setPattern(firstRowButton, i, !trackData[i]);
+            if (i >= 0 && firstRowButton < data.length && i < data[firstRowButton].length) {
+                data[firstRowButton][i] = !data[firstRowButton][i];
             }
         }
     }
@@ -271,16 +274,16 @@ public class DrumView extends View {
         mChannel = channel;
         tall = mChannel.getSoundSet().getSounds().size();
 
-        data = new boolean[tall][wide];
+        data = mChannel.pattern; //new boolean[tall][wide];
         int subbeats = mJam.getSubbeats();
 
-        for (int i = 0; i < tall; i++) {
+        /*for (int i = 0; i < tall; i++) {
             for (int j = 0; j < wide; j++) {
                 if (i < mChannel.pattern.length &&
                         j * subbeats < mChannel.pattern[i].length)
                     data[i][j] = mChannel.pattern[i][j * subbeats];
             }
-        }
+        }*/
     }
 
 
@@ -295,7 +298,6 @@ public class DrumView extends View {
             tall = mChannel.pattern.length;
         }
         else {
-            trackData = mChannel.getTrack(y);
             firstRowButton = y;
             wide = mJam.getSubbeats();
             tall = mJam.getTotalBeats();

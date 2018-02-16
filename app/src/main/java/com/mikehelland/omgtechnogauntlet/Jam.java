@@ -1,6 +1,8 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -52,6 +54,8 @@ class Jam {
 
     private long mSyncTime = 0L;
 
+    private String appName = "";
+
     Jam(Context context, OMGSoundPool pool) {
 
         this.pool = pool;
@@ -59,6 +63,15 @@ class Jam {
         mContext = context;
         mm = new MelodyMaker(mContext);
         mm.makeMelodyFromMotif(beats);
+
+        appName = mContext.getResources().getString(R.string.app_name);
+        try {
+            PackageInfo pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+            appName = appName + " "  + pInfo.versionName;
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     void addStateChangeListener(StateChangeCallback listener) {
@@ -538,6 +551,8 @@ class Jam {
 
         sb.append("{\"type\": \"SECTION\", \"tags\": \"");
         sb.append(mTags);
+        sb.append("\", \"madeWith\": \"");
+        sb.append(appName);
         sb.append("\", \"scale\": \"");
         sb.append(mm.getScale());
         sb.append("\", \"ascale\": [");

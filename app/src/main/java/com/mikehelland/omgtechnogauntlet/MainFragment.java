@@ -94,7 +94,6 @@ public class MainFragment extends OMGFragment {
                 showFragmentRight(f);
             }
             else {
-
                 GuitarFragment f = new GuitarFragment();
                 f.setJam(mJam, channel);
                 showFragmentRight(f);
@@ -110,7 +109,7 @@ public class MainFragment extends OMGFragment {
                 f.setJam(mJam, channel);
                 showFragmentRight(f);
 
-                return false;
+                return true;
             }
         });
 
@@ -149,6 +148,7 @@ public class MainFragment extends OMGFragment {
         controls.findViewById(R.id.options_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 SoundSetFragment f = new SoundSetFragment();
                 f.setJam(mJam, channel);
                 showFragmentRight(f);
@@ -316,6 +316,7 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 if (Main.MONKEY_TEST) return;
+
                 Fragment f = new BluetoothBrainFragment();
                 showFragmentDown(f);
             }

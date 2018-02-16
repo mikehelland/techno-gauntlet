@@ -5,7 +5,6 @@ import android.app.FragmentTransaction;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,9 +38,7 @@ public class Main extends Activity {
 
         setContentView(R.layout.main);
 
-        long start = System.nanoTime();
         mJam = new Jam(this, mPool);
-        Log.d("MGH new Jam", System.nanoTime() - start + "ns");
 
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
         mBeatView.setJam(mJam);
@@ -59,9 +56,7 @@ public class Main extends Activity {
             }
         });
 
-        start = System.currentTimeMillis();
         setupBluetooth();
-        Log.d("MGH setupBluetooth", System.currentTimeMillis() - start + "ns");
 
         new Thread(new Runnable() {
             @Override

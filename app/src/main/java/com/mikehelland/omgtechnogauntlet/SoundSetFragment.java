@@ -12,9 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TabHost;
@@ -192,22 +190,6 @@ public class SoundSetFragment extends OMGFragment {
                         }).download();
                     }
                 });
-
-            }
-        });
-    }
-
-    void downloadCustomUrl() {
-
-        EditText editText = (EditText)mView.findViewById(R.id.custom_url_edittext);
-        String customUrl = editText.getText().toString();
-
-        InputMethodManager imm = (InputMethodManager)editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-
-        new SoundSetDownloader(getActivity(), customUrl, new SoundSetDownloader.DownloaderCallback() {
-            @Override
-            void run(SoundSet soundSet) {
 
             }
         });
