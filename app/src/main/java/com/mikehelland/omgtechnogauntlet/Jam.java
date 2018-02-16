@@ -58,7 +58,6 @@ class Jam {
 
         mContext = context;
         mm = new MelodyMaker(mContext);
-        mm.makeMotif();
         mm.makeMelodyFromMotif(beats);
     }
 
@@ -66,8 +65,8 @@ class Jam {
         mStateChangeListeners.add(listener);
     }
     void removeStateChangeListener(StateChangeCallback listener) {
-        listener.remove = true;
-        //mStateChangeListeners.remove(listener);
+        //listener.remove = true;
+        mStateChangeListeners.remove(listener);
     }
 
     void loadSoundSets() {

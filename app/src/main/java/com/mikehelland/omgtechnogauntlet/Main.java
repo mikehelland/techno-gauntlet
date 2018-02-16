@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -30,8 +31,6 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDatabase = new DatabaseContainer(this);
-
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN|
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -40,10 +39,13 @@ public class Main extends Activity {
 
         setContentView(R.layout.main);
 
+        long start = System.nanoTime();
         mJam = new Jam(this, mPool);
+        Log.d("MGH new Jam", System.nanoTime() - start + "ns");
 
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
         mBeatView.setJam(mJam);
+        mBeatView.showLoadProgress(1);
         mJam.addInvalidateOnBeatListener(mBeatView);
         mBeatView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,15 +59,23 @@ public class Main extends Activity {
             }
         });
 
+        start = System.currentTimeMillis();
         setupBluetooth();
+        Log.d("MGH setupBluetooth", System.currentTimeMillis() - start + "ns");
 
-        if (mWelcomeFragment == null) {
-            mWelcomeFragment = new WelcomeFragment();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mDatabase = new DatabaseContainer(Main.this);
+                    if (mWelcomeFragment == null) {
+                        mWelcomeFragment = new WelcomeFragment();
+                    }
 
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.add(R.id.main_layout, mWelcomeFragment);
-        ft.commit();
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.add(R.id.main_layout, mWelcomeFragment);
+                    ft.commit();
+            }
+        }).start();
 
         mPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
