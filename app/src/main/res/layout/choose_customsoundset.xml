@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.mikehelland.omgtechnogauntlet.SlidingFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/tab3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8px"
+            android:text="Load a Custom SoundSet"
+            android:textAlignment="center"
+            android:textSize="30sp" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_url_to_a_soundset_or_list_of_soundsets" />
+
+
+        <EditText
+            android:id="@+id/custom_url_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="https://yoursite/yourfile" />
+
+        <Button
+            android:id="@+id/download_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Download" />
+    </LinearLayout>
+
+
+    <TextView android:text="@string/example_soundset"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_below="@id/tab3"
+        android:id="@+id/upgradet2"
+        android:textSize="12sp"
+        />
+
+</com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>

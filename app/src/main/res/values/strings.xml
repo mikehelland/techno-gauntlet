@@ -334,4 +334,30 @@
     </string>
     <string name="syncbeats">Sync Beats</string>
     <string name="unsyncbeats">Unsync Beats</string>
+    <string name="enter_url_to_a_soundset_or_list_of_soundsets">Enter URL to a SoundSet or list of SoundSets</string>
+    <string name="example_soundset">Example SoundSet:\n
+{\n
+\t  "data": [\n
+\t\t    {\n
+\t\t\t      "url": "mykick.mp3",\n
+\t\t\t      "name": "Kick"\n
+\t\t    },\n
+\t\t    {\n
+\t\t\t      "url": "mysnare.mp3",\n
+\t\t\t      "name": "Snare"\n
+\t\t    },\n
+\t\t    {\n
+\t\t\t      "url": "myhihat.mp3",\n
+\t\t\t      "name": "Hi-Hat"\n
+\t\t    }\n
+\t  ],\n
+\t  "name": "My SoundSet",\n
+\t  "type": "SOUNDSET",\n
+\t  "prefix": "http://yoursite/yourfolder/",\n
+\t  "lowNote": 0,\n
+\t  "postfix": ".mp3",\n
+\t  "chromatic": false,\n
+\t  "defaultSurface": "PRESET_VERTICAL",\n
+}
+    </string>
 </resources>

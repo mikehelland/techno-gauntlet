@@ -293,6 +293,25 @@ public class MainFragment extends OMGFragment {
             }
         });
 
+        mView.findViewById(R.id.add_channel_button).setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View view) {
+                final Channel channel = new Channel(getActivity(), mJam, mPool);
+
+                CustomSoundSetFragment f = new CustomSoundSetFragment();
+                f.setJam(mJam, channel);
+                f.setCallback(new CustomSoundSetFragment.ChoiceCallback() {
+                    void onChoice(SoundSet soundSet) {
+                        mJam.addChannel(channel);
+                        mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
+                    }
+                });
+                showFragmentRight(f);
+                return true;
+            }
+        });
+
         mView.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
