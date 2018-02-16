@@ -2,7 +2,6 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -135,23 +134,7 @@ public class GuitarView extends View {
         restNote.setRest(true);
 
 
-        images = new Bitmap[8][2];
-        images[0][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_half);
-        images[0][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_half);
-        images[1][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_dotted_quarter);
-        images[1][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_dotted_quarter);
-        images[2][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_quarter);
-        images[2][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_quarter);
-        images[3][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_dotted_eighth);
-        images[3][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_dotted_eighth);
-        images[4][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_eighth);
-        images[4][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_eighth);
-        images[5][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_dotted_sixteenth);
-        images[5][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_dotted_sixteenth);
-        images[6][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_sixteenth);
-        images[6][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_sixteenth);
-        images[7][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_thirtysecond);
-        images[7][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_thirtysecond);
+        images = ((Main)context).getImages().getNoteImages();
 
         paintCurrentBeat = new Paint();
         paintCurrentBeat.setARGB(128, 255, 0, 0);

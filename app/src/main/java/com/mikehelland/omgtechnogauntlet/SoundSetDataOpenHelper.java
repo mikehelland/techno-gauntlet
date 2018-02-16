@@ -273,12 +273,10 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     Cursor getCursor() {
         SQLiteDatabase db = mDB;
-        Cursor cursor = db.rawQuery("SELECT * FROM soundsets WHERE downloaded = 1 ORDER BY _id DESC", null);
-
-        return cursor;
+        return db.rawQuery("SELECT * FROM soundsets WHERE downloaded = 1 ORDER BY _id DESC", null);
     }
 
-    public String getLastSaved() {
+    /*public String getLastSaved() {
         String ret = "";
         SQLiteDatabase db = mDB;
         Cursor cursor = db.rawQuery("SELECT * FROM soundsets ORDER BY time DESC LIMIT 1", null);
@@ -288,7 +286,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return ret;
-    }
+    }*/
 
     SoundSet addSoundSet(ContentValues data) {
 
@@ -339,10 +337,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     SoundSet getSoundSetByURL(String url) {
         return getSoundSetByQuery("url = '" + url + "'");
-    }
-
-    String getLastErrorMessage() {
-        return cErrorMessage;
     }
 
     private void showToast() {

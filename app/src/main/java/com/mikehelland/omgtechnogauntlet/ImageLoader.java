@@ -11,24 +11,52 @@ import android.graphics.BitmapFactory;
 
 class ImageLoader {
 
-    Bitmap[] mChordImages;
+    private Bitmap[] mChordImages;
+    private Bitmap[][] mNoteImages;
 
-    ImageLoader(Context context) {
+    ImageLoader(final Context context) {
 
-        mChordImages = new Bitmap[8];
-        mChordImages[0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_one);
-        mChordImages[1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_two);
-        mChordImages[2] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_three);
-        mChordImages[3] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_four);
-        mChordImages[4] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_flatfive);
-        mChordImages[5] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_five);
-        mChordImages[6] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_six);
-        mChordImages[7] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_seven);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mChordImages = new Bitmap[8];
+                mChordImages[0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_one);
+                mChordImages[1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_two);
+                mChordImages[2] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_three);
+                mChordImages[3] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_four);
+                mChordImages[4] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_flatfive);
+                mChordImages[5] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_five);
+                mChordImages[6] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_six);
+                mChordImages[7] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_seven);
 
+                mNoteImages = new Bitmap[8][2];
+                mNoteImages[0][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_half);
+                mNoteImages[0][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_half);
+                mNoteImages[1][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_dotted_quarter);
+                mNoteImages[1][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_dotted_quarter);
+                mNoteImages[2][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_quarter);
+                mNoteImages[2][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_quarter);
+                mNoteImages[3][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_dotted_eighth);
+                mNoteImages[3][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_dotted_eighth);
+                mNoteImages[4][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_eighth);
+                mNoteImages[4][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_eighth);
+                mNoteImages[5][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_dotted_sixteenth);
+                mNoteImages[5][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_dotted_sixteenth);
+                mNoteImages[6][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_sixteenth);
+                mNoteImages[6][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_sixteenth);
+                mNoteImages[7][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_thirtysecond);
+                mNoteImages[7][1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_rest_thirtysecond);
+
+            }
+        }).start();
 
     }
 
     Bitmap[] getChordImages() {
         return mChordImages;
+    }
+
+    Bitmap[][] getNoteImages() {
+        return mNoteImages;
     }
 }
