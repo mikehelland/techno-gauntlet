@@ -19,6 +19,13 @@
         android:id="@+id/blank_jam_button"
         android:layout_below="@id/return_to_omg_bananas"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Load Jam From URL"
+        android:id="@+id/load_jam_from_url_button"
+        android:layout_below="@id/blank_jam_button"/>
+
     <!--<Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,7 +39,7 @@
         android:layout_width="fill_parent"
         android:textSize="22sp"
         android:gravity="center"
-        android:layout_below="@id/blank_jam_button"
+        android:layout_below="@id/load_jam_from_url_button"
         android:id="@+id/load_jam_caption"
         />
 

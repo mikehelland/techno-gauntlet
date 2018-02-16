@@ -45,6 +45,14 @@ public class WelcomeFragment extends OMGFragment {
             }
         });
 
+        mView.findViewById(R.id.load_jam_from_url_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LoadJamFromURLFragment f = new LoadJamFromURLFragment();
+                showFragment(f);
+            }
+        });
+
         mView.findViewById(R.id.exit_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
