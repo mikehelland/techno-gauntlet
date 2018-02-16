@@ -86,8 +86,7 @@ public class Main extends Activity {
             }
         });
 
-        Toast.makeText(this, "Press the MONKEY to Change!", Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, "Press the BANANA to Save!", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Press the MONKEY for random changes!", Toast.LENGTH_SHORT).show();
 
         mImages = new ImageLoader(this);
     }

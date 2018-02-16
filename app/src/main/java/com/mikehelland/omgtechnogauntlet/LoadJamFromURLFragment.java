@@ -70,8 +70,6 @@ public class LoadJamFromURLFragment extends OMGFragment {
                     if (jam != null) {
                         activity.getDatabase().getSavedData().insert(0, jam.getTags(), result);
                     }
-
-                    activity.getFragmentManager().popBackStack();
                 }
             }
         });

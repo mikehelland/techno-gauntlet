@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/main_banana"
-        android:src="@drawable/banana48"
-        android:layout_width="wrap_content"
+        android:src="@android:drawable/ic_menu_upload"
+        android:layout_width="48dip"
         android:layout_height="48dip"
         android:layout_alignParentRight="true"
 
