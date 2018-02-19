@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
 
 /**
@@ -44,9 +45,49 @@ public class ChannelOptionsFragment extends OMGFragment {
         mView.findViewById(R.id.remove_channel_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 mJam.getChannels().remove(mChannel);
+                getActivity().getFragmentManager().popBackStack();
+            }
+        });
 
+        mView.findViewById(R.id.clear_channel_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mChannel.clearNotes();
+                getActivity().getFragmentManager().popBackStack();
+            }
+        });
+
+        View rbSequencer = mView.findViewById(R.id.radioButton);
+        if (mChannel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
+            ((RadioButton)rbSequencer).toggle();
+        }
+        rbSequencer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mChannel.setSurface("PRESET_SEQUENCER");
+                getActivity().getFragmentManager().popBackStack();
+            }
+        });
+        View rbVertical = mView.findViewById(R.id.radioButton2);
+        if (mChannel.getSurfaceURL().equals("PRESET_VERTICAL")) {
+            ((RadioButton)rbVertical).toggle();
+        }
+        rbVertical.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mChannel.setSurface("PRESET_VERTICAL");
+                getActivity().getFragmentManager().popBackStack();
+            }
+        });
+        View rbFretboard = mView.findViewById(R.id.radioButton3);
+        if (mChannel.getSurfaceURL().equals("PRESET_FRETBOARD")) {
+            ((RadioButton)rbFretboard).toggle();
+        }
+        rbFretboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mChannel.setSurface("PRESET_FRETBOARD");
                 getActivity().getFragmentManager().popBackStack();
             }
         });

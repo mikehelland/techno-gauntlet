@@ -5,27 +5,28 @@
               android:layout_height="fill_parent"
         >
 
+
     <TextView android:id="@+id/saved_data_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="4dip"
+        android:padding="4dip"
         android:text="Today"
         android:layout_centerVertical="true"
-
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         />
 
+
     <TextView android:id="@+id/saved_data_tags"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
 
-              android:textAppearance="?android:attr/textAppearanceLarge"
-              android:paddingLeft="6dip"
-              android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/saved_data_date"
-            />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:padding="6dip"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/saved_data_date"
+        />
 
-<!--              android:minHeight="?android:attr/listPreferredItemHeight"
--->
 
 
 </RelativeLayout>

@@ -2,12 +2,15 @@ package com.mikehelland.omgtechnogauntlet;
 
 import java.util.ArrayList;
 
-public class NoteList extends ArrayList<Note> {
+class NoteList extends ArrayList<Note> {
 
     private int beats = 8;
+    //todo this should come from the jam, which we don't have access to!
 
-
-    public void overwrite(Note note, double beat) {
+    void overwrite(Note note, double beat) {
+        if (note == null) {
+            return;
+        }
 
         Note existingNote;
         double beatsUsed = 0.0d;

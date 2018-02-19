@@ -2,6 +2,7 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,8 @@ import java.util.Date;
 public class SavedDataAdapter extends SimpleCursorAdapter {
     private final Context context;
     private final Cursor mCursor;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd HH:mm");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd");
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("h:mma");
 
     public SavedDataAdapter(Context context, int layout, Cursor c, String[] from, int[] to){
         super(context, layout, c, from, to);
@@ -46,11 +48,20 @@ public class SavedDataAdapter extends SimpleCursorAdapter {
         if (tags.length() == 0) {
             tags = "(no tags)";
         }
+        if (tags.length() > 70) {
+            tags = tags.substring(0, 60) + "...";
+        }
         holder.tags.setText(tags);
 
         Date date = new Date();
         date.setTime(mCursor.getLong(mCursor.getColumnIndex("time")) * 1000);
-        holder.date.setText(dateFormat.format(date));
+        if (DateUtils.isToday(date.getTime())) {
+            holder.date.setText(timeFormat.format(date));
+        }
+        else {
+            holder.date.setText(dateFormat.format(date));
+
+        }
 
         //String date = mCursor.getString(mCursor.getColumnIndex("artist"));
         //holder.date.setText(date);

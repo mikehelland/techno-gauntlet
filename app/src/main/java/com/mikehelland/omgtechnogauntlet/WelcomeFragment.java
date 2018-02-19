@@ -45,13 +45,13 @@ public class WelcomeFragment extends OMGFragment {
             }
         });
 
-        mView.findViewById(R.id.load_jam_from_url_button).setOnClickListener(new View.OnClickListener() {
+        mView.findViewById(R.id.load_from_url_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (Main.MONKEY_TEST) {
                     return;
                 }
-                showFragment(new LoadJamFromURLFragment());
+                showFragment(new LoadFromURLFragment());
             }
         });
 

@@ -105,6 +105,11 @@ public class MainFragment extends OMGFragment {
             @Override
             public boolean onLongClick(View view) {
 
+                if (channel.getSoundSet().getURL().length() == 0 ||
+                        !channel.getSoundSet().isValid()) {
+                    return false;
+                }
+
                 ChannelOptionsFragment f = new ChannelOptionsFragment();
                 f.setJam(mJam, channel);
                 showFragmentRight(f);
@@ -165,11 +170,12 @@ public class MainFragment extends OMGFragment {
                     return false;
                 }
 
-                SurfaceFragment f = new SurfaceFragment();
+                ChannelOptionsFragment f = new ChannelOptionsFragment();
                 f.setJam(mJam, channel);
                 showFragmentRight(f);
 
                 return true;
+
             }
         });
 
@@ -290,25 +296,6 @@ public class MainFragment extends OMGFragment {
                 });
                 showFragmentRight(f);
 
-            }
-        });
-
-        mView.findViewById(R.id.add_channel_button).setOnLongClickListener(new View.OnLongClickListener() {
-
-            @Override
-            public boolean onLongClick(View view) {
-                final Channel channel = new Channel(getActivity(), mJam, mPool);
-
-                CustomSoundSetFragment f = new CustomSoundSetFragment();
-                f.setJam(mJam, channel);
-                f.setCallback(new CustomSoundSetFragment.ChoiceCallback() {
-                    void onChoice(SoundSet soundSet) {
-                        mJam.addChannel(channel);
-                        mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
-                    }
-                });
-                showFragmentRight(f);
-                return true;
             }
         });
 

@@ -8,13 +8,15 @@
         android:id="@+id/tab3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8px"
-            android:text="Load a Custom SoundSet"
+            android:padding="8dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/load_from_url"
             android:textAlignment="center"
             android:textSize="30sp" />
 
@@ -22,7 +24,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/enter_url_to_a_soundset_or_list_of_soundsets" />
+            android:text="@string/enter_url_to_external_file" />
 
 
         <EditText
@@ -37,16 +39,5 @@
             android:layout_height="wrap_content"
             android:text="Download" />
     </LinearLayout>
-
-
-    <TextView android:text="@string/example_soundset"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="true"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:layout_below="@id/tab3"
-        android:id="@+id/upgradet2"
-        android:textSize="12sp"
-        />
 
 </com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>
