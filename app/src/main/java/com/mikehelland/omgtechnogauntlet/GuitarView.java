@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: m
@@ -92,6 +93,8 @@ public class GuitarView extends View {
     private int showingFrets = 0;
     private int skipBottom = 0;
     private int skipTop = 0;
+
+    private boolean mZoomMode = false;
 
     public GuitarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -201,6 +204,11 @@ public class GuitarView extends View {
         canvas.drawLine(0, height - 1, width,
                 height - 1, paint);
 
+        for (Touch touch : touches) {
+            canvas.drawRect(0, height - (touch.onFret + 1) * boxHeight,
+                    width, height - touch.onFret  * boxHeight,
+                    topPanelPaint);
+        }
         if (touchingFret > -1 ) {
             canvas.drawRect(0, height - (touchingFret + 1) * boxHeight,
                     width, height - touchingFret  * boxHeight,
@@ -246,9 +254,14 @@ public class GuitarView extends View {
             return result;
         }
 
-        if (zooming || event.getPointerCount() > 1) {
-            onMultiTouchEvent(event);
+        //if (zooming || event.getPointerCount() > 1) {
+        if (mZoomMode) {
+            onMultiTouchEventForZoom(event);
             return true;
+        }
+        else {
+            onMultiTouchEvent(event);
+            if (true) return true;
         }
 
         int action = event.getAction();
@@ -481,7 +494,7 @@ public class GuitarView extends View {
         }
     }
 
-    int getTouchingString(float x) {
+    private int getTouchingString(float x) {
         int touchingString = (int)Math.floor(x / boxWidth);
         if (touchingString == 3) {
             return 1;
@@ -492,8 +505,15 @@ public class GuitarView extends View {
 
         return touchingString;
     }
+    private int getTouchingFret(float y) {
+        int fret = (int)Math.floor(y / boxHeight);
+        fret = Math.max(0, Math.min(showingFrets - 1, fret));
+        fret = showingFrets - fret - 1;
+        fret = fret + skipBottom;
+        return fret;
+    }
 
-    private void onMultiTouchEvent(MotionEvent event) {
+    private void onMultiTouchEventForZoom(MotionEvent event) {
 
         if (touchingFret > -1) {
             mChannel.playLiveNote(restNote);
@@ -572,5 +592,160 @@ public class GuitarView extends View {
         showingFrets = Math.max(1, frets - skipTop - skipBottom - zoomingSkipBottom - zoomingSkipTop);
 
         invalidate();
+    }
+
+    void setZoomModeOn() {
+        mZoomMode = true;
+    }
+
+    private boolean isTouching = false;
+    private List<Touch> touches = new ArrayList<>();
+    public boolean onMultiTouchEvent(MotionEvent event) {
+
+        int action = event.getAction();
+
+        switch (action & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN: {
+
+                Log.d("MGH MultiTouch", "Action_Down");
+                onDown(event, 0);
+                break;
+            }
+
+            case MotionEvent.ACTION_UP: {
+
+                Log.d("MGH MultiTouch", "Action_Up");
+                onUp(event, -1);
+                break;
+            }
+
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                final int index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
+                        >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+
+                Log.d("MGH MultiTouch", "Action_Pointer_Down " + index);
+                onDown(event, index);
+                break;
+            }
+
+            case MotionEvent.ACTION_POINTER_UP: {
+                final int index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
+                        >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+
+                Log.d("MGH MultiTouch", "Action_Pointer_Up " + index);
+
+                onUp(event, index);
+                break;
+            }
+
+            case MotionEvent.ACTION_MOVE: {
+                onMove(event);
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    Touch makeTouch(MotionEvent event, int index) {
+
+        Touch t = new Touch(event.getX(index), event.getY(index), event.getPointerId(index));
+        t.onString = getTouchingString(event.getX(index));
+        t.onFret = getTouchingFret(event.getY(index));
+
+        return t;
+    }
+
+    private void onDown(MotionEvent event, int index) {
+        Touch touch = makeTouch(event, index);
+        touches.add(touch);
+
+        playNote(touch);
+    }
+
+    private void onUp(MotionEvent event, int index) {
+        if (index > -1) {
+            final int id = event.getPointerId(index);
+            for (Touch touch : touches) {
+                if (id == touch.id) {
+                    touches.remove(touch);
+                    mChannel.stopWithHandle(touch.playingHandle);
+                    break;
+                }
+            }
+        }
+        else {
+            mChannel.stopWithHandle(touches.get(0).playingHandle);
+            //channel.stopChannel(touches.get(0).channelId);
+            touches.clear();
+            isTouching = false;
+
+            Note restNote = new Note();
+            restNote.setRest(true);
+            mChannel.playLiveNote(restNote, true);
+        }
+
+        //I don't think this would run, since it would action_up, but hey
+        if (touches.size() == 0) {
+            Note restNote = new Note();
+            restNote.setRest(true);
+            mChannel.playLiveNote(restNote, true);
+        }
+    }
+
+    private void onMove(MotionEvent event) {
+
+        int id;
+        int lastFret;
+        int lastString;
+        for (int ip = 0; ip < event.getPointerCount(); ip++) {
+            id = event.getPointerId(ip);
+            for (Touch touch : touches) {
+                if (id == touch.id) {
+
+                    lastFret = touch.onFret;
+                    lastString = touch.onString;
+
+                    touch.x = event.getX(ip);
+                    touch.y = event.getY(ip);
+                    touch.onFret = getTouchingFret(touch.y);
+                    touch.onString = getTouchingString(touch.x);
+
+                    if (lastFret != touch.onFret || lastString != touch.onString) {
+                        playNote(touch);
+                    }
+                    break;
+                }
+            }
+        }
+
+    }
+
+    private void playNote(Touch touch) {
+
+        if (touch.onFret > -1 && touch.onFret < fretMapping.length) {
+
+            Note note = new Note();
+            note.setBasicNote(touch.onFret - rootFret);
+            note.setScaledNote(fretMapping[touch.onFret]);
+            note.setInstrumentNote(fretMapping[touch.onFret] - lowNote);
+
+            mChannel.setArpeggiator(touch.onString);
+            if (!touch.isPlaying || !mJam.isPlaying() || touch.onString == 0) {
+                mChannel.playLiveNote(note);
+                touch.isPlaying = true;
+                touch.note = note;
+            }
+            else {
+                touch.note.setBasicNote(note.getBasicNote());
+                touch.note.setScaledNote(note.getScaledNote());
+                touch.note.setInstrumentNote(note.getInstrumentNote());
+                //mChannel.updateLiveNote(touch.note);
+            }
+        } else {
+            Log.e("MGH GuitarView OnDraw", "Invalid fretmapping. skipBottom: " +
+                    skipBottom + ", touchingFret: " + touch.onFret + ", fretMapping.length: " +
+                    fretMapping.length + " in soundset: " + mChannel.getSoundSetName());
+        }
     }
 }

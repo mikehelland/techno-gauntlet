@@ -368,4 +368,5 @@
     <string name="or_load_a_saved_jam">Or Load A Saved Jam</string>
     <string name="exit">Exit</string>
     <string name="load_from_url">Load from URL</string>
+    <string name="zoom_vertical_view">Zoom Vertical View</string>
 </resources>

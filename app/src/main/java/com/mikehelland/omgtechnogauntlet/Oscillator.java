@@ -23,8 +23,6 @@ class Oscillator { //DialpadChannel extends Channel {
     private boolean delayed = false;
     private boolean flanged = false;
 
-    private Note lastPlayedNote;
-
     Oscillator(OscillatorSettings settings) {
 
         boolean delay = settings.delay;
@@ -78,11 +76,6 @@ class Oscillator { //DialpadChannel extends Channel {
 
 
     int playNote(Note note, boolean multiTouch) {
-        //super.playNote(note);
-
-        if (lastPlayedNote != null)
-            lastPlayedNote.isPlaying(false);
-
         //if (!enabled)
         //    return -1;
 
@@ -96,9 +89,6 @@ class Oscillator { //DialpadChannel extends Channel {
             unmute();
 
             ugOscA1.setFreq(frequency);
-
-            note.isPlaying(true);
-            lastPlayedNote = note;
         }
         return 1;
     }

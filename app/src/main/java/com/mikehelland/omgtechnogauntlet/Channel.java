@@ -63,6 +63,10 @@ class Channel {
     private float pan = 0f;
     private float mSampleSpeed = 1;
 
+    private Note[] arpNotes = new Note[10];
+    private int nextArpNote = 0;
+    private int arpNotesCount = 0;
+
     public Channel(Context context, Jam jam, OMGSoundPool pool) {
         mPool = pool;
         this.context = context;
@@ -99,6 +103,7 @@ class Channel {
 
         if (note.isRest()) {
             arpeggiate = 0;
+            arpNotesCount = 0;
             stopRecording();
             state = STATE_PLAYBACK;
         }
@@ -107,6 +112,11 @@ class Channel {
                 if (arpeggiate == 0)
                     startRecordingNote(note);
                 else {
+                    Log.d("MGH playlive note", "adding arpNote " + arpNotesCount);
+                    if (arpNotesCount < arpNotes.length) {
+                        arpNotes[arpNotesCount] = note;
+                        arpNotesCount++;
+                    }
                     note.setBeats(arpeggiate / dsubbeats);
                     recordNote(note, mJam.getCurrentSubbeat());
                 }
@@ -127,21 +137,17 @@ class Channel {
         //if (!enabled)
         //    return -1;
 
+        note.isPlaying(true);
+        lastPlayedNote = note;
+
         if (mSoundSet.isOscillator()) {
             return mSoundSet.getOscillator().playNote(note, multiTouch);
         }
-
-        note.isPlaying(true);
-        lastPlayedNote = note;
 
         finishAt = -1;
 
         if (playingId > -1 && (note.isRest() || !multiTouch)) {
             mute();
-            /*mPool.setVolume(playingId, 0.01f, 0.01f);
-            mPool.pause(playingId);
-            mPool.stop(playingId);
-            playingId = -1;*/
         }
 
         int noteHandle = -1;
@@ -553,17 +559,24 @@ class Channel {
         if (state == Channel.STATE_LIVEPLAY && arpeggiate > 0 &&
                 subbeat % arpeggiate == 0) {
 
-            if (lastPlayedNote != null && !lastPlayedNote.isRest() ) {
-                Note note = lastPlayedNote.cloneNote();
+            if (arpNotesCount > 0) {
+                if (nextArpNote >=  arpNotesCount) {
+                    nextArpNote = 0;
+                }
 
-                playNote(note, false);
-                finishCurrentNoteAt(System.currentTimeMillis() +
-                        (long) (arpeggiate * mJam.getSubbeatLength()) - 50);
+                if (nextArpNote < arpNotes.length && arpNotes[nextArpNote] != null) {
+                    Note note = arpNotes[nextArpNote].cloneNote();
+                    nextArpNote++;
 
-                note.setBeats(arpeggiate / dsubbeats);
+                    playNote(note, false);
+                    finishCurrentNoteAt(System.currentTimeMillis() +
+                            (long) (arpeggiate * mJam.getSubbeatLength()) - 50);
 
-                if (enabled) {
-                    recordNote(note, subbeat);
+                    note.setBeats(arpeggiate / dsubbeats);
+
+                    if (enabled) {
+                        recordNote(note, subbeat);
+                    }
                 }
             }
             return true;
@@ -633,6 +646,7 @@ class Channel {
 
     void updateLiveNote(Note note) {
         lastPlayedNote = note;
+
     }
 
     void finish() {

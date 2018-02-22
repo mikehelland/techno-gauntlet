@@ -126,6 +126,18 @@ public class ChannelOptionsFragment extends OMGFragment {
             public void onStopTrackingTouch(SeekBar seekBar) { }
         });
 
+        mView.findViewById(R.id.zoom_vertical_view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getFragmentManager().popBackStack();
+
+                GuitarFragment f = new GuitarFragment();
+                f.setJam(mJam, mChannel);
+                f.setZoomModeOn();
+                showFragmentRight(f);
+            }
+        });
+
 
     }
 }

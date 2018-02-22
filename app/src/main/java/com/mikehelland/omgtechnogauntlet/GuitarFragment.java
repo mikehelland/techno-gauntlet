@@ -16,6 +16,8 @@ public class GuitarFragment extends OMGFragment {
     private GuitarView guitarView;
     private Channel mChannel;
 
+    private boolean mZoomMode = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,6 +41,10 @@ public class GuitarFragment extends OMGFragment {
         }
     }
 
+    void setZoomModeOn() {
+        mZoomMode = true;
+    }
+
     private Fretboard getPreferredFretboard() {
 
         String surfaceURL = mChannel.getSurfaceURL();
@@ -55,7 +61,9 @@ public class GuitarFragment extends OMGFragment {
             fretboard = new Fretboard(mChannel, mJam, surfaceJSON);
         }
 
-
+        if (mZoomMode) {
+            guitarView.setZoomModeOn();
+        }
         guitarView.setJam(mJam, mChannel, fretboard);
         return null;
     }
