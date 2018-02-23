@@ -70,7 +70,7 @@ public class GuitarView extends View {
     private Bitmap images[][];
 
     private Paint paintCurrentBeat;
-
+    private Paint paintCurrentBeatRest;
 
     private int lowNote;
 
@@ -95,6 +95,8 @@ public class GuitarView extends View {
     private int skipTop = 0;
 
     private boolean mZoomMode = false;
+
+    private List<Touch> touches = new ArrayList<>();
 
     public GuitarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -140,9 +142,13 @@ public class GuitarView extends View {
         images = ((Main)context).getImages().getNoteImages();
 
         paintCurrentBeat = new Paint();
-        paintCurrentBeat.setARGB(128, 255, 0, 0);
+        paintCurrentBeat.setARGB(128, 0, 255, 0);
         paintCurrentBeat.setShadowLayer(4, 0, 0, 0xFFFFFFFF);
         paintCurrentBeat.setStyle(Paint.Style.FILL_AND_STROKE);
+        paintCurrentBeatRest = new Paint();
+        paintCurrentBeatRest.setARGB(128, 255, 0, 0);
+        paintCurrentBeatRest.setShadowLayer(4, 0, 0, 0xFFFFFFFF);
+        paintCurrentBeatRest.setStyle(Paint.Style.FILL_AND_STROKE);
 
     }
 
@@ -152,7 +158,7 @@ public class GuitarView extends View {
             return;
         }
 
-        if (!mJam.isPaused()) {
+        if (mJam.isPlaying()) {
             float beatBoxWidth = ((float)getWidth()) / mJam.getTotalBeats();
             float beatBoxStart = mJam.getCurrentSubbeat() / mJam.getSubbeats() * beatBoxWidth;
 
@@ -196,8 +202,10 @@ public class GuitarView extends View {
             canvas.drawLine(0, height - fret * boxHeight, width,
                     height - fret * boxHeight, paint);
 
-            canvas.drawText(useScale ? keyCaptions[noteNumber % 12] : soundsetCaptions[noteNumber],
-                    0, height - (fret - 1) * boxHeight - boxHeightHalf, paint);
+            if (useScale || noteNumber < soundsetCaptions.length) {
+                canvas.drawText(useScale ? keyCaptions[noteNumber % 12] : soundsetCaptions[noteNumber],
+                        0, height - (fret - 1) * boxHeight - boxHeightHalf, paint);
+            }
 
         }
 
@@ -254,89 +262,11 @@ public class GuitarView extends View {
             return result;
         }
 
-        //if (zooming || event.getPointerCount() > 1) {
         if (mZoomMode) {
             onMultiTouchEventForZoom(event);
-            return true;
         }
         else {
             onMultiTouchEvent(event);
-            if (true) return true;
-        }
-
-        int action = event.getAction();
-        int fretThatsShowing;
-        if (action == MotionEvent.ACTION_DOWN) {
-
-            if (mChannel.isEnabled() && !modified) {
-                modified = true;
-
-                mChannel.clearNotes();
-            }
-
-            touchingString = getTouchingString(event.getX());
-
-            touchingFret = (int)Math.floor(event.getY() / boxHeight);
-            touchingFret = Math.max(0, Math.min(showingFrets - 1, touchingFret));
-            touchingFret = showingFrets - touchingFret - 1;
-
-            lastFret = touchingFret;
-            Note note = new Note();
-            note.setBasicNote(skipBottom + touchingFret - rootFret);
-            fretThatsShowing = skipBottom + touchingFret;
-            if (fretThatsShowing > -1 && fretThatsShowing < fretMapping.length) {
-                note.setScaledNote(fretMapping[fretThatsShowing]);
-                note.setInstrumentNote(fretMapping[fretThatsShowing] - lowNote);
-                mChannel.playLiveNote(note);
-                mChannel.setArpeggiator(touchingString);
-            }
-            else {
-                Log.e("MGH GuitarView OnDraw", "Invalid fretmapping. skipBottom: " +
-                        skipBottom +", touchingFret: " + touchingFret + ", fretMapping.length: " +
-                        fretMapping.length + " in soundset: " + mChannel.getSoundSetName());
-            }
-
-        }
-
-        if (action == MotionEvent.ACTION_MOVE) {
-            if (lastFret > -1) {
-                touchingString = getTouchingString(event.getX());
-
-                touchingFret = (int)Math.floor(event.getY() / boxHeight);
-                touchingFret = Math.max(0, Math.min(showingFrets - 1, touchingFret));
-                touchingFret = showingFrets - touchingFret - 1;
-
-                if (touchingFret != lastFret) {
-
-                    lastFret = touchingFret;
-                    Note note = new Note();
-                    note.setBasicNote(skipBottom + touchingFret - rootFret);
-                    fretThatsShowing = skipBottom + touchingFret;
-                    if (fretThatsShowing > -1 && fretThatsShowing < fretMapping.length) {
-                        note.setScaledNote(fretMapping[fretThatsShowing]);
-                        note.setInstrumentNote(fretMapping[fretThatsShowing] - lowNote);
-                        if (!mJam.isPlaying() || touchingString == 0)
-                            mChannel.playLiveNote(note);
-                        else
-                            mChannel.updateLiveNote(note);
-                    }
-                    else {
-                        Log.e("MGH GuitarView OnDraw", "Invalid fretmapping. skipBottom: " +
-                                skipBottom + ", touchingFret: " + touchingFret + ", fretMapping.length: " +
-                                fretMapping.length + " in soundset: " + mChannel.getSoundSetName());
-                    }
-                }
-                mChannel.setArpeggiator(touchingString);
-
-            }
-
-        }
-
-        if (action == MotionEvent.ACTION_UP) {
-            mChannel.playLiveNote(restNote);
-            touchingString = -1;
-            touchingFret = -1;
-            lastFret = -1;
         }
 
         invalidate();
@@ -471,7 +401,7 @@ public class GuitarView extends View {
                 canvas.drawRect(draw_x, draw_y,
                         draw_x + draw_boxwidth,
                         draw_y + boxHeight,
-                        paintCurrentBeat);
+                        draw_note.isRest() ? paintCurrentBeatRest: paintCurrentBeat);
             }
 
             if (draw_noteImage != null) {
@@ -598,56 +528,39 @@ public class GuitarView extends View {
         mZoomMode = true;
     }
 
-    private boolean isTouching = false;
-    private List<Touch> touches = new ArrayList<>();
-    public boolean onMultiTouchEvent(MotionEvent event) {
+    private void onMultiTouchEvent(MotionEvent event) {
 
         int action = event.getAction();
 
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN: {
-
-                Log.d("MGH MultiTouch", "Action_Down");
                 onDown(event, 0);
                 break;
             }
-
             case MotionEvent.ACTION_UP: {
-
-                Log.d("MGH MultiTouch", "Action_Up");
                 onUp(event, -1);
                 break;
             }
-
             case MotionEvent.ACTION_POINTER_DOWN: {
                 final int index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
                         >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-
-                Log.d("MGH MultiTouch", "Action_Pointer_Down " + index);
                 onDown(event, index);
                 break;
             }
-
             case MotionEvent.ACTION_POINTER_UP: {
                 final int index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
                         >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-
-                Log.d("MGH MultiTouch", "Action_Pointer_Up " + index);
-
                 onUp(event, index);
                 break;
             }
-
             case MotionEvent.ACTION_MOVE: {
                 onMove(event);
                 break;
             }
         }
-
-        return true;
     }
 
-    Touch makeTouch(MotionEvent event, int index) {
+    private Touch makeTouch(MotionEvent event, int index) {
 
         Touch t = new Touch(event.getX(index), event.getY(index), event.getPointerId(index));
         t.onString = getTouchingString(event.getX(index));
@@ -676,17 +589,8 @@ public class GuitarView extends View {
         }
         else {
             mChannel.stopWithHandle(touches.get(0).playingHandle);
-            //channel.stopChannel(touches.get(0).channelId);
             touches.clear();
-            isTouching = false;
 
-            Note restNote = new Note();
-            restNote.setRest(true);
-            mChannel.playLiveNote(restNote, true);
-        }
-
-        //I don't think this would run, since it would action_up, but hey
-        if (touches.size() == 0) {
             Note restNote = new Note();
             restNote.setRest(true);
             mChannel.playLiveNote(restNote, true);
