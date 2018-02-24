@@ -2,6 +2,7 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 /**
  * Created by m on 7/31/16.
@@ -12,6 +13,7 @@ class CommandProcessor extends BluetoothDataCallback {
     static String JAMINFO_SUBBEATLENGTH = "JAMINFO_SUBBEATLENGTH";
     static String JAMINFO_KEY = "JAMINFO_KEY";
     static String JAMINFO_SCALE = "JAMINFO_SCALE";
+    final static String SET_ARPNOTES = "SET_ARPNOTES";
 
     private BluetoothConnection mConnection;
     private Jam mJam;
@@ -41,7 +43,7 @@ class CommandProcessor extends BluetoothDataCallback {
     @Override
     public void newData(String name, String value) {
 
-        //Log.d("MGH BT newdata", name + (value != null ? ("=" + value) : ""));
+        Log.d("MGH BT newdata", name + (value != null ? ("=" + value) : ""));
 
         if (name.equals("SET_SUBBEATLENGTH")) {
             if (value == null) return;
@@ -114,6 +116,10 @@ class CommandProcessor extends BluetoothDataCallback {
             if (value == null) return;
             if (mChannel != null)
                 mChannel.setArpeggiator(Integer.parseInt(value));
+        }
+
+        if (name.equals(SET_ARPNOTES)) {
+            onSetArpNotes(value);
         }
 
         if (name.equals(JAMINFO_KEY)) {
@@ -446,5 +452,27 @@ class CommandProcessor extends BluetoothDataCallback {
 
     void setSync(boolean sync) {
         mSync = sync;
+    }
+
+    private void onSetArpNotes(String value) {
+        if (value == null || mChannel == null) return;
+
+        try {
+            String[] notePairs = value.split("\\|");
+            String[] basicAndInstrument;
+            Note[] notes = new Note[notePairs.length];
+            int i = 0;
+            for (String notePair : notePairs) {
+                basicAndInstrument = notePair.split(",");
+                notes[i] = new Note();
+                notes[i].setBasicNote(Integer.parseInt(basicAndInstrument[0]));
+                notes[i].setInstrumentNote(Integer.parseInt(basicAndInstrument[1]));
+                i++;
+            }
+            mChannel.setArpNotes(notes);
+        }
+        catch (Exception e) {
+            Log.e("MGH CommandProcessor", e.getMessage());
+        }
     }
 }

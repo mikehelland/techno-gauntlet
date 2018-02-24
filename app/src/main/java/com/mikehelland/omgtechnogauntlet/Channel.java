@@ -112,7 +112,6 @@ class Channel {
                 if (arpeggiate == 0)
                     startRecordingNote(note);
                 else {
-                    Log.d("MGH playlive note", "adding arpNote " + arpNotesCount);
                     if (arpNotesCount < arpNotes.length) {
                         arpNotes[arpNotesCount] = note;
                         arpNotesCount++;
@@ -683,5 +682,15 @@ class Channel {
 
     float getSampleSpeed() {
         return mSampleSpeed;
+    }
+
+    void setArpNotes(Note[] notes) {
+        arpNotesCount = 0;
+        for (int i = 0; i < notes.length; i++) {
+            if (i < arpNotes.length) {
+                arpNotes[i] = notes[i];
+                arpNotesCount++;
+            }
+        }
     }
 }
