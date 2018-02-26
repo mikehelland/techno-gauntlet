@@ -1,9 +1,8 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -41,17 +40,17 @@ public class WelcomeFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 MainFragment mainFragment = new MainFragment();
-                showFragment(mainFragment);
+                showFragmentRight(mainFragment);
             }
         });
 
         mView.findViewById(R.id.load_from_url_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Main.MONKEY_TEST) {
+                if (Main.MONKEY_TEST > 1) {
                     return;
                 }
-                showFragment(new LoadFromURLFragment());
+                showFragmentRight(new LoadFromURLFragment());
             }
         });
 
@@ -59,7 +58,7 @@ public class WelcomeFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 Activity activity = getActivity();
-                if (activity != null && !Main.MONKEY_TEST) {
+                if (activity != null && !ActivityManager.isUserAMonkey()) {
                     activity.finish();
                 }
             }
@@ -116,27 +115,11 @@ public class WelcomeFragment extends OMGFragment {
             @Override
             public void run() {
                 mPool.onAllLoadsFinishedCallback = null;
-                showFragment(new MainFragment());
+                showFragmentRight(new MainFragment());
             }
         };
 
         ((Main) getActivity()).loadJam(json);
-    }
-
-    public void showFragment(Fragment f) {
-
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.animator.slide_in_right,
-                R.animator.slide_out_left,
-                R.animator.slide_in_left,
-                R.animator.slide_out_right
-        );
-        ft.replace(R.id.main_layout, f);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.addToBackStack(null);
-        ft.commit();
-
     }
 
     private void loadDefaultJam() {
@@ -145,7 +128,7 @@ public class WelcomeFragment extends OMGFragment {
             @Override
             public void run() {
                 mPool.onAllLoadsFinishedCallback = null;
-                showFragment(new MainFragment());
+                showFragmentRight(new MainFragment());
             }
         };
 

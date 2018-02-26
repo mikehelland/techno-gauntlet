@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,20 +41,27 @@ public class LoadFromURLFragment extends OMGFragment {
         mView.findViewById(R.id.download_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                downloadCustomUrl();
+                EditText editText = (EditText)mView.findViewById(R.id.custom_url_edittext);
+                final String customUrl = editText.getText().toString();
+
+                InputMethodManager imm = (InputMethodManager)editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                }
+
+                if (customUrl.toLowerCase().equals("monkeytest")) {
+                    Main.MONKEY_TEST++;
+                    Toast.makeText(getActivity(), "Monkey Test Mode " +
+                            Main.MONKEY_TEST, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                downloadCustomUrl(customUrl);
             }
         });
     }
 
-    void downloadCustomUrl() {
-
-        EditText editText = (EditText)mView.findViewById(R.id.custom_url_edittext);
-        final String customUrl = editText.getText().toString();
-
-        InputMethodManager imm = (InputMethodManager)editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-        }
+    void downloadCustomUrl(String customUrl) {
 
         if (customUrl.length() == 0) {
             return;

@@ -188,12 +188,11 @@ public class MainFragment extends OMGFragment {
         mKeyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (Main.MONKEY_TEST > 1) return;
 
                 KeyFragment fragment = new KeyFragment();
                 fragment.setJam(mJam, MainFragment.this);
                 showFragmentRight(fragment);
-
-
             }
         });
 
@@ -201,10 +200,11 @@ public class MainFragment extends OMGFragment {
         bpmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (Main.MONKEY_TEST > 1) return;
+
                 BeatsFragment fragment = new BeatsFragment();
                 fragment.setJam(mJam, MainFragment.this);
                 showFragmentRight(fragment);
-
             }
         });
 
@@ -212,12 +212,11 @@ public class MainFragment extends OMGFragment {
         mChordsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (Main.MONKEY_TEST > 1) return;
 
                 ChordsFragment fragment = new ChordsFragment();
                 fragment.setJam(mJam);
                 showFragmentRight(fragment);
-
-
             }
         });
 
@@ -225,22 +224,6 @@ public class MainFragment extends OMGFragment {
         mJam.addInvalidateOnNewMeasureListener(mChordsButton);
 
         updateUI();
-    }
-
-    public void showFragmentRight(Fragment f) {
-
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.animator.slide_in_right,
-                R.animator.slide_out_left,
-                R.animator.slide_in_left,
-                R.animator.slide_out_right
-        );
-        ft.replace(R.id.main_layout, f);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.addToBackStack(null);
-        ft.commit();
-
     }
 
     public void showFragmentDown(Fragment f) {
@@ -302,7 +285,7 @@ public class MainFragment extends OMGFragment {
         mView.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Main.MONKEY_TEST) return;
+                if (Main.MONKEY_TEST > 0) return;
 
                 Fragment f = new BluetoothBrainFragment();
                 showFragmentDown(f);

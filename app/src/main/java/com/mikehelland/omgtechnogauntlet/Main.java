@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 public class Main extends Activity {
 
-    final static boolean MONKEY_TEST = false;
+    static int MONKEY_TEST = 0;
 
     Jam mJam;
     OMGSoundPool mPool = new OMGSoundPool(this, 32, AudioManager.STREAM_MUSIC, 100);

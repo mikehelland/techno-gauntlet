@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -18,6 +19,7 @@ import java.util.List;
  * Date: 11/15/13
  * Time: 11:01 PM
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class GuitarView extends View {
 
     private Paint paint;
@@ -40,13 +42,6 @@ public class GuitarView extends View {
     private Paint paintText;
 
     private Paint paintBeat;
-
-    private int touchingString = -1;
-    private int touchingFret = -1;
-
-    private Note restNote;
-
-    private int lastFret = -1;
 
     private int key;
     private int[] scale;
@@ -73,8 +68,6 @@ public class GuitarView extends View {
     private Paint paintCurrentBeatRest;
 
     private int lowNote;
-
-    private boolean modified = false;
 
     private int rootFret = 0;
 
@@ -134,10 +127,6 @@ public class GuitarView extends View {
         topPanelPaint.setARGB(255, 192, 192, 255);
 
         setBackgroundColor(Color.BLACK);
-
-        restNote = new Note();
-        restNote.setRest(true);
-
 
         images = ((Main)context).getImages().getNoteImages();
 
@@ -217,11 +206,6 @@ public class GuitarView extends View {
                     width, height - touch.onFret  * boxHeight,
                     topPanelPaint);
         }
-        if (touchingFret > -1 ) {
-            canvas.drawRect(0, height - (touchingFret + 1) * boxHeight,
-                    width, height - touchingFret  * boxHeight,
-                    topPanelPaint);
-        }
 
         drawColumns(canvas);
         drawNotes(canvas, mChannel.getNotes());
@@ -249,7 +233,8 @@ public class GuitarView extends View {
     }
 
 
-
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
 
         if (mJam == null || mChannel == null || fretMapping == null || fretMapping.length == 0) {
@@ -445,13 +430,6 @@ public class GuitarView extends View {
 
     private void onMultiTouchEventForZoom(MotionEvent event) {
 
-        if (touchingFret > -1) {
-            mChannel.playLiveNote(restNote);
-            touchingString = -1;
-            touchingFret = -1;
-            lastFret = -1;
-        }
-
         int action = event.getAction();
 
         switch (action & MotionEvent.ACTION_MASK) {
@@ -459,9 +437,6 @@ public class GuitarView extends View {
                 break;
             }
             case MotionEvent.ACTION_POINTER_DOWN: {
-                final int index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
-                        >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-
                 float y;
                 zoomTop = -1;
                 zoomBottom = -1;
