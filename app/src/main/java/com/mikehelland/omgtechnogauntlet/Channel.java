@@ -1,6 +1,5 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -35,8 +34,6 @@ class Channel {
 
     private int playingId = -1;
 
-    private Context context;
-
     private int octave = 3;
 
     private Note recordingNote;
@@ -67,9 +64,8 @@ class Channel {
     private int nextArpNote = 0;
     private int arpNotesCount = 0;
 
-    public Channel(Context context, Jam jam, OMGSoundPool pool) {
+    public Channel(Jam jam, OMGSoundPool pool) {
         mPool = pool;
-        this.context = context;
         mJam = jam;
 
         mSoundSet = new SoundSet();
@@ -350,14 +346,6 @@ class Channel {
         return mSoundSet.getName();
     }
 
-    void prepareSoundSetFromURL(String url) {
-        SoundSetDataOpenHelper dataHelper = ((Main)context).getDatabase().getSoundSetData();
-        SoundSet soundSet = dataHelper.getSoundSetByURL(url);
-        if (soundSet != null) {
-            prepareSoundSet(soundSet);
-        }
-    }
-
     void prepareSoundSet(SoundSet soundSet) {
 
         // first take care of the last soundset
@@ -445,7 +433,7 @@ class Channel {
         sb.append("}");
     }
 
-    void getNoteData(StringBuilder sb) {
+    private void getNoteData(StringBuilder sb) {
 
         sb.append(", \"scale\": \"");
         sb.append(mJam.getScaleString());
@@ -478,7 +466,7 @@ class Channel {
         sb.append("]");
     }
 
-    void getTrackData(StringBuilder sb) {
+    private void getTrackData(StringBuilder sb) {
         sb.append(", \"tracks\": [");
 
         ArrayList<SoundSet.Sound> sounds = mSoundSet.getSounds();

@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,7 +16,7 @@ public class Main extends Activity {
     static int MONKEY_TEST = 0;
 
     Jam mJam;
-    OMGSoundPool mPool = new OMGSoundPool(this, 32, AudioManager.STREAM_MUSIC, 100);
+    OMGSoundPool mPool;
     BluetoothManager mBtf;
     Jam.StateChangeCallback mJamCallback;
     DatabaseContainer mDatabase;
@@ -38,7 +39,8 @@ public class Main extends Activity {
 
         setContentView(R.layout.main);
 
-        mJam = new Jam(this, mPool);
+        mPool =  new OMGSoundPool(getApplicationContext(), 32, AudioManager.STREAM_MUSIC, 100);
+        mJam = new Jam(new MelodyMaker(getApplicationContext()), mPool, "");
 
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
         mBeatView.setJam(mJam);
@@ -216,10 +218,19 @@ public class Main extends Activity {
 
         if (!allGood) return null;
 
-        final Jam jam = new Jam(this, mPool);
-        allGood = jam.load(json);
+        Jam tjam = null;
+        try {
+            Log.e("MGH load json", json);
+            tjam = JamLoader.load(json, this);
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+        if (tjam == null) {
+            return null;
+        }
 
-        if (!allGood) return null;
+        final Jam jam = tjam;
 
         if (mJamCallback != null)
             jam.addStateChangeListener(mJamCallback);

@@ -47,7 +47,7 @@ public class WelcomeFragment extends OMGFragment {
         mView.findViewById(R.id.load_from_url_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Main.MONKEY_TEST > 1) {
+                if (ActivityManager.isUserAMonkey()) {
                     return;
                 }
                 showFragmentRight(new LoadFromURLFragment());
@@ -134,19 +134,9 @@ public class WelcomeFragment extends OMGFragment {
 
         mPool.allowLoading();
 
-        mJam.load(getActivity().getResources().getString(R.string.default_jam));
-
+        ((Main) getActivity()).loadJam(getActivity().getResources().getString(R.string.default_jam));
 
         mPool.setInitialized(true);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mPool.loadSounds();
-                mJam.loadSoundSets();
-            }
-        }).start();
-
     }
 
     private void askToRemoveSavedJam(final int i) {

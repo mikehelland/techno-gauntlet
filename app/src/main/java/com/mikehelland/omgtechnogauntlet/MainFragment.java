@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.ActivityManager;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
@@ -188,7 +189,7 @@ public class MainFragment extends OMGFragment {
         mKeyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Main.MONKEY_TEST > 1) return;
+                if (ActivityManager.isUserAMonkey()) return;
 
                 KeyFragment fragment = new KeyFragment();
                 fragment.setJam(mJam, MainFragment.this);
@@ -200,7 +201,7 @@ public class MainFragment extends OMGFragment {
         bpmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Main.MONKEY_TEST > 1) return;
+                if (ActivityManager.isUserAMonkey()) return;
 
                 BeatsFragment fragment = new BeatsFragment();
                 fragment.setJam(mJam, MainFragment.this);
@@ -212,7 +213,7 @@ public class MainFragment extends OMGFragment {
         mChordsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Main.MONKEY_TEST > 1) return;
+                if (ActivityManager.isUserAMonkey()) return;
 
                 ChordsFragment fragment = new ChordsFragment();
                 fragment.setJam(mJam);
@@ -267,7 +268,7 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
 
-                final Channel channel = new Channel(getActivity(), mJam, mPool);
+                final Channel channel = new Channel( mJam, mPool);
 
                 SoundSetFragment f = new SoundSetFragment();
                 f.setJam(mJam, channel);
@@ -285,7 +286,7 @@ public class MainFragment extends OMGFragment {
         mView.findViewById(R.id.bt_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Main.MONKEY_TEST > 0) return;
+                if (ActivityManager.isUserAMonkey()) return;
 
                 Fragment f = new BluetoothBrainFragment();
                 showFragmentDown(f);

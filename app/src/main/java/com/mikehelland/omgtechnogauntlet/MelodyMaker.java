@@ -8,7 +8,6 @@ import java.util.Random;
 public class MelodyMaker {
 
     Random rand;
-    Context mContext;
 
     int key;
 
@@ -26,7 +25,6 @@ public class MelodyMaker {
     private int scaleI;
 
     public MelodyMaker(Context context) {
-        mContext = context;
 
         keyCaptions = context.getResources().getStringArray(R.array.keys_captions);
         keys = context.getResources().getStringArray(R.array.keys);

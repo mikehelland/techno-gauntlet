@@ -1,15 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Random;
@@ -31,8 +23,6 @@ class Jam {
     private List<Channel> mChannels = new CopyOnWriteArrayList<>();
 
     private OMGSoundPool pool;
-
-    private Context mContext;
 
     private PlaybackThread playbackThread;
 
@@ -56,22 +46,14 @@ class Jam {
 
     private String appName = "";
 
-    Jam(Context context, OMGSoundPool pool) {
+    Jam(MelodyMaker melodyMaker, OMGSoundPool pool, String appName) {
 
         this.pool = pool;
 
-        mContext = context;
-        mm = new MelodyMaker(mContext);
+        mm = melodyMaker;
         mm.makeMelodyFromMotif(beats);
 
-        appName = mContext.getResources().getString(R.string.app_name);
-        try {
-            PackageInfo pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-            appName = appName + " "  + pInfo.versionName;
-
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
+        this.appName = appName;
     }
 
     void addStateChangeListener(StateChangeCallback listener) {
@@ -181,97 +163,6 @@ class Jam {
         return subbeatLength;
     }
 
-    boolean load(String json) {
-
-        boolean good = false;
-        try {
-
-            JSONObject jsonData = new JSONObject(json);
-
-            JSONArray parts;
-            parts = jsonData.getJSONArray("parts");
-
-            if (jsonData.has("measures")) {
-                setMeasures(jsonData.getInt("measures"));
-                if (jsonData.has("beats")) {
-                    setBeats(jsonData.getInt("beats"));
-                }
-                if (jsonData.has("subbeats")) {
-                    //setSubbeats(jsonData.getInt("subbeats"));
-                }
-            }
-
-            if (jsonData.has("subbeatMillis")) {
-                setSubbeatLength(jsonData.getInt("subbeatMillis"));
-            }
-
-            if (jsonData.has("shuffle")) {
-                setShuffle((float)jsonData.getDouble("shuffle"));
-            }
-
-            if (jsonData.has("rootNote")) {
-                setKey(jsonData.getInt("rootNote") % 12);
-            }
-
-            if (jsonData.has("scale")) {
-                setScale(jsonData.getString("scale"));
-            }
-
-            if (jsonData.has("chordProgression")) {
-                JSONArray chordsData = jsonData.getJSONArray("chordProgression");
-                int[] newChords = new int[chordsData.length()];
-                for (int ic = 0; ic < chordsData.length(); ic++) {
-                    newChords[ic] = chordsData.getInt(ic);
-                }
-                setChordProgression(newChords);
-            }
-
-            if (jsonData.has("tags")) {
-                mTags = jsonData.getString("tags");
-            }
-
-            Channel channel;
-
-            for (int ip = 0; ip < parts.length(); ip++) {
-                JSONObject part = parts.getJSONObject(ip);
-                String type = part.getString("type");
-
-                //only good for old saved songs, prelaunch maybe remove it
-                if ("CHORDPROGRESSION".equals(type)) {
-                    JSONArray chordsData = part.getJSONArray("data");
-                    int[] newChords = new int[chordsData.length()];
-                    for (int ic = 0; ic < chordsData.length(); ic++) {
-                        newChords[ic] = chordsData.getInt(ic);
-                    }
-                    setChordProgression(newChords);
-                    continue;
-                }
-
-                channel = new Channel(mContext, this, pool);
-                loadPart(channel, part);
-                mChannels.add(channel);
-            }
-
-            onNewLoop(System.currentTimeMillis());
-
-            good = true;
-
-        } catch (final JSONException e) {
-            Log.e("MGH loaddata exception", e.getMessage());
-            ((Main)mContext).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(mContext,
-                            "Could not load data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-            e.printStackTrace();
-        }
-
-        return good;
-
-    }
-
     List<Channel> getChannels() {
         return mChannels;
     }
@@ -294,6 +185,9 @@ class Jam {
 
     void setBeats(int beats) {
         this.beats = beats;
+    }
+    void setSubbeats(int subbeats) {
+        this.subbeats = subbeats;
     }
 
     private class PlaybackThread extends Thread {
@@ -785,108 +679,6 @@ class Jam {
         return mm.scaleNote(basicNote, 0);
     }
 
-    private void loadMelody(Channel channel, JSONObject part) throws JSONException {
-
-        NoteList notes = channel.getNotes();
-        notes.clear();
-
-        if (part.has("volume")) {
-            channel.setVolume((float)part.getDouble("volume"));
-        }
-        if (part.has("mute") && part.getBoolean("mute"))
-            channel.disable();
-        else
-            channel.enable();
-
-        JSONArray notesData = part.getJSONArray("notes");
-
-        Note newNote;
-        JSONObject noteData;
-
-        for (int i = 0; i < notesData.length(); i++) {
-            noteData = notesData.getJSONObject(i);
-
-            newNote = new Note();
-            newNote.setBeats(noteData.getDouble("beats"));
-
-            newNote.setRest(noteData.getBoolean("rest"));
-
-            if (!newNote.isRest()) {
-                newNote.setBasicNote(noteData.getInt("note"));
-                if (!channel.getSoundSet().isChromatic()) {
-                    newNote.setScaledNote(newNote.getBasicNote());
-                    newNote.setInstrumentNote(newNote.getBasicNote());
-                }
-            }
-            notes.add(newNote);
-        }
-
-    }
-
-    private void loadPart(Channel jamChannel, JSONObject part) throws  JSONException {
-        String soundsetURL = part.getString("soundsetURL");
-
-        jamChannel.prepareSoundSetFromURL(soundsetURL);
-
-        if (part.has("surfaceURL")) {
-            String surfaceURL = part.getString("surfaceURL");
-            jamChannel.setSurface(surfaceURL);
-        }
-
-        if (part.has("volume")) {
-            jamChannel.setVolume((float)part.getDouble("volume"));
-        }
-        if (part.has("pan")) {
-            jamChannel.setPan((float)part.getDouble("pan"));
-        }
-        if (part.has("sampleSpeed")) {
-            jamChannel.setSampleSpeed((float)part.getDouble("sampleSpeed"));
-        }
-
-        if (jamChannel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
-            loadDrums(jamChannel, part);
-        }
-        else {
-            loadMelody(jamChannel, part);
-        }
-    }
-
-    private void loadDrums(Channel jamChannel, JSONObject part) throws JSONException {
-
-
-        JSONArray tracks = part.getJSONArray("tracks");
-
-        JSONObject track;
-        JSONArray trackData;
-
-        boolean[][] pattern = jamChannel.pattern;
-
-        if (part.has("volume")) {
-            jamChannel.setVolume((float)part.getDouble("volume"));
-        }
-        if (part.has("mute") && part.getBoolean("mute"))
-            jamChannel.disable();
-        else
-            jamChannel.enable();
-
-        //underrun overrun?
-        //match the right channels?
-        // this assumes things are in the right order
-
-        for (int i = 0; i < tracks.length(); i++) {
-            track = tracks.getJSONObject(i);
-
-            trackData = track.getJSONArray("data");
-
-            for (int j = 0; j < trackData.length(); j++) {
-                if (i < pattern.length && j < pattern[i].length)
-                    pattern[i][j] = trackData.getInt(j) == 1;
-            }
-
-        }
-
-    }
-
     abstract static class StateChangeCallback {
         abstract void onSubbeatLengthChange(int length, String source);
         abstract void onKeyChange(int key, String source);
@@ -899,11 +691,10 @@ class Jam {
         boolean remove = false;
     }
 
-    Channel newChannel(long soundsetId) {
-        final Channel channel = new Channel(mContext, this, pool);
+    Channel newChannel(SoundSet soundSet) {
 
-        SoundSetDataOpenHelper helper = ((Main)mContext).getDatabase().getSoundSetData();
-        channel.prepareSoundSet(helper.getSoundSetById(soundsetId));
+        final Channel channel = new Channel(this, pool);
+        channel.prepareSoundSet(soundSet);
 
         new Thread(new Runnable() {
             @Override

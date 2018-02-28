@@ -22,12 +22,16 @@ class CommandProcessor extends BluetoothDataCallback {
     private JamInfo mPeerJam;
     private OnPeerChangeListener mOnPeerChangeListener;
 
-    final private Context mContext;
+    final private DatabaseContainer mDatabase;
+    final private Main mContext;
 
     private boolean mSync = false;
 
     CommandProcessor(Context context) {
-        mContext = context;
+        //todo storing the context because I need to load the jam
+        //maybe this should be done somehow else
+        mContext = (Main)context;
+        mDatabase = mContext.getDatabase();
     }
 
     void setup(BluetoothConnection connection, Jam jam, Channel channel) {
@@ -358,8 +362,7 @@ class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void sendSavedJams() {
-        SavedDataOpenHelper data = new SavedDataOpenHelper(mContext);
-        Cursor cursor = data.getSavedCursor();
+        Cursor cursor = mDatabase.getSavedData().getSavedCursor();
         StringBuilder value = new StringBuilder();
         while (cursor.moveToNext()) {
             value.append(cursor.getString(cursor.getColumnIndex("_id")));
@@ -374,8 +377,7 @@ class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void sendSoundSets() {
-        SoundSetDataOpenHelper data = ((Main)mContext).getDatabase().getSoundSetData();
-        Cursor cursor = data.getCursor();
+        Cursor cursor = mDatabase.getSoundSetData().getCursor();
         StringBuilder value = new StringBuilder();
         int idColumn = cursor.getColumnIndex("_id");
         int nameColumn = cursor.getColumnIndex("name");
@@ -391,13 +393,15 @@ class CommandProcessor extends BluetoothDataCallback {
         mConnection.sendNameValuePair("SOUNDSETS", value.toString());
     }
 
-    private void addChannel(long soundsetId) {
-        mJam.newChannel(soundsetId);
+    private void addChannel(long soundSetId) {
+
+        SoundSet soundSet = mDatabase.getSoundSetData().getSoundSetById(soundSetId);
+        mJam.newChannel(soundSet);
     }
 
     private void loadJam(long jamId) {
-        SavedDataOpenHelper dataHelper = new SavedDataOpenHelper(mContext);
-        ((Main)mContext).loadJam(dataHelper.getJamJson(jamId));
+        SavedDataOpenHelper dataHelper = mDatabase.getSavedData();
+        mContext.loadJam(dataHelper.getJamJson(jamId));
     }
 
     private String getCaptions() {

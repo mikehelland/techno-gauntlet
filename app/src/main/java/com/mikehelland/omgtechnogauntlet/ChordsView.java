@@ -56,8 +56,8 @@ public class ChordsView extends View {
         if (width == -1) {
             width = getWidth();
             height = getHeight();
-            boxHeight = images[1].getHeight();
-            boxWidth = images[1].getWidth();
+            boxHeight = images[0].getHeight();
+            boxWidth = images[0].getWidth();
             marginY = (height - boxHeight) / 2;
         }
 
