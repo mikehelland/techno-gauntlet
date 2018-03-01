@@ -8,6 +8,8 @@ package com.mikehelland.omgtechnogauntlet;
 public class Touch {
     int onFret;
     int onString;
+    int lastFret = -1;
+    int lastString = -1;
     float x;
     float y;
     int id;

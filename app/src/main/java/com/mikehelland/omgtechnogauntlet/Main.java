@@ -222,8 +222,13 @@ public class Main extends Activity {
         try {
             Log.e("MGH load json", json);
             tjam = JamLoader.load(json, this);
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (final Exception e) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
             e.printStackTrace();
         }
         if (tjam == null) {

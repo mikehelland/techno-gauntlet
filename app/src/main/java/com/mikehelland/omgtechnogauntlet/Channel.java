@@ -104,16 +104,21 @@ class Channel {
             state = STATE_PLAYBACK;
         }
         else {
-            if (mJam.isPlaying() && enabled) {
-                if (arpeggiate == 0)
-                    startRecordingNote(note);
+            if (mJam.isPlaying()) {
+                if (arpeggiate == 0) {
+                    if (enabled) {
+                        startRecordingNote(note);
+                    }
+                }
                 else {
                     if (arpNotesCount < arpNotes.length) {
                         arpNotes[arpNotesCount] = note;
                         arpNotesCount++;
                     }
                     note.setBeats(arpeggiate / dsubbeats);
-                    recordNote(note, mJam.getCurrentSubbeat());
+                    if (enabled) {
+                        recordNote(note, mJam.getCurrentSubbeat());
+                    }
                 }
             }
             state = STATE_LIVEPLAY;
@@ -629,6 +634,9 @@ class Channel {
 
     void setArpeggiator(int newValue) {
         arpeggiate = newValue;
+        if (newValue == 0) {
+            arpNotesCount = 0;
+        }
     }
 
     void updateLiveNote(Note note) {

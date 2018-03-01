@@ -582,15 +582,15 @@ public class GuitarView extends View {
             for (Touch touch : touches) {
                 if (id == touch.id) {
 
-                    lastFret = touch.onFret;
-                    lastString = touch.onString;
+                    touch.lastFret = touch.onFret;
+                    touch.lastString = touch.onString;
 
                     touch.x = event.getX(ip);
                     touch.y = event.getY(ip);
                     touch.onFret = getTouchingFret(touch.y);
                     touch.onString = getTouchingString(touch.x);
 
-                    if (lastFret != touch.onFret || lastString != touch.onString) {
+                    if (touch.lastFret != touch.onFret || touch.lastString != touch.onString) {
                         playNote(touch);
                     }
                     break;
@@ -610,7 +610,7 @@ public class GuitarView extends View {
             note.setInstrumentNote(fretMapping[touch.onFret] - lowNote);
 
             mChannel.setArpeggiator(touch.onString);
-            if (!touch.isPlaying || !mJam.isPlaying() || touch.onString == 0) {
+            if (!touch.isPlaying || !mJam.isPlaying() || touch.onString == 0 || touch.lastString == 0) {
                 mChannel.playLiveNote(note);
                 touch.isPlaying = true;
                 touch.note = note;
