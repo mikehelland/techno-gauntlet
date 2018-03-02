@@ -499,6 +499,16 @@ public class MainFragment extends OMGFragment {
                         }
                     });
             }
+
+            @Override
+            void onChannelVolumeChanged(int channelNumber, float volume, String source) {
+
+            }
+
+            @Override
+            void onChannelPanChanged(int channelNumber, float pan, String source) {
+
+            }
         };
 
         mJam.addStateChangeListener(mJamListener);

@@ -182,6 +182,18 @@ public class Main extends Activity {
                 mBtf.sendCommandToDevices(
                         CommandProcessor.getChannelEnabledCommand(channelNumber, enabled), source);
             }
+
+            @Override
+            void onChannelVolumeChanged(int channelNumber, float volume, String source) {
+                mBtf.sendCommandToDevices(
+                        CommandProcessor.getChannelVolumeCommand(channelNumber, volume), source);
+            }
+
+            @Override
+            void onChannelPanChanged(int channelNumber, float pan, String source) {
+                mBtf.sendCommandToDevices(
+                        CommandProcessor.getChannelPanCommand(channelNumber, pan), source);
+            }
         };
         mJam.addStateChangeListener(mJamCallback);
 

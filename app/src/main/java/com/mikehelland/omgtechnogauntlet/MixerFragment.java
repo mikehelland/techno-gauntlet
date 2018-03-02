@@ -41,6 +41,18 @@ public class MixerFragment extends OMGFragment {
                 for (View panel : mPanels)
                     panel.postInvalidate();
             }
+
+            @Override
+            void onChannelVolumeChanged(int channelNumber, float v, String source) {
+                for (View panel : mPanels)
+                    panel.postInvalidate();
+            }
+            @Override
+            void onChannelPanChanged(int channelNumber, float p, String source) {
+                for (View panel : mPanels)
+                    panel.postInvalidate();
+            }
+
         };
         mJam.addStateChangeListener(mCallback);
 
@@ -52,13 +64,15 @@ public class MixerFragment extends OMGFragment {
 
         ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
         View controls;
+        int i = 0;
         for (final Channel channel : mJam.getChannels()) {
 
             controls = inflater.inflate(R.layout.mixer_panel, container, false);
             container.addView(controls);
 
             MixerView mixerView = (MixerView) controls.findViewById(R.id.mixer_view);
-            mixerView.setJam(mJam, channel, channel.getSoundSetName());
+            mixerView.setJam(mJam, channel, channel.getSoundSetName(), i);
+            i++;
 
             mPanels.add(mixerView);
         }

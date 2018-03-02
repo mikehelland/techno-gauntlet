@@ -159,6 +159,10 @@ class CommandProcessor extends BluetoothDataCallback {
             if (value == null) return;
             setChannelVolume(value);
         }
+        if (name.equals("SET_CHANNEL_PAN")) {
+            if (value == null) return;
+            setChannelPan(value);
+        }
         if (name.equals("SET_CHANNEL_ENABLED")) {
             if (value == null) return;
             setChannelEnabled(value);
@@ -257,7 +261,7 @@ class CommandProcessor extends BluetoothDataCallback {
 
         return  (channel.isEnabled() ? "1," : "0,") +
                 (channel.getSoundSet().isChromatic() ? "1," : "0,") +
-                surface + "," + channel.getVolume() + "," + channel.getSoundSetName();
+                surface + "," + channel.getSoundSetName() + "," + channel.getVolume() + "," + channel.getPan();
     }
 
     private void sendChannelInfo() {
@@ -430,7 +434,22 @@ class CommandProcessor extends BluetoothDataCallback {
             String[] data = params.split(",");
             float volume = Float.parseFloat(data[0]);
             int channel = Integer.parseInt(data[1]);
-            mJam.getChannels().get(channel).setVolume(volume);
+
+            mJam.setChannelVolume(channel, volume, mConnection.getDevice().getAddress());
+            //mJam.getChannels().get(channel).setVolume(volume);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void setChannelPan(String params) {
+        try {
+            String[] data = params.split(",");
+            float pan = Float.parseFloat(data[0]);
+            int channel = Integer.parseInt(data[1]);
+
+            mJam.setChannelPan(channel, pan, mConnection.getDevice().getAddress());
+            //mJam.getChannels().get(channel).setPan(pan);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -452,6 +471,12 @@ class CommandProcessor extends BluetoothDataCallback {
 
     static String getChannelEnabledCommand(int channelNumber, boolean enabled) {
         return "CHANNEL_ENABLED=" + (enabled?"1,":"0,") + channelNumber;
+    }
+    static String getChannelVolumeCommand(int channelNumber, float volume) {
+        return "CHANNEL_VOLUME=" + volume + "," + channelNumber;
+    }
+    static String getChannelPanCommand(int channelNumber, float pan) {
+        return "CHANNEL_PAN=" + pan + "," + channelNumber;
     }
 
     void setSync(boolean sync) {

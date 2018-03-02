@@ -686,6 +686,8 @@ class Jam {
         abstract void onChordProgressionChange(int[] chords);
         abstract void onNewChannel(Channel channel);
         abstract void onChannelEnabledChanged(int channelNumber, boolean enabled, String source);
+        abstract void onChannelVolumeChanged(int channelNumber, float volume, String source);
+        abstract void onChannelPanChanged(int channelNumber, float pan, String source);
 
         abstract void newState(String stateChange, Object... args);
         boolean remove = false;
@@ -713,6 +715,20 @@ class Jam {
         return channel;
     }
 
+    void setChannelVolume(int i,float v, String device) {
+        getChannels().get(i).setVolume(v);
+
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onChannelVolumeChanged(i, v, device);
+        }
+    }
+    void setChannelPan(int i, float p, String device) {
+        getChannels().get(i).setPan(p);
+
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onChannelPanChanged(i, p, device);
+        }
+    }
     void setChannelEnabled(int i, boolean l, String device) {
         if (l)
             getChannels().get(i).enable();

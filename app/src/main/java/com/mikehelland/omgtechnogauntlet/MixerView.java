@@ -42,15 +42,14 @@ public class MixerView extends View {
 
     private int labelTextSize = 48;
 
-    private float volume = 0.5f;
-    private float pan = 0.0f;
-
     private float muteButtonWidth = -1;
     private float volumeStart = -1;
     private float controlMargin = 5;
     private float volumeWidth = -1;
     private float panStart = -1;
     private float panWidth = -1;
+
+    private int channelNumber = 0;
 
     public MixerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -103,6 +102,9 @@ public class MixerView extends View {
             panStart = volumeStart + volumeWidth + controlMargin;
             panWidth = width - panStart - controlMargin;
         }
+
+        float volume = mChannel.getVolume();
+        float pan = mChannel.getPan();
 
         float height2 = height / 2;
 
@@ -183,12 +185,10 @@ public class MixerView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Channel channel, String name) {
+    public void setJam(Jam jam, Channel channel, String name, int channelNumber) {
         mJam = jam;
         mChannel = channel;
-
-        volume = channel.getVolume();
-        pan = channel.getPan();
+        this.channelNumber = channelNumber;
 
         setChannelName(name);
 
@@ -196,13 +196,12 @@ public class MixerView extends View {
 
     private void performTouch(float x) {
         if (touchingArea == TOUCHING_AREA_VOLUME) {
-            volume = Math.max(0, Math.min(1, (x - volumeStart) / volumeWidth));
-            mChannel.setVolume(volume);
+            float volume = Math.max(0, Math.min(1, (x - volumeStart) / volumeWidth));
+            mJam.setChannelVolume(channelNumber, volume, null);
         }
         else if (touchingArea == TOUCHING_AREA_PAN) {
-            pan = Math.max(-1.0f, Math.min(1.0f, ((x - panStart) / panWidth - 0.5f) * 2));
-            mChannel.setPan(pan);
+            float pan = Math.max(-1.0f, Math.min(1.0f, ((x - panStart) / panWidth - 0.5f) * 2));
+            mJam.setChannelPan(channelNumber, pan, null);
         }
     }
-
 }
