@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.mikehelland.omgtechnogauntlet.SlidingFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="center">
+
+
+    <TextView android:text="Get the Full Version of"
+              android:layout_alignParentRight="true"
+              android:layout_alignParentLeft="true"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:id="@+id/upgradet1"
+              android:textSize="32sp"
+              android:gravity="center"
+            />
+
+    <TextView android:text="OMG TECHNO GAUNTLET"
+              android:layout_alignParentRight="true"
+              android:layout_alignParentLeft="true"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"
+              android:layout_below="@id/upgradet1"
+              android:id="@+id/upgradet2"
+              android:textSize="60sp"
+              android:gravity="center"
+            />
+
+
+    <TextView android:text="to add more channels."
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:id="@+id/shuffle_caption"
+        android:textSize="32sp"
+        android:layout_below="@id/upgradet2"
+        android:gravity="center"
+        android:padding="8dip"
+        />
+
+</com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>

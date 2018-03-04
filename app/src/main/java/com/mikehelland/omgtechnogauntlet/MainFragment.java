@@ -267,6 +267,12 @@ public class MainFragment extends OMGFragment {
         mView.findViewById(R.id.add_channel_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (BuildConfig.FLAVOR.equals("demo") && mJam.getChannels().size() >= 4) {
+                    if (ActivityManager.isUserAMonkey()) return;
+                    Fragment f = new UpgradeFragment();
+                    showFragmentRight(f);
+                    return;
+                }
 
                 final Channel channel = new Channel( mJam, mPool);
 

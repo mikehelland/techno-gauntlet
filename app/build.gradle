@@ -29,13 +29,27 @@ android {
         applicationId "com.mikehelland.omgtechnogauntlet"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 14
-        versionName "4.1"
+        versionCode 15
+        versionName "4.2"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "mode"
+    productFlavors {
+        main {
+            dimension "mode"
+            resValue "string", "app_name", "Techno GAUNTLET"
+        }
+
+        demo {
+            dimension "mode"
+            applicationId "com.mikehelland.omgtechnogauntletdemo"
+            resValue "string", "app_name", "Techno GAUNTLET Demo"
         }
     }
 }

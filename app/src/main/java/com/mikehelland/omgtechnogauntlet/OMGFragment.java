@@ -31,18 +31,20 @@ public class OMGFragment extends Fragment{
 
     protected void showFragmentRight(Fragment f) {
 
-        FragmentManager fm = getFragmentManager();
-        if (fm != null) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.setCustomAnimations(R.animator.slide_in_right,
-                    R.animator.slide_out_left,
-                    R.animator.slide_in_left,
-                    R.animator.slide_out_right
-            );
-            ft.replace(R.id.main_layout, f);
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            ft.addToBackStack(null);
-            ft.commit();
-        }
+        try {
+            FragmentManager fm = getFragmentManager();
+            if (fm != null) {
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.setCustomAnimations(R.animator.slide_in_right,
+                        R.animator.slide_out_left,
+                        R.animator.slide_in_left,
+                        R.animator.slide_out_right
+                );
+                ft.replace(R.id.main_layout, f);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                ft.addToBackStack(null);
+                ft.commit();
+            }
+        } catch (Exception ignore) {}
     }
 }

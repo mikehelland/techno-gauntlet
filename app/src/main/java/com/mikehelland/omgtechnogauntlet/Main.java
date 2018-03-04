@@ -13,8 +13,6 @@ import android.widget.Toast;
 
 public class Main extends Activity {
 
-    static int MONKEY_TEST = 0;
-
     Jam mJam;
     OMGSoundPool mPool;
     BluetoothManager mBtf;

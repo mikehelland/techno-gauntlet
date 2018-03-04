@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,13 +46,6 @@ public class LoadFromURLFragment extends OMGFragment {
                 InputMethodManager imm = (InputMethodManager)editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (imm != null) {
                     imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-                }
-
-                if (customUrl.toLowerCase().equals("monkeytest")) {
-                    Main.MONKEY_TEST++;
-                    Toast.makeText(getActivity(), "Monkey Test Mode " +
-                            Main.MONKEY_TEST, Toast.LENGTH_SHORT).show();
-                    return;
                 }
 
                 downloadCustomUrl(customUrl);
