@@ -42,7 +42,6 @@ public class Main extends Activity {
 
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
         mBeatView.setJam(mJam);
-        mBeatView.showLoadProgress(1);
         mJam.addInvalidateOnBeatListener(mBeatView);
         mBeatView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,13 +61,13 @@ public class Main extends Activity {
             @Override
             public void run() {
                 mDatabase = new DatabaseContainer(Main.this);
-                    if (mWelcomeFragment == null) {
-                        mWelcomeFragment = new WelcomeFragment();
-                    }
+                if (mWelcomeFragment == null) {
+                    mWelcomeFragment = new WelcomeFragment();
+                }
 
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    ft.add(R.id.main_layout, mWelcomeFragment);
-                    ft.commit();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.add(R.id.main_layout, mWelcomeFragment);
+                ft.commit();
             }
         }).start();
 

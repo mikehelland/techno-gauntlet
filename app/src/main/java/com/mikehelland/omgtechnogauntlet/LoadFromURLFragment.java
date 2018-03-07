@@ -28,7 +28,6 @@ public class LoadFromURLFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.load_from_url,
                 container, false);
 
-
         getActivityMembers();
         setup();
 
@@ -41,11 +40,15 @@ public class LoadFromURLFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 EditText editText = (EditText)mView.findViewById(R.id.custom_url_edittext);
-                final String customUrl = editText.getText().toString();
+                String customUrl = editText.getText().toString();
 
                 InputMethodManager imm = (InputMethodManager)editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (imm != null) {
                     imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                }
+
+                if (customUrl.startsWith("omg/")) {
+                    customUrl = customUrl.replace("omg/", "http://openmusic.gallery/data/");
                 }
 
                 downloadCustomUrl(customUrl);

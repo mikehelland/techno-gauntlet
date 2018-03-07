@@ -19,6 +19,7 @@ public class BeatView extends View {
     private int beats = 4;
 
     private boolean mShowingLoadProgress = false;
+    private boolean mInitialized = false;
     private int mProgressMax = 1;
     private int mProgressI = 0;
 
@@ -67,7 +68,7 @@ public class BeatView extends View {
         }
         canvas.drawLine(0, getHeight() - 2, getWidth(), getHeight() - 2, paintWhite);
 
-        if (mShowingLoadProgress) {
+        if (!mInitialized || mShowingLoadProgress) {
             canvas.drawRect(0, 0, getWidth() * ((float)mProgressI / mProgressMax), getHeight(), paintBlue);
             mText = "Loading Sounds...";
         }
@@ -99,6 +100,7 @@ public class BeatView extends View {
         mProgressMax = max;
         mProgressI = 0;
         mShowingLoadProgress = true;
+        mInitialized = true;
     }
 
     void incrementProgress() {

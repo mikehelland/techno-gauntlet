@@ -3,28 +3,36 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-
-
-    <Button android:text="@string/return_to_jam"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:drawableRight="@android:drawable/ic_media_ff"
-        android:id="@+id/return_to_omg_bananas"
-        android:layout_alignParentTop="true"/>
-
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/start_a_blank_jam"
-        android:id="@+id/blank_jam_button"
-        android:layout_below="@id/return_to_omg_bananas"/>
+        android:orientation="horizontal"
+        android:id="@+id/welcome_buttons">
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/start_a_blank_jam"
+            android:id="@+id/blank_jam_button"
+            />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/load_from_url"
-        android:id="@+id/load_from_url_button"
-        android:layout_below="@id/blank_jam_button"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/load_from_url"
+            android:id="@+id/load_from_url_button"
+            />
+
+        <Button android:text="@string/return_to_jam"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:drawableRight="@android:drawable/ic_media_ff"
+            android:id="@+id/return_to_omg_bananas"
+            />
+
+    </LinearLayout>
 
     <!--<Button
         android:layout_width="match_parent"
@@ -40,7 +48,7 @@
         android:textSize="20sp"
         android:padding="2dp"
         android:gravity="center"
-        android:layout_below="@id/load_from_url_button"
+        android:layout_below="@id/welcome_buttons"
         android:id="@+id/load_jam_caption"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true" />
