@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +17,7 @@ import org.json.JSONObject;
 
 class JamLoader {
 
-    static Jam load(String json, Main context) throws Exception {
+    static Jam load(String json, final Main context) throws Exception {
 
         if (context == null) {
             return null;
@@ -78,13 +79,21 @@ class JamLoader {
 
                 String soundsetURL = part.getString("soundsetURL");
 
-                SoundSetDataOpenHelper dataHelper = dbc.getSoundSetData();
+                final SoundSetDataOpenHelper dataHelper = dbc.getSoundSetData();
                 SoundSet soundSet = dataHelper.getSoundSetByURL(soundsetURL);
                 if (soundSet != null) {
                     channel = new Channel(jam, context.mPool);
                     channel.prepareSoundSet(soundSet);
                     loadPart(channel, part);
                     jam.getChannels().add(channel);
+                }
+                else {
+                    context.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(context, dataHelper.getLastErrorMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
 

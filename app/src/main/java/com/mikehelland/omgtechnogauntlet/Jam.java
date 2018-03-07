@@ -298,14 +298,13 @@ class Jam {
 
     private void onNewLoop(Long now) {
 
+        runCallbacks("ON_NEW_LOOP");
+
         progressionI++;
 
         if (progressionI >= progression.length || progressionI < 0) {
             progressionI = 0;
         }
-
-        runCallbacks("ON_NEW_LOOP");
-
         int chord = progression[progressionI];
 
         updateChord(chord);

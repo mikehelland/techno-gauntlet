@@ -64,10 +64,11 @@ public class Main extends Activity {
                 if (mWelcomeFragment == null) {
                     mWelcomeFragment = new WelcomeFragment();
                 }
-
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.add(R.id.main_layout, mWelcomeFragment);
-                ft.commit();
+                try {
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.add(R.id.main_layout, mWelcomeFragment);
+                    ft.commit();
+                } catch (Exception ignore) { }
             }
         }).start();
 

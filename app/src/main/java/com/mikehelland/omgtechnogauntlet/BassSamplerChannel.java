@@ -1,6 +1,5 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.content.Context;
 import android.content.res.Resources;
 
 /**
@@ -11,7 +10,7 @@ import android.content.res.Resources;
 class BassSamplerChannel {
 
 
-    static String getDefaultSoundSetJSON(Context context) {
+    static String getDefaultSoundSetJSON(Resources res) {
 
         int i = 0;
         int[] rids = new int[21];
@@ -45,7 +44,6 @@ class BassSamplerChannel {
         sb.append("\"highNote\": 48, \"lowNote\": 28, \"octave\": 2, ");
         sb.append("\"data\": [");
 
-        Resources res = context.getResources();
         String resourceName;
         for (int j = 0; j < i; j++) {
 
@@ -65,7 +63,7 @@ class BassSamplerChannel {
         return sb.toString();
     }
 
-    static String getSlapSoundSetJSON(Context context) {
+    static String getSlapSoundSetJSON(Resources res) {
 
         int i = 0;
         int[] rids = new int[25];
@@ -103,7 +101,6 @@ class BassSamplerChannel {
         sb.append("\"highNote\": 45, \"lowNote\": 21, \"octave\": 2, ");
         sb.append("\"data\": [");
 
-        Resources res = context.getResources();
         String resourceName;
         for (int j = 0; j < i; j++) {
 

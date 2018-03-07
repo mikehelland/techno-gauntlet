@@ -5,8 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,10 +14,13 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     private String cErrorMessage = "";
     private SQLiteDatabase mDB;
 
-    private Context mContext;
+    private String slapBass;
+    private String bass;
     SoundSetDataOpenHelper(Context context) {
         super(context, "OMG_TECHNO_GAUNTLET", null, 2);
-        mContext = context;
+
+        slapBass = BassSamplerChannel.getSlapSoundSetJSON(context.getResources());
+        bass = BassSamplerChannel.getDefaultSoundSetJSON(context.getResources());
 
         mDB = getWritableDatabase();
     }
@@ -44,7 +45,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion == 1 && newVersion == 2) {
-            Log.d("MGH datahelper", "UPGRADE!");
             db.execSQL("ALTER TABLE soundsets ADD COLUMN downloaded INTEGER");
             db.execSQL("UPDATE soundsets SET downloaded = 1");
         }
@@ -143,7 +143,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     }
 
     private void setupBassSoundSet(SQLiteDatabase db) {
-        String json = BassSamplerChannel.getDefaultSoundSetJSON(mContext);
 
         ContentValues data = new ContentValues();
         data.put("name", "Electric Bass");
@@ -151,7 +150,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("omg_id", "PRESET_BASS");
         data.put("type", "BASSLINE");
         data.put("chromatic", true);
-        data.put("data", json);
+        data.put("data", bass);
         data.put("time", System.currentTimeMillis() / 1000);
         data.put("downloaded", 1);
 
@@ -170,7 +169,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     }
 
     private void setupSlapBassSoundSet(SQLiteDatabase db) {
-        String json = BassSamplerChannel.getSlapSoundSetJSON(mContext);
 
         ContentValues data = new ContentValues();
         data.put("name", "Slap Bass");
@@ -178,7 +176,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         data.put("omg_id", "PRESET_SLAP_BASS");
         data.put("type", "BASSLINE");
         data.put("chromatic", true);
-        data.put("data", json);
+        data.put("data", slapBass);
         data.put("time", System.currentTimeMillis() / 1000);
         data.put("downloaded", 1);
 
@@ -263,9 +261,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
                 db.insert("soundsets", null, data);
             }
 
-            catch (JSONException e) {
-                Log.e("MGH setup oscillators", e.getMessage());
-            }
+            catch (JSONException ignore) { }
         }
 
     }
@@ -315,14 +311,12 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
         if (cursor.getCount() == 0) {
             cErrorMessage = "Couldn't find Sound Set in the database";
-            showToast();
         }
         else {
             cursor.moveToFirst();
             soundset = new SoundSet(cursor);
             if (!soundset.isValid()) {
                 cErrorMessage = "Not a valid soundset";
-                showToast();
                 soundset = null;
             }
         }
@@ -337,15 +331,6 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     SoundSet getSoundSetByURL(String url) {
         return getSoundSetByQuery("url = '" + url + "'");
-    }
-
-    private void showToast() {
-        ((Main)mContext).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(mContext, cErrorMessage, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     void delete(long id) {
@@ -365,5 +350,9 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         if (mDB.isOpen()) {
             mDB.update("soundsets", newData, "_id=?", args);
         }
+    }
+
+    String getLastErrorMessage() {
+        return cErrorMessage;
     }
 }

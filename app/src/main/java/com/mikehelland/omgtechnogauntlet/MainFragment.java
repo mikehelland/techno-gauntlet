@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -379,7 +380,12 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
 
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+                Activity activity = getActivity();
+                if (activity == null) {
+                    return;
+                }
+
+                Animation turnin = AnimationUtils.loadAnimation(activity, R.anim.rotate);
                 view.startAnimation(turnin);
 
                 doneButton.setVisibility(View.VISIBLE);

@@ -400,7 +400,9 @@ class CommandProcessor extends BluetoothDataCallback {
     private void addChannel(long soundSetId) {
 
         SoundSet soundSet = mDatabase.getSoundSetData().getSoundSetById(soundSetId);
-        mJam.newChannel(soundSet);
+        if (soundSet != null) {
+            mJam.newChannel(soundSet);
+        }
     }
 
     private void loadJam(long jamId) {
