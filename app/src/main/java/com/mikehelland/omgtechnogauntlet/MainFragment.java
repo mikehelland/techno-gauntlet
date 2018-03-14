@@ -311,6 +311,15 @@ public class MainFragment extends OMGFragment {
 
             }
         });
+        mixerButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                SampleSpeedFragment fragment = new SampleSpeedFragment();
+                //fragment.setJam(mJam, MainFragment.this);
+                showFragmentRight(fragment);
+                return true;
+            }
+        });
 
         ImageView mainLibenizHead = (ImageView)mView.findViewById(R.id.libeniz_head);
         mainLibenizHead.setOnClickListener(new View.OnClickListener() {
