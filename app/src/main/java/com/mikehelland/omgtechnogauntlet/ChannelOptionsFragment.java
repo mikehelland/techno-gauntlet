@@ -73,7 +73,7 @@ public class ChannelOptionsFragment extends OMGFragment {
         rbSequencer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChannel.setSurface("PRESET_SEQUENCER");
+                mChannel.setSurface(new Surface("PRESET_SEQUENCER"));
                 getActivity().getFragmentManager().popBackStack();
             }
         });
@@ -84,7 +84,7 @@ public class ChannelOptionsFragment extends OMGFragment {
         rbVertical.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChannel.setSurface("PRESET_VERTICAL");
+                mChannel.setSurface(new Surface("PRESET_VERTICAL"));
                 getActivity().getFragmentManager().popBackStack();
             }
         });
@@ -95,7 +95,7 @@ public class ChannelOptionsFragment extends OMGFragment {
         rbFretboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChannel.setSurface("PRESET_FRETBOARD");
+                mChannel.setSurface(new Surface("PRESET_FRETBOARD"));
                 getActivity().getFragmentManager().popBackStack();
             }
         });

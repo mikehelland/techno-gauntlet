@@ -51,7 +51,7 @@ class Channel {
 
     private SoundSet mSoundSet;
 
-    private String mSurfaceURL = "";
+    private Surface mSurface;
 
     boolean[][] pattern;
     private float volume = 0.75f;
@@ -71,7 +71,8 @@ class Channel {
         mSoundSet = new SoundSet();
         mSoundSet.setName("DRUMBEAT");
         mSoundSet.setURL("");
-        mSoundSet.setChromatic(false);
+
+        mSurface = new Surface();
 
         pattern = new boolean[8][256]; // use a high limit [mJam.getTotalSubbeats()];
 
@@ -84,8 +85,8 @@ class Channel {
         dsubbeats = (double)subbeats;
     }
 
-    int playLiveNote(Note note) {
-        return playLiveNote(note, false);
+    void playLiveNote(Note note) {
+        playLiveNote(note, false);
     }
 
     int playLiveNote(Note note, boolean multiTouch) {
@@ -363,9 +364,8 @@ class Channel {
 
         //creates a new array from the old one //todo looks like it just blanks it really
         int soundCount = mSoundSet.getSounds().size();
-        int totalSubbeats = mJam.getTotalSubbeats();
         if (pattern == null || pattern.length != soundCount) {
-            pattern = new boolean[soundCount][256]; //[totalSubbeats];
+            pattern = new boolean[soundCount][256];
         }
 
         for (SoundSet.Sound sound : mSoundSet.getSounds()) {
@@ -429,7 +429,7 @@ class Channel {
         if (!enabled)
             sb.append(", \"mute\": true");
 
-        if (getSurfaceURL().equals("PRESET_SEQUENCER")) {
+        if (useSequencer()) {
             getTrackData(sb);
         } else {
             getNoteData(sb);
@@ -499,7 +499,7 @@ class Channel {
 
     void playBeat(int subbeat) {
 
-        if (getSurfaceURL().equals("PRESET_SEQUENCER")) {
+        if (useSequencer()) {
             playDrumBeat(subbeat);
             return;
         }
@@ -531,8 +531,6 @@ class Channel {
 
     private void playDrumBeat(int subbeat) {
         if (enabled) {
-            //TODO this crashes when, say a 1 beat pattern is played in a jam with more than 1 beat
-            // the only real way fix it is change the pattern to the right length at a synchronized time
             for (int i = 0; i < pattern.length; i++) {
                 try {
                     if (pattern[i][subbeat]) {
@@ -588,13 +586,6 @@ class Channel {
         this.pattern = pattern;
     }
 
-    boolean[] getTrack(int track)  {
-        if (pattern == null || track < 0 || track >= pattern.length) {
-            return new boolean[256];
-        }
-        return pattern[track];
-    }
-
     void setPattern(int track, int subbeat, boolean value) {
         if (track >= pattern.length || track < 0 ||
                 subbeat >= pattern[track].length || subbeat < 0) {
@@ -605,13 +596,15 @@ class Channel {
         }
     }
 
-    void setSurface(String surfaceURL) {
-        mSurfaceURL = surfaceURL;
+    void setSurface(Surface surface) {
+        mSurface = surface;
     }
 
+    Surface getSurface() {return mSurface;}
+
     String getSurfaceURL() {
-        if (mSurfaceURL.length() > 0)
-            return mSurfaceURL;
+        if (mSurface != null && mSurface.getURL().length() > 0)
+            return mSurface.getURL();
 
         if (mSoundSet != null) {
             if (mSoundSet.getDefaultSurface().length() > 0)
@@ -637,11 +630,6 @@ class Channel {
         if (newValue == 0) {
             arpNotesCount = 0;
         }
-    }
-
-    void updateLiveNote(Note note) {
-        lastPlayedNote = note;
-
     }
 
     void finish() {
@@ -692,5 +680,9 @@ class Channel {
 
     void setNotes(NoteList notes) {
         mNoteList = notes;
+    }
+
+    boolean useSequencer() {
+        return mSurface.getURL().equals(SufacesDataHelper.PRESET_SEQUENCER);
     }
 }

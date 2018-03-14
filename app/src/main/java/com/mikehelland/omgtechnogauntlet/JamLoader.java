@@ -109,9 +109,13 @@ class JamLoader {
 
     static private void loadPart(Channel jamChannel, JSONObject part) throws  JSONException {
 
-        if (part.has("surfaceURL")) {
+        if (part.has("surface")) {
+            JSONObject surfaceJSONObject = part.getJSONObject("surface");
+            jamChannel.setSurface(parseSurfaceJSONObject(surfaceJSONObject));
+        }
+        else if (part.has("surfaceURL")) { //the old way
             String surfaceURL = part.getString("surfaceURL");
-            jamChannel.setSurface(surfaceURL);
+            jamChannel.setSurface(new Surface(surfaceURL));
         }
 
         if (part.has("volume")) {
@@ -124,7 +128,7 @@ class JamLoader {
             jamChannel.setSampleSpeed((float)part.getDouble("sampleSpeed"));
         }
 
-        if (jamChannel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
+        if (jamChannel.useSequencer()) {
             loadDrums(jamChannel, part);
         }
         else {
@@ -214,5 +218,16 @@ class JamLoader {
             e.printStackTrace();
         }
         return appName;
+    }
+
+    private static Surface parseSurfaceJSONObject(JSONObject jsonObject) throws JSONException{
+        final Surface surface = new Surface();
+        surface.setName(jsonObject.getString("name"));
+        surface.setURL(jsonObject.getString("url"));
+        if (jsonObject.has("zoomSkipBottom") && jsonObject.has("zoomSkipTop")) {
+            surface.setSkipBottomAndTop(jsonObject.getInt("zoomSkipBottom"),
+                    jsonObject.getInt("zoomSkipTop"));
+        }
+        return  surface;
     }
 }

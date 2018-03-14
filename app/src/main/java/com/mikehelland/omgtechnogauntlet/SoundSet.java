@@ -33,6 +33,8 @@ class SoundSet {
 
     private boolean mIsSoundFont = false;
 
+    private String mJSON = "";
+
     SoundSet() {}
 
     SoundSet(Cursor cursor) {
@@ -51,11 +53,20 @@ class SoundSet {
         mIsValid = loadFromJSON((String)data.get("data"));
     }
 
+    SoundSet(SoundSet soundSet) {
+        mName = soundSet.getName();
+        mURL = soundSet.getURL();
+        mID = soundSet.getID();
+
+        mIsValid = loadFromJSON(soundSet.mJSON);
+    }
+
     boolean isValid() {
         return mIsValid;
     }
 
     private boolean loadFromJSON(String json) {
+        mJSON = json;
         try {
             JSONObject soundSet = new JSONObject(json);
 
@@ -169,10 +180,6 @@ class SoundSet {
     //}
     long getID() {
         return mID;
-    }
-
-    public void setChromatic(boolean b) {
-        mChromatic = b;
     }
 
     String[] getSoundNames() {

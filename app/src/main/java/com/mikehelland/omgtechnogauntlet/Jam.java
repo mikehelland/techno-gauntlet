@@ -192,9 +192,10 @@ class Jam {
 
     void copyChannel(Channel channel) {
         final Channel newChannel = new Channel(this, pool);
-        newChannel.prepareSoundSet(channel.getSoundSet());
+        newChannel.prepareSoundSet(new SoundSet(channel.getSoundSet()));
         newChannel.loadSoundSetIds();
-        if (newChannel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
+        newChannel.setSurface(channel.getSurface().copy());
+        if (newChannel.useSequencer()) {
             newChannel.setPattern(channel.pattern.clone());
         }
         else {

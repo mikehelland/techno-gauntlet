@@ -171,7 +171,7 @@ public class GuitarView extends View {
             drawNotes(canvas, mChannel.getNotes());
             return;
         }
-
+Log.d("MGH gv ondraw", "bottom and top=" + skipBottom + ", " + skipTop);
         int noteNumber;
         int index;
         for (int fret = 1 ; fret <= showingFrets; fret++) {
@@ -202,8 +202,8 @@ public class GuitarView extends View {
                 height - 1, paint);
 
         for (Touch touch : touches) {
-            canvas.drawRect(0, height - (touch.onFret + 1) * boxHeight,
-                    width, height - touch.onFret  * boxHeight,
+            canvas.drawRect(0, height - (touch.onFret - skipBottom + 1) * boxHeight,
+                    width, height - (touch.onFret  - skipBottom) * boxHeight,
                     topPanelPaint);
         }
 
@@ -266,8 +266,12 @@ public class GuitarView extends View {
 
         setScaleInfo();
 
-        mJam.addInvalidateOnBeatListener(this);
+        int[] skipBottomAndTop = mChannel.getSurface().getSkipBottomAndTop();
+        skipBottom = skipBottomAndTop[0];
+        skipTop = skipBottomAndTop[1];
+        showingFrets = Math.max(1, frets - skipTop - skipBottom);
 
+        mJam.addInvalidateOnBeatListener(this);
     }
 
     public void setScaleInfo() {
@@ -462,6 +466,8 @@ public class GuitarView extends View {
                 zoomingSkipTop = 0;
                 zoomingSkipBottom = 0;
 
+                mChannel.getSurface().setSkipBottomAndTop(skipBottom, skipTop);
+
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
@@ -575,8 +581,6 @@ public class GuitarView extends View {
     private void onMove(MotionEvent event) {
 
         int id;
-        int lastFret;
-        int lastString;
         for (int ip = 0; ip < event.getPointerCount(); ip++) {
             id = event.getPointerId(ip);
             for (Touch touch : touches) {

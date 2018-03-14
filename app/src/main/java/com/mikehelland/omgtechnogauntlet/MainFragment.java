@@ -88,9 +88,7 @@ public class MainFragment extends OMGFragment {
                 return;
             }
 
-            String surfaceURL = channel.getSurfaceURL();
-
-            if (surfaceURL.equals("PRESET_SEQUENCER")) {
+            if (channel.useSequencer()) {
                 DrumFragment f = new DrumFragment();
                 f.setJam(mJam, channel);
                 showFragmentRight(f);
