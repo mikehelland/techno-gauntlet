@@ -56,8 +56,8 @@ class OMGSoundPool extends SoundPool {
         return isLoaded;
     }
 
-    void setLoaded(boolean value) {
-        isLoaded = value;
+    void setLoaded() {
+        isLoaded = true;
     }
 
     void makeSureDspIsRunning() {
@@ -72,12 +72,11 @@ class OMGSoundPool extends SoundPool {
         mDacs.add(dac);
     }
 
-
     boolean isInitialized() {
         return isInitialized;
     }
-    void setInitialized(boolean value) {
-        isInitialized = value;
+    void setInitialized() {
+        isInitialized = true;
     }
 
     void addSoundToLoad(SoundSet.Sound sound) {

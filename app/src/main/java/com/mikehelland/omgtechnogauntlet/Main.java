@@ -83,7 +83,7 @@ public class Main extends Activity {
                 mPool.soundsToLoad--;
                 if (mPool.soundsToLoad <= 0) {
 
-                    mPool.setLoaded(true);
+                    mPool.setLoaded();
 
                     if (!mPool.isCanceled() && mPool.onAllLoadsFinishedCallback != null)
                         mPool.onAllLoadsFinishedCallback.run();

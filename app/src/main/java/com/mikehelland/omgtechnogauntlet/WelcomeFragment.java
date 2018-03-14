@@ -137,7 +137,7 @@ public class WelcomeFragment extends OMGFragment {
         int defaultJam = BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
         ((Main) getActivity()).loadJam(getActivity().getResources().getString(defaultJam));
 
-        mPool.setInitialized(true);
+        mPool.setInitialized();
     }
 
     private void askToRemoveSavedJam(final int i) {
