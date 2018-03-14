@@ -171,7 +171,7 @@ public class GuitarView extends View {
             drawNotes(canvas, mChannel.getNotes());
             return;
         }
-Log.d("MGH gv ondraw", "bottom and top=" + skipBottom + ", " + skipTop);
+
         int noteNumber;
         int index;
         for (int fret = 1 ; fret <= showingFrets; fret++) {
@@ -626,7 +626,7 @@ Log.d("MGH gv ondraw", "bottom and top=" + skipBottom + ", " + skipTop);
                 //mChannel.updateLiveNote(touch.note);
             }
         } else {
-            Log.e("MGH GuitarView OnDraw", "Invalid fretmapping. skipBottom: " +
+            Log.e("MGH GuitarView playnote", "Invalid fretmapping. skipBottom: " +
                     skipBottom + ", touchingFret: " + touch.onFret + ", fretMapping.length: " +
                     fretMapping.length + " in soundset: " + mChannel.getSoundSetName());
         }

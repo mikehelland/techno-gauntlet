@@ -38,4 +38,16 @@ class Surface {
         surface.setSkipBottomAndTop(mZoomSkipBotton, mZoomSkipTop);
         return surface;
     }
+
+    void getData(StringBuilder sb) {
+        sb.append("{\"url\": \"");
+        sb.append(mURL);
+        sb.append("\", \"name\": \"");
+        sb.append(mName);
+        sb.append("\", \"skipBottom\": ");
+        sb.append(mZoomSkipBotton);
+        sb.append(", \"skipTop\": ");
+        sb.append(mZoomSkipTop);
+        sb.append("}");
+    }
 }

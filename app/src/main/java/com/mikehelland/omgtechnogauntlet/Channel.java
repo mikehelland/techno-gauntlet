@@ -418,9 +418,9 @@ class Channel {
         sb.append(mSoundSet.isSoundFont() ? "true" : "false");
         sb.append(", \"soundsetURL\": \"");
         sb.append(mSoundSet.getURL());
-        sb.append("\", \"surfaceURL\" : \"");
-        sb.append(getSurfaceURL());
-        sb.append("\", \"volume\": ");
+        sb.append("\", \"surface\" : ");
+        mSurface.getData(sb);
+        sb.append(", \"volume\": ");
         sb.append(volume);
         sb.append(", \"pan\": ");
         sb.append(pan);

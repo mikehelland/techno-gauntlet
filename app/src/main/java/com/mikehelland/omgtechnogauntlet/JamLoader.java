@@ -224,9 +224,9 @@ class JamLoader {
         final Surface surface = new Surface();
         surface.setName(jsonObject.getString("name"));
         surface.setURL(jsonObject.getString("url"));
-        if (jsonObject.has("zoomSkipBottom") && jsonObject.has("zoomSkipTop")) {
-            surface.setSkipBottomAndTop(jsonObject.getInt("zoomSkipBottom"),
-                    jsonObject.getInt("zoomSkipTop"));
+        if (jsonObject.has("skipBottom") && jsonObject.has("skipTop")) {
+            surface.setSkipBottomAndTop(jsonObject.getInt("skipBottom"),
+                    jsonObject.getInt("skipTop"));
         }
         return  surface;
     }
