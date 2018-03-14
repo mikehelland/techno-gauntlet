@@ -190,6 +190,23 @@ class Jam {
         this.subbeats = subbeats;
     }
 
+    void copyChannel(Channel channel) {
+        final Channel newChannel = new Channel(this, pool);
+        newChannel.prepareSoundSet(channel.getSoundSet());
+        newChannel.loadSoundSetIds();
+        if (newChannel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
+            newChannel.setPattern(channel.pattern.clone());
+        }
+        else {
+            NoteList newNotes = new NoteList();
+            for (Note note : channel.getNotes()) {
+                newNotes.add(note.cloneNote());
+            }
+            newChannel.setNotes(newNotes);
+        }
+        addChannel(newChannel);
+    }
+
     private class PlaybackThread extends Thread {
 
         int ibeat;

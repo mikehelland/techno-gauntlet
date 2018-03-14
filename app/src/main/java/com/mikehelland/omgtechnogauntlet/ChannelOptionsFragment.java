@@ -58,6 +58,14 @@ public class ChannelOptionsFragment extends OMGFragment {
             }
         });
 
+        mView.findViewById(R.id.copy_channel_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mJam.copyChannel(mChannel);
+                getActivity().getFragmentManager().popBackStack();
+            }
+        });
+
         View rbSequencer = mView.findViewById(R.id.radioButton);
         if (mChannel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
             ((RadioButton)rbSequencer).toggle();

@@ -689,4 +689,8 @@ class Channel {
             }
         }
     }
+
+    void setNotes(NoteList notes) {
+        mNoteList = notes;
+    }
 }
