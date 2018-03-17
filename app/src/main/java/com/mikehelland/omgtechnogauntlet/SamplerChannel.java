@@ -1,13 +1,13 @@
 package com.mikehelland.omgtechnogauntlet;
 
-public class SamplerChannel {
+class SamplerChannel {
 
 
-    public static String getDefaultSoundSetJson() {
+    static String getDefaultSoundSetJson() {
 
         StringBuilder sb = new StringBuilder();
         sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": false, \"name\": \"");
-        sb.append("Percussion Sampler\", \"url\": \"PRESET_PERCUSSION_SAMPLER\", \"data\": [");
+        sb.append("Percussion Sampler\", \"url\": \"PRESET_PERCUSSION_SAMPLER\", \"defaultSurface\": \"PRESET_SEQUENCER\", \"data\": [");
 
         sb.append("{\"url\": \"PRESET_bongol\", \"name\": \"bongo l\", \"preset_id\": ");
         sb.append(R.raw.sampler_8_bongol);

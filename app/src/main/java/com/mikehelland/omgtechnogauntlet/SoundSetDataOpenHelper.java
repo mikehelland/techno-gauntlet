@@ -196,52 +196,32 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     private void setupOscillatorSoundSet(SQLiteDatabase db) {
 
+        String proto = "\"type\" : \"SOUNDSET\", \"cshromatic\": true, " +
+                "\"defaultSurface\": \"PRESET_VERTICAL\", " +
+                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+
         String[] oscs = new String[11];
-        oscs[10] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Soft Sine Delay\", \"url\": \"PRESET_OSC_SINE_SOFT_DELAY\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+        oscs[10] = "{\"name\": \"Osc Soft Sine Delay\", \"url\": \"PRESET_OSC_SINE_SOFT_DELAY\", " + proto;
 
-        oscs[9] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Sine\", \"url\": \"PRESET_OSC_SINE\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+        oscs[9] = "{\"name\": \"Osc Sine\", \"url\": \"PRESET_OSC_SINE\", " + proto;
 
-        oscs[8] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Soft Square Delay\", \"url\": \"PRESET_OSC_SQUARE_SOFT_DELAY\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+        oscs[8] = "{\"name\": \"Osc Soft Square Delay\", \"url\": \"PRESET_OSC_SQUARE_SOFT_DELAY\", " + proto;
 
-        oscs[7] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Square Delay\", \"url\": \"PRESET_OSC_SQUARE_DELAY\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+        oscs[7] = "{\"name\": \"Osc Square Delay\", \"url\": \"PRESET_OSC_SQUARE_DELAY\", " + proto;
 
-        oscs[6] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Soft Square Flange\", \"url\": \"PRESET_OSC_SQUARE_SOFT_FLANGE\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+        oscs[6] = "{\"name\": \"Osc Soft Square Flange\", \"url\": \"PRESET_OSC_SQUARE_SOFT_FLANGE\", " + proto;
 
-        oscs[5] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Square\", \"url\": \"PRESET_OSC_SQUARE\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+        oscs[5] = "{\"name\": \"Osc Square\", \"url\": \"PRESET_OSC_SQUARE\", " + proto;
 
-        oscs[4] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Soft Square\", \"url\": \"PRESET_OSC_SQUARE_SOFT\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+        oscs[4] = "{\"name\": \"Osc Soft Square\", \"url\": \"PRESET_OSC_SQUARE_SOFT\", " + proto;
 
-        oscs[3] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Soft Saw\", \"url\": \"PRESET_OSC_SAW_SOFT\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+        oscs[3] = "{\"name\": \"Osc Soft Saw\", \"url\": \"PRESET_OSC_SAW_SOFT\", " + proto;
 
-        oscs[2] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Saw\", \"url\": \"PRESET_OSC_SAW\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
+        oscs[2] = "{\"name\": \"Osc Saw\", \"url\": \"PRESET_OSC_SAW\", " + proto;
 
+        oscs[1] = "{\"name\": \"Osc Soft Saw Delay\", \"url\": \"PRESET_OSC_SAW_SOFT_DELAT\", " + proto;
 
-        oscs[1] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Soft Saw Delay\", \"url\": \"PRESET_OSC_SAW_SOFT_DELAT\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
-
-        oscs[0] = "{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"" +
-                "Osc Saw Delay\", \"url\": \"PRESET_OSC_SAW_DELAY\", " +
-                "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
-
+        oscs[0] = "{\"name\": \"Osc Saw Delay\", \"url\": \"PRESET_OSC_SAW_DELAY\", " + proto;
 
         for (String s : oscs) {
 

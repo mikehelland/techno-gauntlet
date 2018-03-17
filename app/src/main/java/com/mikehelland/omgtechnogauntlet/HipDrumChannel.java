@@ -6,7 +6,7 @@ class HipDrumChannel {
 
         StringBuilder sb = new StringBuilder();
         sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": false, \"name\": \"");
-        sb.append("Hip Hop Drum Kit\", \"url\": \"PRESET_HIPKIT\", \"data\": [");
+        sb.append("Hip Hop Drum Kit\", \"url\": \"PRESET_HIPKIT\", \"defaultSurface\": \"PRESET_SEQUENCER\", \"data\": [");
 
         sb.append("{\"url\": \"PRESET_HH_KICK\", \"name\": \"kick\", \"preset_id\": ");
         sb.append(R.raw.hh_kick);

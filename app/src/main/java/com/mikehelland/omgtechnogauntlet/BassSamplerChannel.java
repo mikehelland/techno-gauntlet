@@ -41,7 +41,7 @@ class BassSamplerChannel {
         StringBuilder sb = new StringBuilder();
         sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"");
         sb.append("Electric Bass\", \"url\": \"PRESET_BASS\", ");
-        sb.append("\"highNote\": 48, \"lowNote\": 28, \"octave\": 2, ");
+        sb.append("\"highNote\": 48, \"lowNote\": 28, \"octave\": 2, \"defaultSurface\": \"PRESET_VERTICAL\", ");
         sb.append("\"data\": [");
 
         String resourceName;
@@ -98,7 +98,7 @@ class BassSamplerChannel {
         StringBuilder sb = new StringBuilder();
         sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": true, \"name\": \"");
         sb.append("Slap Bass\", \"url\": \"http://openmusic.gallery/data/413\", ");
-        sb.append("\"highNote\": 45, \"lowNote\": 21, \"octave\": 2, ");
+        sb.append("\"highNote\": 45, \"lowNote\": 21, \"octave\": 2, \"defaultSurface\": \"PRESET_VERTICAL\", ");
         sb.append("\"data\": [");
 
         String resourceName;

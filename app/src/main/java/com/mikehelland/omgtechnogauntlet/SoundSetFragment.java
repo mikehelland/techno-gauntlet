@@ -109,6 +109,8 @@ public class SoundSetFragment extends OMGFragment {
             return;
         }
 
+        setupOptionsButton();
+
         SoundSetDataOpenHelper openHelper = ((Main)context).getDatabase().getSoundSetData();
         mCursor = openHelper.getCursor();
 
@@ -292,5 +294,16 @@ public class SoundSetFragment extends OMGFragment {
             }
         }).start();
 
+    }
+
+    private void setupOptionsButton() {
+        mView.findViewById(R.id.more_channel_options_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChannelOptionsFragment f = new ChannelOptionsFragment();
+                f.setJam(mJam, mChannel);
+                showFragmentRight(f);
+            }
+        });
     }
 }

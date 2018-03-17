@@ -88,6 +88,10 @@ class SoundSet {
                 mHighNote = soundSet.getInt("highNote");
             }
 
+            if (soundSet.has("defaultSurface")) {
+                mDefaultSurface = soundSet.getString("defaultSurface");
+            }
+
             mIsOscillator = mURL.startsWith("PRESET_OSC_");
             if (mIsOscillator) {
                 mOscillator = new Oscillator(new OscillatorSettings(mURL));
@@ -95,10 +99,6 @@ class SoundSet {
             }
 
             JSONArray data = soundSet.getJSONArray("data");
-
-            if (soundSet.has("defaultSurface")) {
-                mDefaultSurface = soundSet.getString("defaultSurface");
-            }
 
             if (soundSet.has("prefix")) {
                 mPrefix = soundSet.getString("prefix");

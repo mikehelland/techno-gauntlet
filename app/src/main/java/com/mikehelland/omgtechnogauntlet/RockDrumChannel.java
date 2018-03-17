@@ -6,7 +6,7 @@ public class RockDrumChannel {
 
         StringBuilder sb = new StringBuilder();
         sb.append("{\"type\" : \"SOUNDSET\", \"chromatic\": false, \"name\": \"");
-        sb.append("Rock Drum Kit\", \"url\": \"PRESET_ROCKKIT\", \"data\": [");
+        sb.append("Rock Drum Kit\", \"url\": \"PRESET_ROCKKIT\", \"defaultSurface\": \"PRESET_SEQUENCER\", \"data\": [");
 
         sb.append("{\"url\": \"PRESET_ROCK_KICK\", \"name\": \"kick\", \"preset_id\": ");
         sb.append(R.raw.rock_kick);

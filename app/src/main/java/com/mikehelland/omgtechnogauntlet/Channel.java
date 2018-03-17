@@ -361,6 +361,10 @@ class Channel {
         }
 
         mSoundSet = soundSet;
+        String surfaceURL = soundSet.getDefaultSurface();
+        if (surfaceURL != null && surfaceURL.length() > 0) {
+            mSurface.setURL(surfaceURL);
+        }
 
         //creates a new array from the old one //todo looks like it just blanks it really
         int soundCount = mSoundSet.getSounds().size();

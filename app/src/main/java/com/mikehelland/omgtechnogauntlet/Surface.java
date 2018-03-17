@@ -7,8 +7,7 @@ package com.mikehelland.omgtechnogauntlet;
 
 class Surface {
     private String mName = "";
-    private String mURL = SufacesDataHelper.PRESET_SEQUENCER;
-    private long mID;
+    private String mURL = SufacesDataHelper.PRESET_VERTICAL;
 
     private int mZoomSkipBotton = 0;
     private int mZoomSkipTop = 0;
