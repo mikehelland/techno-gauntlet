@@ -160,6 +160,12 @@ class JamLoader {
         for (int i = 0; i < tracks.length(); i++) {
             track = tracks.getJSONObject(i);
 
+            if (track.has("mute") && track.getBoolean("mute")) {
+                if (i < jamChannel.getPatternInfo().getTracks().size()) {
+                    jamChannel.getPatternInfo().getTrack(i).setMute(true);
+                }
+            }
+
             trackData = track.getJSONArray("data");
 
             for (int j = 0; j < trackData.length(); j++) {

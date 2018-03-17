@@ -25,6 +25,7 @@ class Channel {
     private boolean isAScale = true;
 
     private NoteList mNoteList = new NoteList();
+    private SequencerPattern mPatternInfo = new SequencerPattern();
 
     private int playingI = 0;
 
@@ -50,7 +51,6 @@ class Channel {
     ArrayList<DebugTouch> debugTouchData = new ArrayList<>();
 
     private SoundSet mSoundSet;
-
     private Surface mSurface;
 
     boolean[][] pattern;
@@ -366,11 +366,7 @@ class Channel {
             mSurface.setURL(surfaceURL);
         }
 
-        //creates a new array from the old one //todo looks like it just blanks it really
-        int soundCount = mSoundSet.getSounds().size();
-        if (pattern == null || pattern.length != soundCount) {
-            pattern = new boolean[soundCount][256];
-        }
+        pattern = mPatternInfo.updateTracks(mSoundSet.getSounds());
 
         for (SoundSet.Sound sound : mSoundSet.getSounds()) {
             mPool.addSoundToLoad(sound);
@@ -485,7 +481,10 @@ class Channel {
             sb.append(sounds.get(p).getName());
             sb.append("\", \"sound\": \"");
             sb.append(sounds.get(p).getURL());
-            sb.append("\", \"data\": [");
+            sb.append("\", \"mute\": ");
+            sb.append((p < mPatternInfo.getTracks().size() && mPatternInfo.getTrack(p).isMuted()) ?
+                    "true" : "false");
+            sb.append(", \"data\": [");
             for (int i = 0; i < mJam.getTotalSubbeats(); i++) {
                 sb.append(pattern[p][i] ? 1 : 0);
                 if (i < mJam.getTotalSubbeats() - 1)
@@ -537,7 +536,7 @@ class Channel {
         if (enabled) {
             for (int i = 0; i < pattern.length; i++) {
                 try {
-                    if (pattern[i][subbeat]) {
+                    if (pattern[i][subbeat] && !mPatternInfo.getTrack(i).isMuted()) {
                         if (i < ids.length)
                             playingId = mPool.play(ids[i], leftVolume, rightVolume, 10, 0, mSampleSpeed);
                     }
@@ -688,5 +687,9 @@ class Channel {
 
     boolean useSequencer() {
         return mSurface.getURL().equals(SufacesDataHelper.PRESET_SEQUENCER);
+    }
+
+    SequencerPattern getPatternInfo() {
+        return mPatternInfo;
     }
 }

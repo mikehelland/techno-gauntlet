@@ -1,8 +1,10 @@
 package com.mikehelland.omgtechnogauntlet;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,6 +19,8 @@ public class DrumView extends View {
 
     private Paint paint;
     private Paint paintOff;
+    private Paint paintMute;
+    private Paint paintCurrentTrack;
 
     private int height = -1;
 
@@ -53,8 +57,9 @@ public class DrumView extends View {
     private int lastX = -1;
     private int lastY = -1;
 
-    //private DrumChannel mChannel;
     private Channel mChannel;
+
+    private long mLastClickTime = 0;
 
     public DrumView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -69,6 +74,13 @@ public class DrumView extends View {
 
         paintBeat =  new Paint();
         paintBeat.setARGB(255, 255, 0, 0);
+
+        paintCurrentTrack =  new Paint();
+        paintCurrentTrack.setARGB(128, 255, 255, 255);
+
+        paintMute =  new Paint();
+        paintMute.setARGB(128, 255, 0, 0);
+        paintMute.setShadowLayer(10, 0, 0, 0xFFFFFFFF);
 
         paintOff = new Paint();
         paintOff.setARGB(255, 128, 128, 128);
@@ -142,10 +154,16 @@ public class DrumView extends View {
             for (int j = 0; j < captions.length; j++) {
                 if (j < captions.length) {
 
+                    if (mChannel.getPatternInfo().getTrack(j).isMuted()) {
+                        canvas.drawRect(marginX, j * captionHeight + marginY,
+                                boxWidth - marginX, j * captionHeight + captionHeight - marginY,
+                                paintMute);
+                    }
+
                     if (firstRowButton == j) {
                         canvas.drawRect(marginX, j * captionHeight + marginY,
                                 boxWidth - marginX, j * captionHeight + captionHeight - marginY,
-                                paint);
+                                paintCurrentTrack);
                     }
 
                     if (captionWidths[j].length == 1) {
@@ -196,6 +214,7 @@ public class DrumView extends View {
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
 
         if (mJam == null || mChannel == null || boxHeight == 0 || boxWidth == 0 || captionHeight == 0) {
@@ -291,6 +310,13 @@ public class DrumView extends View {
         if (mChannel == null || mChannel.pattern == null || y < 0 || y >= captions.length) {
             return;
         }
+
+        long now = System.currentTimeMillis();
+        if (now - mLastClickTime < 200) {
+            mChannel.getPatternInfo().getTrack(y).toggleMute();
+        }
+        Log.d("MGH", "lastclick =  " + (now - mLastClickTime));
+        mLastClickTime = now;
 
         if (firstRowButton == y) {
             firstRowButton = -1;
