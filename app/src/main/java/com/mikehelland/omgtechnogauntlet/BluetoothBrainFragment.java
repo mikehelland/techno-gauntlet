@@ -75,6 +75,10 @@ public class BluetoothBrainFragment extends OMGFragment {
 
     private void setupBrainList(LayoutInflater inflater) {
         List<String> list = getBrainMACList();
+        if (list == null) {
+            return;
+        }
+
         ViewGroup viewGroup = (ViewGroup) mView.findViewById(R.id.brain_devices);
         for (String macAddress : list) {
             for (BluetoothDevice device : mBtf.getPairedDevices()) {
@@ -87,7 +91,12 @@ public class BluetoothBrainFragment extends OMGFragment {
     }
 
     private List<String> getBrainMACList() {
-        return ((Main)getActivity()).getDatabase().mBluetoothDeviceData.getBrainMACList();
+        Main activity = (Main)getActivity();
+        if (activity == null || activity.getDatabase() == null || activity.getDatabase().mBluetoothDeviceData == null) {
+            return null;
+        }
+
+        return activity.getDatabase().mBluetoothDeviceData.getBrainMACList();
     }
 
     private void setup() {
@@ -194,8 +203,9 @@ public class BluetoothBrainFragment extends OMGFragment {
         return new BluetoothConnectCallback() {
             @Override
             public void newStatus(final String status) {
-                if (view != null && getActivity() != null) {
-                    getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity();
+                if (view != null && activity != null) {
+                    activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             ((TextView)view.findViewById(R.id.bt_device_status)).setText(status);
@@ -208,8 +218,9 @@ public class BluetoothBrainFragment extends OMGFragment {
                 final CommandProcessor cp = setupDataCallBackForConnection(connection);
                 if (mViewMap.containsKey(connection.getDevice().getAddress())) {
                     final View freshView = mViewMap.get(connection.getDevice().getAddress());
-                    if (cp != null && getActivity() != null) {
-                        getActivity().runOnUiThread(new Runnable() {
+                    Activity activity = getActivity();
+                    if (cp != null && activity != null) {
+                        activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 onPanelConnected(freshView, cp);
@@ -222,8 +233,9 @@ public class BluetoothBrainFragment extends OMGFragment {
             public void onDisconnected(final BluetoothConnection connection) {
                 if (mViewMap.containsKey(connection.getDevice().getAddress())) {
                     final BtRelativeLayout view = mViewMap.get(connection.getDevice().getAddress());
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(new Runnable() {
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 resetPanel(view);
@@ -240,10 +252,11 @@ public class BluetoothBrainFragment extends OMGFragment {
 
             @Override
             void onChange(final JamInfo jam) {
-                if (getActivity() == null)
+                Activity activity = getActivity();
+                if (activity == null)
                     return;
 
-                getActivity().runOnUiThread(new Runnable() {
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         setPanelInfo(controls, jam);

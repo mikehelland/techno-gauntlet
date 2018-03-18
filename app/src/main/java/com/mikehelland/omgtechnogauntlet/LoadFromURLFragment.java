@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -61,8 +62,9 @@ public class LoadFromURLFragment extends OMGFragment {
         if (customUrl.length() == 0) {
             return;
         }
+        Activity activity = getActivity(); if (activity == null)  return;
 
-        new FileDownloader(getActivity(), customUrl, new FileDownloader.DownloaderCallback() {
+        new FileDownloader(activity, customUrl, new FileDownloader.DownloaderCallback() {
             @Override
             void run(String result) {
                 if (result == null || result.length() == 0) {

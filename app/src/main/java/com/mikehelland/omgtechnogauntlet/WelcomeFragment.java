@@ -67,7 +67,8 @@ public class WelcomeFragment extends OMGFragment {
         mView.findViewById(R.id.blank_jam_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadJam(getActivity().getResources().getString(R.string.blank_jam));
+                Activity activity = getActivity(); if (activity == null) return;
+                loadJam(activity.getResources().getString(R.string.blank_jam));
             }
         });
 
@@ -119,7 +120,9 @@ public class WelcomeFragment extends OMGFragment {
             }
         };
 
-        ((Main) getActivity()).loadJam(json);
+        Activity activity = getActivity(); if (activity == null) return;
+
+        ((Main) activity).loadJam(json);
     }
 
     private void loadDefaultJam() {
@@ -135,7 +138,10 @@ public class WelcomeFragment extends OMGFragment {
         mPool.allowLoading();
 
         int defaultJam = BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
-        ((Main) getActivity()).loadJam(getActivity().getResources().getString(defaultJam));
+        Activity activity = getActivity();
+        if (activity != null) {
+            ((Main) activity).loadJam(activity.getResources().getString(defaultJam));
+        }
 
         mPool.setInitialized();
     }
@@ -168,8 +174,9 @@ public class WelcomeFragment extends OMGFragment {
     private void removeSavedJam(int i) {
         mCursor.moveToPosition(i);
         long id = mCursor.getLong(mCursor.getColumnIndex("_id"));
-        SavedDataOpenHelper dataHelper = new SavedDataOpenHelper(getActivity());
-        dataHelper.delete(id);
+
+        Activity activity = getActivity(); if (activity == null) return;
+        ((Main)activity).getDatabase().getSavedData().delete(id);
     }
 
     @Override

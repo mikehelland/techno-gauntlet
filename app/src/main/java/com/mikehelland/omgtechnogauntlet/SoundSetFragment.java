@@ -184,7 +184,7 @@ public class SoundSetFragment extends OMGFragment {
                         cursor.moveToPosition(i);
                         String url = cursor.getString(cursor.getColumnIndex("url"));
 
-                        new SoundSetDownloader(getActivity(), url, new SoundSetDownloader.DownloaderCallback() {
+                        new SoundSetDownloader(context, url, new SoundSetDownloader.DownloaderCallback() {
 
                             public void run(SoundSet soundSet) {
                                 onSoundSetFilesDownloaded(soundSet);
@@ -224,21 +224,28 @@ public class SoundSetFragment extends OMGFragment {
 
         Activity activity = getActivity();
         if (activity != null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setMessage("Remove this SoundSet?").setPositiveButton("Yes", dialogClickListener)
                     .setNegativeButton("No", dialogClickListener).show();
         }
     }
 
     private void delete(int i) {
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+
         mCursor.moveToPosition(i);
         long id = mCursor.getLong(mCursor.getColumnIndex("_id"));
-        ((Main)getActivity()).getDatabase().getSoundSetData().delete(id);
+        ((Main)activity).getDatabase().getSoundSetData().delete(id);
     }
 
     private void setupSoundfontTab() {
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
 
-        final String[] soundfonts = getActivity().getResources().getStringArray(R.array.soundfonts);
+        final String[] soundfonts = activity.getResources().getStringArray(R.array.soundfonts);
 
         ListView list = (ListView)mView.findViewById(R.id.soundfont_list);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -250,7 +257,11 @@ public class SoundSetFragment extends OMGFragment {
     }
 
     private void loadSoundfont(String soundfontName) {
-        final String[] soundfontURLs = getActivity().getResources().getStringArray(R.array.soundfont_urls);
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+
+        final String[] soundfontURLs = activity.getResources().getStringArray(R.array.soundfont_urls);
 
         Spinner librarySpinner = (Spinner)mView.findViewById(R.id.soundfont_library_spinner);
         String url = soundfontURLs[librarySpinner.getSelectedItemPosition()];
@@ -259,11 +270,11 @@ public class SoundSetFragment extends OMGFragment {
 
         String soundfontJSON = "{\"name\": \"" + soundfontName.replace("_", " ") +
                 " (" + librarySpinner.getSelectedItem().toString() + ")\", \"prefix\": \"" + url +"\"," +
-                getActivity().getResources().getString(R.string.soundfont_json);
+                activity.getResources().getString(R.string.soundfont_json);
 
 
-        Toast.makeText(getActivity(), url, Toast.LENGTH_SHORT).show();
-        new SoundSetDownloader(getActivity(), url, new SoundSetDownloader.DownloaderCallback() {
+        Toast.makeText(activity, url, Toast.LENGTH_SHORT).show();
+        new SoundSetDownloader(activity, url, new SoundSetDownloader.DownloaderCallback() {
             @Override
             void run(SoundSet soundSet) {
                 onSoundSetFilesDownloaded(soundSet);

@@ -24,7 +24,8 @@ public class BluetoothConnectFragment extends OMGFragment {
         mBtf.whenReady(new BluetoothReadyCallback() {
             @Override
             public void onReady() {
-                getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity(); if (activity == null)  return;
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         setup();
@@ -44,14 +45,19 @@ public class BluetoothConnectFragment extends OMGFragment {
         mBtf.checkConnections();
 
         for (BluetoothDevice device : mBtf.getPairedDevices()) {
-            pairedDevicesViewGroup.addView(setupDeviceButton(device));
+            Button button = setupDeviceButton(device);
+            if (button != null) {
+                pairedDevicesViewGroup.addView(button);
+            }
         }
     }
 
     private Button setupDeviceButton(final BluetoothDevice device) {
         boolean connected = false;
 
-        final Button button = new Button(getActivity());
+        Activity activity = getActivity(); if (activity == null)  return null;
+
+        final Button button = new Button(activity);
         button.setText(device.getName() + " (?)");
         button.setCompoundDrawablesWithIntrinsicBounds(R.drawable.device, 0, 0, 0);
 

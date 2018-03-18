@@ -30,7 +30,8 @@ public class BluetoothChooseDeviceFragment extends OMGFragment {
         mBtf.whenReady(new BluetoothReadyCallback() {
             @Override
             public void onReady() {
-                getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity(); if (activity == null)  return;
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         setup();
@@ -55,7 +56,9 @@ public class BluetoothChooseDeviceFragment extends OMGFragment {
             names.add(device.getName());
         }
 
-        ArrayAdapter adapter = new ArrayAdapter<>(getActivity(),
+        Activity activity = getActivity(); if (activity == null)  return;
+
+        ArrayAdapter adapter = new ArrayAdapter<>(activity,
                 android.R.layout.simple_list_item_1, names);
         list.setAdapter(adapter);
 
@@ -73,7 +76,7 @@ public class BluetoothChooseDeviceFragment extends OMGFragment {
             mCallback.run(mPairedList.get(i));
             Activity activity = getActivity();
             if (activity != null) {
-                getActivity().getFragmentManager().popBackStack();
+                activity.getFragmentManager().popBackStack();
             }
         }
     }

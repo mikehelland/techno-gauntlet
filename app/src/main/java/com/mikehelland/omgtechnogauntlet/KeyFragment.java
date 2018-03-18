@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,19 +41,20 @@ public class KeyFragment extends OMGFragment {
     }
 
     public void setup() {
+        Activity activity = getActivity(); if (activity == null)  return;
 
         String[] roots = getResources().getStringArray(R.array.keys_captions);
         String[] scales = getResources().getStringArray(R.array.quantizer_entries);
 
         ListView rootsList = (ListView)mView.findViewById(R.id.roots_list);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity,
                 android.R.layout.simple_list_item_single_choice, roots);
         rootsList.setAdapter(adapter);
 
         rootsList.setItemChecked(mJam.getKey(), true);
 
         ListView scalesList = (ListView)mView.findViewById(R.id.scales_list);
-        ArrayAdapter<String> scaleAdapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> scaleAdapter = new ArrayAdapter<String>(activity,
                 android.R.layout.simple_list_item_single_choice, scales);
         scalesList.setAdapter(scaleAdapter);
 

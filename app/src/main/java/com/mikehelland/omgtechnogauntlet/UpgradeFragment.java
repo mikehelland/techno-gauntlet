@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -28,10 +29,13 @@ public class UpgradeFragment extends OMGFragment {
 
         String text = "<a href='https://play.google.com/store/apps/details?id=com.mikehelland.omgtechnogauntlet'>TECHNO GAUNTLET</a>";
 
-        String installer = getActivity().getPackageManager().getInstallerPackageName(
-                "com.mikehelland.omgtechnogauntletdemo");
-        if (installer != null && installer.contains("amazon")) {
-            text = "<a href='https://www.amazon.com/MonadPad-com-Techno-Gauntlet/dp/B075W3WWGR/'>TECHNO GAUNTLET</a>";
+        Activity activity = getActivity();
+        if (activity != null) {
+            String installer = activity.getPackageManager().getInstallerPackageName(
+                    "com.mikehelland.omgtechnogauntletdemo");
+            if (installer != null && installer.contains("amazon")) {
+                text = "<a href='https://www.amazon.com/MonadPad-com-Techno-Gauntlet/dp/B075W3WWGR/'>TECHNO GAUNTLET</a>";
+            }
         }
         textView.setText(Html.fromHtml(text));
 

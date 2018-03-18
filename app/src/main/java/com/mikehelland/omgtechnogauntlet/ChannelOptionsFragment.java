@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +47,7 @@ public class ChannelOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 mJam.getChannels().remove(mChannel);
-                getActivity().getFragmentManager().popBackStack();
+                finish();
             }
         });
 
@@ -54,7 +55,7 @@ public class ChannelOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 mChannel.clearNotes();
-                getActivity().getFragmentManager().popBackStack();
+                finish();
             }
         });
 
@@ -62,7 +63,7 @@ public class ChannelOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 mJam.copyChannel(mChannel);
-                getActivity().getFragmentManager().popBackStack();
+                finish();
             }
         });
 
@@ -74,7 +75,7 @@ public class ChannelOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 mChannel.setSurface(new Surface("PRESET_SEQUENCER"));
-                getActivity().getFragmentManager().popBackStack();
+                finish();
             }
         });
         View rbVertical = mView.findViewById(R.id.radioButton2);
@@ -85,7 +86,7 @@ public class ChannelOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 mChannel.setSurface(new Surface("PRESET_VERTICAL"));
-                getActivity().getFragmentManager().popBackStack();
+                finish();
             }
         });
         View rbFretboard = mView.findViewById(R.id.radioButton3);
@@ -96,7 +97,7 @@ public class ChannelOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 mChannel.setSurface(new Surface("PRESET_FRETBOARD"));
-                getActivity().getFragmentManager().popBackStack();
+                finish();
             }
         });
 
@@ -154,5 +155,12 @@ public class ChannelOptionsFragment extends OMGFragment {
             }
         });
 
+    }
+
+    private void finish() {
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+        activity.getFragmentManager().popBackStack();
     }
 }

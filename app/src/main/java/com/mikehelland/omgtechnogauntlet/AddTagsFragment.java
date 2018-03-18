@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -79,7 +80,9 @@ public class AddTagsFragment extends OMGFragment {
             }
         });
 
-        InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        Activity activity = getActivity(); if (activity == null)  return;
+
+        InputMethodManager imgr = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         mTagText.requestFocus();
         imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         mTagText.setSelection(mTagText.getText().length());
@@ -90,10 +93,14 @@ public class AddTagsFragment extends OMGFragment {
         String tags = mTagText.getText().toString();
         mJam.setTags(tags);
 
-        OMGHelper omgHelper = new OMGHelper(getActivity(), mJam);
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+
+        OMGHelper omgHelper = new OMGHelper(activity, mJam);
         omgHelper.submit(shareAfter);
 
-        getActivity().getFragmentManager().popBackStack();
+        activity.getFragmentManager().popBackStack();
 
     }
 

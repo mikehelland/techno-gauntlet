@@ -1,6 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
 //import android.support.v4.app.Fragment;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -22,11 +23,13 @@ public class OMGFragment extends Fragment{
     }
 
     protected Jam getJam() {
-        return ((Main)getActivity()).mJam;
+        Activity activity = getActivity(); if (activity == null) return null;
+        return ((Main)activity).mJam;
     }
 
     protected void setJam(Jam jam) {
-        ((Main)getActivity()).mJam = jam;
+        Activity activity = getActivity(); if (activity == null) return;
+        ((Main)activity).mJam = jam;
     }
 
     protected void showFragmentRight(Fragment f) {

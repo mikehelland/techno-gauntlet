@@ -145,7 +145,9 @@ public class MainFragment extends OMGFragment {
                 play();
 
                 mJam.monkeyWithChannel(channel);
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+
+                Activity activity = getActivity(); if (activity == null)  return;
+                Animation turnin = AnimationUtils.loadAnimation(activity, R.anim.rotate);
                 view.startAnimation(turnin);
 
             }
@@ -340,7 +342,9 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
                 play();
                 mJam.monkeyWithEverything();
-                Animation turnin = AnimationUtils.loadAnimation(getActivity(), R.anim.rotate);
+
+                Activity activity = getActivity(); if (activity == null)  return;
+                Animation turnin = AnimationUtils.loadAnimation(activity, R.anim.rotate);
                 view.startAnimation(turnin);
 
                 for (View monkeyhead : monkeyHeads) {
@@ -454,7 +458,9 @@ public class MainFragment extends OMGFragment {
     }
 
     private void saveJam(boolean share){
-        OMGHelper omgHelper = new OMGHelper(getActivity(), mJam);
+        Activity activity = getActivity(); if (activity == null)  return;
+
+        OMGHelper omgHelper = new OMGHelper(activity, mJam);
         omgHelper.submit(share);
 
     }
@@ -469,19 +475,20 @@ public class MainFragment extends OMGFragment {
 
             @Override
             void onSubbeatLengthChange(int length, String source) {
-                if (getActivity() != null)
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateBPMUI();
-                        }
-                    });
+                Activity activity = getActivity(); if (activity == null)  return;
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateBPMUI();
+                    }
+                });
             }
 
             @Override
             void onKeyChange(int key, String source) {
-                if (getActivity() != null)
-                    getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity(); if (activity == null)  return;
+                activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             updateKeyUI();
@@ -491,8 +498,9 @@ public class MainFragment extends OMGFragment {
 
             @Override
             void onScaleChange(String scale, String source) {
-                if (getActivity() != null)
-                    getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity(); if (activity == null)  return;
+
+                activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             updateKeyUI();
@@ -502,8 +510,8 @@ public class MainFragment extends OMGFragment {
 
             @Override
             void onChordProgressionChange(int[] chords) {
-                if (getActivity() != null)
-                    getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity(); if (activity == null)  return;
+                activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             updateChordsUI();
@@ -512,8 +520,8 @@ public class MainFragment extends OMGFragment {
             }
             @Override
             void onNewChannel(final Channel channel) {
-                if (getActivity() != null)
-                    getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity(); if (activity == null)  return;
+                activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             setupPanel(channel);
@@ -522,8 +530,8 @@ public class MainFragment extends OMGFragment {
             }
             @Override
             void onChannelEnabledChanged(final int channel, final boolean enabled, String source) {
-                if (getActivity() != null)
-                    getActivity().runOnUiThread(new Runnable() {
+                Activity activity = getActivity(); if (activity == null)  return;
+                activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             View panel = channelViewMap.get(mJam.getChannels().get(channel));

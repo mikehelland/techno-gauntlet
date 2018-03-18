@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,8 @@ public class ChordsFragment extends OMGFragment {
 
     public void setup() {
 
+        Activity activity = getActivity(); if (activity == null)  return;
+
         final Button recordChordsButton = (Button)mView.findViewById(R.id.record_chords_button);
         recordChordsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +68,7 @@ public class ChordsFragment extends OMGFragment {
         String[] chords = getResources().getStringArray(R.array.chords);
 
         ListView chordsList = (ListView)mView.findViewById(R.id.chords_list);
-        ChordsAdapter soundSetsAdapter = new ChordsAdapter(getActivity(), R.layout.chordoption,
+        ChordsAdapter soundSetsAdapter = new ChordsAdapter(activity, R.layout.chordoption,
                                             chords, mJam.getScale());
         chordsList.setAdapter(soundSetsAdapter);
 
