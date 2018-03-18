@@ -1,5 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -21,11 +22,7 @@ public class MixerView extends View {
     private Paint paintGreen;
 
     private int width = -1;
-    private int width2 = -1;
     private int height = -1;
-
-    private Jam mJam;
-    private Channel mChannel;
 
     private Paint topPanelPaint;
     private Paint paintText;
@@ -37,8 +34,7 @@ public class MixerView extends View {
 
     private int touchingArea = TOUCHING_AREA_NONE;
 
-    private String channelName = "";
-    private float channelNameWidth2;
+    private String name = "";
 
     private int labelTextSize = 48;
 
@@ -49,7 +45,7 @@ public class MixerView extends View {
     private float panStart = -1;
     private float panWidth = -1;
 
-    private int channelNumber = 0;
+    private MixerViewController mController;
 
     public MixerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -78,15 +74,6 @@ public class MixerView extends View {
         topPanelPaint.setARGB(255, 192, 192, 255);
 
         setBackgroundColor(Color.BLACK);
-
-        setChannelName("Test Trackname");
-
-    }
-
-    public void setChannelName(String newChannelName) {
-        channelName = newChannelName;
-        channelNameWidth2 = paintText.measureText(channelName) / 2;
-
     }
 
     public void onDraw(Canvas canvas) {
@@ -94,7 +81,6 @@ public class MixerView extends View {
         if (height == -1) {
             width = getWidth();
             height = getHeight();
-            width2 = width / 2;
 
             muteButtonWidth = paintText.measureText(" Mute ");
             volumeStart = muteButtonWidth + controlMargin;
@@ -102,14 +88,14 @@ public class MixerView extends View {
             panStart = volumeStart + volumeWidth + controlMargin;
             panWidth = width - panStart - controlMargin;
         }
-
-        float volume = mChannel.getVolume();
-        float pan = mChannel.getPan();
+        float volume = mController.onGetVolume();
+        float pan = mController.onGetPan();
+        boolean mute = mController.onGetMute();
 
         float height2 = height / 2;
 
         canvas.drawRect(0, 0, muteButtonWidth, height,
-                mChannel.isEnabled() ? paintGreen : paintRed);
+                !mute ? paintGreen : paintRed);
         canvas.drawText(" Mute ", 0, height2, paintText);
 
 
@@ -130,7 +116,7 @@ public class MixerView extends View {
                 topPanelPaint);
 
         canvas.drawRect(volumeStart, 0, volumeStart + volumeWidth * volume, height,
-                mChannel.isEnabled() ? paintGreen : paintRed);
+                !mute ? paintGreen : paintRed);
 
 
         canvas.drawRect(panStart + panWidth / 2 + panWidth / 2 * pan - controlMargin, 0,
@@ -148,9 +134,10 @@ public class MixerView extends View {
                     paintBlue);
         }
 
-        canvas.drawText(channelName, volumeStart + controlMargin, height2, paintText);
+        canvas.drawText(name, volumeStart + controlMargin, height2, paintText);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
 
@@ -158,7 +145,11 @@ public class MixerView extends View {
         if (action == MotionEvent.ACTION_DOWN) {
 
             if (x <= muteButtonWidth) {
-                mJam.toggleChannelEnabled(mChannel);
+                //todo do this through the jamm Jam.toggleChannelEnabled(mChannel);
+                if (mController != null) {
+                    mController.onMuteChange(!mController.onGetMute());
+                }
+                //mTrack.toggleMute();
                 touchingArea = TOUCHING_AREA_MUTE;
             }
             else if (x <= volumeStart + volumeWidth) {
@@ -185,23 +176,34 @@ public class MixerView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Channel channel, String name, int channelNumber) {
-        mJam = jam;
-        mChannel = channel;
-        this.channelNumber = channelNumber;
-
-        setChannelName(name);
+    public void setJam(String name, MixerView.MixerViewController controller) {
+        this.name = name;
+        mController = controller;
 
     }
 
     private void performTouch(float x) {
         if (touchingArea == TOUCHING_AREA_VOLUME) {
             float volume = Math.max(0, Math.min(1, (x - volumeStart) / volumeWidth));
-            mJam.setChannelVolume(channelNumber, volume, null);
+
+            if (mController != null) {
+                mController.onVolumeChange(volume);
+            }
         }
         else if (touchingArea == TOUCHING_AREA_PAN) {
             float pan = Math.max(-1.0f, Math.min(1.0f, ((x - panStart) / panWidth - 0.5f) * 2));
-            mJam.setChannelPan(channelNumber, pan, null);
+            if (mController != null) {
+                mController.onPanChange(pan);
+            }
         }
+    }
+
+    abstract static class MixerViewController {
+        abstract void onMuteChange(boolean mute);
+        abstract void onVolumeChange(float volume);
+        abstract void onPanChange(float pan);
+        abstract boolean onGetMute();
+        abstract float onGetVolume();
+        abstract float onGetPan();
     }
 }

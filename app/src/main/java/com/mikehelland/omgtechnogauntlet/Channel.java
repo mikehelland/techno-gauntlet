@@ -481,9 +481,15 @@ class Channel {
             sb.append(sounds.get(p).getName());
             sb.append("\", \"sound\": \"");
             sb.append(sounds.get(p).getURL());
-            sb.append("\", \"mute\": ");
-            sb.append((p < mPatternInfo.getTracks().size() && mPatternInfo.getTrack(p).isMuted()) ?
-                    "true" : "false");
+            sb.append("\"");
+            if (p < mPatternInfo.getTracks().size()) {
+                sb.append(", \"mute\": ");
+                sb.append(mPatternInfo.getTrack(p).isMuted() ? "true" : "false");
+                sb.append(", \"volume\": ");
+                sb.append(mPatternInfo.getTrack(p).getVolume());
+                sb.append(", \"pan\": ");
+                sb.append(mPatternInfo.getTrack(p).getPan());
+            }
             sb.append(", \"data\": [");
             for (int i = 0; i < mJam.getTotalSubbeats(); i++) {
                 sb.append(pattern[p][i] ? 1 : 0);
@@ -537,8 +543,14 @@ class Channel {
             for (int i = 0; i < pattern.length; i++) {
                 try {
                     if (pattern[i][subbeat] && !mPatternInfo.getTrack(i).isMuted()) {
-                        if (i < ids.length)
-                            playingId = mPool.play(ids[i], leftVolume, rightVolume, 10, 0, mSampleSpeed);
+                        if (i < ids.length) {
+                            //playingId = mPool.play(ids[i], leftVolume, rightVolume, 10, 0, mSampleSpeed);
+                            float volume = mPatternInfo.getTrack(i).getVolume() * this.volume;
+                            float pan = mPatternInfo.getTrack(i).getPan() + this.pan;
+                            float[] stereoVolume = calculateStereoVolume(volume, pan);
+                            playingId = mPool.play(ids[i], stereoVolume[0], stereoVolume[1],
+                                    10, 0, mSampleSpeed);
+                        }
                     }
                 }
                 catch (Exception excp) {
@@ -653,14 +665,22 @@ class Channel {
     }
     float getPan() {return pan;}
     private void calculateStereoVolume() {
-        float cross = (pan + 1) / 2;
-        final double halfPi = Math.PI / 2;
-        leftVolume = volume * (float)Math.sin((1 - cross) * halfPi);
-        rightVolume = volume * (float)Math.sin(cross * halfPi);
+        float[] stereoVolume = calculateStereoVolume(volume, pan);
+        leftVolume = stereoVolume[0];
+        rightVolume = stereoVolume[1];
 
         if (mSoundSet != null && mSoundSet.isOscillator()) {
             mSoundSet.getOscillator().ugDac.setVolume(leftVolume, rightVolume);
         }
+    }
+
+    private static float[] calculateStereoVolume(float volume, float pan) {
+        float[] stereoVolume = new float[2];
+        float cross = (pan + 1) / 2;
+        final double halfPi = Math.PI / 2;
+        stereoVolume[0] = volume * (float)Math.sin((1 - cross) * halfPi);
+        stereoVolume[1] = volume * (float)Math.sin(cross * halfPi);
+        return stereoVolume;
     }
 
     void setSampleSpeed(float sampleSpeed) {

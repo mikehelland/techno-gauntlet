@@ -13,6 +13,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -303,6 +304,13 @@ public class MainFragment extends OMGFragment {
         mixerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mJam.getChannels().size() == 0) {
+                    Activity context = getActivity();
+                    if (context != null) {
+                        Toast.makeText(context, "Add Channels before you mix them!", Toast.LENGTH_LONG).show();
+                    }
+                    return;
+                }
                 MixerFragment fragment = new MixerFragment();
                 //fragment.setJam(mJam, MainFragment.this);
                 showFragmentRight(fragment);
@@ -312,6 +320,13 @@ public class MainFragment extends OMGFragment {
         mixerButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                if (mJam.getChannels().size() == 0) {
+                    Activity context = getActivity();
+                    if (context != null) {
+                        Toast.makeText(context, "Add Channels before you mix them!", Toast.LENGTH_LONG).show();
+                    }
+                    return true;
+                }
                 SampleSpeedFragment fragment = new SampleSpeedFragment();
                 //fragment.setJam(mJam, MainFragment.this);
                 showFragmentRight(fragment);

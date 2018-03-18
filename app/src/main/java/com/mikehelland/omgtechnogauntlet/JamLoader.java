@@ -160,9 +160,15 @@ class JamLoader {
         for (int i = 0; i < tracks.length(); i++) {
             track = tracks.getJSONObject(i);
 
-            if (track.has("mute") && track.getBoolean("mute")) {
-                if (i < jamChannel.getPatternInfo().getTracks().size()) {
+            if (i < jamChannel.getPatternInfo().getTracks().size()) {
+                if (track.has("mute") && track.getBoolean("mute")) {
                     jamChannel.getPatternInfo().getTrack(i).setMute(true);
+                }
+                if (track.has("volume")) {
+                    jamChannel.getPatternInfo().getTrack(i).setVolume((float)track.getDouble("volume"));
+                }
+                if (track.has("pan")) {
+                    jamChannel.getPatternInfo().getTrack(i).setPan((float)track.getDouble("pan"));
                 }
             }
 

@@ -137,8 +137,6 @@ public class ChannelOptionsFragment extends OMGFragment {
         mView.findViewById(R.id.zoom_vertical_view).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().getFragmentManager().popBackStack();
-
                 GuitarFragment f = new GuitarFragment();
                 f.setJam(mJam, mChannel);
                 f.setZoomModeOn();
@@ -146,6 +144,15 @@ public class ChannelOptionsFragment extends OMGFragment {
             }
         });
 
+        View subMixerButton = mView.findViewById(R.id.track_sub_mixer_button);
+        subMixerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TrackSubMixerFragment f = new TrackSubMixerFragment();
+                f.setChannel(mChannel);
+                showFragmentRight(f);
+            }
+        });
 
     }
 }
