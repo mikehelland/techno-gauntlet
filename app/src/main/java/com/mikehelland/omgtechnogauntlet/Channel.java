@@ -626,10 +626,10 @@ class Channel {
                 return mSoundSet.getDefaultSurface();
 
             if (mSoundSet.isChromatic())
-                return SufacesDataHelper.PRESET_VERTICAL;
+                return Surface.PRESET_VERTICAL;
         }
 
-        return SufacesDataHelper.PRESET_SEQUENCER;
+        return Surface.PRESET_SEQUENCER;
     }
 
     String getSurfaceJSON() {
@@ -706,7 +706,7 @@ class Channel {
     }
 
     boolean useSequencer() {
-        return mSurface.getURL().equals(SufacesDataHelper.PRESET_SEQUENCER);
+        return mSurface.getURL().equals(Surface.PRESET_SEQUENCER);
     }
 
     SequencerPattern getPatternInfo() {

@@ -8,10 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 class SufacesDataHelper extends SQLiteOpenHelper {
 
-    static String PRESET_VERTICAL = "PRESET_VERTICAL";
-    static String PRESET_FRETBOARD = "PRESET_FRETBOARD";
-    static String PRESET_SEQUENCER = "PRESET_SEQUENCER";
-
     SufacesDataHelper(Context context) {
         super(context, "OMG_SURFACES", null, 1);
     }
@@ -32,22 +28,22 @@ class SufacesDataHelper extends SQLiteOpenHelper {
 
         ContentValues data = new ContentValues();
         data.put("name", "Sequencer");
-        data.put("url", PRESET_SEQUENCER);
-        data.put("data", PRESET_SEQUENCER);
+        data.put("url", Surface.PRESET_SEQUENCER);
+        data.put("data", Surface.PRESET_SEQUENCER);
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("surfaces", null, data);
 
         data = new ContentValues();
         data.put("name", "Vertical");
-        data.put("url", PRESET_VERTICAL);
-        data.put("data", PRESET_VERTICAL);
+        data.put("url", Surface.PRESET_VERTICAL);
+        data.put("data", Surface.PRESET_VERTICAL);
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("surfaces", null, data);
 
         data = new ContentValues();
         data.put("name", "Fretboard");
-        data.put("url", PRESET_FRETBOARD);
-        data.put("data", PRESET_FRETBOARD);
+        data.put("url", Surface.PRESET_FRETBOARD);
+        data.put("data", Surface.PRESET_FRETBOARD);
         data.put("time", System.currentTimeMillis() / 1000);
         db.insert("surfaces", null, data);
 

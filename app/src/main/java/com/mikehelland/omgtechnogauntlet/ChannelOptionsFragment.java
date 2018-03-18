@@ -135,7 +135,8 @@ public class ChannelOptionsFragment extends OMGFragment {
             public void onStopTrackingTouch(SeekBar seekBar) { }
         });
 
-        mView.findViewById(R.id.zoom_vertical_view).setOnClickListener(new View.OnClickListener() {
+        View zoomButton = mView.findViewById(R.id.zoom_vertical_view);
+        zoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 GuitarFragment f = new GuitarFragment();
@@ -144,6 +145,9 @@ public class ChannelOptionsFragment extends OMGFragment {
                 showFragmentRight(f);
             }
         });
+        if (!mChannel.getSurface().getURL().equals(Surface.PRESET_VERTICAL)) {
+            zoomButton.setVisibility(View.GONE);
+        }
 
         View subMixerButton = mView.findViewById(R.id.track_sub_mixer_button);
         subMixerButton.setOnClickListener(new View.OnClickListener() {
@@ -154,6 +158,9 @@ public class ChannelOptionsFragment extends OMGFragment {
                 showFragmentRight(f);
             }
         });
+        if (!mChannel.useSequencer()) {
+            subMixerButton.setVisibility(View.GONE);
+        }
 
     }
 

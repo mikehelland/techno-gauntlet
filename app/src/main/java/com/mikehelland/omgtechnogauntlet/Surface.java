@@ -6,8 +6,12 @@ package com.mikehelland.omgtechnogauntlet;
  */
 
 class Surface {
+    static String PRESET_FRETBOARD = "PRESET_FRETBOARD";
+    static String PRESET_SEQUENCER = "PRESET_SEQUENCER";
+    static String PRESET_VERTICAL = "PRESET_VERTICAL";
+
     private String mName = "";
-    private String mURL = SufacesDataHelper.PRESET_VERTICAL;
+    private String mURL = PRESET_VERTICAL;
 
     private int mZoomSkipBotton = 0;
     private int mZoomSkipTop = 0;
