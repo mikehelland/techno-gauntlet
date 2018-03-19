@@ -2,7 +2,6 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class MelodyMaker {
@@ -58,12 +57,12 @@ public class MelodyMaker {
     }
 
 
-    public ArrayList<Note> makeMelody(double totalBeats) {
+    NoteList makeMelody(double totalBeats) {
 
         return makeMelody(totalBeats, -1.0d);
     }
 
-    public NoteList makeMelody(double totalBeats, double beatBias) {
+    NoteList makeMelody(double totalBeats, double beatBias) {
 
         // use the motif approach
         if (rand.nextBoolean()) {
@@ -228,7 +227,7 @@ public class MelodyMaker {
 
     }
 
-    public NoteList makeMelodyFromMotif(ArrayList<Note> motif, double totalbeats) {
+    public NoteList makeMelodyFromMotif(NoteList motif, double totalbeats) {
 
         NoteList ret = new NoteList();
 
@@ -335,7 +334,7 @@ public class MelodyMaker {
         return ret;
     }
 
-    public ArrayList<Note> melodify(ArrayList<Note> motif) {
+    NoteList melodify(NoteList motif) {
 
         int lastNote = 0;
         int notesAway;

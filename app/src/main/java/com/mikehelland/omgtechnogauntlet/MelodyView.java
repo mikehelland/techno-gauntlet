@@ -214,7 +214,7 @@ public class MelodyView extends View {
     private int draw_boxwidth;
 
 
-    public void drawNotes(Canvas canvas, ArrayList<Note> list, int startI, int finishI, int spaceUsed) {
+    public void drawNotes(Canvas canvas, NoteList list, int startI, int finishI, int spaceUsed) {
 
         if (spaceUsed > width) {
             draw_boxwidth = (int)(boxWidth * 0.75d);

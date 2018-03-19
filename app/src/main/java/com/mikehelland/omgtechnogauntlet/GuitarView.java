@@ -339,7 +339,7 @@ public class GuitarView extends View {
         showingFrets = frets;
     }
 
-    public void drawNotes(Canvas canvas, ArrayList<Note> list) {
+    public void drawNotes(Canvas canvas, NoteList list) {
 
         //float middle = getHeight() / 2.0f;
         float draw_y;

@@ -84,4 +84,35 @@
         android:singleLine="true"
         android:visibility="gone"/>
 
+    <LinearLayout android:layout_below="@id/sync_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dip"
+        android:layout_margin="5dip"
+        android:id="@+id/peer_jam_stoplight"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/redlight_button"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:background="#FF0000"/>
+
+        <Button
+            android:id="@+id/yellowlight_button"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:background="#FFFF00"/>
+
+        <Button
+            android:background="#00FF00"
+            android:id="@+id/greenlight_button"
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            />
+    </LinearLayout>
 </com.mikehelland.omgtechnogauntlet.BtRelativeLayout>

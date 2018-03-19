@@ -1,8 +1,8 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-class NoteList extends ArrayList<Note> {
+class NoteList extends CopyOnWriteArrayList<Note> {
 
     private int beats = 8;
     //todo this should come from the jam, which we don't have access to!

@@ -191,7 +191,7 @@ public class MainFragment extends OMGFragment {
         mKeyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ActivityManager.isUserAMonkey()) return;
+                //if (ActivityManager.isUserAMonkey()) return;
 
                 KeyFragment fragment = new KeyFragment();
                 fragment.setJam(mJam, MainFragment.this);
@@ -203,7 +203,7 @@ public class MainFragment extends OMGFragment {
         bpmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ActivityManager.isUserAMonkey()) return;
+                //if (ActivityManager.isUserAMonkey()) return;
 
                 BeatsFragment fragment = new BeatsFragment();
                 fragment.setJam(mJam, MainFragment.this);
@@ -215,7 +215,7 @@ public class MainFragment extends OMGFragment {
         mChordsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ActivityManager.isUserAMonkey()) return;
+                //if (ActivityManager.isUserAMonkey()) return;
 
                 ChordsFragment fragment = new ChordsFragment();
                 fragment.setJam(mJam);

@@ -92,7 +92,7 @@ public class BluetoothBrainFragment extends OMGFragment {
 
     private List<String> getBrainMACList() {
         Main activity = (Main)getActivity();
-        if (activity == null || activity.getDatabase() == null || activity.getDatabase().mBluetoothDeviceData == null) {
+        if (activity == null || activity.getDatabase() == null) {
             return null;
         }
 
@@ -302,6 +302,43 @@ public class BluetoothBrainFragment extends OMGFragment {
                 }
             }
         });
+
+        final Button redLight = (Button)controls.findViewById(R.id.redlight_button);
+        final Button yellowLight = (Button)controls.findViewById(R.id.yellowlight_button);
+        final Button greenLight = (Button)controls.findViewById(R.id.greenlight_button);
+        redLight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redLight.setAlpha(1.0f);
+                redLight.setPadding(0, 0, 0, 0);
+                yellowLight.setAlpha(0.5f);
+                yellowLight.setPadding(5, 5, 5, 5);
+                greenLight.setAlpha(0.5f);
+                greenLight.setPadding(5, 5, 5, 5);
+            }
+        });
+        yellowLight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                yellowLight.setAlpha(1.0f);
+                yellowLight.setPadding(0, 0, 0, 0);
+                redLight.setAlpha(0.5f);
+                redLight.setPadding(5, 5, 5, 5);
+                greenLight.setAlpha(0.5f);
+                greenLight.setPadding(5, 5, 5, 5);
+            }
+        });
+        greenLight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                greenLight.setAlpha(1.0f);
+                greenLight.setPadding(0, 0, 0, 0);
+                yellowLight.setAlpha(0.5f);
+                yellowLight.setPadding(5, 5, 5, 5);
+                redLight.setAlpha(0.5f);
+                redLight.setPadding(5, 5, 5, 5);
+            }
+        });
     }
 
     private void setPanelInfo(BtRelativeLayout controls, JamInfo jam) {
@@ -317,6 +354,7 @@ public class BluetoothBrainFragment extends OMGFragment {
             ((ImageView)controls.findViewById(R.id.img_device)).setImageResource(R.drawable.device_blue);
             controls.findViewById(R.id.peer_jam_controls).setVisibility(View.VISIBLE);
             controls.findViewById(R.id.sync_button).setVisibility(View.VISIBLE);
+            controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.VISIBLE);
         }
 
         ((Button)controls.findViewById(R.id.tempo_button)).

@@ -298,15 +298,15 @@ class Jam {
             long finishAt;
             Channel channel;
             for (int i = 0; i < mChannels.size(); i++) { // Channel channel : mChannels) {
-                channel = mChannels.get(i);
-                //todo this ends up null occasionally, threading issue?
-                if (channel != null) {
+                try {
+                    channel = mChannels.get(i);
                     finishAt = channel.getFinishAt();
                     if (finishAt > 0 && now >= finishAt) {
                         channel.mute();
                         channel.finishCurrentNoteAt(0);
                     }
                 }
+                catch  (Exception ignore) {}
             }
         }
 
