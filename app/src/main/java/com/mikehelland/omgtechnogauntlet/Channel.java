@@ -3,11 +3,14 @@ package com.mikehelland.omgtechnogauntlet;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 class Channel {
 
     private static int STATE_LIVEPLAY = 0;
     private static int STATE_PLAYBACK = 1;
+
+    private String mID;
 
     private int arpeggiate = 0;
 
@@ -68,6 +71,8 @@ class Channel {
         mPool = pool;
         mJam = jam;
 
+        mID = UUID.randomUUID().toString();
+
         mSoundSet = new SoundSet();
         mSoundSet.setName("DRUMBEAT");
         mSoundSet.setURL("");
@@ -78,6 +83,8 @@ class Channel {
 
         setup();
     }
+
+    String getID() {return mID;}
 
     private void setup() {
         subbeats = mJam.getSubbeats();
@@ -520,6 +527,7 @@ class Channel {
         if (state != Channel.STATE_PLAYBACK)
             return;
 
+        //todo do we need this getI()? Why not use playingI directly
         int i = getI();
         if (i <  getNotes().size()) {
             if (getNextBeat() == subbeat / (double)subbeats) {

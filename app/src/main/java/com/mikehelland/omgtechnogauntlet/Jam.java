@@ -552,7 +552,7 @@ class Jam {
 
         DrumMonkey monkey = new DrumMonkey(this, channel);
 
-        if (channel.getSoundSetName().toLowerCase().indexOf("kit") > -1
+        if (channel.getSoundSetName().toLowerCase().contains("kit")
                 || rand.nextBoolean()) {
             //todo makeDrumBeatFromMelody is a possibility
             monkey.makeDrumBeats();
@@ -702,12 +702,11 @@ class Jam {
         abstract void onScaleChange(String scale, String source);
         abstract void onChordProgressionChange(int[] chords);
         abstract void onNewChannel(Channel channel);
-        abstract void onChannelEnabledChanged(int channelNumber, boolean enabled, String source);
-        abstract void onChannelVolumeChanged(int channelNumber, float volume, String source);
-        abstract void onChannelPanChanged(int channelNumber, float pan, String source);
+        abstract void onChannelEnabledChanged(Channel channel, boolean enabled, String source);
+        abstract void onChannelVolumeChanged(Channel channel, float volume, String source);
+        abstract void onChannelPanChanged(Channel channel, float pan, String source);
 
         abstract void newState(String stateChange, Object... args);
-        boolean remove = false;
     }
 
     Channel newChannel(SoundSet soundSet) {
@@ -732,28 +731,55 @@ class Jam {
         return channel;
     }
 
-    void setChannelVolume(int i,float v, String device) {
-        getChannels().get(i).setVolume(v);
+    Channel getChannelByID(String channelID) {
+        for (Channel channel : mChannels) {
+            if (channel.getID().equals(channelID)) {
+                return channel;
+            }
+        }
+        return null;
+    }
 
-        for (StateChangeCallback callback : mStateChangeListeners) {
-            callback.onChannelVolumeChanged(i, v, device);
+    void setChannelVolume(String channelID, float v, String device) {
+        Channel channel = getChannelByID(channelID);
+        if (channel != null) {
+            setChannelVolume(channel, v, device);
         }
     }
-    void setChannelPan(int i, float p, String device) {
-        getChannels().get(i).setPan(p);
-
-        for (StateChangeCallback callback : mStateChangeListeners) {
-            callback.onChannelPanChanged(i, p, device);
+    void setChannelPan(String channelID, float p, String device) {
+        Channel channel = getChannelByID(channelID);
+        if (channel != null) {
+            setChannelPan(channel, p, device);
         }
     }
-    void setChannelEnabled(int i, boolean l, String device) {
+    void setChannelEnabled(String channelID, boolean on, String device) {
+        Channel channel = getChannelByID(channelID);
+        if (channel != null) {
+            setChannelEnabled(channel, on, device);
+        }
+    }
+    void setChannelVolume(Channel channel, float v, String device) {
+        channel.setVolume(v);
+
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onChannelVolumeChanged(channel, v, device);
+        }
+    }
+    void setChannelPan(Channel channel, float p, String device) {
+        channel.setPan(p);
+
+        for (StateChangeCallback callback : mStateChangeListeners) {
+            callback.onChannelPanChanged(channel, p, device);
+        }
+    }
+    void setChannelEnabled(Channel channel, boolean l, String device) {
         if (l)
-            getChannels().get(i).enable();
+            channel.enable();
         else
-            getChannels().get(i).disable();
+            channel.disable();
 
         for (StateChangeCallback callback : mStateChangeListeners) {
-            callback.onChannelEnabledChanged(i, l, device);
+            callback.onChannelEnabledChanged(channel, l, device);
         }
     }
     boolean toggleChannelEnabled(Channel channel) {
@@ -763,7 +789,7 @@ class Jam {
         boolean enabled = channel.toggleEnabled();
 
         for (StateChangeCallback callback : mStateChangeListeners) {
-            callback.onChannelEnabledChanged(mChannels.indexOf(channel), enabled, device);
+            callback.onChannelEnabledChanged(channel, enabled, device);
         }
 
         return enabled;

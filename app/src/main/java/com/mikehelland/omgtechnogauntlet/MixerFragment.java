@@ -5,14 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class MixerFragment extends OMGFragment {
 
     private View mView;
 
-    private List<View> mPanels = new ArrayList<>();
+    private HashMap<Channel, View> mPanels = new HashMap<>();
 
     private Jam.StateChangeCallback mCallback;
 
@@ -37,19 +36,22 @@ public class MixerFragment extends OMGFragment {
             @Override void onNewChannel(Channel channel) {}
 
             @Override
-            void onChannelEnabledChanged(int channelNumber, boolean enabled, String source) {
-                for (View panel : mPanels)
+            void onChannelEnabledChanged(Channel channel, boolean enabled, String source) {
+                View panel = mPanels.get(channel);
+                if (panel != null)
                     panel.postInvalidate();
             }
 
             @Override
-            void onChannelVolumeChanged(int channelNumber, float v, String source) {
-                for (View panel : mPanels)
+            void onChannelVolumeChanged(Channel channel, float v, String source) {
+                View panel = mPanels.get(channel);
+                if (panel != null)
                     panel.postInvalidate();
             }
             @Override
-            void onChannelPanChanged(int channelNumber, float p, String source) {
-                for (View panel : mPanels)
+            void onChannelPanChanged(Channel channel, float p, String source) {
+                View panel = mPanels.get(channel);
+                if (panel != null)
                     panel.postInvalidate();
             }
 
@@ -64,33 +66,31 @@ public class MixerFragment extends OMGFragment {
 
         ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
         View controls;
-        int i = 0;
         for (final Channel channel : mJam.getChannels()) {
 
             controls = inflater.inflate(R.layout.mixer_panel, container, false);
             container.addView(controls);
 
-            setupPanel(controls, channel, i);
-            i++;
+            setupPanel(controls, channel);
         }
     }
 
-    private void setupPanel(View controls, final Channel channel, final int i) {
+    private void setupPanel(View controls, final Channel channel) {
         MixerView mixerView = (MixerView) controls.findViewById(R.id.mixer_view);
         mixerView.setJam(channel.getSoundSetName(), new MixerView.MixerViewController() {
             @Override
             void onMuteChange(boolean mute) {
-                mJam.setChannelEnabled(i, !mute, null);
+                mJam.setChannelEnabled(channel, !mute, null);
             }
 
             @Override
             void onVolumeChange(float volume) {
-                mJam.setChannelVolume(i, volume, null);
+                mJam.setChannelVolume(channel, volume, null);
             }
 
             @Override
             void onPanChange(float pan) {
-                mJam.setChannelPan(i, pan, null);
+                mJam.setChannelPan(channel, pan, null);
             }
 
             @Override
@@ -109,7 +109,7 @@ public class MixerFragment extends OMGFragment {
             }
         });
 
-        mPanels.add(mixerView);
+        mPanels.put(channel, mixerView);
     }
 
     @Override

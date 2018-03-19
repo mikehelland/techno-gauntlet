@@ -529,12 +529,12 @@ public class MainFragment extends OMGFragment {
                     });
             }
             @Override
-            void onChannelEnabledChanged(final int channel, final boolean enabled, String source) {
+            void onChannelEnabledChanged(final Channel channel, final boolean enabled, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
                 activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            View panel = channelViewMap.get(mJam.getChannels().get(channel));
+                            View panel = channelViewMap.get(channel);
                             if (panel != null)
                                 panel.findViewById(R.id.mute_button).setBackgroundColor(
                                         enabled ? Color.GREEN : Color.RED);
@@ -543,14 +543,9 @@ public class MainFragment extends OMGFragment {
             }
 
             @Override
-            void onChannelVolumeChanged(int channelNumber, float volume, String source) {
-
-            }
-
+            void onChannelVolumeChanged(Channel channel, float volume, String source) {}
             @Override
-            void onChannelPanChanged(int channelNumber, float pan, String source) {
-
-            }
+            void onChannelPanChanged(Channel channel, float pan, String source) {}
         };
 
         mJam.addStateChangeListener(mJamListener);

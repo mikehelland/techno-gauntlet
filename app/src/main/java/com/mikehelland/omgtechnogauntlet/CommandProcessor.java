@@ -10,10 +10,10 @@ import android.util.Log;
  */
 class CommandProcessor extends BluetoothDataCallback {
 
-    static String JAMINFO_SUBBEATLENGTH = "JAMINFO_SUBBEATLENGTH";
-    static String JAMINFO_KEY = "JAMINFO_KEY";
-    static String JAMINFO_SCALE = "JAMINFO_SCALE";
-    final static String SET_ARPNOTES = "SET_ARPNOTES";
+    final static String JAMINFO_SUBBEATLENGTH = "JAMINFO_SUBBEATLENGTH";
+    final static String JAMINFO_KEY = "JAMINFO_KEY";
+    final static String JAMINFO_SCALE = "JAMINFO_SCALE";
+    private final static String CHANNEL_SET_ARPNOTES = "CHANNEL_SET_ARPNOTES";
 
     private BluetoothConnection mConnection;
     private Jam mJam;
@@ -49,154 +49,113 @@ class CommandProcessor extends BluetoothDataCallback {
 
         Log.d("MGH BT newdata", name + (value != null ? ("=" + value) : ""));
 
-        if (name.equals("SET_SUBBEATLENGTH")) {
-            if (value == null) return;
-            mJam.setSubbeatLength(Integer.parseInt(value), mConnection.getDevice().getAddress());
-            return;
-        }
-        if (name.equals("SET_PLAY")) {
-            mJam.kickIt();
-            return;
-        }
-        if (name.equals("SET_STOP")) {
-            mJam.pause();
-            return;
-        }
-        if (name.equals("SET_KEY")) {
-            if (value == null) return;
-            mJam.setKey(Integer.parseInt(value), mConnection.getDevice().getAddress());
-            return;
-        }
-        if (name.equals("SET_SCALE")) {
-            mJam.setScale(value, mConnection.getDevice().getAddress());
-            return;
+        switch (name) {
+            case "SET_PLAY":
+                mJam.kickIt();
+                return;
+            case "SET_STOP":
+                mJam.pause();
+                return;
+            case "GET_JAM_INFO":
+                sendJamInfo();
+                return;
+            case "GET_SAVED_JAMS":
+                sendSavedJams();
+                return;
+            case "GET_SOUNDSETS":
+                sendSoundSets();
+                return;
+            case "ON_NEW_LOOP":
+                onNewLoop();
+                return;
         }
 
-        if (name.equals("SET_CHANNEL")) {
-            if (value == null) return;
-            int channelI = Integer.parseInt(value);
-            if (channelI < mJam.getChannels().size()) {
-                mChannel = mJam.getChannels().get(channelI);
+        // the rest of the cases need a value
+        if (value == null)
+            return;
+
+        switch (name) {
+            case "ADD_CHANNEL":
+                addChannel(Long.parseLong(value));
+                return;
+            case "LOAD_JAM":
+                loadJam(Long.parseLong(value));
+                return;
+            case "SET_SUBBEATLENGTH":
+                mJam.setSubbeatLength(Integer.parseInt(value), mConnection.getDevice().getAddress());
+                return;
+            case "SET_KEY":
+                mJam.setKey(Integer.parseInt(value), mConnection.getDevice().getAddress());
+                return;
+            case "SET_SCALE":
+                mJam.setScale(value, mConnection.getDevice().getAddress());
+                return;
+            case "SET_CHANNEL":
+                mChannel = mJam.getChannelByID(value);
                 sendChannelInfo();
-            }
-            return;
+                return;
+            case "SET_CHORD":
+                int chordI = Integer.parseInt(value);
+                int[] chords = {chordI};
+                mJam.setChordProgression(chords);
+                return;
+            case "SET_CHANNEL_VOLUME":
+                setChannelVolume(value);
+                return;
+            case "SET_CHANNEL_PAN":
+                setChannelPan(value);
+                return;
+            case "SET_CHANNEL_ENABLED":
+                setChannelEnabled(value);
+                return;
+            case "CLEAR_CHANNEL":
+                clearChannel(value);
+                return;
+
+            case JAMINFO_KEY:
+                onSetKey(value);
+                return;
+            case JAMINFO_SCALE:
+                onSetScale(value);
+                return;
+            case JAMINFO_SUBBEATLENGTH:
+                onSetSubbeatLength(value);
+                return;
+            case "JAMINFO_CHANNELS":
+                //onSetChannels(value);
+                return;
         }
 
-        if (name.equals("SET_CHORD")) {
-            if (value == null) return;
-            int chordI = Integer.parseInt(value);
-            int[] chords = {chordI};
-            mJam.setChordProgression(chords);
+        // the rest the cases need a channel
+        if (mChannel == null)
             return;
-        }
 
-        if (name.equals("GET_JAM_INFO")) {
-            sendJamInfo();
-            return;
-        }
+        switch (name) {
 
-        if (name.equals("CHANNEL_PLAY_NOTE")) {
-            if (value == null) return;
-            channelPlayNote(value);
-            return;
-        }
-
-        if (name.equals("CHANNEL_SET_PATTERN")) {
-
-            if (value != null) {
-                String[] params = value.split(",");
-                int track = Integer.parseInt(params[0]);
-                int subbeat = Integer.parseInt(params[1]);
-                boolean patternValue = params[2].equals("true");
-
-                if (mChannel != null) {
-                    mChannel.setPattern(track, subbeat, patternValue);
-                }
-            }
-            return;
-        }
-
-        if (name.equals("SET_ARPEGGIATOR")) {
-            if (value == null) return;
-            if (mChannel != null)
+            case "CHANNEL_PLAY_NOTE":
+                channelPlayNote(value);
+                return;
+            case "CHANNEL_SET_PATTERN":
+                channelSetPattern(value);
+                return;
+            case "CHANNEL_SET_ARPEGGIATOR":
                 mChannel.setArpeggiator(Integer.parseInt(value));
-        }
-
-        if (name.equals(SET_ARPNOTES)) {
-            onSetArpNotes(value);
-        }
-
-        if (name.equals(JAMINFO_KEY)) {
-            if (value == null) return;
-            onSetKey(value);
-        }
-        if (name.equals(JAMINFO_SCALE)) {
-            if (value == null) return;
-            onSetScale(value);
-        }
-        if (name.equals(JAMINFO_SUBBEATLENGTH)) {
-            if (value == null) return;
-            onSetSubbeatLength(value);
-        }
-        if (name.equals("JAMINFO_CHANNELS")) {
-            if (value == null) return;
-            onSetChannels(value);
-        }
-
-        if (name.equals("GET_SAVED_JAMS")) sendSavedJams();
-        if (name.equals("GET_SOUNDSETS")) sendSoundSets();
-
-        if (name.equals("ADD_CHANNEL")) {
-            if (value == null) return;
-            addChannel(Long.parseLong(value));
-        }
-        if (name.equals("LOAD_JAM")) {
-            if (value == null) return;
-            loadJam(Long.parseLong(value));
-        }
-
-        if (name.equals("SET_CHANNEL_VOLUME")) {
-            if (value == null) return;
-            setChannelVolume(value);
-        }
-        if (name.equals("SET_CHANNEL_PAN")) {
-            if (value == null) return;
-            setChannelPan(value);
-        }
-        if (name.equals("SET_CHANNEL_ENABLED")) {
-            if (value == null) return;
-            setChannelEnabled(value);
-        }
-
-        if (name.equals("CLEAR_CHANNEL")) {
-            if (value == null) return;
-            int channelI = Integer.parseInt(value);
-            if (channelI < mJam.getChannels().size()) {
-                mJam.getChannels().get(channelI).clearNotes();
-            }
-            return;
-        }
-
-        if (name.equals("ON_NEW_LOOP")) {
-            if (mSync) {
-                mJam.setSubbeatLength(mPeerJam.getSubbeatLength());
-                if (mJam.isPaused()) {
-                    mJam.kickIt();
-                }
-                else {
-                    mJam.syncNow();
-                }
-                mSync = false;
-            }
-            return;
+                break;
+            case CHANNEL_SET_ARPNOTES:
+                onSetArpNotes(value);
+                break;
         }
     }
 
-    private void channelPlayNote(String value) {
-        if (mChannel == null) {
-            return;
-        }
+    private void channelSetPattern(String value) {
+        String[] params = value.split(",");
+        int track = Integer.parseInt(params[0]);
+        int subbeat = Integer.parseInt(params[1]);
+        boolean patternValue = params[2].equals("true");
+        mChannel.setPattern(track, subbeat, patternValue);
+    }
 
+    private void channelPlayNote(String value) {
         Note note = new Note();
         String[] noteInfo = value.split(",");
         int basicNoteNumber = Integer.parseInt(noteInfo[0]);
@@ -227,28 +186,27 @@ class CommandProcessor extends BluetoothDataCallback {
 
 
     static private String getChannelsInfo(Jam jam) {
-        String setChannels = "";
+        StringBuilder setChannels = new StringBuilder();
         for (int i = 0; i < jam.getChannels().size(); i++) {
             Channel channel = jam.getChannels().get(i);
 
-            setChannels += getChannelInfo(channel);
+            getChannelInfo(setChannels, channel);
 
             if (i < jam.getChannels().size() - 1) {
-                setChannels += "|";
+                setChannels.append("|");
             }
         }
-        return setChannels;
+        return setChannels.toString();
     }
 
     static String getNewChannelCommand(Channel channel) {
-        return "NEW_CHANNEL=" + getChannelInfo(channel);
+        StringBuilder sb = new StringBuilder();
+        sb.append("NEW_CHANNEL=");
+        getChannelInfo(sb, channel);
+        return sb.toString();
     }
 
-    static String getChannelsInfoCommand(Jam jam) {
-        return "SET_CHANNELS=" + getChannelsInfo(jam);
-    }
-
-    static private String getChannelInfo(Channel channel) {
+    static private void getChannelInfo(StringBuilder sb, Channel channel) {
 
         String surfaceURL = channel.getSurfaceURL();
         String surface = "0";
@@ -259,9 +217,17 @@ class CommandProcessor extends BluetoothDataCallback {
         if ("PRESET_FRETBOARD".equals(surfaceURL))
             surface = "2";
 
-        return  (channel.isEnabled() ? "1," : "0,") +
-                (channel.getSoundSet().isChromatic() ? "1," : "0,") +
-                surface + "," + channel.getSoundSetName() + "," + channel.getVolume() + "," + channel.getPan();
+        sb.append(channel.getID());
+        sb.append(",");
+        sb.append(channel.isEnabled() ? "1," : "0,");
+        sb.append(channel.getSoundSet().isChromatic() ? "1," : "0,");
+        sb.append(surface);
+        sb.append(",");
+        sb.append(channel.getSoundSetName());
+        sb.append(",");
+        sb.append(channel.getVolume());
+        sb.append(",");
+        sb.append(channel.getPan());
     }
 
     private void sendChannelInfo() {
@@ -283,17 +249,18 @@ class CommandProcessor extends BluetoothDataCallback {
 
     private String getNoteInfo(Channel channel) {
 
-        String info = "";
+        StringBuilder info = new StringBuilder();
         int i = 0;
         for (Note note : channel.getNotes()) {
-            info += (note.isRest() ? "-" : "") + Double.toString(note.getBeats()) + "|" +
-                    Integer.toString(note.getInstrumentNote());
+            info.append(note.isRest() ? "-" : "");
+            info.append(note.getBeats());
+            info.append("|");
+            info.append(note.getInstrumentNote());
             if (i++ < channel.getNotes().size() - 1) {
-                info += ",";
+                info.append(",");
             }
         }
-
-        return info;
+        return info.toString();
     }
 
     private String getDrumbeatInfo(Channel channel) {
@@ -337,11 +304,14 @@ class CommandProcessor extends BluetoothDataCallback {
         mPeerJam.setSubbeatLength(Integer.parseInt(subbeatLength));
         if (mOnPeerChangeListener != null) mOnPeerChangeListener.onChange(mPeerJam);
     }
-    private void onSetChannels(String channelInfo) {
+    /*private void onSetChannels(String channelInfo) {
         if (channelInfo != null) {
             channelInfo.split("");
         }
     }
+    static String getChannelsInfoCommand(Jam jam) {
+        return "SET_CHANNELS=" + getChannelsInfo(jam);
+    }*/
 
     private void assurePeerJam() {
         if (mPeerJam == null) {
@@ -435,10 +405,8 @@ class CommandProcessor extends BluetoothDataCallback {
         try {
             String[] data = params.split(",");
             float volume = Float.parseFloat(data[0]);
-            int channel = Integer.parseInt(data[1]);
 
-            mJam.setChannelVolume(channel, volume, mConnection.getDevice().getAddress());
-            //mJam.getChannels().get(channel).setVolume(volume);
+            mJam.setChannelVolume(data[1], volume, mConnection.getDevice().getAddress());
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -448,10 +416,8 @@ class CommandProcessor extends BluetoothDataCallback {
         try {
             String[] data = params.split(",");
             float pan = Float.parseFloat(data[0]);
-            int channel = Integer.parseInt(data[1]);
 
-            mJam.setChannelPan(channel, pan, mConnection.getDevice().getAddress());
-            //mJam.getChannels().get(channel).setPan(pan);
+            mJam.setChannelPan(data[1], pan, mConnection.getDevice().getAddress());
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -460,10 +426,9 @@ class CommandProcessor extends BluetoothDataCallback {
     private void setChannelEnabled(String params) {
         try {
             String[] data = params.split(",");
-            int enabled = Integer.parseInt(data[0]);
-            int channel = Integer.parseInt(data[1]);
+            boolean on = !data[0].equals("0");
 
-            mJam.setChannelEnabled(channel, enabled != 0, mConnection.getDevice().getAddress());
+            mJam.setChannelEnabled(data[1], on, mConnection.getDevice().getAddress());
 
         }
         catch (Exception e) {
@@ -471,14 +436,14 @@ class CommandProcessor extends BluetoothDataCallback {
         }
     }
 
-    static String getChannelEnabledCommand(int channelNumber, boolean enabled) {
-        return "CHANNEL_ENABLED=" + (enabled?"1,":"0,") + channelNumber;
+    static String getChannelEnabledCommand(String id, boolean enabled) {
+        return "CHANNEL_ENABLED=" + (enabled?"1,":"0,") + id;
     }
-    static String getChannelVolumeCommand(int channelNumber, float volume) {
-        return "CHANNEL_VOLUME=" + volume + "," + channelNumber;
+    static String getChannelVolumeCommand(String id, float volume) {
+        return "CHANNEL_VOLUME=" + volume + "," + id;
     }
-    static String getChannelPanCommand(int channelNumber, float pan) {
-        return "CHANNEL_PAN=" + pan + "," + channelNumber;
+    static String getChannelPanCommand(String id, float pan) {
+        return "CHANNEL_PAN=" + pan + "," + id;
     }
 
     void setSync(boolean sync) {
@@ -486,8 +451,6 @@ class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void onSetArpNotes(String value) {
-        if (value == null || mChannel == null) return;
-
         try {
             String[] notePairs = value.split("\\|");
             String[] basicAndInstrument;
@@ -505,5 +468,25 @@ class CommandProcessor extends BluetoothDataCallback {
         catch (Exception e) {
             Log.e("MGH CommandProcessor", e.getMessage());
         }
+    }
+
+    private void onNewLoop() {
+        if (mSync) {
+            mJam.setSubbeatLength(mPeerJam.getSubbeatLength());
+            if (mJam.isPaused()) {
+                mJam.kickIt();
+            } else {
+                mJam.syncNow();
+            }
+            mSync = false;
+        }
+    }
+
+    private void clearChannel(String value) {
+        Channel channel = mJam.getChannelByID(value);
+        if (channel != null) {
+            channel.clearNotes();
+        }
+
     }
 }
