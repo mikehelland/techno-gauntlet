@@ -3,7 +3,6 @@ package com.mikehelland.omgtechnogauntlet;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -37,11 +36,15 @@ public class MainFragment extends OMGFragment {
 
     private HashMap<Channel, View> channelViewMap = new HashMap<>();
 
+    private boolean mLeavingNow = false;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         getActivityMembers();
+
+        mLeavingNow = false;
 
         mView = inflater.inflate(R.layout.main_fragment,
                 container, false);
@@ -92,12 +95,12 @@ public class MainFragment extends OMGFragment {
             if (channel.useSequencer()) {
                 DrumFragment f = new DrumFragment();
                 f.setJam(mJam, channel);
-                showFragmentRight(f);
+                animateFragment(f, 0);
             }
             else {
                 GuitarFragment f = new GuitarFragment();
                 f.setJam(mJam, channel);
-                showFragmentRight(f);
+                animateFragment(f, 0);
             }
             }
         });
@@ -113,7 +116,7 @@ public class MainFragment extends OMGFragment {
 
                 ChannelOptionsFragment f = new ChannelOptionsFragment();
                 f.setJam(mJam, channel);
-                showFragmentRight(f);
+                animateFragment(f, 0);
 
                 return true;
             }
@@ -159,7 +162,7 @@ public class MainFragment extends OMGFragment {
 
                 SoundSetFragment f = new SoundSetFragment();
                 f.setJam(mJam, channel);
-                showFragmentRight(f);
+                animateFragment(f, 0);
 
             }
         });
@@ -175,7 +178,7 @@ public class MainFragment extends OMGFragment {
 
                 ChannelOptionsFragment f = new ChannelOptionsFragment();
                 f.setJam(mJam, channel);
-                showFragmentRight(f);
+                animateFragment(f, 0);
 
                 return true;
 
@@ -195,7 +198,7 @@ public class MainFragment extends OMGFragment {
 
                 KeyFragment fragment = new KeyFragment();
                 fragment.setJam(mJam, MainFragment.this);
-                showFragmentRight(fragment);
+                animateFragment(fragment, 0);
             }
         });
 
@@ -207,7 +210,7 @@ public class MainFragment extends OMGFragment {
 
                 BeatsFragment fragment = new BeatsFragment();
                 fragment.setJam(mJam, MainFragment.this);
-                showFragmentRight(fragment);
+                animateFragment(fragment, 0);
             }
         });
 
@@ -219,7 +222,7 @@ public class MainFragment extends OMGFragment {
 
                 ChordsFragment fragment = new ChordsFragment();
                 fragment.setJam(mJam);
-                showFragmentRight(fragment);
+                animateFragment(fragment, 0);
             }
         });
 
@@ -229,38 +232,13 @@ public class MainFragment extends OMGFragment {
         updateUI();
     }
 
-    public void showFragmentDown(Fragment f) {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.animator.slide_in_down,
-                R.animator.slide_out_up,
-                R.animator.slide_in_up,
-                R.animator.slide_out_down
-        );
-        ft.replace(R.id.main_layout, f);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.addToBackStack(null);
-        ft.commit();
-    }
+    @Override
+    protected void animateFragment(Fragment f, int direction) {
+        if (mLeavingNow)
+            return;
 
-    public void showFragmentUp(Fragment f) {
-
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.animator.slide_in_left,
-                R.animator.slide_out_right,
-                R.animator.slide_in_right,
-                R.animator.slide_out_left
-                //R.anim.slide_in_down,
-                //R.anim.slide_out_down,
-                //R.anim.slide_in_up,
-                //R.anim.slide_out_up
-        );
-        //ft.remove(MainFragment.this);
-        ft.replace(R.id.main_layout, f);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.addToBackStack(null);
-        ft.commit();
-
+        mLeavingNow = true;
+        super.animateFragment(f, direction);
     }
 
     private void setupMainControls() {
@@ -272,7 +250,7 @@ public class MainFragment extends OMGFragment {
                 if (BuildConfig.FLAVOR.equals("demo") && mJam.getChannels().size() >= 4) {
                     if (ActivityManager.isUserAMonkey()) return;
                     Fragment f = new UpgradeFragment();
-                    showFragmentRight(f);
+                    animateFragment(f, 0);
                     return;
                 }
 
@@ -286,7 +264,7 @@ public class MainFragment extends OMGFragment {
                         mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
                     }
                 });
-                showFragmentRight(f);
+                animateFragment(f, 0);
 
             }
         });
@@ -297,7 +275,7 @@ public class MainFragment extends OMGFragment {
                 if (ActivityManager.isUserAMonkey()) return;
 
                 Fragment f = new BluetoothBrainFragment();
-                showFragmentDown(f);
+                animateFragment(f, 1);
             }
         });
 
@@ -315,7 +293,7 @@ public class MainFragment extends OMGFragment {
                 }
                 MixerFragment fragment = new MixerFragment();
                 //fragment.setJam(mJam, MainFragment.this);
-                showFragmentRight(fragment);
+                animateFragment(fragment, 0);
 
             }
         });
@@ -331,7 +309,7 @@ public class MainFragment extends OMGFragment {
                 }
                 SampleSpeedFragment fragment = new SampleSpeedFragment();
                 //fragment.setJam(mJam, MainFragment.this);
-                showFragmentRight(fragment);
+                animateFragment(fragment, 0);
                 return true;
             }
         });
@@ -384,7 +362,7 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 Fragment f = new AddTagsFragment();
-                showFragmentUp(f);
+                animateFragment(f, 3);
             }
         });
 

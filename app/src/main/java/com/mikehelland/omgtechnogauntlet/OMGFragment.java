@@ -32,17 +32,29 @@ public class OMGFragment extends Fragment{
         ((Main)activity).mJam = jam;
     }
 
-    protected void showFragmentRight(Fragment f) {
+    protected void animateFragment(Fragment f, int direction) {
 
         try {
             FragmentManager fm = getFragmentManager();
             if (fm != null) {
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.animator.slide_in_right,
-                        R.animator.slide_out_left,
-                        R.animator.slide_in_left,
-                        R.animator.slide_out_right
-                );
+
+                //0 is right, 1 is down, 2 is left, 3 is up
+                if (direction == 1) {
+                    ft.setCustomAnimations(R.animator.slide_in_down, R.animator.slide_out_up,
+                            R.animator.slide_in_up, R.animator.slide_out_down
+                    );
+                }
+                else if (direction == 2) {
+                    ft.setCustomAnimations(R.animator.slide_in_left, R.animator.slide_out_right,
+                            R.animator.slide_in_right, R.animator.slide_out_left
+                    );
+                }
+                else {
+                    ft.setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
+                            R.animator.slide_in_left, R.animator.slide_out_right
+                    );
+                }
                 ft.replace(R.id.main_layout, f);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 ft.addToBackStack(null);

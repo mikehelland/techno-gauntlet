@@ -313,7 +313,7 @@ public class SoundSetFragment extends OMGFragment {
             public void onClick(View view) {
                 ChannelOptionsFragment f = new ChannelOptionsFragment();
                 f.setJam(mJam, mChannel);
-                showFragmentRight(f);
+                animateFragment(f, 0);
             }
         });
     }

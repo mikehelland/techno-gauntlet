@@ -142,7 +142,7 @@ public class ChannelOptionsFragment extends OMGFragment {
                 GuitarFragment f = new GuitarFragment();
                 f.setJam(mJam, mChannel);
                 f.setZoomModeOn();
-                showFragmentRight(f);
+                animateFragment(f, 0);
             }
         });
         if (!mChannel.getSurface().getURL().equals(Surface.PRESET_VERTICAL)) {
@@ -155,7 +155,7 @@ public class ChannelOptionsFragment extends OMGFragment {
             public void onClick(View view) {
                 TrackSubMixerFragment f = new TrackSubMixerFragment();
                 f.setChannel(mChannel);
-                showFragmentRight(f);
+                animateFragment(f, 0);
             }
         });
         if (!mChannel.useSequencer()) {

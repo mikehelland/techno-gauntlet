@@ -40,7 +40,7 @@ public class WelcomeFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 MainFragment mainFragment = new MainFragment();
-                showFragmentRight(mainFragment);
+                animateFragment(mainFragment, 0);
             }
         });
 
@@ -50,7 +50,7 @@ public class WelcomeFragment extends OMGFragment {
                 if (ActivityManager.isUserAMonkey()) {
                     return;
                 }
-                showFragmentRight(new LoadFromURLFragment());
+                animateFragment(new LoadFromURLFragment(), 0);
             }
         });
 
@@ -116,7 +116,7 @@ public class WelcomeFragment extends OMGFragment {
             @Override
             public void run() {
                 mPool.onAllLoadsFinishedCallback = null;
-                showFragmentRight(new MainFragment());
+                animateFragment(new MainFragment(), 0);
             }
         };
 
@@ -131,7 +131,7 @@ public class WelcomeFragment extends OMGFragment {
             @Override
             public void run() {
                 mPool.onAllLoadsFinishedCallback = null;
-                showFragmentRight(new MainFragment());
+                animateFragment(new MainFragment(), 0);
             }
         };
 

@@ -1,8 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -68,7 +66,7 @@ public class BluetoothBrainFragment extends OMGFragment {
                         addDevice(device);
                     }
                 });
-                showFragmentDown(f);
+                animateFragment(f, 1);
             }
         });
     }
@@ -129,19 +127,6 @@ public class BluetoothBrainFragment extends OMGFragment {
         }
 
         return cp;
-    }
-
-    public void showFragmentDown(Fragment f) {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.animator.slide_in_down,
-                R.animator.slide_out_up,
-                R.animator.slide_in_up,
-                R.animator.slide_out_down
-        );
-        ft.replace(R.id.main_layout, f);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        ft.addToBackStack(null);
-        ft.commit();
     }
 
     private void addDevice(BluetoothDevice device) {
