@@ -404,9 +404,14 @@ class Channel {
 
     boolean loadSoundSetIds() {
 
-        for (int i = 0; i < mSoundSet.getSounds().size(); i++) {
-            ids[i] = mPool.getPoolId(mSoundSet.getSounds().get(i).getURL());
+        int i = 0;
+        try {
+            for (SoundSet.Sound sound : mSoundSet.getSounds()) {
+                ids[i] = mPool.getPoolId(sound.getURL());
+                i++;
+            }
         }
+        catch (Exception ignore) {}
 
         return true;
     }
