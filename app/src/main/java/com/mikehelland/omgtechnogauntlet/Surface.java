@@ -6,9 +6,9 @@ package com.mikehelland.omgtechnogauntlet;
  */
 
 class Surface {
-    static String PRESET_FRETBOARD = "PRESET_FRETBOARD";
-    static String PRESET_SEQUENCER = "PRESET_SEQUENCER";
-    static String PRESET_VERTICAL = "PRESET_VERTICAL";
+    final static String PRESET_FRETBOARD = "PRESET_FRETBOARD";
+    final static String PRESET_SEQUENCER = "PRESET_SEQUENCER";
+    final static String PRESET_VERTICAL = "PRESET_VERTICAL";
 
     private String mName = "";
     private String mURL = PRESET_VERTICAL;

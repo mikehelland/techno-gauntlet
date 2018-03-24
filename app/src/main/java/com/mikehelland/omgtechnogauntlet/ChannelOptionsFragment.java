@@ -18,7 +18,6 @@ public class ChannelOptionsFragment extends OMGFragment {
 
     private Jam mJam;
     private View mView;
-    private MainFragment mainFragment;
     private Channel mChannel;
 
     @Override
@@ -67,36 +66,37 @@ public class ChannelOptionsFragment extends OMGFragment {
             }
         });
 
+        String surfaceURL = mChannel.getSurfaceURL();
         View rbSequencer = mView.findViewById(R.id.radioButton);
-        if (mChannel.getSurfaceURL().equals("PRESET_SEQUENCER")) {
+        if (surfaceURL.equals(Surface.PRESET_SEQUENCER)) {
             ((RadioButton)rbSequencer).toggle();
         }
         rbSequencer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChannel.setSurface(new Surface("PRESET_SEQUENCER"));
+                mChannel.setSurface(new Surface(Surface.PRESET_SEQUENCER));
                 finish();
             }
         });
         View rbVertical = mView.findViewById(R.id.radioButton2);
-        if (mChannel.getSurfaceURL().equals("PRESET_VERTICAL")) {
+        if (surfaceURL.equals(Surface.PRESET_VERTICAL)) {
             ((RadioButton)rbVertical).toggle();
         }
         rbVertical.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChannel.setSurface(new Surface("PRESET_VERTICAL"));
+                mChannel.setSurface(new Surface(Surface.PRESET_VERTICAL));
                 finish();
             }
         });
         View rbFretboard = mView.findViewById(R.id.radioButton3);
-        if (mChannel.getSurfaceURL().equals("PRESET_FRETBOARD")) {
+        if (surfaceURL.equals(Surface.PRESET_FRETBOARD)) {
             ((RadioButton)rbFretboard).toggle();
         }
         rbFretboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChannel.setSurface(new Surface("PRESET_FRETBOARD"));
+                mChannel.setSurface(new Surface(Surface.PRESET_FRETBOARD));
                 finish();
             }
         });
@@ -139,13 +139,12 @@ public class ChannelOptionsFragment extends OMGFragment {
         zoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GuitarFragment f = new GuitarFragment();
+                ZoomFragment f = new ZoomFragment();
                 f.setJam(mJam, mChannel);
-                f.setZoomModeOn();
                 animateFragment(f, 0);
             }
         });
-        if (!mChannel.getSurface().getURL().equals(Surface.PRESET_VERTICAL)) {
+        if (!surfaceURL.equals(Surface.PRESET_VERTICAL)) {
             zoomButton.setVisibility(View.GONE);
         }
 

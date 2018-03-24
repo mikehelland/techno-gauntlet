@@ -228,6 +228,8 @@ class CommandProcessor extends BluetoothDataCallback {
         sb.append(channel.getVolume());
         sb.append(",");
         sb.append(channel.getPan());
+        sb.append(",");
+        sb.append(channel.getSampleSpeed());
     }
 
     private void sendChannelInfo() {
