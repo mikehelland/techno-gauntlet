@@ -1,7 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,6 @@ public class TrackSubMixerFragment extends OMGFragment {
 
     private View mView;
 
-    private Channel mChannel;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -23,12 +20,7 @@ public class TrackSubMixerFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.mixer_fragment,
                 container, false);
 
-        if (mChannel != null) {
-            setupPanels(inflater);
-        }
-        else {
-            Log.d("MGH submixer", "NOT READY!");
-        }
+        setupPanels(inflater);
 
         return mView;
     }
@@ -37,7 +29,7 @@ public class TrackSubMixerFragment extends OMGFragment {
 
         ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
         View controls;
-        for (final SequencerTrack track : mChannel.getPatternInfo().getTracks()) {
+        for (final SequencerTrack track : getJam().getChannelTracksgetCurrentPart().getPatternInfo().getTracks()) {
 
             controls = inflater.inflate(R.layout.mixer_panel, container, false);
             container.addView(controls);
@@ -46,7 +38,7 @@ public class TrackSubMixerFragment extends OMGFragment {
             mixerView.setJam(track.getName(), new MixerView.MixerViewController() {
                 @Override
                 void onMuteChange(boolean mute) {
-                    track.toggleMute();
+                    getJam().setPartTrackMute(mute);
                 }
                 @Override
                 void onVolumeChange(float volume) {
@@ -71,11 +63,6 @@ public class TrackSubMixerFragment extends OMGFragment {
                 }
             });
         }
-    }
-
-
-    void setChannel(Channel channel) {
-        mChannel = channel;
     }
 }
 

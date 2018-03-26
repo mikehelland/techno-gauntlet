@@ -22,9 +22,6 @@ public class SampleSpeedView extends View {
     private int width2 = -1;
     private int height = -1;
 
-    private _OldJam mJam;
-    private Channel mChannel;
-
     private Paint topPanelPaint;
     private Paint paintText;
 

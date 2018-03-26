@@ -4,7 +4,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-class SectionToOMG {
+class SectionToJSON {
 
     static String getData(Section section) {
 
@@ -12,7 +12,7 @@ class SectionToOMG {
 
         sb.append("{\"type\": \"SECTION\", \"tags\": \"");
         sb.append(section.tags);
-        sb.append("\", \"madeWith\": \"");
+        sb.append("\", \"omgVersion\":0.9, \"madeWith\": \"");
         sb.append("");
         sb.append("\", \"keyParameters\": ");
         section.keyParameters.getData(sb);

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.Part;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
 /**
@@ -19,8 +21,8 @@ class CommandProcessor extends BluetoothDataCallback {
     private final static String CHANNEL_SET_ARPNOTES = "CHANNEL_SET_ARPNOTES";
 
     private BluetoothConnection mConnection;
-    private _OldJam mJam;
-    private Channel mChannel = null;
+    private Jam mJam;
+    private Part mChannel = null;
 
     private JamInfo mPeerJam;
     private OnPeerChangeListener mOnPeerChangeListener;
@@ -37,7 +39,7 @@ class CommandProcessor extends BluetoothDataCallback {
         mDatabase = mContext.getDatabase();
     }
 
-    void setup(BluetoothConnection connection, _OldJam jam, Channel channel) {
+    void setup(BluetoothConnection connection, Jam jam, Part channel) {
         mJam = jam;
         mConnection = connection;
 
@@ -54,10 +56,10 @@ class CommandProcessor extends BluetoothDataCallback {
 
         switch (name) {
             case "SET_PLAY":
-                mJam.kickIt();
+                mJam.play();
                 return;
             case "SET_STOP":
-                mJam.pause();
+                mJam.stop();
                 return;
             case "GET_JAM_INFO":
                 sendJamInfo();

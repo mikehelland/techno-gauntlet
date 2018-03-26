@@ -29,7 +29,7 @@ public class SampleSpeedFragment extends OMGFragment {
         ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
         View controls;
         int i = 0;
-        for (final Channel channel : mJam.getChannels()) {
+        for (final Part part : getJam().getParts()) {
 
             controls = inflater.inflate(R.layout.samplespeed_panel, container, false);
             container.addView(controls);

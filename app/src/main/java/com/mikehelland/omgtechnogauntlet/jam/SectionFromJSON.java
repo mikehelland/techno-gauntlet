@@ -1,4 +1,4 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.jam;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -6,10 +6,8 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.mikehelland.omgtechnogauntlet.jam.Note;
-import com.mikehelland.omgtechnogauntlet.jam.NoteList;
-import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
-import com.mikehelland.omgtechnogauntlet.jam.Surface;
+import com.mikehelland.omgtechnogauntlet.R;
+import com.mikehelland.omgtechnogauntlet.SoundSetDataOpenHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,44 +18,42 @@ import org.json.JSONObject;
  * take the loading out of the jam, because it needs access to the database
  */
 
-class JamLoader {
+class SectionFromJSON {
 
-    static _OldJam load(String json, final Main context) throws Exception {
+    static Section fromOMG(String json) throws Exception {
 
-        if (context == null) {
-            return null;
-        }
-
-        _OldJam jam = new _OldJam(new MelodyMaker(context), context.mPool, getAppName(context));
-        DatabaseContainer dbc = context.getDatabase();
+        Section jam = new Section();
 
         try {
 
             JSONObject jsonData = new JSONObject(json);
 
+            jam.beatParameters = loadBeatParameters();
+            jam.keyParameters = loadKeyParameters();
+
             JSONArray parts;
             parts = jsonData.getJSONArray("parts");
 
             if (jsonData.has("measures")) {
-                jam.setMeasures(jsonData.getInt("measures"));
-                if (jsonData.has("beats")) {
-                    jam.setBeats(jsonData.getInt("beats"));
-                }
-                if (jsonData.has("subbeats")) {
-                    jam.setSubbeats(jsonData.getInt("subbeats"));
-                }
+                jam.beatParameters.measures = jsonData.getInt("measures");
+            }
+            if (jsonData.has("beats")) {
+                jam.beatParameters.beats = jsonData.getInt("beats");
+            }
+            if (jsonData.has("subbeats")) {
+                jam.beatParameters.subbeats = jsonData.getInt("subbeats");
             }
 
             if (jsonData.has("subbeatMillis")) {
-                jam.setSubbeatLength(jsonData.getInt("subbeatMillis"));
+                jam.beatParameters.subbeatLength = jsonData.getInt("subbeatMillis");
             }
 
             if (jsonData.has("shuffle")) {
-                jam.setShuffle((float)jsonData.getDouble("shuffle"));
+                jam.beatParameters.shuffle = (float)jsonData.getDouble("shuffle");
             }
 
             if (jsonData.has("rootNote")) {
-                jam.setKey(jsonData.getInt("rootNote") % 12);
+                jam.keyParameters.rootNote = jsonData.getInt("rootNote") % 12;
             }
 
             if (jsonData.has("scale")) {
@@ -70,14 +66,14 @@ class JamLoader {
                 for (int ic = 0; ic < chordsData.length(); ic++) {
                     newChords[ic] = chordsData.getInt(ic);
                 }
-                jam.setChordProgression(newChords);
+                jam.progression = newChords;
             }
 
             if (jsonData.has("tags")) {
-                jam.setTags(jsonData.getString("tags"));
+                jam.tags = jsonData.getString("tags");
             }
 
-            Channel channel;
+            Part channel;
 
             for (int ip = 0; ip < parts.length(); ip++) {
                 JSONObject part = parts.getJSONObject(ip);
@@ -87,7 +83,7 @@ class JamLoader {
                 final SoundSetDataOpenHelper dataHelper = dbc.getSoundSetData();
                 SoundSet soundSet = dataHelper.getSoundSetByURL(soundsetURL);
                 if (soundSet != null) {
-                    channel = new Channel(jam, context.mPool);
+                    channel = new Part(jam, context.mPool);
                     channel.prepareSoundSet(soundSet);
                     loadPart(channel, part);
                     jam.getChannels().add(channel);
@@ -112,32 +108,32 @@ class JamLoader {
         return jam;
     }
 
-    static private void loadPart(Channel jamChannel, JSONObject part) throws  JSONException {
+    static private void loadPart(Part part, JSONObject partJSON) throws  JSONException {
 
-        if (part.has("surface")) {
-            JSONObject surfaceJSONObject = part.getJSONObject("surface");
-            jamChannel.setSurface(parseSurfaceJSONObject(surfaceJSONObject));
+        if (partJSON.has("surface")) {
+            JSONObject surfaceJSONObject = partJSON.getJSONObject("surface");
+            part.surface = loadSurface(surfaceJSONObject);
         }
-        else if (part.has("surfaceURL")) { //the old way
-            String surfaceURL = part.getString("surfaceURL");
-            jamChannel.setSurface(new Surface(surfaceURL));
-        }
-
-        if (part.has("volume")) {
-            jamChannel.setVolume((float)part.getDouble("volume"));
-        }
-        if (part.has("pan")) {
-            jamChannel.setPan((float)part.getDouble("pan"));
-        }
-        if (part.has("sampleSpeed")) {
-            jamChannel.setSampleSpeed((float)part.getDouble("sampleSpeed"));
+        else if (partJSON.has("surfaceURL")) { //the old way
+            String surfaceURL = partJSON.getString("surfaceURL");
+            part.surface = new Surface(surfaceURL);
         }
 
-        if (jamChannel.useSequencer()) {
-            loadDrums(jamChannel, part);
+        if (partJSON.has("volume")) {
+            part.setVolume((float)partJSON.getDouble("volume"));
+        }
+        if (partJSON.has("pan")) {
+            part.setPan((float)partJSON.getDouble("pan"));
+        }
+        if (partJSON.has("sampleSpeed")) {
+            part.setSampleSpeed((float)partJSON.getDouble("sampleSpeed"));
+        }
+
+        if (part.useSequencer()) {
+            loadDrums(part, partJSON);
         }
         else {
-            loadMelody(jamChannel, part);
+            loadMelody(part, partJSON);
         }
     }
 
@@ -237,7 +233,7 @@ class JamLoader {
         return appName;
     }
 
-    private static Surface parseSurfaceJSONObject(JSONObject jsonObject) throws JSONException{
+    private static Surface loadSurface(JSONObject jsonObject) throws JSONException{
         final Surface surface = new Surface();
         surface.setName(jsonObject.getString("name"));
         surface.setURL(jsonObject.getString("url"));
@@ -246,5 +242,12 @@ class JamLoader {
                     jsonObject.getInt("skipTop"));
         }
         return  surface;
+    }
+
+    private static BeatParameters loadBeatParameters(JSONObject jsonObject) {
+
+    }
+    private static KeyParameters loadKeyParameters(JSONObject jsonObject) {
+
     }
 }

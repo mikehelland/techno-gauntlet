@@ -122,6 +122,7 @@ public class WelcomeFragment extends OMGFragment {
 
         Activity activity = getActivity(); if (activity == null) return;
 
+        getJam().loadFromJSON(json);
         ((Main) activity).loadJam(json);
     }
 
@@ -140,7 +141,8 @@ public class WelcomeFragment extends OMGFragment {
         int defaultJam = BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
         Activity activity = getActivity();
         if (activity != null) {
-            ((Main) activity).loadJam(activity.getResources().getString(defaultJam));
+            //((Main) activity).loadJam(activity.getResources().getString(defaultJam));
+            getJam().loadJSON(activity.getResources().getString(defaultJam));
         }
 
         mPool.setInitialized();

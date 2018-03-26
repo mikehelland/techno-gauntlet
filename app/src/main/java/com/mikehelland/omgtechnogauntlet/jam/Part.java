@@ -2,7 +2,7 @@ package com.mikehelland.omgtechnogauntlet.jam;
 
 import java.util.UUID;
 
-class Part {
+public class Part {
 
     String id;
 
@@ -34,7 +34,7 @@ class Part {
     //find the the best way to separate them but stay performant
 
 
-    public Part(Section section) {
+    Part(Section section) {
         id = UUID.randomUUID().toString();
 
         keyParameters = section.keyParameters;
@@ -98,4 +98,11 @@ class Part {
         clearPattern();
     }
 
+    public String getName() {
+        return soundSet.getName();
+    }
+
+    public String getId() {
+        return id;
+    }
 }

@@ -11,7 +11,6 @@ import com.mikehelland.omgtechnogauntlet.jam.Jam;
 public class OMGFragment extends Fragment{
 
     private Jam jam;
-    protected OMGSoundPool mPool;
     protected BluetoothManager mBtf;
     //protected _OldJam.StateChangeCallback mJamCallback;
 
@@ -19,7 +18,6 @@ public class OMGFragment extends Fragment{
 
         Main main = ((Main)getActivity());
         //mJam = main.mJam;
-        mPool = main.mPool;
         mBtf = main.mBtf;
         //mJamCallback = main.mJamCallback;
     }

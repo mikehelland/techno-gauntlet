@@ -2,8 +2,6 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,12 +10,12 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamLoader;
 
 public class Main extends Activity {
 
     Jam jam = new Jam();
 
-    OMGSoundPool mPool;
     BluetoothManager mBtf;
     DatabaseContainer mDatabase;
 
@@ -41,25 +39,24 @@ public class Main extends Activity {
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
 
         jam = new Jam();
-        jam.addPlayStatusChangeListener
+        mBeatView.setJam(jam);
 
-        mPool =  new OMGSoundPool(getApplicationContext(), 32, AudioManager.STREAM_MUSIC, 100);
+        //todo whats this jam.addPlayStatusChangeListener
+        //jam.addInvalidateOnBeatListener(mBeatView);
 
-        mBeatView.setJam(mJam);
-        mJam.addInvalidateOnBeatListener(mBeatView);
         mBeatView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mJam.isPlaying()) {
-                    mJam.pause();
+                if (jam.isPlaying()) {
+                    jam.stop();
                 }
                 else {
-                    mJam.kickIt();
+                    jam.play();
                 }
             }
         });
 
-        setupBluetooth();
+        //todo setupBluetooth();
 
         new Thread(new Runnable() {
             @Override
@@ -76,7 +73,8 @@ public class Main extends Activity {
             }
         }).start();
 
-        mPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+        //todo put this in the soundManager? um
+        /*mPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int i, int i1) {
                 if (!mBeatView.isShowingLoadProgress()) {
@@ -93,7 +91,7 @@ public class Main extends Activity {
                         mPool.onAllLoadsFinishedCallback.run();
                 }
             }
-        });
+        });*/
 
         Toast.makeText(this, "Press the MONKEY for random changes!", Toast.LENGTH_SHORT).show();
 
@@ -105,18 +103,18 @@ public class Main extends Activity {
     @Override
     public void onPause() {
         super.onPause();
-        if (!mPool.isLoaded())
-            mPool.cancelLoading();
-        mJam.pause();
+        //todo relocate
+        // if (!mPool.isLoaded())
+        //    mPool.cancelLoading();
+        jam.stop();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mJam.finish();
+        jam.finish();
         mBtf.cleanUp();
         mDatabase.close();
-        mPool.cleanUp();
     }
 
     @Override
@@ -130,7 +128,7 @@ public class Main extends Activity {
 
     }
 
-    private void setupBluetooth() {
+    /*private void setupBluetooth() {
         mBtf = new BluetoothManager(this);
         if (mBtf.isBlueToothOn()) {
             mBtf.startAccepting(makeConnectCallback());
@@ -198,7 +196,6 @@ public class Main extends Activity {
             }
         };
         mJam.addStateChangeListener(mJamCallback);
-
     }
 
     BluetoothConnectCallback makeConnectCallback() {
@@ -215,9 +212,12 @@ public class Main extends Activity {
             public void onDisconnected(final BluetoothConnection connection) {}
         };
     }
+    */
 
-    _OldJam loadJam(String json) {
 
+    void loadJam(String json) {
+
+        //is this here because we could be called from bluetooth, so back out to welcome?
         boolean allGood = true;
         int backstack = getFragmentManager().getBackStackEntryCount();
         while (backstack > 0) {
@@ -230,7 +230,7 @@ public class Main extends Activity {
             backstack--;
         }
 
-        if (!allGood) return null;
+        if (!allGood) return;
 
         _OldJam tjam = null;
         try {

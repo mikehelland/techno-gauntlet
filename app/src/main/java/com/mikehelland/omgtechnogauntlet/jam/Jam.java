@@ -7,9 +7,15 @@ public class Jam {
     private Section section;
     private Player player;
 
+    private Part currentPart;
 
     public Jam() {
     }
+
+    public void loadFromJSON(String json) {
+        SectionFromJSON.fromOMG(json);
+    }
+
 
     public String getTags() {
         return section.tags;
@@ -23,7 +29,7 @@ public class Jam {
         return section.beatParameters.subbeatLength;
     }
 
-    public void setSubbeatLength(int subbeatLength) {
+    public void setSubbeatLength(int subbeatLength, String sourceDevice) {
         section.beatParameters.subbeatLength = subbeatLength;
     }
 
@@ -63,7 +69,7 @@ public class Jam {
         return section.keyParameters.scale;
     }
 
-    public void setScale(int[] scale) {
+    public void setScale(int[] scale, String sourceDevice) {
         section.keyParameters.scale = scale;
     }
 
@@ -71,7 +77,7 @@ public class Jam {
         return section.keyParameters.rootNote;
     }
 
-    public void setKey(int key) {
+    public void setKey(int key, String sourceDevice) {
         section.keyParameters.rootNote = key;
     }
 
@@ -88,19 +94,16 @@ public class Jam {
     }
 
 
-    int getCurrentSubbeat() {
+    public int getCurrentSubbeat() {
         return player.getCurrentSubbeat();
     }
-    boolean isPlaying() {
+    public boolean isPlaying() {
         return player.isPlaying();
     }
-    public boolean isPaused() {
-        return player.isPaused();
-    }
 
-
+    //todo set totalSubbeats in the Jam instead of calculating it everytime
     // a couple helper functions
-    int getTotalBeats() {
+    public int getTotalBeats() {
         return section.beatParameters.beats * section.beatParameters.measures;
     }
     String getKeyName() {
@@ -113,9 +116,51 @@ public class Jam {
         setSubbeatLength((int)((60000 / bpm) / section.beatParameters.subbeats));
     }
 
+    public void play() {
+        player.play(section);
+    }
+
+    public void stop() {
+        player.stop();
+    }
+
+    public void finish() {
+        player.cleanUp();
+        //todo unref everything here
+    }
+
+    public void setPartMute(Part part, boolean mute, Object o) {
+        part.audioParameters.mute = mute;
+    }
+
+    public void setPartVolume(Part part, float volume, String device) {
+        part.audioParameters.volume = volume;
+    }
+
+    public void setPartPan(Part part, float pan, String device) {
+        part.audioParameters.pan = pan;
+    }
+
+    public boolean getPartMute(Part part) {
+        return part.audioParameters.mute;
+    }
+    public float getPartVolume(Part part) {
+        return part.audioParameters.volume;
+    }
+    public float getPartPan(Part part) {
+        return part.audioParameters.pan;
+    }
+
     abstract static class PlayStatusChangeListener {
         abstract void onPlay();
         abstract void onStop();
+    }
+
+    public void setCurrentPart(Part currentPart) {
+        this.currentPart = currentPart;
+    }
+    public Part getCurrentPart() {
+        return currentPart;
     }
 
 

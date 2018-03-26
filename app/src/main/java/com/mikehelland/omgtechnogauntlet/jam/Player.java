@@ -1,15 +1,21 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
-import android.view.View;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 class Player {
+
+    final static int STATE_STOPPED = 0;
+    final static int STATE_STARTING = 1;
+    final static int STATE_PLAYING = 2;
+    final static int STATE_STOPPING = 3;
+    final static int STATE_FINISHED = 4;
+
+    private int state = 0;
+
+    private OnPlayerStateChangeListener onStateChangeListener;
+    private OnNewBeatListener onNewBeatListener;
 
     private Section section;
 
-    int ibeat;
+    int isubbeat;
     long timeSinceLast;
     long lastBeatPlayed;
 
@@ -23,19 +29,15 @@ class Player {
     private boolean cancelPlaybackThread = false;
 
     private boolean playing = false;
-    private boolean mIsPaused = true;
 
     private int progressionI = -1;
-
-    private List<View> viewsToInvalidateOnBeat = new CopyOnWriteArrayList<>();
-    private List<View> viewsToInvalidateOnNewMeasure = new CopyOnWriteArrayList<>();
 
     private int currentChord = 0;
 
     private long mSyncTime = 0L;
 
-    Player(Section section) {
-        this.section = section;
+    Player(OnPlayerStateChangeListener listener) {
+        onStateChangeListener = listener;
     }
 
     private void playBeatSampler(int subbeat) {
@@ -48,24 +50,25 @@ class Player {
         }
     }
 
-    void kickIt() {
+    void play(Section section) {
 
         if (!playing) {
             cancelPlaybackThread = false;
             playbackThread = new PlaybackThread();
             playbackThread.start();
         }
-        mIsPaused = false;
+
+        //todo call onStart()
     }
 
 
 
     int getCurrentSubbeat() {
-        return ibeat;
+        return isubbeat;
         //todo there's probably a good reason for this code below
         //todo but it made the beat counter not right (because I added measures)
         //todo so.... why was it here? mistake? or part of the recording features?
-        //int i = playbackThread.ibeat;
+        //int i = playbackThread.isubbeat;
         //if (i == 0) i = beats * subbeats;
         //return i - 1;
 
@@ -75,7 +78,7 @@ class Player {
         if (playbackThread == null)
             return 0;
 
-        int i = ibeat;
+        int i = isubbeat;
 
         debugTouch.iclosestsubbeat = i;
         debugTouch.dbeat = (i + playbackThread.timeSinceLast / (double)subbeatLength) / subbeats;
@@ -121,20 +124,21 @@ class Player {
         }
     }
 
-    void pause() {
-        mIsPaused = true;
+    void stop() {
+        state = STATE_STOPPING;
         cancelPlaybackThread = true;
 
         for (Part part : section.parts) {
             //todo part.mute();
         }
+        state = STATE_STOPPED;
     }
 
     void finish() {
-        mIsPaused = true;
         for (Part part : section.parts) {
             //todo part.finish();
         }
+        state = STATE_FINISHED;
     }
 
     boolean isPlaying() {
@@ -146,26 +150,11 @@ class Player {
         return progressionI;
     }
 
-    void addInvalidateOnBeatListener(View view) {
-        viewsToInvalidateOnBeat.add(view);
-    }
-
-    void addInvalidateOnNewMeasureListener(View view) {
-        viewsToInvalidateOnNewMeasure.add(view);
-    }
-
-    void removeInvalidateOnBeatListener(View view)  {
-        viewsToInvalidateOnBeat.remove(view);
-    }
-
-    boolean isPaused() {return mIsPaused;}
-
-
     private class PlaybackThread extends Thread {
 
         public void run() {
 
-            startTheThing();
+            startPlayback();
             while (!cancelPlaybackThread) {
                 if (isTime()) {
                     doTheThing();
@@ -174,12 +163,12 @@ class Player {
         }
     }
 
-    private void startTheThing() {
+    private void startPlayback() {
         playing = true;
         progressionI = -1; // gets incremented by onNewLoop
         onNewLoop();
 
-        ibeat = 0;
+        isubbeat = 0;
         lastBeatPlayed = System.currentTimeMillis() - section.beatParameters.subbeatLength;
     }
 
@@ -190,7 +179,7 @@ class Player {
 
         now = System.currentTimeMillis();
         timeUntilNext = lastBeatPlayed + section.beatParameters.subbeatLength;
-        if (ibeat % section.beatParameters.subbeats != 0 && section.beatParameters.shuffle > 0) {
+        if (isubbeat % section.beatParameters.subbeats != 0 && section.beatParameters.shuffle > 0) {
             timeUntilNext += (int) (section.beatParameters.subbeatLength * section.beatParameters.shuffle);
         }
 
@@ -213,29 +202,25 @@ class Player {
 
     private void doTheThing() {
         totalSubbeats = BeatParameters.getTotalSubbeats(section.beatParameters);
-        if (ibeat < totalSubbeats) {
+        if (isubbeat < totalSubbeats) {
             lastBeatPlayed += subbeatLength;
-            playBeatSampler(ibeat);
+            playBeatSampler(isubbeat);
         }
 
-        ibeat++;
+        isubbeat++;
 
         if (mSyncTime > 0) {
-            ibeat = 1;
+            isubbeat = 1;
             lastBeatPlayed = mSyncTime + subbeatLength;
             mSyncTime = 0;
         }
-        if (ibeat >= totalSubbeats) {
-            ibeat = 0;
+        if (isubbeat >= totalSubbeats) {
+            isubbeat = 0;
             onNewLoop();
-
-            for (View iv : viewsToInvalidateOnNewMeasure) {
-                iv.postInvalidate();
-            }
         }
 
-        for (View iv : viewsToInvalidateOnBeat) {
-            iv.postInvalidate();
+        if (onNewBeatListener != null) {
+            onNewBeatListener.onNewBeat(isubbeat);
         }
     }
 
@@ -254,4 +239,11 @@ class Player {
         catch  (Exception ignore) {}
     }
 
+    abstract static class OnPlayerStateChangeListener {
+        abstract void onPlay();
+        abstract void onStop();
+    }
+    abstract static class OnNewBeatListener {
+        abstract void onNewBeat(int beat);
+    }
 }
