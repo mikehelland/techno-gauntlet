@@ -2,6 +2,9 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.content.Context;
 
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.NoteList;
+
 import java.util.Random;
 
 public class MelodyMaker {

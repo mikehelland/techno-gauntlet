@@ -17,7 +17,7 @@ import android.widget.EditText;
  */
 public class AddTagsFragment extends OMGFragment {
 
-    //private Jam mJam;
+    //private _OldJam mJam;
     //private MainFragment mMainFragment;
 
     private View mView;

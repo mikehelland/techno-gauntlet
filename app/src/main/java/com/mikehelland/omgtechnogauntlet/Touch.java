@@ -1,5 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+
 /**
  * User: m
  * Date: 7/1/13

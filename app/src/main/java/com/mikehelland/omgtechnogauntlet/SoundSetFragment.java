@@ -19,6 +19,8 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+
 /**
  * User: m
  * Date: 5/6/14
@@ -94,7 +96,7 @@ public class SoundSetFragment extends OMGFragment {
         return mView;
     }
 
-    public void setJam(Jam jam, Channel channel) {
+    public void setJam(_OldJam jam, Channel channel) {
         mJam = jam;
         mChannel = channel;
 

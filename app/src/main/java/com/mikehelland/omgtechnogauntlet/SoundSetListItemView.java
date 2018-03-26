@@ -10,6 +10,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.mikehelland.omgtechnogauntlet.jam.NoteList;
+
 import java.util.ArrayList;
 
 /**
@@ -32,7 +34,7 @@ public class SoundSetListItemView extends View {
     private int boxWidth;
     private int boxHeight;
 
-    private Jam mJam;
+    private _OldJam mJam;
     private Main mActivity;
 
     private NoteList mList;
@@ -209,7 +211,7 @@ public class SoundSetListItemView extends View {
     }
 
 
-    public void setJam(Main activity, Jam jam) {
+    public void setJam(Main activity, _OldJam jam) {
         mJam = jam;
         mActivity = activity;
     }

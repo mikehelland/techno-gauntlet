@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+
 import java.util.ArrayList;
 
 /**
@@ -35,7 +37,7 @@ public class DrumView extends View {
 
     //private boolean[] trackData;
     private boolean[][] data;
-    private Jam mJam;
+    private _OldJam mJam;
 
     private Paint topPanelPaint;
     private Paint paintText;
@@ -280,7 +282,7 @@ public class DrumView extends View {
         }
     }
 
-    public void setJam(Jam jam, Channel channel) {
+    public void setJam(_OldJam jam, Channel channel) {
         mJam = jam;
         wide = mJam.getTotalBeats();
 

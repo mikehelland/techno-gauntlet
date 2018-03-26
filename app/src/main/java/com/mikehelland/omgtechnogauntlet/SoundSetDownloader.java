@@ -8,6 +8,8 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

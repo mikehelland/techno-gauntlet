@@ -12,7 +12,7 @@ import android.view.ViewGroup;
  */
 public class ZoomFragment extends OMGFragment {
 
-    private Jam mJam;
+    private _OldJam mJam;
     private ZoomVerticalView guitarView = null;
     private Channel mChannel;
 
@@ -32,7 +32,7 @@ public class ZoomFragment extends OMGFragment {
         return view;
     }
 
-    public void setJam(Jam jam, Channel channel) {
+    public void setJam(_OldJam jam, Channel channel) {
         mJam = jam;
         mChannel = channel;
 

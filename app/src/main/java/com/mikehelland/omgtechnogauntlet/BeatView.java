@@ -6,9 +6,11 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+
 public class BeatView extends View {
 
-    private Jam mJam;
+    private Jam jam;
 
     private Paint paintRed;
     private Paint paintGreen;
@@ -52,7 +54,7 @@ public class BeatView extends View {
     }
 
     public void onDraw(Canvas canvas) {
-        if (mJam == null)
+        if (jam == null)
             return;
 
         if (!mIsHeightSet) {
@@ -60,9 +62,9 @@ public class BeatView extends View {
             mIsHeightSet = true;
         }
 
-        beats = mJam.getBeats();
-        float boxWidth = ((float)getWidth()) / mJam.getTotalBeats();
-        for (int i = 1; i < mJam.getTotalBeats(); i++) {
+        beats = jam.getBeats();
+        float boxWidth = ((float)getWidth()) / jam.getTotalBeats();
+        for (int i = 1; i < jam.getTotalBeats(); i++) {
             canvas.drawLine(i * boxWidth, 0, i * boxWidth, getHeight(),
                     i % beats == 0 ? paintWhite : paintGrey);
         }
@@ -72,13 +74,13 @@ public class BeatView extends View {
             canvas.drawRect(0, 0, getWidth() * ((float)mProgressI / mProgressMax), getHeight(), paintBlue);
             mText = "Loading Sounds...";
         }
-        else if (mJam.isPaused()){
+        else if (jam.isPaused()){
             canvas.drawRect(0, 0, getWidth(), getHeight(), paintRed);
             mText = "Play";
         }
-        if (!mJam.isPaused()) {
-            float beatBoxWidth = ((float)getWidth()) / mJam.getTotalBeats();
-            float beatBoxStart = mJam.getCurrentSubbeat() / mJam.getSubbeats() * beatBoxWidth;
+        if (!jam.isPaused()) {
+            float beatBoxWidth = ((float)getWidth()) / jam.getTotalBeats();
+            float beatBoxStart = jam.getCurrentSubbeat() / jam.getSubbeats() * beatBoxWidth;
 
             canvas.drawRect(beatBoxStart, 0, beatBoxStart + beatBoxWidth, getHeight(), paintGreen);
             if (!mShowingLoadProgress) {
@@ -90,7 +92,7 @@ public class BeatView extends View {
     }
 
     void setJam(Jam jam) {
-        mJam = jam;
+        this.jam = jam;
         postInvalidate();
     }
 

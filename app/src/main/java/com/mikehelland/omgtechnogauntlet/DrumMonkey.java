@@ -1,5 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -22,7 +24,7 @@ class DrumMonkey {
 
     private Channel mChannel;
 
-    DrumMonkey(Jam jam, Channel channel) {
+    DrumMonkey(_OldJam jam, Channel channel) {
         mChannel = channel;
 
         rand = jam.getRand();

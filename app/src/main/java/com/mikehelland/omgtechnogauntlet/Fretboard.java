@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,16 +53,16 @@ public class Fretboard {
 
     private FretMap fretMap = new FretMap();
 
-    private Jam mJam;
+    private _OldJam mJam;
 
-    public Fretboard(Channel channel, Jam jam, Cursor cursor) {
+    public Fretboard(Channel channel, _OldJam jam, Cursor cursor) {
 
         setup("");
         //cursor.getColumnIndex("data")
     }
 
 
-    public Fretboard(Channel channel, Jam jam, String fretboardJson) {
+    public Fretboard(Channel channel, _OldJam jam, String fretboardJson) {
 
         mChannel = channel;
         mJam = jam;

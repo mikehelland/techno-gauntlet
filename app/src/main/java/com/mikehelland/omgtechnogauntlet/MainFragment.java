@@ -32,7 +32,7 @@ public class MainFragment extends OMGFragment {
 
     private List<View> monkeyHeads = new ArrayList<>();
 
-    private Jam.StateChangeCallback mJamListener;
+    private _OldJam.StateChangeCallback mJamListener;
 
     private HashMap<Channel, View> channelViewMap = new HashMap<>();
 
@@ -444,7 +444,7 @@ public class MainFragment extends OMGFragment {
     }
 
     private void setupJamStateListener() {
-        mJamListener = new Jam.StateChangeCallback() {
+        mJamListener = new _OldJam.StateChangeCallback() {
 
             @Override
             void newState(final String state, Object... args) {

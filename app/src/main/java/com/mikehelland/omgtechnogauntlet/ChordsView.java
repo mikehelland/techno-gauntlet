@@ -26,7 +26,7 @@ public class ChordsView extends View {
     private int boxWidth;
     private int boxHeight;
 
-    private Jam mJam;
+    private _OldJam mJam;
 
     final private Bitmap images[];
 
@@ -140,7 +140,7 @@ public class ChordsView extends View {
     }
 
 
-    public void setJam(Jam jam) {
+    public void setJam(_OldJam jam) {
         mJam = jam;
     }
 

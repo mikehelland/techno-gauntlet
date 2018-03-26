@@ -1,17 +1,16 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.jam;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.Log;
 
 import com.mikehelland.omgtechnogauntlet.dsp.Dac;
-import com.mikehelland.omgtechnogauntlet.jam.OscillatorThread;
-import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-class OMGSoundPool extends SoundPool {
+class SoundManager {
 
     private static final int LOADED_FILES_LIMIT = 800;
 
@@ -25,6 +24,8 @@ class OMGSoundPool extends SoundPool {
     private boolean mIsDspRunning = false;
     private ArrayList<Dac> mDacs = new ArrayList<>();
 
+    private SoundPool soundPool = new SoundPool(32, AudioManager.STREAM_MUSIC, 100);
+
     private ConcurrentHashMap<String, Integer> loadedUrls = new ConcurrentHashMap<>();
 
     private ConcurrentHashMap<String, SoundSet.Sound> mSoundsToLoad = new ConcurrentHashMap<>();
@@ -36,8 +37,7 @@ class OMGSoundPool extends SoundPool {
 
     private boolean mShowedFileLimit = false;
 
-    OMGSoundPool(Context context, int i1, int i2, int i3) {
-        super(i1, i2, i3);
+    SoundManager(Context context) {
         mContext = context;
 
     }
@@ -129,11 +129,11 @@ class OMGSoundPool extends SoundPool {
                 if (sound.isPreset()) {
                     preset_id = sound.getPresetId();
 
-                    poolId = load(mContext, preset_id, 1);
+                    poolId = soundPool.load(mContext, preset_id, 1);
                 }
                 else {
                     path = mContext.getFilesDir() + "/" + Long.toString(sound.getSoundSetId()) + "/";
-                    poolId = load(path + Integer.toString(sound.getSoundSetIndex()), 1);
+                    poolId = soundPool.load(path + Integer.toString(sound.getSoundSetIndex()), 1);
                 }
                 loadedUrls.put(sound.getURL(), poolId);
             }
@@ -153,6 +153,6 @@ class OMGSoundPool extends SoundPool {
         if (mIsDspRunning) {
             mDspThread.interrupt();
         }
-        this.release();
+        soundPool.release();
     }
 }

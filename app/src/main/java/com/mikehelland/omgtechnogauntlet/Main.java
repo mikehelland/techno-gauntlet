@@ -11,12 +11,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+
 public class Main extends Activity {
 
-    Jam mJam;
+    Jam jam = new Jam();
+
     OMGSoundPool mPool;
     BluetoothManager mBtf;
-    Jam.StateChangeCallback mJamCallback;
     DatabaseContainer mDatabase;
 
     private WelcomeFragment mWelcomeFragment;
@@ -34,13 +36,15 @@ public class Main extends Activity {
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN|WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-
         setContentView(R.layout.main);
 
-        mPool =  new OMGSoundPool(getApplicationContext(), 32, AudioManager.STREAM_MUSIC, 100);
-        mJam = new Jam(new MelodyMaker(getApplicationContext()), mPool, "");
-
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
+
+        jam = new Jam();
+        jam.addPlayStatusChangeListener
+
+        mPool =  new OMGSoundPool(getApplicationContext(), 32, AudioManager.STREAM_MUSIC, 100);
+
         mBeatView.setJam(mJam);
         mJam.addInvalidateOnBeatListener(mBeatView);
         mBeatView.setOnClickListener(new View.OnClickListener() {
@@ -137,7 +141,7 @@ public class Main extends Activity {
 
     private void setupBluetoothJamCallback() {
 
-        mJamCallback = new Jam.StateChangeCallback() {
+        mJamCallback = new _OldJam.StateChangeCallback() {
 
             @Override
             void newState(String state, Object... args) {
@@ -212,7 +216,7 @@ public class Main extends Activity {
         };
     }
 
-    Jam loadJam(String json) {
+    _OldJam loadJam(String json) {
 
         boolean allGood = true;
         int backstack = getFragmentManager().getBackStackEntryCount();
@@ -228,7 +232,7 @@ public class Main extends Activity {
 
         if (!allGood) return null;
 
-        Jam tjam = null;
+        _OldJam tjam = null;
         try {
             Log.e("MGH load json", json);
             tjam = JamLoader.load(json, this);
@@ -245,7 +249,7 @@ public class Main extends Activity {
             return null;
         }
 
-        final Jam jam = tjam;
+        final _OldJam jam = tjam;
 
         if (mJamCallback != null)
             jam.addStateChangeListener(mJamCallback);
@@ -254,7 +258,7 @@ public class Main extends Activity {
             @Override
             public void run() {
 
-                Jam oldJam = mJam;
+                _OldJam oldJam = mJam;
                 mJam = jam;
                 mJam.addInvalidateOnBeatListener(mBeatView);
                 mBeatView.setJam(mJam);

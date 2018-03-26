@@ -6,6 +6,11 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.NoteList;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+import com.mikehelland.omgtechnogauntlet.jam.Surface;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,13 +22,13 @@ import org.json.JSONObject;
 
 class JamLoader {
 
-    static Jam load(String json, final Main context) throws Exception {
+    static _OldJam load(String json, final Main context) throws Exception {
 
         if (context == null) {
             return null;
         }
 
-        Jam jam = new Jam(new MelodyMaker(context), context.mPool, getAppName(context));
+        _OldJam jam = new _OldJam(new MelodyMaker(context), context.mPool, getAppName(context));
         DatabaseContainer dbc = context.getDatabase();
 
         try {

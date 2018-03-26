@@ -145,7 +145,7 @@ public class MixerView extends View {
         if (action == MotionEvent.ACTION_DOWN) {
 
             if (x <= muteButtonWidth) {
-                //todo do this through the jamm Jam.toggleChannelEnabled(mChannel);
+                //todo do this through the jamm _OldJam.toggleChannelEnabled(mChannel);
                 if (mController != null) {
                     mController.onMuteChange(!mController.onGetMute());
                 }

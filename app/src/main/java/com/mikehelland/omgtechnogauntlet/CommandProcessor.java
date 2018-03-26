@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+
 /**
  * Created by m on 7/31/16.
  * the layer between the bluetooth connection and the jam
@@ -16,7 +19,7 @@ class CommandProcessor extends BluetoothDataCallback {
     private final static String CHANNEL_SET_ARPNOTES = "CHANNEL_SET_ARPNOTES";
 
     private BluetoothConnection mConnection;
-    private Jam mJam;
+    private _OldJam mJam;
     private Channel mChannel = null;
 
     private JamInfo mPeerJam;
@@ -34,7 +37,7 @@ class CommandProcessor extends BluetoothDataCallback {
         mDatabase = mContext.getDatabase();
     }
 
-    void setup(BluetoothConnection connection, Jam jam, Channel channel) {
+    void setup(BluetoothConnection connection, _OldJam jam, Channel channel) {
         mJam = jam;
         mConnection = connection;
 
@@ -185,7 +188,7 @@ class CommandProcessor extends BluetoothDataCallback {
 
 
 
-    static private String getChannelsInfo(Jam jam) {
+    static private String getChannelsInfo(_OldJam jam) {
         StringBuilder setChannels = new StringBuilder();
         for (int i = 0; i < jam.getChannels().size(); i++) {
             Channel channel = jam.getChannels().get(i);
@@ -311,7 +314,7 @@ class CommandProcessor extends BluetoothDataCallback {
             channelInfo.split("");
         }
     }
-    static String getChannelsInfoCommand(Jam jam) {
+    static String getChannelsInfoCommand(_OldJam jam) {
         return "SET_CHANNELS=" + getChannelsInfo(jam);
     }*/
 

@@ -13,7 +13,7 @@ public class MixerFragment extends OMGFragment {
 
     private HashMap<Channel, View> mPanels = new HashMap<>();
 
-    private Jam.StateChangeCallback mCallback;
+    private _OldJam.StateChangeCallback mCallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -27,7 +27,7 @@ public class MixerFragment extends OMGFragment {
         setupPanels(inflater);
 
 
-        mCallback = new Jam.StateChangeCallback() {
+        mCallback = new _OldJam.StateChangeCallback() {
             @Override void newState(String state, Object... args) {}
             @Override void onSubbeatLengthChange(int length, String source) {}
             @Override void onKeyChange(int key, String source) {}

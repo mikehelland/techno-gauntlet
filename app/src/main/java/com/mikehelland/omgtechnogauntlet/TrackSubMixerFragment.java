@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mikehelland.omgtechnogauntlet.jam.SequencerTrack;
+
 public class TrackSubMixerFragment extends OMGFragment {
 
     private View mView;

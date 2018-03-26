@@ -1,4 +1,4 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.jam;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Created by m on 3/17/18.
  */
 
-class SequencerPattern {
+public class SequencerPattern {
     private CopyOnWriteArrayList<SequencerTrack> mTracks = new CopyOnWriteArrayList<>();
 
     boolean[][] updateTracks(ArrayList<SoundSet.Sound> sounds) {

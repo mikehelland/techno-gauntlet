@@ -1,39 +1,35 @@
 package com.mikehelland.omgtechnogauntlet;
 
 //import android.support.v4.app.Fragment;
-import android.app.Activity;
+
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+
 public class OMGFragment extends Fragment{
 
-    protected Jam mJam;
+    private Jam jam;
     protected OMGSoundPool mPool;
     protected BluetoothManager mBtf;
-    protected Jam.StateChangeCallback mJamCallback;
+    //protected _OldJam.StateChangeCallback mJamCallback;
 
     protected void getActivityMembers() {
 
         Main main = ((Main)getActivity());
-        mJam = main.mJam;
+        //mJam = main.mJam;
         mPool = main.mPool;
         mBtf = main.mBtf;
-        mJamCallback = main.mJamCallback;
+        //mJamCallback = main.mJamCallback;
     }
 
     protected Jam getJam() {
-        Activity activity = getActivity(); if (activity == null) return null;
-        return ((Main)activity).mJam;
+        return jam;
     }
 
-    protected void setJam(Jam jam) {
-        Activity activity = getActivity(); if (activity == null) return;
-        ((Main)activity).mJam = jam;
-    }
-
-    protected void animateFragment(Fragment f, int direction) {
-
+    protected void animateFragment(OMGFragment f, int direction) {
+        f.jam = jam;
         try {
             FragmentManager fm = getFragmentManager();
             if (fm != null) {
@@ -48,6 +44,10 @@ public class OMGFragment extends Fragment{
                 else if (direction == 2) {
                     ft.setCustomAnimations(R.animator.slide_in_left, R.animator.slide_out_right,
                             R.animator.slide_in_right, R.animator.slide_out_left
+                    );
+                } if (direction == 3) {
+                    ft.setCustomAnimations(R.animator.slide_in_up, R.animator.slide_out_down,
+                            R.animator.slide_in_down, R.animator.slide_out_up
                     );
                 }
                 else {

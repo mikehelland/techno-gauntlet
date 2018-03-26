@@ -16,7 +16,6 @@ import android.widget.ListView;
  */
 public class KeyFragment extends OMGFragment {
 
-    private Jam mJam;
     private View mView;
     private MainFragment mainFragment;
 
@@ -26,18 +25,9 @@ public class KeyFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.choosekey,
                 container, false);
 
-        if (mJam != null)
-            setup();
+        setup();
 
         return mView;
-    }
-
-    public void setJam(Jam jam, MainFragment main) {
-        mJam = jam;
-        mainFragment = main;
-
-        if (mView != null)
-            setup();
     }
 
     public void setup() {
@@ -51,20 +41,20 @@ public class KeyFragment extends OMGFragment {
                 android.R.layout.simple_list_item_single_choice, roots);
         rootsList.setAdapter(adapter);
 
-        rootsList.setItemChecked(mJam.getKey(), true);
+        rootsList.setItemChecked(getJam().getKey(), true);
 
         ListView scalesList = (ListView)mView.findViewById(R.id.scales_list);
         ArrayAdapter<String> scaleAdapter = new ArrayAdapter<String>(activity,
                 android.R.layout.simple_list_item_single_choice, scales);
         scalesList.setAdapter(scaleAdapter);
 
-        scalesList.setItemChecked(mJam.getScaleIndex(), true);
+        scalesList.setItemChecked(getJam().getScaleIndex(), true);
 
 
         rootsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mJam.setKey(i);
+                getJam().setKey(i);
 
                 mainFragment.updateKeyUI();
             }
@@ -74,7 +64,7 @@ public class KeyFragment extends OMGFragment {
         scalesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mJam.setScale(i);
+                getJam().setScale();
 
                 mainFragment.updateKeyUI();
             }

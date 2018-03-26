@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 
+import com.mikehelland.omgtechnogauntlet.jam.Surface;
+
 /**
  * User: m
  * Date: 5/6/14
@@ -16,7 +18,7 @@ import android.widget.SeekBar;
  */
 public class ChannelOptionsFragment extends OMGFragment {
 
-    private Jam mJam;
+    private _OldJam mJam;
     private View mView;
     private Channel mChannel;
 
@@ -32,7 +34,7 @@ public class ChannelOptionsFragment extends OMGFragment {
         return mView;
     }
 
-    public void setJam(Jam jam, Channel channel) {
+    public void setJam(_OldJam jam, Channel channel) {
         mJam = jam;
         mChannel = channel;
 

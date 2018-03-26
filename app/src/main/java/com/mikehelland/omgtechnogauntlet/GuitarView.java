@@ -11,6 +11,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.NoteList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +38,7 @@ public class GuitarView extends View {
     private float boxHeight;
     private float boxHeightHalf;
 
-    private Jam mJam;
+    private _OldJam mJam;
     private Channel mChannel;
 
     private Paint topPanelPaint;
@@ -258,7 +261,7 @@ public class GuitarView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Channel channel, Fretboard fretboard) {
+    public void setJam(_OldJam jam, Channel channel, Fretboard fretboard) {
         mJam = jam;
         mChannel = channel;
 

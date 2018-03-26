@@ -22,7 +22,7 @@ public class SampleSpeedView extends View {
     private int width2 = -1;
     private int height = -1;
 
-    private Jam mJam;
+    private _OldJam mJam;
     private Channel mChannel;
 
     private Paint topPanelPaint;
@@ -140,7 +140,7 @@ public class SampleSpeedView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Channel channel, String name, int channelNumber) {
+    public void setJam(_OldJam jam, Channel channel, String name, int channelNumber) {
         mJam = jam;
         mChannel = channel;
         this.channelNumber = channelNumber;

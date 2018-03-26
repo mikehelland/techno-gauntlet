@@ -156,7 +156,7 @@ public class ZoomVerticalView extends View {
 
     }
 
-    public void setJam(Jam jam, Channel channel) {
+    public void setJam(_OldJam jam, Channel channel) {
         key = jam.getKey();
         scale = jam.getScale();
         mChannel = channel;

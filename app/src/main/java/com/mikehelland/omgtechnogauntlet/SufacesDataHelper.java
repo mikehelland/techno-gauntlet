@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.mikehelland.omgtechnogauntlet.jam.Surface;
+
 class SufacesDataHelper extends SQLiteOpenHelper {
 
     SufacesDataHelper(Context context) {

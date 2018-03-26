@@ -11,13 +11,13 @@ class OMGHelper {
 
     private Context mContext;
 
-    private Jam mJam;
+    private _OldJam mJam;
 
     enum Type {
         DRUMBEAT, BASSLINE, MELODY, CHORDPROGRESSION, SECTION
     }
 
-    OMGHelper(Context context, Jam jam) {
+    OMGHelper(Context context, _OldJam jam) {
         mContext =  context;
         mJam = jam;
 

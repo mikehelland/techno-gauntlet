@@ -1,8 +1,8 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.jam;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-class NoteList extends CopyOnWriteArrayList<Note> {
+public class NoteList extends CopyOnWriteArrayList<Note> {
 
     private int beats = 8;
     //todo this should come from the jam, which we don't have access to!

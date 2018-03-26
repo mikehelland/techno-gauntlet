@@ -1,4 +1,4 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.jam;
 
 /**
  * User: m
@@ -62,7 +62,7 @@ public class Note {
         return scaledNote;
     }
 
-    Note cloneNote() {
+    public Note cloneNote() {
         Note ret = new Note();
         ret.mBeats = mBeats;
         ret.isrest = isrest;

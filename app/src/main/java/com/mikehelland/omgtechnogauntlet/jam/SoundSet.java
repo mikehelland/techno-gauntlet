@@ -1,4 +1,4 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.jam;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-class SoundSet {
+public class SoundSet {
 
     private String mName;
     private String mURL;
@@ -20,6 +20,7 @@ class SoundSet {
     private boolean mChromatic = false;
     private int mHighNote;
     private int mLowNote;
+    private int mRootNote;
 
     private String mPrefix = "";
     private String mPostfix = "";
@@ -37,7 +38,8 @@ class SoundSet {
 
     SoundSet() {}
 
-    SoundSet(Cursor cursor) {
+    //todo Cursor!?!
+    public SoundSet(Cursor cursor) {
         mName = cursor.getString(cursor.getColumnIndex("name"));
         mURL = cursor.getString(cursor.getColumnIndex("url"));
         mID = cursor.getLong(cursor.getColumnIndex("_id"));
@@ -45,7 +47,7 @@ class SoundSet {
         mIsValid = loadFromJSON(cursor.getString(cursor.getColumnIndex("data")));
     }
 
-    SoundSet(ContentValues data) {
+    public SoundSet(ContentValues data) {
         mName = (String)data.get("name");
         mURL = (String)data.get("url");
         mID = (long)data.get("_id");
@@ -148,7 +150,7 @@ class SoundSet {
         return true;
     }
 
-    boolean isChromatic() {
+    public boolean isChromatic() {
         return mChromatic;
     }
     int getHighNote() {
@@ -176,7 +178,7 @@ class SoundSet {
     }
 
     //public void setID(long ID) {
-    //    this.mID = ID;
+    //    this.id = ID;
     //}
     long getID() {
         return mID;
@@ -206,7 +208,7 @@ class SoundSet {
         return mIsSoundFont;
     }
 
-    class Sound {
+    public class Sound {
 
         private String mName = "";
         private String mURL = "";
@@ -222,7 +224,7 @@ class SoundSet {
             this.mName = mName;
         }
 
-        String getURL() {
+        public String getURL() {
             return mURL;
         }
 
@@ -259,4 +261,13 @@ class SoundSet {
         }
     }
 
+    void getData(StringBuilder sb) {
+        sb.append("{\"url\": \"");
+        sb.append(mURL);
+        sb.append("\", \"name\": \"");
+        sb.append(mName);
+        sb.append("\", \"soundFont\": ");
+        sb.append(mIsSoundFont);
+        sb.append("}");
+    }
 }

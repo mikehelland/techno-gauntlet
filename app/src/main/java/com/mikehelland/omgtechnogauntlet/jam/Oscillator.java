@@ -1,4 +1,4 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.jam;
 
 import com.mikehelland.omgtechnogauntlet.dsp.Dac;
 import com.mikehelland.omgtechnogauntlet.dsp.Delay;

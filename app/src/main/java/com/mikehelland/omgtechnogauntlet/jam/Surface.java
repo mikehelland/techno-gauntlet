@@ -1,11 +1,11 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.jam;
 
 /**
  * Created by m on 3/13/18.
  * hold info for ui
  */
 
-class Surface {
+public class Surface {
     final static String PRESET_FRETBOARD = "PRESET_FRETBOARD";
     final static String PRESET_SEQUENCER = "PRESET_SEQUENCER";
     final static String PRESET_VERTICAL = "PRESET_VERTICAL";
@@ -34,7 +34,7 @@ class Surface {
 
     String getURL() {return mURL;}
 
-    Surface copy() {
+    public Surface copy() {
         Surface surface = new Surface();
         surface.setURL(mURL);
         surface.setName(mName);

@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

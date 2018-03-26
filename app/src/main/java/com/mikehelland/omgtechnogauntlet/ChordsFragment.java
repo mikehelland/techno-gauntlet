@@ -16,7 +16,7 @@ import android.widget.ListView;
  */
 public class ChordsFragment extends OMGFragment {
 
-    private Jam mJam;
+    private _OldJam mJam;
     private View mView;
 
     ChordsView mChordsView;
@@ -35,7 +35,7 @@ public class ChordsFragment extends OMGFragment {
         return mView;
     }
 
-    public void setJam(Jam jam) {
+    public void setJam(_OldJam jam) {
         mJam = jam;
 
         if (mView != null)
