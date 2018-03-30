@@ -9,8 +9,8 @@ public class SequencerTrack {
     AudioParameters audioParameters;
     private boolean[] data = new boolean[512];
 
-    String getName() {return name;}
-    boolean isMuted() {return audioParameters.mute;}
+    public String getName() {return name;}
+    public boolean isMuted() {return audioParameters.mute;}
     boolean[] getData() {return data;}
 
     SequencerTrack(String name) {
@@ -30,9 +30,9 @@ public class SequencerTrack {
     }
 
     void setPan(float pan) {audioParameters.pan = pan;}
-    float getPan() {return audioParameters.pan;}
+    public float getPan() {return audioParameters.pan;}
 
     void setVolume(float volume) {audioParameters.volume = volume;}
-    float getVolume() {return audioParameters.volume;}
+    public float getVolume() {return audioParameters.volume;}
 
 }

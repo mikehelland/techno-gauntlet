@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.mikehelland.omgtechnogauntlet.R;
-import com.mikehelland.omgtechnogauntlet.SoundSetDataOpenHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,121 +13,56 @@ import org.json.JSONObject;
 
 /**
  * Created by m on 2/28/18.
- * take the loading out of the jam, because it needs access to the database
+ * load up a Section model from JSON
  */
 
 class SectionFromJSON {
 
-    static Section fromOMG(String json) throws Exception {
+    static Section fromJSON(String json) throws Exception {
 
-        Section jam = new Section();
+        Section section = new Section();
 
         try {
 
             JSONObject jsonData = new JSONObject(json);
 
-            jam.beatParameters = loadBeatParameters();
-            jam.keyParameters = loadKeyParameters();
+            if (jsonData.has("tags")) {
+                section.tags = jsonData.getString("tags");
+            }
+
+            section.beatParameters = loadBeatParameters(jsonData);
+            section.keyParameters = loadKeyParameters(jsonData);
+
+            section.progression = loadChordProgession(jsonData);
 
             JSONArray parts;
             parts = jsonData.getJSONArray("parts");
 
-            if (jsonData.has("measures")) {
-                jam.beatParameters.measures = jsonData.getInt("measures");
-            }
-            if (jsonData.has("beats")) {
-                jam.beatParameters.beats = jsonData.getInt("beats");
-            }
-            if (jsonData.has("subbeats")) {
-                jam.beatParameters.subbeats = jsonData.getInt("subbeats");
-            }
-
-            if (jsonData.has("subbeatMillis")) {
-                jam.beatParameters.subbeatLength = jsonData.getInt("subbeatMillis");
-            }
-
-            if (jsonData.has("shuffle")) {
-                jam.beatParameters.shuffle = (float)jsonData.getDouble("shuffle");
-            }
-
-            if (jsonData.has("rootNote")) {
-                jam.keyParameters.rootNote = jsonData.getInt("rootNote") % 12;
-            }
-
-            if (jsonData.has("scale")) {
-                jam.setScale(jsonData.getString("scale"));
-            }
-
-            if (jsonData.has("chordProgression")) {
-                JSONArray chordsData = jsonData.getJSONArray("chordProgression");
-                int[] newChords = new int[chordsData.length()];
-                for (int ic = 0; ic < chordsData.length(); ic++) {
-                    newChords[ic] = chordsData.getInt(ic);
-                }
-                jam.progression = newChords;
-            }
-
-            if (jsonData.has("tags")) {
-                jam.tags = jsonData.getString("tags");
-            }
-
-            Part channel;
+            Part part;
 
             for (int ip = 0; ip < parts.length(); ip++) {
-                JSONObject part = parts.getJSONObject(ip);
+                JSONObject partJSON = parts.getJSONObject(ip);
 
-                String soundsetURL = part.getString("soundsetURL");
-
-                final SoundSetDataOpenHelper dataHelper = dbc.getSoundSetData();
-                SoundSet soundSet = dataHelper.getSoundSetByURL(soundsetURL);
-                if (soundSet != null) {
-                    channel = new Part(jam, context.mPool);
-                    channel.prepareSoundSet(soundSet);
-                    loadPart(channel, part);
-                    jam.getChannels().add(channel);
-                }
-                else {
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(context, dataHelper.getLastErrorMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+                part = new Part(section);
+                loadPart(part, partJSON);
+                section.parts.add(part);
             }
-
-            //todo jam.onNewLoop(System.currentTimeMillis());
-
         } catch (final JSONException e) {
             Log.e("MGH loaddata exception", e.getMessage());
             throw new Exception("Could not load data: " + e.getMessage());
         }
 
-        return jam;
+        return section;
     }
 
     static private void loadPart(Part part, JSONObject partJSON) throws  JSONException {
 
-        if (partJSON.has("surface")) {
-            JSONObject surfaceJSONObject = partJSON.getJSONObject("surface");
-            part.surface = loadSurface(surfaceJSONObject);
-        }
-        else if (partJSON.has("surfaceURL")) { //the old way
-            String surfaceURL = partJSON.getString("surfaceURL");
-            part.surface = new Surface(surfaceURL);
-        }
+        part.surface = loadSurface(partJSON);
+        part.soundSet = loadSoundSet(partJSON);
 
-        if (partJSON.has("volume")) {
-            part.setVolume((float)partJSON.getDouble("volume"));
-        }
-        if (partJSON.has("pan")) {
-            part.setPan((float)partJSON.getDouble("pan"));
-        }
-        if (partJSON.has("sampleSpeed")) {
-            part.setSampleSpeed((float)partJSON.getDouble("sampleSpeed"));
-        }
+        part.audioParameters = loadAudioParameters(partJSON);
 
-        if (part.useSequencer()) {
+        if (part.surface.getURL().equals(Surface.PRESET_SEQUENCER)) {
             loadDrums(part, partJSON);
         }
         else {
@@ -137,43 +70,27 @@ class SectionFromJSON {
         }
     }
 
-    static private void loadDrums(Channel jamChannel, JSONObject part) throws JSONException {
+    static private void loadDrums(Part part, JSONObject partJSON) throws JSONException {
 
-        JSONArray tracks = part.getJSONArray("tracks");
+        JSONArray tracks = partJSON.getJSONArray("tracks");
 
-        JSONObject track;
+        JSONObject trackJSON;
         JSONArray trackData;
-
-        boolean[][] pattern = jamChannel.pattern;
-
-        if (part.has("volume")) {
-            jamChannel.setVolume((float)part.getDouble("volume"));
-        }
-        if (part.has("mute") && part.getBoolean("mute"))
-            jamChannel.disable();
-        else
-            jamChannel.enable();
+        SequencerTrack track;
+        boolean[][] pattern = part.pattern;
 
         //underrun overrun?
         //match the right channels?
         // this assumes things are in the right order
 
         for (int i = 0; i < tracks.length(); i++) {
-            track = tracks.getJSONObject(i);
+            trackJSON = tracks.getJSONObject(i);
 
-            if (i < jamChannel.getPatternInfo().getTracks().size()) {
-                if (track.has("mute") && track.getBoolean("mute")) {
-                    jamChannel.getPatternInfo().getTrack(i).setMute(true);
-                }
-                if (track.has("volume")) {
-                    jamChannel.getPatternInfo().getTrack(i).setVolume((float)track.getDouble("volume"));
-                }
-                if (track.has("pan")) {
-                    jamChannel.getPatternInfo().getTrack(i).setPan((float)track.getDouble("pan"));
-                }
-            }
+            track = new SequencerTrack("todo"); //todo
+            track.audioParameters = loadAudioParameters(trackJSON);
+            part.sequencerPattern.getTracks().add(track);
 
-            trackData = track.getJSONArray("data");
+            trackData = trackJSON.getJSONArray("data");
 
             for (int j = 0; j < trackData.length(); j++) {
                 if (i < pattern.length && j < pattern[i].length)
@@ -183,20 +100,12 @@ class SectionFromJSON {
         }
     }
 
-    static private void loadMelody(Channel channel, JSONObject part) throws JSONException {
+    static private void loadMelody(Part part, JSONObject jsonData) throws JSONException {
 
-        NoteList notes = channel.getNotes();
+        NoteList notes = part.notes;
         notes.clear();
 
-        if (part.has("volume")) {
-            channel.setVolume((float)part.getDouble("volume"));
-        }
-        if (part.has("mute") && part.getBoolean("mute"))
-            channel.disable();
-        else
-            channel.enable();
-
-        JSONArray notesData = part.getJSONArray("notes");
+        JSONArray notesData = jsonData.getJSONArray("notes");
 
         Note newNote;
         JSONObject noteData;
@@ -211,7 +120,7 @@ class SectionFromJSON {
 
             if (!newNote.isRest()) {
                 newNote.setBasicNote(noteData.getInt("note"));
-                if (!channel.getSoundSet().isChromatic()) {
+                if (!part.soundSet.isChromatic()) {
                     newNote.setScaledNote(newNote.getBasicNote());
                     newNote.setInstrumentNote(newNote.getBasicNote());
                 }
@@ -233,21 +142,139 @@ class SectionFromJSON {
         return appName;
     }
 
-    private static Surface loadSurface(JSONObject jsonObject) throws JSONException{
+    private static Surface loadSurface(JSONObject jsonData) throws JSONException{
         final Surface surface = new Surface();
-        surface.setName(jsonObject.getString("name"));
-        surface.setURL(jsonObject.getString("url"));
-        if (jsonObject.has("skipBottom") && jsonObject.has("skipTop")) {
-            surface.setSkipBottomAndTop(jsonObject.getInt("skipBottom"),
-                    jsonObject.getInt("skipTop"));
+
+        if (jsonData.has("surface")) {
+            JSONObject surfaceJSONObject = jsonData.getJSONObject("surface");
+
+            surface.setName(surfaceJSONObject.getString("name"));
+            surface.setURL(surfaceJSONObject.getString("url"));
+            if (jsonData.has("skipBottom") && jsonData.has("skipTop")) {
+                surface.setSkipBottomAndTop(jsonData.getInt("skipBottom"),
+                        jsonData.getInt("skipTop"));
+            }
         }
+        else if (jsonData.has("surfaceURL")) { //the old way
+            String surfaceURL = jsonData.getString("surfaceURL");
+            surface.setURL(surfaceURL);
+        }
+
         return  surface;
     }
 
-    private static BeatParameters loadBeatParameters(JSONObject jsonObject) {
+    private static SoundSet loadSoundSet(JSONObject jsonData) throws JSONException{
+        final SoundSet soundSet = new SoundSet();
 
+        JSONObject jsonObject = jsonData;
+        if (jsonData.has("soundset")) {
+            jsonObject = jsonData.getJSONObject("soundSet");
+
+            if (jsonObject.has("name")) {
+                soundSet.setName(jsonObject.getString("name"));
+            }
+            if (jsonObject.has("url")) {
+                soundSet.setURL(jsonObject.getString("url"));
+            }
+        }
+        else { // the old way
+            if (jsonData.has("soundsetURL")) { //the old way
+                soundSet.setURL(jsonData.getString("soundsetURL"));
+            }
+            if (jsonData.has("soundsetName")) { //the old way
+                soundSet.setName(jsonData.getString("soundsetName"));
+            }
+        }
+        if (jsonObject.has("soundFont")) {
+            soundSet.setSoundFont(jsonObject.getBoolean("soundFont"));
+        }
+
+        return  soundSet;
     }
-    private static KeyParameters loadKeyParameters(JSONObject jsonObject) {
 
+    private static BeatParameters loadBeatParameters(JSONObject jsonData) throws JSONException {
+        BeatParameters beatParameters = new BeatParameters();
+
+        if (jsonData.has("beatParameters")) {
+            jsonData = jsonData.getJSONObject("beatParameters");
+        }
+
+        if (jsonData.has("measures")) {
+            beatParameters.measures = jsonData.getInt("measures");
+        }
+        if (jsonData.has("beats")) {
+            beatParameters.beats = jsonData.getInt("beats");
+        }
+        if (jsonData.has("subbeats")) {
+            beatParameters.subbeats = jsonData.getInt("subbeats");
+        }
+        if (jsonData.has("subbeatMillis")) {
+            beatParameters.subbeatLength = jsonData.getInt("subbeatMillis");
+        }
+        if (jsonData.has("shuffle")) {
+            beatParameters.shuffle = (float)jsonData.getDouble("shuffle");
+        }
+        return beatParameters;
+    }
+
+    private static KeyParameters loadKeyParameters(JSONObject jsonData) throws JSONException {
+        KeyParameters keyParameters = new KeyParameters();
+        if (jsonData.has("keyParameters")) {
+            jsonData = jsonData.getJSONObject("keyParameters");
+        }
+
+        if (jsonData.has("rootNote")) {
+            keyParameters.rootNote = jsonData.getInt("rootNote") % 12;
+        }
+
+        JSONArray scaleJSON = null;
+        if (jsonData.has("ascale")) { // the old way
+            scaleJSON = jsonData.getJSONArray("ascale");
+        }
+        else if (jsonData.has("scale")) {
+            scaleJSON = jsonData.getJSONArray("scale");
+        }
+        if (scaleJSON != null) {
+            int[] scale = new int[scaleJSON.length()];
+            for (int i = 0; i < scaleJSON.length(); i++) {
+                scale[i] = scaleJSON.getInt(i);
+            }
+            keyParameters.scale = scale;
+        }
+        return keyParameters;
+    }
+
+    private static AudioParameters loadAudioParameters(JSONObject jsonData) throws JSONException{
+        AudioParameters audioParameters = new AudioParameters();
+
+        if (jsonData.has("audioParameters")) {
+            jsonData = jsonData.getJSONObject("audioParameters");
+        }
+
+        if (jsonData.has("mute")) {
+            audioParameters.mute = jsonData.getBoolean("mute");
+        }
+        if (jsonData.has("volume")) {
+            audioParameters.volume = (float)jsonData.getDouble("volume");
+        }
+        if (jsonData.has("pan")) {
+            audioParameters.pan = (float)jsonData.getDouble("pan");
+        }
+        if (jsonData.has("sampleSpeed")) {
+            audioParameters.speed = (float)jsonData.getDouble("sampleSpeed");
+        }
+        return audioParameters;
+    }
+
+    private static int[] loadChordProgession(JSONObject jsonData) throws JSONException {
+        int[] chords = new int[] {0};
+        if (jsonData.has("chordProgression")) {
+            JSONArray chordsData = jsonData.getJSONArray("chordProgression");
+            chords = new int[chordsData.length()];
+            for (int ic = 0; ic < chordsData.length(); ic++) {
+                chords[ic] = chordsData.getInt(ic);
+            }
+        }
+        return chords;
     }
 }

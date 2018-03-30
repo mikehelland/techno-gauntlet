@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mikehelland.omgtechnogauntlet.jam.Part;
+
 public class SampleSpeedFragment extends OMGFragment {
 
     private View mView;
@@ -35,7 +37,7 @@ public class SampleSpeedFragment extends OMGFragment {
             container.addView(controls);
 
             SampleSpeedView mixerView = (SampleSpeedView) controls.findViewById(R.id.levels_view);
-            mixerView.setJam(mJam, channel, channel.getSoundSetName(), i);
+            mixerView.setJam(getJam(), getJam().getCurrentPart(), getJam().getCurrentPart().getName());
             i++;
         }
 

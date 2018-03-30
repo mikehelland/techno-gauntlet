@@ -6,9 +6,9 @@ package com.mikehelland.omgtechnogauntlet.jam;
  */
 
 public class Surface {
-    final static String PRESET_FRETBOARD = "PRESET_FRETBOARD";
-    final static String PRESET_SEQUENCER = "PRESET_SEQUENCER";
-    final static String PRESET_VERTICAL = "PRESET_VERTICAL";
+    public final static String PRESET_FRETBOARD = "PRESET_FRETBOARD";
+    public final static String PRESET_SEQUENCER = "PRESET_SEQUENCER";
+    public final static String PRESET_VERTICAL = "PRESET_VERTICAL";
 
     private String mName = "";
     private String mURL = PRESET_VERTICAL;
@@ -17,7 +17,7 @@ public class Surface {
     private int mZoomSkipTop = 0;
 
     Surface() {}
-    Surface(String url) {
+    public Surface(String url) {
         mURL = url;
     }
 
@@ -28,7 +28,7 @@ public class Surface {
         mZoomSkipTop = top;
     }
 
-    int[] getSkipBottomAndTop() {
+    public int[] getSkipBottomAndTop() {
         return new int[]{mZoomSkipBotton, mZoomSkipTop};
     }
 

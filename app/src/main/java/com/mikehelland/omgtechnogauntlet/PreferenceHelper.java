@@ -14,7 +14,7 @@ public class PreferenceHelper {
     public static SharedPreferences getPrefs(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
-    public static String getLastChannelConfiguration(Context c) {
+    public static String getLastPartConfiguration(Context c) {
         return getPrefs(c).getString(LAST_CHANNEL_CONFIGURATION,
                 "PRESET_KEYBOARD,PRESET_BASS,PRESET_HIPKIT,PRESET_PERCUSSION_SAMPLER");
     }

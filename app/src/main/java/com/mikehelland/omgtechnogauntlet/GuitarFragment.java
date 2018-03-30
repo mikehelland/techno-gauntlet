@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
+
 /**
  * User: m
  * Date: 5/6/14
@@ -12,9 +14,8 @@ import android.view.ViewGroup;
  */
 public class GuitarFragment extends OMGFragment {
 
-    private _OldJam mJam;
     private GuitarView guitarView;
-    private Channel mChannel;
+    private OnSubbeatListener onSubbeatListener;
 
     private boolean mZoomMode = false;
 
@@ -25,30 +26,27 @@ public class GuitarFragment extends OMGFragment {
                 container, false);
 
         guitarView = (GuitarView)view.findViewById(R.id.guitarfrets);
-        if (mJam != null)
-            getPreferredFretboard();
 
+        onSubbeatListener = new OnSubbeatListener() {
+            @Override
+            public void onSubbeat(int subbeat) {
+                guitarView.postInvalidate();
+            }
+        };
+
+        getJam().addOnSubbeatListener(onSubbeatListener);
 
         return view;
-    }
-
-    public void setJam(_OldJam jam, Channel channel) {
-        mJam = jam;
-        mChannel = channel;
-
-        if (guitarView != null) {
-            getPreferredFretboard();
-        }
     }
 
     void setZoomModeOn() {
         mZoomMode = true;
     }
 
-    private Fretboard getPreferredFretboard() {
+    /*private Fretboard getPreferredFretboard() {
 
-        String surfaceURL = mChannel.getSurfaceURL();
-        String surfaceJSON = mChannel.getSurfaceJSON();
+        String surfaceURL = getPart().getSurfaceURL();
+        String surfaceJSON = getPart().getSurfaceJSON();
 
         Fretboard fretboard;
         if ("PRESET_VERTICAL".equals(surfaceURL)) {
@@ -58,18 +56,18 @@ public class GuitarFragment extends OMGFragment {
             if (surfaceJSON == null) {
                 surfaceJSON = getString(R.string.default_fretboard_json);
             }
-            fretboard = new Fretboard(mChannel, mJam, surfaceJSON);
+            fretboard = new Fretboard(mPart, mJam, surfaceJSON);
         }
 
         if (mZoomMode) {
             guitarView.setZoomModeOn();
         }
-        guitarView.setJam(mJam, mChannel, fretboard);
+        guitarView.setJam(mJam, mPart, fretboard);
         return null;
-    }
+    }*/
 
     public void onPause() {
         super.onPause();
-        mJam.removeInvalidateOnBeatListener(guitarView);
+        getJam().removeOnSubbeatListener(onSubbeatListener);
     }
 }

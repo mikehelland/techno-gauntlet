@@ -2,7 +2,6 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +12,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
+import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
+import com.mikehelland.omgtechnogauntlet.jam.Part;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,9 +35,9 @@ public class MainFragment extends OMGFragment {
 
     private List<View> monkeyHeads = new ArrayList<>();
 
-    private _OldJam.StateChangeCallback mJamListener;
+    private OnJamChangeListener mJamListener;
 
-    private HashMap<Channel, View> channelViewMap = new HashMap<>();
+    private HashMap<Part, View> channelViewMap = new HashMap<>();
 
     private boolean mLeavingNow = false;
 
@@ -63,21 +66,21 @@ public class MainFragment extends OMGFragment {
 
         mContainer = (ViewGroup) mView.findViewById(R.id.channel_list);
         //View controls;
-        for (Channel channel : mJam.getChannels()) {
+        for (Part channel : getJam().getParts()) {
             setupPanel(channel);
         }
     }
 
-    private void setupPanel(final Channel channel) {
+    private void setupPanel(final Part part) {
 
         View controls = mInflater.inflate(R.layout.main_panel, mContainer, false);
-        channelViewMap.put(channel, controls);
+        channelViewMap.put(part, controls);
 
         // the -1 keeps the add channel button on the bottom
         mContainer.addView(controls, mContainer.getChildCount() - 1);
 
         Button button = ((Button)controls.findViewById(R.id.track_button));
-        String name = channel.getSoundSetName();
+        String name = part.getName();
         int paransIndex = name.indexOf(" (");
         if (paransIndex > -1) {
             name = name.substring(0, paransIndex);
@@ -87,19 +90,17 @@ public class MainFragment extends OMGFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            if (channel.getSoundSet().getURL().length() == 0 ||
-                    !channel.getSoundSet().isValid()) {
+            if (!part.isValid()) {
                 return;
             }
 
-            if (channel.useSequencer()) {
+            if (part.useSequencer()) {
                 DrumFragment f = new DrumFragment();
-                f.setJam(mJam, channel);
+                getJam().setCurrentPart(part);
                 animateFragment(f, 0);
             }
             else {
                 GuitarFragment f = new GuitarFragment();
-                f.setJam(mJam, channel);
                 animateFragment(f, 0);
             }
             }
@@ -109,13 +110,11 @@ public class MainFragment extends OMGFragment {
             @Override
             public boolean onLongClick(View view) {
 
-                if (channel.getSoundSet().getURL().length() == 0 ||
-                        !channel.getSoundSet().isValid()) {
+                if (!part.isValid()) {
                     return false;
                 }
 
-                ChannelOptionsFragment f = new ChannelOptionsFragment();
-                f.setJam(mJam, channel);
+                PartOptionsFragment f = new PartOptionsFragment();
                 animateFragment(f, 0);
 
                 return true;
@@ -126,42 +125,43 @@ public class MainFragment extends OMGFragment {
         muteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                muteButton.setBackgroundColor(mJam.toggleChannelEnabled(channel) ?
-                        Color.GREEN : Color.RED);
+                boolean newMute = !part.getMute();
+                getJam().setPartMute(part, newMute, null);
+                muteButton.setBackgroundColor(newMute ? Color.RED : Color.GREEN);
             }
         });
-        muteButton.setBackgroundColor(channel.isEnabled() ?
+        muteButton.setBackgroundColor(!part.getMute() ?
                 Color.GREEN : Color.RED);
         muteButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                channel.clearNotes();
+                getJam().clearPart(part);
                 return true;
             }
         });
 
-        View monkeyHead = controls.findViewById(R.id.libeniz_head);
+        /*View monkeyHead = controls.findViewById(R.id.libeniz_head);
         monkeyHeads.add(monkeyHead);
         monkeyHead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 play();
 
-                mJam.monkeyWithChannel(channel);
+                getJam().monkeyWithPart(part);
 
                 Activity activity = getActivity(); if (activity == null)  return;
                 Animation turnin = AnimationUtils.loadAnimation(activity, R.anim.rotate);
                 view.startAnimation(turnin);
 
             }
-        });
+        });*/
 
         controls.findViewById(R.id.options_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 SoundSetFragment f = new SoundSetFragment();
-                f.setJam(mJam, channel);
+                getJam().setCurrentPart(part);
                 animateFragment(f, 0);
 
             }
@@ -171,13 +171,12 @@ public class MainFragment extends OMGFragment {
             @Override
             public boolean onLongClick(View view) {
 
-                if (channel.getSoundSet().getURL().length() == 0 ||
-                        !channel.getSoundSet().isValid()) {
+                if (!part.isValid()) {
                     return false;
                 }
 
-                ChannelOptionsFragment f = new ChannelOptionsFragment();
-                f.setJam(mJam, channel);
+                PartOptionsFragment f = new PartOptionsFragment();
+                getJam().setCurrentPart(part);
                 animateFragment(f, 0);
 
                 return true;
@@ -195,9 +194,7 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 //if (ActivityManager.isUserAMonkey()) return;
-
                 KeyFragment fragment = new KeyFragment();
-                fragment.setJam(mJam, MainFragment.this);
                 animateFragment(fragment, 0);
             }
         });
@@ -207,9 +204,7 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 //if (ActivityManager.isUserAMonkey()) return;
-
                 BeatsFragment fragment = new BeatsFragment();
-                fragment.setJam(mJam, MainFragment.this);
                 animateFragment(fragment, 0);
             }
         });
@@ -219,21 +214,24 @@ public class MainFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 //if (ActivityManager.isUserAMonkey()) return;
-
                 ChordsFragment fragment = new ChordsFragment();
-                fragment.setJam(mJam);
                 animateFragment(fragment, 0);
             }
         });
 
-        mChordsButton.setJam(mJam);
-        mJam.addInvalidateOnNewMeasureListener(mChordsButton);
+        mChordsButton.setJam(getJam());
+        getJam().addOnSubbeatListener(new OnSubbeatListener() { //todo remove it?
+            @Override
+            public void onSubbeat(int subbeat) {
+                mChordsButton.postInvalidate();
+            }
+        });
 
         updateUI();
     }
 
     @Override
-    protected void animateFragment(Fragment f, int direction) {
+    protected void animateFragment(OMGFragment f, int direction) {
         if (mLeavingNow)
             return;
 
@@ -247,24 +245,25 @@ public class MainFragment extends OMGFragment {
         mView.findViewById(R.id.add_channel_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (BuildConfig.FLAVOR.equals("demo") && mJam.getChannels().size() >= 4) {
+                if (BuildConfig.FLAVOR.equals("demo") && getJam().getParts().size() >= 4) {
                     if (ActivityManager.isUserAMonkey()) return;
-                    Fragment f = new UpgradeFragment();
-                    animateFragment(f, 0);
+                    animateFragment(new UpgradeFragment(), 0);
                     return;
                 }
 
-                final Channel channel = new Channel( mJam, mPool);
+                //todo oh oh oh how to create a new part before even adding it?
+                /*final Part channel = new Part( getJam(), mPool);
 
                 SoundSetFragment f = new SoundSetFragment();
-                f.setJam(mJam, channel);
+                f.setJam(getJam(), channel);
                 f.setCallback(new SoundSetFragment.ChoiceCallback() {
                     void onChoice(SoundSet soundSet) {
-                        mJam.addChannel(channel);
-                        mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
+                        getJam().addPart(channel);
+                        //todo nah, do this next line from a listener of the above line, you fine?
+                        mBtf.sendCommandToDevices(CommandProcessor.getNewPartCommand(channel), null);
                     }
                 });
-                animateFragment(f, 0);
+                animateFragment(f, 0);*/
 
             }
         });
@@ -274,7 +273,7 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
                 if (ActivityManager.isUserAMonkey()) return;
 
-                Fragment f = new BluetoothBrainFragment();
+                OMGFragment f = new BluetoothBrainFragment();
                 animateFragment(f, 1);
             }
         });
@@ -284,15 +283,15 @@ public class MainFragment extends OMGFragment {
         mixerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mJam.getChannels().size() == 0) {
+                if (getJam().getParts().size() == 0) {
                     Activity context = getActivity();
                     if (context != null) {
-                        Toast.makeText(context, "Add Channels before you mix them!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "Add Parts before you mix them!", Toast.LENGTH_LONG).show();
                     }
                     return;
                 }
                 MixerFragment fragment = new MixerFragment();
-                //fragment.setJam(mJam, MainFragment.this);
+                //fragment.setJam(getJam(), MainFragment.this);
                 animateFragment(fragment, 0);
 
             }
@@ -300,26 +299,26 @@ public class MainFragment extends OMGFragment {
         mixerButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (mJam.getChannels().size() == 0) {
+                if (getJam().getParts().size() == 0) {
                     Activity context = getActivity();
                     if (context != null) {
-                        Toast.makeText(context, "Add Channels before you mix them!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "Add Parts before you mix them!", Toast.LENGTH_LONG).show();
                     }
                     return true;
                 }
                 SampleSpeedFragment fragment = new SampleSpeedFragment();
-                //fragment.setJam(mJam, MainFragment.this);
+                //fragment.setJam(getJam(), MainFragment.this);
                 animateFragment(fragment, 0);
                 return true;
             }
         });
 
-        ImageView mainLibenizHead = (ImageView)mView.findViewById(R.id.libeniz_head);
+        /*ImageView mainLibenizHead = (ImageView)mView.findViewById(R.id.libeniz_head);
         mainLibenizHead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 play();
-                mJam.monkeyWithEverything();
+                getJam().monkeyWithEverything();
 
                 Activity activity = getActivity(); if (activity == null)  return;
                 Animation turnin = AnimationUtils.loadAnimation(activity, R.anim.rotate);
@@ -331,13 +330,13 @@ public class MainFragment extends OMGFragment {
 
                 //updateUI();
             }
-        });
+        })*/;
 
-        setupMainBanana();
+        setupUploadButton();
 
     }
 
-    private void setupMainBanana() {
+    private void setupUploadButton() {
 
         final View savedPanel = mView.findViewById(R.id.saved_panel);
 
@@ -361,8 +360,7 @@ public class MainFragment extends OMGFragment {
         tagsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment f = new AddTagsFragment();
-                animateFragment(f, 3);
+                animateFragment(new AddTagsFragment(), 3);
             }
         });
 
@@ -402,13 +400,6 @@ public class MainFragment extends OMGFragment {
 
     }
 
-
-    private void play() {
-        if (!mJam.isPlaying()) {
-            mJam.kickIt();
-        }
-    }
-
     public void onViewStateRestored(Bundle bundle) {
         super.onViewStateRestored(bundle);
         updateUI();
@@ -428,31 +419,31 @@ public class MainFragment extends OMGFragment {
     }
 
     public void updateBPMUI() {
-        bpmButton.setText(String.format("%s bpm", Integer.toString(mJam.getBPM())));
+        bpmButton.setText(String.format("%s bpm", Integer.toString(getJam().getBPM())));
     }
 
     public void updateKeyUI() {
-        mKeyButton.setText(mJam.getKeyName());
+        mKeyButton.setText(getJam().getKeyName());
     }
 
     private void saveJam(boolean share){
         Activity activity = getActivity(); if (activity == null)  return;
 
-        OMGHelper omgHelper = new OMGHelper(activity, mJam);
+        OMGHelper omgHelper = new OMGHelper(activity, getJam());
         omgHelper.submit(share);
 
     }
 
     private void setupJamStateListener() {
-        mJamListener = new _OldJam.StateChangeCallback() {
+        mJamListener = new OnJamChangeListener() {
 
             @Override
-            void newState(final String state, Object... args) {
+            public void newState(final String state, Object... args) {
             }
 
 
             @Override
-            void onSubbeatLengthChange(int length, String source) {
+            public void onSubbeatLengthChange(int length, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
 
                 activity.runOnUiThread(new Runnable() {
@@ -464,7 +455,7 @@ public class MainFragment extends OMGFragment {
             }
 
             @Override
-            void onKeyChange(int key, String source) {
+            public void onKeyChange(int key, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
                 activity.runOnUiThread(new Runnable() {
                         @Override
@@ -475,7 +466,7 @@ public class MainFragment extends OMGFragment {
             }
 
             @Override
-            void onScaleChange(String scale, String source) {
+            public void onScaleChange(String scale, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
 
                 activity.runOnUiThread(new Runnable() {
@@ -487,7 +478,7 @@ public class MainFragment extends OMGFragment {
             }
 
             @Override
-            void onChordProgressionChange(int[] chords) {
+            public void onChordProgressionChange(int[] chords) {
                 Activity activity = getActivity(); if (activity == null)  return;
                 activity.runOnUiThread(new Runnable() {
                         @Override
@@ -497,7 +488,7 @@ public class MainFragment extends OMGFragment {
                     });
             }
             @Override
-            void onNewChannel(final Channel channel) {
+            public void onNewPart(final Part channel) {
                 Activity activity = getActivity(); if (activity == null)  return;
                 activity.runOnUiThread(new Runnable() {
                         @Override
@@ -507,7 +498,7 @@ public class MainFragment extends OMGFragment {
                     });
             }
             @Override
-            void onChannelEnabledChanged(final Channel channel, final boolean enabled, String source) {
+            public void onPartEnabledChanged(final Part channel, final boolean enabled, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
                 activity.runOnUiThread(new Runnable() {
                         @Override
@@ -521,18 +512,18 @@ public class MainFragment extends OMGFragment {
             }
 
             @Override
-            void onChannelVolumeChanged(Channel channel, float volume, String source) {}
+            public void onPartVolumeChanged(Part channel, float volume, String source) {}
             @Override
-            void onChannelPanChanged(Channel channel, float pan, String source) {}
+            public void onPartPanChanged(Part channel, float pan, String source) {}
         };
 
-        mJam.addStateChangeListener(mJamListener);
+        getJam().addOnJamChangeListener(mJamListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mJam.removeStateChangeListener(mJamListener);
+        getJam().removeOnJamChangeListener(mJamListener);
     }
 }
 

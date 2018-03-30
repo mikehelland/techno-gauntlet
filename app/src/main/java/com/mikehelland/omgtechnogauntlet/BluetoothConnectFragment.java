@@ -9,6 +9,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothReadyCallback;
+
 public class BluetoothConnectFragment extends OMGFragment {
 
     private View mView;
@@ -132,7 +136,7 @@ public class BluetoothConnectFragment extends OMGFragment {
         }
 
         CommandProcessor cp = new CommandProcessor(activity);
-        cp.setup(connection, mJam, null);
+        cp.setup(connection, getJam(), null);
         connection.setDataCallback(cp);
     }
 }

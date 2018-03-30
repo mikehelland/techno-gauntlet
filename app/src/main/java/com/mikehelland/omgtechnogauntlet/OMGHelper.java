@@ -3,6 +3,8 @@ package com.mikehelland.omgtechnogauntlet;
 import android.content.Context;
 import android.content.Intent;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+
 class OMGHelper {
 
     private static String mSubmitUrl = "data/";
@@ -11,13 +13,13 @@ class OMGHelper {
 
     private Context mContext;
 
-    private _OldJam mJam;
+    private Jam mJam;
 
     enum Type {
         DRUMBEAT, BASSLINE, MELODY, CHORDPROGRESSION, SECTION
     }
 
-    OMGHelper(Context context, _OldJam jam) {
+    OMGHelper(Context context, Jam jam) {
         mContext =  context;
         mJam = jam;
 

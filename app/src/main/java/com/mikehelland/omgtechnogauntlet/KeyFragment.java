@@ -48,15 +48,16 @@ public class KeyFragment extends OMGFragment {
                 android.R.layout.simple_list_item_single_choice, scales);
         scalesList.setAdapter(scaleAdapter);
 
-        scalesList.setItemChecked(getJam().getScaleIndex(), true);
+        //todo make a keyHelper or just scan the list and manually set it
+        //scalesList.setItemChecked(getJam().getScaleIndex(), true);
 
 
         rootsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                getJam().setKey(i);
+                //todo getJam().setKey(i);
 
-                mainFragment.updateKeyUI();
+                //todo this doesn't look right: mainFragment.updateKeyUI();
             }
 
         });
@@ -64,9 +65,9 @@ public class KeyFragment extends OMGFragment {
         scalesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                getJam().setScale();
+                //todo getJam().setScale();
 
-                mainFragment.updateKeyUI();
+                //todo this doesn't look right: mainFragment.updateKeyUI();
             }
         });
 

@@ -1,19 +1,39 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Jam {
 
     private Section section;
-    private Player player;
+    private Player player = new Player();
+    private SoundManager soundManager;
+
+    private ArrayList<OnSubbeatListener> onSubbeatListeners = new ArrayList<>();
+    private ArrayList<OnJamChangeListener> onJamChangeListeners = new ArrayList<>();
+    private OnGetSoundSetListener onGetSoundSetListener;
 
     private Part currentPart;
 
-    public Jam() {
+    public Jam(SoundManager soundManager, OnGetSoundSetListener onGetSoundSetListener) {
+        this.soundManager = soundManager;
+        this.onGetSoundSetListener = onGetSoundSetListener;
     }
 
     public void loadFromJSON(String json) {
-        SectionFromJSON.fromOMG(json);
+        try {
+            section = SectionFromJSON.fromJSON(json);
+
+            for (Part part : section.parts) {
+                loadSoundSetForPart(part);
+            }
+
+            soundManager.loadSounds();
+
+        } catch (Exception e) {
+            //todo warn something here
+            e.printStackTrace();
+        }
     }
 
 
@@ -106,14 +126,14 @@ public class Jam {
     public int getTotalBeats() {
         return section.beatParameters.beats * section.beatParameters.measures;
     }
-    String getKeyName() {
+    public String getKeyName() {
         return "Figure keyname out";
     }
-    int getBPM() {
+    public int getBPM() {
         return 60000 / (section.beatParameters.subbeatLength * section.beatParameters.subbeats);
     }
-    void setBPM(float bpm) {
-        setSubbeatLength((int)((60000 / bpm) / section.beatParameters.subbeats));
+    public void setBPM(float bpm) {
+        setSubbeatLength((int)((60000 / bpm) / section.beatParameters.subbeats), null);
     }
 
     public void play() {
@@ -125,11 +145,12 @@ public class Jam {
     }
 
     public void finish() {
-        player.cleanUp();
+        player.finish();
+        //player.cleanUp();
         //todo unref everything here
     }
 
-    public void setPartMute(Part part, boolean mute, Object o) {
+    public void setPartMute(Part part, boolean mute, String device) {
         part.audioParameters.mute = mute;
     }
 
@@ -151,9 +172,52 @@ public class Jam {
         return part.audioParameters.pan;
     }
 
-    abstract static class PlayStatusChangeListener {
-        abstract void onPlay();
-        abstract void onStop();
+    public String getData() {
+        return SectionToJSON.getData(section);
+    }
+
+    public void removePart(Part part) {
+
+    }
+
+    public void clearPart(Part part) {
+
+    }
+
+    public void copyPart(Part part) {
+
+    }
+
+    public void setPartSpeed(Part part, float speed) {
+        part.audioParameters.speed = speed;
+    }
+
+    public void setPartTrackMute(Part part, boolean mute) {
+        part.audioParameters.mute = mute;
+    }
+
+    public void setPartTrackVolume(Part part, float volume) {
+        part.audioParameters.volume = volume;
+    }
+
+    public void setPartTrackPan(Part part, float pan) {
+        part.audioParameters.pan = pan;
+    }
+
+    public void addOnSubbeatListener(OnSubbeatListener listener) {
+        onSubbeatListeners.add(listener);
+    }
+
+    public void removeOnSubbeatListener(OnSubbeatListener listener) {
+        onSubbeatListeners.remove(listener);
+    }
+
+    public void addOnJamChangeListener(OnJamChangeListener listener) {
+        onJamChangeListeners.add(listener);
+    }
+
+    public void removeOnJamChangeListener(OnJamChangeListener listener) {
+        onJamChangeListeners.remove(listener);
     }
 
     public void setCurrentPart(Part currentPart) {
@@ -164,4 +228,24 @@ public class Jam {
     }
 
 
+    public boolean isReady() {
+        return section != null;
+    }
+
+    private void loadSoundSetForPart(Part part) {
+        if (onGetSoundSetListener == null) {
+            return;
+        }
+
+        SoundSet soundSet = onGetSoundSetListener.onGetSoundSet(part.soundSet.getURL());
+        if (soundSet == null) {
+            return;
+        }
+
+        part.soundSet = soundSet;
+
+        for (SoundSet.Sound sound : soundSet.getSounds()) {
+            soundManager.addSoundToLoad(sound);
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.bluetooth;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -10,7 +10,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-class BluetoothConnection extends Thread {
+public class BluetoothConnection extends Thread {
     private BluetoothDevice mDevice;
     private BluetoothManager bluetoothFactory;
     private final InputStream mmInStream;
@@ -86,15 +86,15 @@ class BluetoothConnection extends Thread {
         }
     }
 
-    boolean isDisconnected() {
+    public boolean isDisconnected() {
         return disconnected;
     }
 
-    void sendNameValuePair(String name, String value) {
+    public void sendNameValuePair(String name, String value) {
         writeString(name + "=" + value + ";");
     }
 
-    void sendCommand(String command) {
+    public void sendCommand(String command) {
         writeString(command + ";");
     }
 
@@ -131,7 +131,7 @@ class BluetoothConnection extends Thread {
         return mDevice;
     }
 
-    void setDataCallback(BluetoothDataCallback callback) {
+    public void setDataCallback(BluetoothDataCallback callback) {
         mDataCallback = callback;
     }
 

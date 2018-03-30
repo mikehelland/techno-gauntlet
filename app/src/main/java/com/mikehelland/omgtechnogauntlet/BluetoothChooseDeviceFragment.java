@@ -10,6 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothReadyCallback;
+
 import java.util.ArrayList;
 import java.util.List;
 

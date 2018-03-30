@@ -29,7 +29,6 @@ import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 public class SoundSetFragment extends OMGFragment {
 
     private View mView;
-    private Channel mChannel;
     private ChoiceCallback mCallback = null;
 
     private boolean mDownloadedFromOMG = false;
@@ -90,18 +89,9 @@ public class SoundSetFragment extends OMGFragment {
         });
 
         getActivityMembers();
-        if (mChannel != null)
-            setup();
+        setup();
 
         return mView;
-    }
-
-    public void setJam(_OldJam jam, Channel channel) {
-        mJam = jam;
-        mChannel = channel;
-
-        if (mView != null)
-            setup();
     }
 
     private void setup() {
@@ -132,9 +122,10 @@ public class SoundSetFragment extends OMGFragment {
 
                 mCursor.moveToPosition(i);
 
-                mChannel.prepareSoundSet(new SoundSet(mCursor));
+                //todo should this all be in the callback?
+                /*part.prepareSoundSet(new SoundSet(mCursor));
                 if (mCallback != null)
-                    mCallback.onChoice(mChannel.getSoundSet());
+                    mCallback.onChoice(part.getSoundSet());
 
                 Activity activity = getActivity();
                 if (activity != null)
@@ -144,9 +135,9 @@ public class SoundSetFragment extends OMGFragment {
                     @Override
                     public void run() {
                         mPool.loadSounds();
-                        mChannel.loadSoundSetIds();
+                        part.loadSoundSetIds();
                     }
-                }).start();
+                }).start();*/
             }
         });
 
@@ -291,9 +282,10 @@ public class SoundSetFragment extends OMGFragment {
             return;
         }
 
-        mChannel.prepareSoundSet(soundSet);
+        //todo should this all be in the callback?
+        /*part.prepareSoundSet(soundSet);
         if (mCallback != null)
-            mCallback.onChoice(mChannel.getSoundSet());
+            mCallback.onChoice(part.getSoundSet());
 
         Activity activity = getActivity();
         if (activity != null)
@@ -303,9 +295,9 @@ public class SoundSetFragment extends OMGFragment {
             @Override
             public void run() {
                 mPool.loadSounds();
-                mChannel.loadSoundSetIds();
+                part.loadSoundSetIds();
             }
-        }).start();
+        }).start();*/
 
     }
 
@@ -313,8 +305,7 @@ public class SoundSetFragment extends OMGFragment {
         mView.findViewById(R.id.more_channel_options_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ChannelOptionsFragment f = new ChannelOptionsFragment();
-                f.setJam(mJam, mChannel);
+                PartOptionsFragment f = new PartOptionsFragment();
                 animateFragment(f, 0);
             }
         });

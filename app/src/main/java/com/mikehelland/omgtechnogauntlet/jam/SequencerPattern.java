@@ -33,7 +33,7 @@ public class SequencerPattern {
         return newPattern;
     }
 
-    SequencerTrack getTrack(int index) {
+    public SequencerTrack getTrack(int index) {
         if (index > -1 && index < mTracks.size()) {
             return mTracks.get(index);
         }

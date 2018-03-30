@@ -1,18 +1,21 @@
 package com.mikehelland.omgtechnogauntlet;
 
+//todo since android is deprecating the main Fragment, use the support Fragment
 //import android.support.v4.app.Fragment;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.Part;
 
 public class OMGFragment extends Fragment{
 
-    private Jam jam;
+    protected Jam jam;
     protected BluetoothManager mBtf;
-    //protected _OldJam.StateChangeCallback mJamCallback;
+    //protected Jam.StateChangeCallback mJamCallback;
 
     protected void getActivityMembers() {
 
@@ -25,6 +28,7 @@ public class OMGFragment extends Fragment{
     protected Jam getJam() {
         return jam;
     }
+    protected Part getPart() { return jam.getCurrentPart();}
 
     protected void animateFragment(OMGFragment f, int direction) {
         f.jam = jam;

@@ -1,4 +1,4 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.bluetooth;
 
 public abstract class BluetoothReadyCallback {
 

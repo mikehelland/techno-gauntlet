@@ -54,7 +54,7 @@ public class BeatView extends View {
     }
 
     public void onDraw(Canvas canvas) {
-        if (jam == null)
+        if (jam == null || !jam.isReady())
             return;
 
         if (!mIsHeightSet) {
@@ -74,11 +74,11 @@ public class BeatView extends View {
             canvas.drawRect(0, 0, getWidth() * ((float)mProgressI / mProgressMax), getHeight(), paintBlue);
             mText = "Loading Sounds...";
         }
-        else if (jam.isPaused()){
+        else if (!jam.isPlaying()){
             canvas.drawRect(0, 0, getWidth(), getHeight(), paintRed);
             mText = "Play";
         }
-        if (!jam.isPaused()) {
+        if (jam.isPlaying()) {
             float beatBoxWidth = ((float)getWidth()) / jam.getTotalBeats();
             float beatBoxStart = jam.getCurrentSubbeat() / jam.getSubbeats() * beatBoxWidth;
 

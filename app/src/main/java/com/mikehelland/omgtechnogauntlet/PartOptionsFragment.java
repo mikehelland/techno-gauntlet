@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 
+import com.mikehelland.omgtechnogauntlet.jam.Part;
 import com.mikehelland.omgtechnogauntlet.jam.Surface;
 
 /**
@@ -16,11 +17,9 @@ import com.mikehelland.omgtechnogauntlet.jam.Surface;
  * Date: 5/6/14
  * Time: 7:11 PM
  */
-public class ChannelOptionsFragment extends OMGFragment {
+public class PartOptionsFragment extends OMGFragment {
 
-    private _OldJam mJam;
     private View mView;
-    private Channel mChannel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -28,26 +27,19 @@ public class ChannelOptionsFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.channel_options,
                 container, false);
 
-        if (mJam != null)
-            setup();
+        setup();
 
         return mView;
     }
 
-    public void setJam(_OldJam jam, Channel channel) {
-        mJam = jam;
-        mChannel = channel;
-
-        if (mView != null)
-            setup();
-    }
-
     public void setup() {
+
+        final Part part = getJam().getCurrentPart();
 
         mView.findViewById(R.id.remove_channel_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mJam.getChannels().remove(mChannel);
+                getJam().removePart(part);
                 finish();
             }
         });
@@ -55,7 +47,7 @@ public class ChannelOptionsFragment extends OMGFragment {
         mView.findViewById(R.id.clear_channel_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChannel.clearNotes();
+                getJam().clearPart(part);
                 finish();
             }
         });
@@ -63,12 +55,12 @@ public class ChannelOptionsFragment extends OMGFragment {
         mView.findViewById(R.id.copy_channel_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mJam.copyChannel(mChannel);
+                getJam().copyPart(part);
                 finish();
             }
         });
 
-        String surfaceURL = mChannel.getSurfaceURL();
+        String surfaceURL = part.getSurfaceURL();
         View rbSequencer = mView.findViewById(R.id.radioButton);
         if (surfaceURL.equals(Surface.PRESET_SEQUENCER)) {
             ((RadioButton)rbSequencer).toggle();
@@ -76,7 +68,7 @@ public class ChannelOptionsFragment extends OMGFragment {
         rbSequencer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChannel.setSurface(new Surface(Surface.PRESET_SEQUENCER));
+                setPartSurface(part, new Surface(Surface.PRESET_SEQUENCER));
                 finish();
             }
         });
@@ -87,7 +79,7 @@ public class ChannelOptionsFragment extends OMGFragment {
         rbVertical.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChannel.setSurface(new Surface(Surface.PRESET_VERTICAL));
+                setPartSurface(part, new Surface(Surface.PRESET_VERTICAL));
                 finish();
             }
         });
@@ -98,7 +90,7 @@ public class ChannelOptionsFragment extends OMGFragment {
         rbFretboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mChannel.setSurface(new Surface(Surface.PRESET_FRETBOARD));
+                setPartSurface(part, new Surface(Surface.PRESET_FRETBOARD));
                 finish();
             }
         });
@@ -108,15 +100,15 @@ public class ChannelOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 resetButton.setText("100%");
-                mChannel.setSampleSpeed(1);
+                getJam().setPartSpeed(part, 1);
             }
         });
 
         SeekBar speedBar = (SeekBar)mView.findViewById(R.id.channel_speed_seekbar);
         speedBar.setMax(200);
-        float speed = 100 * mChannel.getSampleSpeed();
+        float speed = 100 * part.getSpeed();
         speedBar.setProgress((int)speed);
-        resetButton.setText(Math.round(mChannel.getSampleSpeed() * 100) + "% - Press to Reset");
+        resetButton.setText(Math.round(part.getSpeed() * 100) + "% - Press to Reset");
 
         speedBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -125,7 +117,7 @@ public class ChannelOptionsFragment extends OMGFragment {
                     float newSpeed = i / 100.0f;
                     resetButton.setText(Math.round(newSpeed * 100) + "% - Press to Reset");
                     if (newSpeed > 0) {
-                        mChannel.setSampleSpeed(newSpeed);
+                        getJam().setPartSpeed(part, newSpeed);
                     }
                 }
             }
@@ -141,8 +133,9 @@ public class ChannelOptionsFragment extends OMGFragment {
         zoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ZoomFragment f = new ZoomFragment();
-                f.setJam(mJam, mChannel);
+                //ZoomFragment f = new ZoomFragment();
+                GuitarFragment f = new GuitarFragment();
+                f.setZoomModeOn();
                 animateFragment(f, 0);
             }
         });
@@ -155,11 +148,10 @@ public class ChannelOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 TrackSubMixerFragment f = new TrackSubMixerFragment();
-                f.setChannel(mChannel);
                 animateFragment(f, 0);
             }
         });
-        if (!mChannel.useSequencer()) {
+        if (!surfaceURL.equals(Surface.PRESET_SEQUENCER)) {
             subMixerButton.setVisibility(View.GONE);
         }
 
@@ -170,5 +162,9 @@ public class ChannelOptionsFragment extends OMGFragment {
         if (activity == null)
             return;
         activity.getFragmentManager().popBackStack();
+    }
+
+    private void setPartSurface(Part part, Surface surface) {
+        //todo use the jam .. part.setSurface(new Surface(Surface.PRESET_SEQUENCER));
     }
 }

@@ -1,6 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
-public class RockDrumChannel {
+public class RockDrumSampler {
 
     public static String getDefaultSoundSetJson() {
 

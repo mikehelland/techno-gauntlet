@@ -3,18 +3,20 @@ package com.mikehelland.omgtechnogauntlet;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
-import com.mikehelland.omgtechnogauntlet.jam.JamLoader;
+import com.mikehelland.omgtechnogauntlet.jam.OnGetSoundSetListener;
+import com.mikehelland.omgtechnogauntlet.jam.SoundManager;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
 public class Main extends Activity {
 
-    Jam jam = new Jam();
+    Jam jam;
 
     BluetoothManager mBtf;
     DatabaseContainer mDatabase;
@@ -38,7 +40,18 @@ public class Main extends Activity {
 
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
 
-        jam = new Jam();
+        mDatabase = new DatabaseContainer(Main.this);
+
+        jam = new Jam(new SoundManager(this), new OnGetSoundSetListener() {
+            @Override
+            public SoundSet onGetSoundSet(String url) {
+                return mDatabase.getSoundSetData().getSoundSetByURL(url);
+            }
+        });
+
+        int defaultJam = BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
+        jam.loadFromJSON(getResources().getString(defaultJam));
+
         mBeatView.setJam(jam);
 
         //todo whats this jam.addPlayStatusChangeListener
@@ -61,9 +74,9 @@ public class Main extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mDatabase = new DatabaseContainer(Main.this);
                 if (mWelcomeFragment == null) {
                     mWelcomeFragment = new WelcomeFragment();
+                    mWelcomeFragment.setJam(jam);
                 }
                 try {
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -139,7 +152,7 @@ public class Main extends Activity {
 
     private void setupBluetoothJamCallback() {
 
-        mJamCallback = new _OldJam.StateChangeCallback() {
+        mJamCallback = new Jam.StateChangeCallback() {
 
             @Override
             void newState(String state, Object... args) {
@@ -174,25 +187,25 @@ public class Main extends Activity {
             }
 
             @Override
-            void onNewChannel(Channel channel) {
-                mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
+            void onNewPart(Part channel) {
+                mBtf.sendCommandToDevices(CommandProcessor.getNewPartCommand(channel), null);
             }
             @Override
-            void onChannelEnabledChanged(Channel channel, boolean enabled, String source) {
+            void onPartEnabledChanged(Part channel, boolean enabled, String source) {
                 mBtf.sendCommandToDevices(
-                        CommandProcessor.getChannelEnabledCommand(channel.getID(), enabled), source);
-            }
-
-            @Override
-            void onChannelVolumeChanged(Channel channel, float volume, String source) {
-                mBtf.sendCommandToDevices(
-                        CommandProcessor.getChannelVolumeCommand(channel.getID(), volume), source);
+                        CommandProcessor.getPartEnabledCommand(channel.getID(), enabled), source);
             }
 
             @Override
-            void onChannelPanChanged(Channel channel, float pan, String source) {
+            void onPartVolumeChanged(Part channel, float volume, String source) {
                 mBtf.sendCommandToDevices(
-                        CommandProcessor.getChannelPanCommand(channel.getID(), pan), source);
+                        CommandProcessor.getPartVolumeCommand(channel.getID(), volume), source);
+            }
+
+            @Override
+            void onPartPanChanged(Part channel, float pan, String source) {
+                mBtf.sendCommandToDevices(
+                        CommandProcessor.getPartPanCommand(channel.getID(), pan), source);
             }
         };
         mJam.addStateChangeListener(mJamCallback);
@@ -215,6 +228,7 @@ public class Main extends Activity {
     */
 
 
+    /* don't think we'll need this
     void loadJam(String json) {
 
         //is this here because we could be called from bluetooth, so back out to welcome?
@@ -232,7 +246,7 @@ public class Main extends Activity {
 
         if (!allGood) return;
 
-        _OldJam tjam = null;
+        Jam tjam = null;
         try {
             Log.e("MGH load json", json);
             tjam = JamLoader.load(json, this);
@@ -249,7 +263,7 @@ public class Main extends Activity {
             return null;
         }
 
-        final _OldJam jam = tjam;
+        final Jam jam = tjam;
 
         if (mJamCallback != null)
             jam.addStateChangeListener(mJamCallback);
@@ -258,7 +272,7 @@ public class Main extends Activity {
             @Override
             public void run() {
 
-                _OldJam oldJam = mJam;
+                Jam oldJam = mJam;
                 mJam = jam;
                 mJam.addInvalidateOnBeatListener(mBeatView);
                 mBeatView.setJam(mJam);
@@ -292,7 +306,7 @@ public class Main extends Activity {
             }
         }).start();
         return jam;
-    }
+    }*/
 
     DatabaseContainer getDatabase() {return mDatabase;}
     ImageLoader getImages() {return mImages;}

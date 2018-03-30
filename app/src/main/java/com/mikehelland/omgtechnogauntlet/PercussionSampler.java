@@ -1,6 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
-class SamplerChannel {
+class PercussionSampler {
 
 
     static String getDefaultSoundSetJson() {

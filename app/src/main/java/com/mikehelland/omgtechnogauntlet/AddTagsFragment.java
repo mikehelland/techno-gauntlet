@@ -17,7 +17,7 @@ import android.widget.EditText;
  */
 public class AddTagsFragment extends OMGFragment {
 
-    //private _OldJam mJam;
+    //private Jam mJam;
     //private MainFragment mMainFragment;
 
     private View mView;
@@ -43,7 +43,7 @@ public class AddTagsFragment extends OMGFragment {
     private void setup() {
 
         mTagText = (EditText) mView.findViewById(R.id.add_tags_text);
-        mTagText.setText(mJam.getTags());
+        mTagText.setText(getJam().getTags());
 
         int[] tagIds = new int[]{R.id.popular_tag_button_1,
                 R.id.popular_tag_button_2,
@@ -91,13 +91,13 @@ public class AddTagsFragment extends OMGFragment {
 
     private void finish(boolean shareAfter) {
         String tags = mTagText.getText().toString();
-        mJam.setTags(tags);
+        getJam().setTags(tags);
 
         Activity activity = getActivity();
         if (activity == null)
             return;
 
-        OMGHelper omgHelper = new OMGHelper(activity, mJam);
+        OMGHelper omgHelper = new OMGHelper(activity, getJam());
         omgHelper.submit(shareAfter);
 
         activity.getFragmentManager().popBackStack();

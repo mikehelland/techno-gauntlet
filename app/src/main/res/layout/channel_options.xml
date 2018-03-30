@@ -11,7 +11,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Channel Options"
+            android:text="Part Options"
             android:textSize="32sp"
             android:padding="8dp"
             android:layout_marginTop="20dp"
@@ -74,7 +74,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Copy Channel"
+            android:text="Copy Part"
             android:id="@+id/copy_channel_button"/>
 
         <Space
@@ -89,13 +89,13 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Clear Channel Data"
+            android:text="Clear Part Data"
             android:id="@+id/clear_channel_button"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Remove Channel"
+            android:text="Remove Part"
             android:id="@+id/remove_channel_button"/>
 
     </LinearLayout>

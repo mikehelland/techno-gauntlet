@@ -1,23 +1,8 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-
-import com.mikehelland.omgtechnogauntlet.jam.Jam;
-import com.mikehelland.omgtechnogauntlet.jam.Note;
-import com.mikehelland.omgtechnogauntlet.jam.NoteList;
-import com.mikehelland.omgtechnogauntlet.jam.Part;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: m
@@ -25,9 +10,11 @@ import java.util.List;
  * Time: 11:01 PM
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class GuitarView extends View {
-
-    private Paint paint;
+public class FretboardView extends View {
+    public FretboardView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+/*    private Paint paint;
     private Paint paintOff;
     private Paint paintRed;
     private Paint paintGreen;
@@ -80,6 +67,8 @@ public class GuitarView extends View {
     private float draw_debugBeatWidth;
     private float draw_beatWidth;
 
+    private Fretboard mFretboard = null;
+
     private float zoomboxHeight = -1;
     private float zoomTop = -1;
     private float zoomBottom = -1;
@@ -94,7 +83,7 @@ public class GuitarView extends View {
 
     private List<Touch> touches = new ArrayList<>();
 
-    public GuitarView(Context context, AttributeSet attrs) {
+    public FretboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         paint = new Paint();
@@ -168,6 +157,13 @@ public class GuitarView extends View {
         paint.setTextSize(boxHeightHalf);
         //}
 
+        if (mFretboard != null) {
+            mFretboard.onDraw(canvas, width, height);
+
+            drawNotes(canvas, mPart.getNotes());
+            return;
+        }
+
         int noteNumber;
         int index;
         for (int fret = 1 ; fret <= showingFrets; fret++) {
@@ -206,7 +202,7 @@ public class GuitarView extends View {
         drawColumns(canvas);
         drawNotes(canvas, mPart.getNotes());
 
-        /*if (mPart.debugTouchData.size() > 0) {
+        if (mPart.debugTouchData.size() > 0) {
             for (int isubbeat = 0; isubbeat <= mJam.getTotalSubbeats(); isubbeat++) {
                 canvas.drawLine(draw_leftOffset + isubbeat * draw_beatWidth, height - 50,
                         draw_leftOffset + isubbeat * draw_beatWidth, height, paint);
@@ -225,7 +221,7 @@ public class GuitarView extends View {
                         debugTouch.mode.equals("START") ? paintGreen : paintRed);
 
             }
-        }*/
+        }
     }
 
 
@@ -235,6 +231,12 @@ public class GuitarView extends View {
 
         if (mJam == null || mPart == null || fretMapping == null || fretMapping.length == 0) {
             return true;
+        }
+
+        if (mFretboard != null) {
+            boolean result = mFretboard.onTouchEvent(event);
+            invalidate();
+            return result;
         }
 
         if (mZoomMode) {
@@ -248,9 +250,11 @@ public class GuitarView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Part channel) {
+    public void setJam(Jam jam, Part channel, Fretboard fretboard) {
         mJam = jam;
         mPart = channel;
+
+        mFretboard = fretboard;
 
         setScaleInfo();
 
@@ -263,13 +267,15 @@ public class GuitarView extends View {
 
     public void setScaleInfo() {
 
+        mPart.debugTouchData.clear();
+
         int rootNote;
 
         key = mJam.getKey();
         scale = mJam.getScale();
         frets = 0;
 
-        useScale = mPart.getSoundSet().isChromatic();
+        useScale = mPart.isAScale();
 
         int highNote;
         if (!useScale) {
@@ -282,8 +288,8 @@ public class GuitarView extends View {
 
         }
         else {
-            lowNote = mPart.getSoundSet().getLowNote();
-            highNote = mPart.getSoundSet().getHighNote();
+            lowNote = mPart.getLowNote();
+            highNote = mPart.getHighNote();
             rootNote = key + mPart.getOctave() * 12;
             while (rootNote < lowNote) {
                 rootNote += 12;
@@ -451,8 +457,7 @@ public class GuitarView extends View {
                 zoomingSkipTop = 0;
                 zoomingSkipBottom = 0;
 
-                //todo thru the jam you say?
-                // mPart.getSurface().setSkipBottomAndTop(skipBottom, skipTop);
+                mPart.getSurface().setSkipBottomAndTop(skipBottom, skipTop);
 
                 break;
             }
@@ -549,18 +554,18 @@ public class GuitarView extends View {
             for (Touch touch : touches) {
                 if (id == touch.id) {
                     touches.remove(touch);
-                    //todo mPart.stopWithHandle(touch.playingHandle);
+                    mPart.stopWithHandle(touch.playingHandle);
                     break;
                 }
             }
         }
         else {
-            //todo mPart.stopWithHandle(touches.get(0).playingHandle);
+            mPart.stopWithHandle(touches.get(0).playingHandle);
             touches.clear();
 
             Note restNote = new Note();
-            //restNote.setRest(true);
-            //todo mPart.playLiveNote(restNote, true);
+            restNote.setRest(true);
+            mPart.playLiveNote(restNote, true);
         }
     }
 
@@ -594,8 +599,7 @@ public class GuitarView extends View {
 
         if (touch.onFret > -1 && touch.onFret < fretMapping.length) {
 
-            //todo
-            /*Note note = new Note();
+            Note note = new Note();
             note.setBasicNote(touch.onFret - rootFret);
             note.setScaledNote(fretMapping[touch.onFret]);
             note.setInstrumentNote(fretMapping[touch.onFret] - lowNote);
@@ -611,11 +615,11 @@ public class GuitarView extends View {
                 touch.note.setScaledNote(note.getScaledNote());
                 touch.note.setInstrumentNote(note.getInstrumentNote());
                 //mPart.updateLiveNote(touch.note);
-            }*/
+            }
         } else {
             Log.e("MGH GuitarView playnote", "Invalid fretmapping. skipBottom: " +
                     skipBottom + ", touchingFret: " + touch.onFret + ", fretMapping.length: " +
-                    fretMapping.length + " in soundset: " + mPart.getName());
+                    fretMapping.length + " in soundset: " + mPart.getSoundSetName());
         }
-    }
+    }*/
 }

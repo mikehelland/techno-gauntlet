@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+
 /**
  * User: m
  * Date: 11/15/13
@@ -26,7 +28,7 @@ public class ChordsView extends View {
     private int boxWidth;
     private int boxHeight;
 
-    private _OldJam mJam;
+    private Jam mJam;
 
     final private Bitmap images[];
 
@@ -66,7 +68,8 @@ public class ChordsView extends View {
         if (mJam != null) {
             chords = mJam.getProgression();
             scale = mJam.getScale();
-            chordInProgression = mJam.getChordInProgression();
+            //todo chordInProgression = mJam.getChordInProgression();
+            //current chord?
         }
 
         if (chords == null)
@@ -140,7 +143,7 @@ public class ChordsView extends View {
     }
 
 
-    public void setJam(_OldJam jam) {
+    public void setJam(Jam jam) {
         mJam = jam;
     }
 

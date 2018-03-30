@@ -12,7 +12,7 @@ import com.mikehelland.omgtechnogauntlet.dsp.WtOsc;
  * Date: 11/15/13
  * Time: 1:56 PM
  */
-class Oscillator { //DialpadChannel extends Channel {
+class Oscillator { //DialpadPart extends Part {
 
     private boolean envActive = false;
     private final WtOsc ugOscA1 = new WtOsc();

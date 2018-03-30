@@ -385,6 +385,6 @@
     <string name="exit">Exit</string>
     <string name="load_from_url">Load URL</string>
     <string name="zoom_vertical_view">Zoom Vertical View</string>
-    <string name="more_channel_options">More Channel Options...</string>
+    <string name="more_channel_options">More Part Options...</string>
     <string name="track_sub_mixer">Track Sub Mixer</string>
 </resources>

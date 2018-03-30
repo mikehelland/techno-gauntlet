@@ -1,4 +1,4 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.bluetooth;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-class BluetoothManager {
+public class BluetoothManager {
 
     static final String STATUS_IO_CONNECTED_THREAD  = "IOException in ConnectedThread";
     static final String STATUS_IO_OPEN_STREAMS  = "IOException opening streams";
@@ -46,7 +46,7 @@ class BluetoothManager {
         mBluetooth = BluetoothAdapter.getDefaultAdapter();
     }
 
-    void whenReady(BluetoothReadyCallback callback) {
+    public void whenReady(BluetoothReadyCallback callback) {
         readyCallback = callback;
 
         if (!isBlueToothOn()) {
@@ -75,7 +75,7 @@ class BluetoothManager {
         return mBluetooth != null && mBluetooth.isEnabled();
     }
 
-    void startAccepting(final BluetoothConnectCallback callback) {
+    public void startAccepting(final BluetoothConnectCallback callback) {
         if (!isBlueToothOn()) return;
         newStatus(callback, STATUS_ACCEPTING_CONNECTIONS);
 
@@ -84,13 +84,13 @@ class BluetoothManager {
         acceptThread.start();
     }
 
-    void addAcceptThreadCallback(BluetoothConnectCallback callback) {
+    public void addAcceptThreadCallback(BluetoothConnectCallback callback) {
         if (acceptThread != null && callback != null)  {
             acceptThread.addCallback(callback);
         }
     }
 
-    void connectTo(BluetoothDevice device, BluetoothConnectCallback callback) {
+    public void connectTo(BluetoothDevice device, BluetoothConnectCallback callback) {
         if (!isBlueToothOn()) return;
         newStatus(callback, STATUS_CONNECTING_TO);
 
@@ -135,7 +135,7 @@ class BluetoothManager {
             checkConnections();
     }
 
-    void checkConnections() {
+    public void checkConnections() {
         ArrayList<BluetoothConnection> toRemove = new ArrayList<>();
         for (BluetoothConnection connection : connectionThreads) {
             if (connection.isDisconnected()) {
@@ -154,7 +154,7 @@ class BluetoothManager {
         ct.start();
     }
 
-    void cleanUp() {
+    public void cleanUp() {
         cleaningUp = true;
         if (acceptThread != null) {
             acceptThread.stopAccepting();
@@ -203,18 +203,18 @@ class BluetoothManager {
         }
     }
 
-    List<BluetoothDevice> getPairedDevices() {
+    public List<BluetoothDevice> getPairedDevices() {
         Set<BluetoothDevice> set = mBluetooth.getBondedDevices();
         ArrayList<BluetoothDevice> list = new ArrayList<>();
         list.addAll(set);
         return list;
     }
 
-    List<BluetoothConnection> getConnections() {
+    public List<BluetoothConnection> getConnections() {
         return connectionThreads;
     }
 
-    boolean isAccepting() {
+    public boolean isAccepting() {
         return (acceptThread != null && acceptThread.isAlive());
     }
 }

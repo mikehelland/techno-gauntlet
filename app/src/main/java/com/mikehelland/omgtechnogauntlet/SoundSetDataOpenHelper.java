@@ -21,8 +21,8 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     SoundSetDataOpenHelper(Context context) {
         super(context, "OMG_TECHNO_GAUNTLET", null, 2);
 
-        slapBass = BassSamplerChannel.getSlapSoundSetJSON(context.getResources());
-        bass = BassSamplerChannel.getDefaultSoundSetJSON(context.getResources());
+        slapBass = BassSampler.getSlapSoundSetJSON(context.getResources());
+        bass = BassSampler.getDefaultSoundSetJSON(context.getResources());
 
         mDB = getWritableDatabase();
     }
@@ -64,7 +64,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     }
 
     private void setupSamplerSoundSet(SQLiteDatabase db) {
-        String json = SamplerChannel.getDefaultSoundSetJson();
+        String json = PercussionSampler.getDefaultSoundSetJson();
 
         ContentValues data = new ContentValues();
         data.put("name", "Percussion Sampler");
@@ -91,7 +91,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     }
 
     private void setupRockDrumsSoundSet(SQLiteDatabase db) {
-        String json = RockDrumChannel.getDefaultSoundSetJson();
+        String json = RockDrumSampler.getDefaultSoundSetJson();
 
         ContentValues data = new ContentValues();
         data.put("name", "Rock Drum Kit");
@@ -118,7 +118,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     }
 
     private void setupHipHopDrumsSoundSet(SQLiteDatabase db) {
-        String json = HipDrumChannel.getDefaultSoundSetJson();
+        String json = HipDrumSampler.getDefaultSoundSetJson();
 
         ContentValues data = new ContentValues();
         data.put("name", "Hip Hop Drum Kit");
@@ -296,6 +296,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         }
         else {
             cursor.moveToFirst();
+            //todo this cursor thing can't be right
             soundset = new SoundSet(cursor);
             if (!soundset.isValid()) {
                 cErrorMessage = "Not a valid soundset";

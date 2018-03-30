@@ -11,7 +11,6 @@ class Player {
     private int state = 0;
 
     private OnPlayerStateChangeListener onStateChangeListener;
-    private OnNewBeatListener onNewBeatListener;
 
     private Section section;
 
@@ -36,8 +35,8 @@ class Player {
 
     private long mSyncTime = 0L;
 
-    Player(OnPlayerStateChangeListener listener) {
-        onStateChangeListener = listener;
+    Player() {
+        //onStateChangeListener = listener;
     }
 
     private void playBeatSampler(int subbeat) {
@@ -51,6 +50,8 @@ class Player {
     }
 
     void play(Section section) {
+
+        this.section = section;
 
         if (!playing) {
             cancelPlaybackThread = false;
@@ -219,8 +220,8 @@ class Player {
             onNewLoop();
         }
 
-        if (onNewBeatListener != null) {
-            onNewBeatListener.onNewBeat(isubbeat);
+        if (onStateChangeListener != null) {
+            onStateChangeListener.onSubbeat(isubbeat);
         }
     }
 
@@ -239,11 +240,9 @@ class Player {
         catch  (Exception ignore) {}
     }
 
-    abstract static class OnPlayerStateChangeListener {
-        abstract void onPlay();
-        abstract void onStop();
-    }
-    abstract static class OnNewBeatListener {
-        abstract void onNewBeat(int beat);
+    static class OnPlayerStateChangeListener {
+        void onPlay() {};
+        void onStop() {};
+        void onSubbeat(int subbeat) {};
     }
 }

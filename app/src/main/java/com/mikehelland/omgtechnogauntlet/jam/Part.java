@@ -1,6 +1,7 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Part {
 
@@ -104,5 +105,55 @@ public class Part {
 
     public String getId() {
         return id;
+    }
+
+    public float getSpeed() {
+        return audioParameters.speed;
+    }
+
+    public String getSurfaceURL() {
+        return surface.getURL();
+    }
+
+    public boolean getMute() {
+        return audioParameters.mute;
+    }
+
+    public float getVolume() {
+        return audioParameters.volume;
+    }
+
+    public float getPan() {
+        return audioParameters.pan;
+    }
+
+    public boolean useSequencer() {
+        return Surface.PRESET_SEQUENCER.equals(surface.getURL());
+    }
+
+    public boolean isValid() {
+        return soundSet.getURL().length() > 0 && soundSet.isValid();
+    }
+
+    public SequencerPattern getSequencerPattern() { return sequencerPattern;}
+
+    public CopyOnWriteArrayList<SequencerTrack> getTracks() {
+        return sequencerPattern.getTracks();
+    }
+
+    public SoundSet getSoundSet() {
+        return soundSet;
+    }
+
+    public Surface getSurface() {
+        return surface;
+    }
+
+    public NoteList getNotes() {
+        return notes;
+    }
+
+    public int getOctave() {
+        return octave;
     }
 }

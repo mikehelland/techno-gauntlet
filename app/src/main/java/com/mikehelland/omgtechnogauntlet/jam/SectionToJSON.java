@@ -4,9 +4,9 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-class SectionToJSON {
+public class SectionToJSON {
 
-    static String getData(Section section) {
+    public static String getData(Section section) {
 
         StringBuilder sb = new StringBuilder();
 

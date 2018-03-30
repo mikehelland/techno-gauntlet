@@ -10,7 +10,7 @@ import com.mikehelland.omgtechnogauntlet.dsp.Dac;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-class SoundManager {
+public class SoundManager {
 
     private static final int LOADED_FILES_LIMIT = 800;
 
@@ -37,7 +37,7 @@ class SoundManager {
 
     private boolean mShowedFileLimit = false;
 
-    SoundManager(Context context) {
+    public SoundManager(Context context) {
         mContext = context;
 
     }

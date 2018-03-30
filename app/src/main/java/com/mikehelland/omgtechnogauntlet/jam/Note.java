@@ -42,7 +42,7 @@ public class Note {
         instrumentNoteNumber = number;
     }
 
-    int getInstrumentNote() {
+    public int getInstrumentNote() {
         return instrumentNoteNumber;
     }
 

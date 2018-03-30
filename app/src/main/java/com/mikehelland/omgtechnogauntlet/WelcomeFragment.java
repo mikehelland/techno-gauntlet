@@ -14,6 +14,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+
 public class WelcomeFragment extends OMGFragment {
 
     private View mView;
@@ -29,12 +31,8 @@ public class WelcomeFragment extends OMGFragment {
 
         populateSavedListView();
 
-        if (!mPool.isInitialized()) {
-
-            loadDefaultJam();
-
-        }
-
+        //todo maybe do this when the jam is created? and use the last jam?
+        // loadDefaultJam();
 
         mView.findViewById(R.id.return_to_omg_bananas).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,40 +110,28 @@ public class WelcomeFragment extends OMGFragment {
 
     private void loadJam(String json) {
 
-        mPool.onAllLoadsFinishedCallback = new Runnable() {
+        /*mPool.onAllLoadsFinishedCallback = new Runnable() {
             @Override
             public void run() {
                 mPool.onAllLoadsFinishedCallback = null;
                 animateFragment(new MainFragment(), 0);
             }
-        };
+        };*/
 
         Activity activity = getActivity(); if (activity == null) return;
 
         getJam().loadFromJSON(json);
-        ((Main) activity).loadJam(json);
     }
 
     private void loadDefaultJam() {
-
-        mPool.onAllLoadsFinishedCallback = new Runnable() {
-            @Override
-            public void run() {
-                mPool.onAllLoadsFinishedCallback = null;
-                animateFragment(new MainFragment(), 0);
-            }
-        };
-
-        mPool.allowLoading();
 
         int defaultJam = BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
         Activity activity = getActivity();
         if (activity != null) {
             //((Main) activity).loadJam(activity.getResources().getString(defaultJam));
-            getJam().loadJSON(activity.getResources().getString(defaultJam));
+            getJam().loadFromJSON(activity.getResources().getString(defaultJam));
         }
 
-        mPool.setInitialized();
     }
 
     private void askToRemoveSavedJam(final int i) {
@@ -187,5 +173,9 @@ public class WelcomeFragment extends OMGFragment {
         try{
             mCursor.close();
         } catch (Exception e) {e.printStackTrace();}
+    }
+
+    void setJam(Jam jam) {
+        this.jam = jam;
     }
 }

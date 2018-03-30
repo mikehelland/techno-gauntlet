@@ -102,10 +102,12 @@ public class LoadFromURLFragment extends OMGFragment {
                 new SoundSetDownloader(activity, "", null).installSoundSet(result);
                 break;
             case "SECTION":
-                _OldJam jam = activity.loadJam(result);
+                getJam().loadFromJSON(result);
+                //todo see if this works and SAVE IT!
+                /*Jam jam = activity.loadJam(result);
                 if (jam != null) {
                     activity.getDatabase().getSavedData().insert(0, jam.getTags(), result);
-                }
+                }*/
                 break;
         }
 

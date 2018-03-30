@@ -7,7 +7,7 @@ import android.content.res.Resources;
  * Date: 11/15/13
  * Time: 1:56 PM
  */
-class BassSamplerChannel {
+class BassSampler {
 
 
     static String getDefaultSoundSetJSON(Resources res) {

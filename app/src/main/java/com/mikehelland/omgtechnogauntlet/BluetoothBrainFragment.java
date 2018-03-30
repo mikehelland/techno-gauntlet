@@ -7,11 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothReadyCallback;
 
 import java.util.HashMap;
 import java.util.List;
+
+//import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothDeviceDataHelper;
 
 public class BluetoothBrainFragment extends OMGFragment {
 
@@ -110,14 +115,15 @@ public class BluetoothBrainFragment extends OMGFragment {
 
     private CommandProcessor setupDataCallBackForConnection(BluetoothConnection connection) {
 
-        CommandProcessor cp = (CommandProcessor) connection.getDataCallback();
+        //todo what's going on here? Do we need this?
+        /* CommandProcessor cp = (CommandProcessor) connection.getDataCallback();
         if (cp == null) {
             Activity activity = getActivity();
             if (activity == null) {
                 return null;
             }
             cp = new CommandProcessor(activity);
-            cp.setup(connection, mJam, null);
+            cp.setup(connection, getJam(), null);
             connection.setDataCallback(cp);
         }
 
@@ -126,7 +132,8 @@ public class BluetoothBrainFragment extends OMGFragment {
             cp.setOnPeerChangeListener(makeOnChangeListener(controls));
         }
 
-        return cp;
+        return cp;*/
+        return null;
     }
 
     private void addDevice(BluetoothDevice device) {
@@ -155,13 +162,14 @@ public class BluetoothBrainFragment extends OMGFragment {
             if (connection.getDevice().getAddress().equals(device.getAddress())) {
 
                 if (!connection.isDisconnected()) {
-                    cp = (CommandProcessor)connection.getDataCallback();
+                    //todo
+                    /*cp = (CommandProcessor)connection.getDataCallback();
                     if (cp != null && cp.getJam() != null) {
                         cp.setOnPeerChangeListener(makeOnChangeListener(controls));
                         onPanelConnected(controls, cp);
                         setPanelInfo(controls, cp.getJam());
                         connection.addConnectedCallback(makeConnectCallback(null));
-                    }
+                    }*/
                 }
             }
         }
@@ -208,7 +216,7 @@ public class BluetoothBrainFragment extends OMGFragment {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                onPanelConnected(freshView, cp);
+                                //todo onPanelConnected(freshView, cp);
                             }
                         });
                     }
@@ -223,7 +231,7 @@ public class BluetoothBrainFragment extends OMGFragment {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                resetPanel(view);
+                                //todo resetPanel(view);
                             }
                         });
                     }
@@ -232,7 +240,7 @@ public class BluetoothBrainFragment extends OMGFragment {
         };
     }
 
-    private CommandProcessor.OnPeerChangeListener makeOnChangeListener(final BtRelativeLayout controls) {
+    /*private CommandProcessor.OnPeerChangeListener makeOnChangeListener(final BtRelativeLayout controls) {
         return new CommandProcessor.OnPeerChangeListener() {
 
             @Override
@@ -355,5 +363,5 @@ public class BluetoothBrainFragment extends OMGFragment {
         controls.findViewById(R.id.bt_brain_connect_button).setVisibility(View.VISIBLE);
         controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
         controls.findViewById(R.id.sync_button).setVisibility(View.GONE);
-    }
+    }*/
 }

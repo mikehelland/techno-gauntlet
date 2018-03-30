@@ -9,6 +9,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+
 /**
  * User: m
  * Date: 5/6/14
@@ -16,7 +18,7 @@ import android.widget.ListView;
  */
 public class ChordsFragment extends OMGFragment {
 
-    private _OldJam mJam;
+    private Jam mJam;
     private View mView;
 
     ChordsView mChordsView;
@@ -35,7 +37,7 @@ public class ChordsFragment extends OMGFragment {
         return mView;
     }
 
-    public void setJam(_OldJam jam) {
+    public void setJam(Jam jam) {
         mJam = jam;
 
         if (mView != null)
@@ -60,7 +62,7 @@ public class ChordsFragment extends OMGFragment {
         mView.findViewById(R.id.clear_chords_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mJam.setChordProgression(new int[]{0});
+                mJam.setProgression(new int[]{0});
                 mChordsView.invalidate();
             }
         });
@@ -77,14 +79,14 @@ public class ChordsFragment extends OMGFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 int[] chords = ((ChordsView)view.findViewById(R.id.chords_option)).getChords();
                 if (recordChords) {
-                    int[] newProgression = new int[mJam.getChordProgression().length + 1];
-                    System.arraycopy(mJam.getChordProgression(), 0,
-                            newProgression, 0, mJam.getChordProgression().length);
+                    int[] newProgression = new int[mJam.getProgression().length + 1];
+                    System.arraycopy(mJam.getProgression(), 0,
+                            newProgression, 0, mJam.getProgression().length);
                     newProgression[newProgression.length - 1] = chords[0];
-                    mJam.setChordProgression(newProgression);
+                    mJam.setProgression(newProgression);
                 }
                 else {
-                    mJam.setChordProgression(chords);
+                    mJam.setProgression(chords);
                 }
                 mChordsView.invalidate();
             }

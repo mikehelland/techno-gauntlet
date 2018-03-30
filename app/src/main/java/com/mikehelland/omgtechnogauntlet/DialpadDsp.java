@@ -8,13 +8,13 @@ package com.mikehelland.omgtechnogauntlet;
 public class DialpadDsp {
 
 
-    /*public DialpadChannel makeBasslineChannel() {
+    /*public DialpadPart makeBasslinePart() {
 
         OscillatorSettings settings = new OscillatorSettings();
         settings.saw = false;
         settings.softe = false;
 
-        DialpadChannel ret = new DialpadChannel(settings);
+        DialpadPart ret = new DialpadPart(settings);
         thread.addDac(ret.ugDac);
 
         ret.ugEnvA.setGain(1.5f);
@@ -23,13 +23,13 @@ public class DialpadDsp {
 
     }
 
-    public DialpadChannel makeGlitzlineChannel() {
+    public DialpadPart makeGlitzlinePart() {
 
         OscillatorSettings settings = new OscillatorSettings();
         settings.softe = false;//true;
         settings.softt = true;
         settings.delay = false;//true;
-        DialpadChannel ret = new DialpadChannel(settings);
+        DialpadPart ret = new DialpadPart(settings);
         thread.addDac(ret.ugDac);
 
         return ret;

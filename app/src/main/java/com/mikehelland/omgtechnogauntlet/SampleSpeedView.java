@@ -8,12 +8,18 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.Part;
+
 /**
  * User: m
  * Date: 11/15/13
  * Time: 11:01 PM
  */
 public class SampleSpeedView extends View {
+
+    private Jam jam;
+    private Part part;
 
     private Paint paint;
     private Paint paintOrange;
@@ -41,6 +47,7 @@ public class SampleSpeedView extends View {
     private float controlMargin = 5;
     private float speedWidth = -1;
 
+    //todo channel number? should be id
     private int channelNumber = 0;
 
     public SampleSpeedView(Context context, AttributeSet attrs) {
@@ -63,12 +70,12 @@ public class SampleSpeedView extends View {
 
         setBackgroundColor(Color.BLACK);
 
-        setChannelName("Test Trackname");
+        setPartName("Test Trackname");
 
     }
 
-    public void setChannelName(String newChannelName) {
-        channelName = newChannelName;
+    public void setPartName(String newPartName) {
+        channelName = newPartName;
         channelNameWidth2 = paintText.measureText(channelName) / 2;
 
     }
@@ -85,7 +92,7 @@ public class SampleSpeedView extends View {
             speedWidth = (width - speedStart) - 2 * controlMargin;
         }
 
-        float speed = mChannel.getSampleSpeed();
+        float speed = part.getSpeed();
 
         float height2 = height / 2;
 
@@ -113,7 +120,8 @@ public class SampleSpeedView extends View {
         if (action == MotionEvent.ACTION_DOWN) {
 
             if (x <= resetButtonWidth) {
-                mChannel.setSampleSpeed(1);
+                //mPart.setSampleSpeed(1);
+                //todo jam.setPartSpeed(part, 1);
                 touchingArea = TOUCHING_AREA_RESET;
             }
             else if (x <= speedStart + speedWidth) {
@@ -137,12 +145,11 @@ public class SampleSpeedView extends View {
         return true;
     }
 
-    public void setJam(_OldJam jam, Channel channel, String name, int channelNumber) {
-        mJam = jam;
-        mChannel = channel;
-        this.channelNumber = channelNumber;
+    public void setJam(Jam jam, Part channel, String name) {
+        this.jam = jam;
+        part = channel;
 
-        setChannelName(name);
+        setPartName(name);
 
     }
 
@@ -152,10 +159,8 @@ public class SampleSpeedView extends View {
 
             float speed = Math.max(0, Math.min(2.0f, ((x - speedStart) / speedWidth) * 2));
 
-            //the reason this should be done through the jam is for forwarding bluetooth messages
-            //mJam.setChannelVolume(channelNumber, volume, null);
-
-            mChannel.setSampleSpeed(speed);
+            //mPart.setSampleSpeed(speed);
+            //todo jam.setPartSpeed(part, speed);
         }
     }
 }

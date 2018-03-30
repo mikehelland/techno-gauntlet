@@ -63,7 +63,7 @@ public class SoundSet {
         mIsValid = loadFromJSON(soundSet.mJSON);
     }
 
-    boolean isValid() {
+    public boolean isValid() {
         return mIsValid;
     }
 
@@ -153,10 +153,10 @@ public class SoundSet {
     public boolean isChromatic() {
         return mChromatic;
     }
-    int getHighNote() {
+    public int getHighNote() {
         return mHighNote;
     }
-    int getLowNote() {
+    public int getLowNote() {
         return mLowNote;
     }
 
@@ -173,18 +173,18 @@ public class SoundSet {
         mURL = url;
     }
 
-    ArrayList<Sound> getSounds() {
+    public ArrayList<Sound> getSounds() {
         return mSounds;
     }
 
     //public void setID(long ID) {
     //    this.id = ID;
     //}
-    long getID() {
+    public long getID() {
         return mID;
     }
 
-    String[] getSoundNames() {
+    public String[] getSoundNames() {
         String[] names = new String[mSounds.size()];
         for (int i = 0; i < names.length; i++) {
             names[i] = mSounds.get(i).getName();
@@ -208,6 +208,10 @@ public class SoundSet {
         return mIsSoundFont;
     }
 
+    void setSoundFont(boolean value) {
+        mIsSoundFont = value;
+    }
+
     public class Sound {
 
         private String mName = "";
@@ -216,7 +220,7 @@ public class SoundSet {
         private long soundset_id = -1;
         private int soundset_index = -1;
 
-        String getName() {
+        public String getName() {
             return mName;
         }
 

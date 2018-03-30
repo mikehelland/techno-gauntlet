@@ -1,6 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
-class HipDrumChannel {
+class HipDrumSampler {
 
     static String getDefaultSoundSetJson() {
 

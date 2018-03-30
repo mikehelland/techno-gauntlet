@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+
 /**
  * User: m
  * Date: 5/6/14
@@ -14,7 +16,7 @@ import android.widget.TextView;
  */
 public class BeatsFragment extends OMGFragment {
 
-    private _OldJam mJam;
+    private Jam mJam;
     private MainFragment mMainFragment;
 
     private View mView;
@@ -51,7 +53,7 @@ public class BeatsFragment extends OMGFragment {
         return view;
     }
 
-    public void setJam(_OldJam jam, MainFragment mainFragment) {
+    public void setJam(Jam jam, MainFragment mainFragment) {
         mJam = jam;
         mMainFragment = mainFragment;
 
