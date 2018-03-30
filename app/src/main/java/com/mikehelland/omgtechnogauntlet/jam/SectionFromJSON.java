@@ -77,11 +77,12 @@ class SectionFromJSON {
         JSONObject trackJSON;
         JSONArray trackData;
         SequencerTrack track;
-        boolean[][] pattern = part.pattern;
+        boolean[][] pattern = new boolean[tracks.length()][];
 
         //underrun overrun?
         //match the right channels?
         // this assumes things are in the right order
+        //todo right, the assumption is the tracks array has the same 1-to-1 as the soundset, fix it?
 
         for (int i = 0; i < tracks.length(); i++) {
             trackJSON = tracks.getJSONObject(i);
@@ -89,6 +90,8 @@ class SectionFromJSON {
             track = new SequencerTrack("todo"); //todo
             track.audioParameters = loadAudioParameters(trackJSON);
             part.sequencerPattern.getTracks().add(track);
+            pattern[i] = track.getData();
+            part.pattern = pattern;
 
             trackData = trackJSON.getJSONArray("data");
 

@@ -29,6 +29,7 @@ public class Part {
     SequencerPattern sequencerPattern = new SequencerPattern();
 
     boolean[][] pattern;
+    int[] poolIds;
 
 
     //todo we have soundset, pattern and patternInfo all kind of doing the same thign
@@ -155,5 +156,9 @@ public class Part {
 
     public int getOctave() {
         return octave;
+    }
+
+    public boolean[][] getPattern() {
+        return pattern;
     }
 }

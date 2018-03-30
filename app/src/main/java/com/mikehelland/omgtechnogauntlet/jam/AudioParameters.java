@@ -5,7 +5,7 @@ package com.mikehelland.omgtechnogauntlet.jam;
  */
 
 class AudioParameters {
-    boolean mute = true;
+    boolean mute = false;
     float volume = 0.75f;
     float pan = 0f;
     float speed = 1;

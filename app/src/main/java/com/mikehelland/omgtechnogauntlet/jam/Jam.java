@@ -9,7 +9,6 @@ public class Jam {
     private Player player = new Player();
     private SoundManager soundManager;
 
-    private ArrayList<OnSubbeatListener> onSubbeatListeners = new ArrayList<>();
     private ArrayList<OnJamChangeListener> onJamChangeListeners = new ArrayList<>();
     private OnGetSoundSetListener onGetSoundSetListener;
 
@@ -28,7 +27,16 @@ public class Jam {
                 loadSoundSetForPart(part);
             }
 
-            soundManager.loadSounds();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    soundManager.loadSounds();
+
+                    for (Part part : section.parts) {
+                        setPoolIdsForPart(part);
+                    }
+                }
+            }).start();
 
         } catch (Exception e) {
             //todo warn something here
@@ -205,11 +213,11 @@ public class Jam {
     }
 
     public void addOnSubbeatListener(OnSubbeatListener listener) {
-        onSubbeatListeners.add(listener);
+        player.onSubbeatListeners.add(listener);
     }
 
     public void removeOnSubbeatListener(OnSubbeatListener listener) {
-        onSubbeatListeners.remove(listener);
+        player.onSubbeatListeners.remove(listener);
     }
 
     public void addOnJamChangeListener(OnJamChangeListener listener) {
@@ -232,6 +240,7 @@ public class Jam {
         return section != null;
     }
 
+    //I'm not too sure these should be here, but where?
     private void loadSoundSetForPart(Part part) {
         if (onGetSoundSetListener == null) {
             return;
@@ -248,4 +257,14 @@ public class Jam {
             soundManager.addSoundToLoad(sound);
         }
     }
+    private void setPoolIdsForPart(Part part) {
+        SoundSet.Sound sound;
+        int size = part.soundSet.getSounds().size();
+        part.poolIds = new int[size];
+        for (int i = 0; i < size; i++) {
+            sound = part.soundSet.getSounds().get(i);
+            part.poolIds[i] = soundManager.getPoolId(sound.getURL());
+        }
+    }
+
 }

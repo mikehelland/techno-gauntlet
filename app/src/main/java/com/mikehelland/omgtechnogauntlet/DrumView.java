@@ -296,7 +296,7 @@ public class DrumView extends View {
         part = channel;
         tall = part.getSoundSet().getSounds().size();
 
-        data = new boolean[tall][wide]; //part.pattern; //new boolean[tall][wide];
+        data = part.getPattern(); //new boolean[tall][wide];
         int subbeats = mJam.getSubbeats();
 
         /*for (int i = 0; i < tall; i++) {

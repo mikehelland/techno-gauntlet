@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.mikehelland.omgtechnogauntlet.jam.Jam;
-
 /**
  * User: m
  * Date: 5/6/14
@@ -16,10 +14,6 @@ import com.mikehelland.omgtechnogauntlet.jam.Jam;
  */
 public class BeatsFragment extends OMGFragment {
 
-    private Jam mJam;
-    private MainFragment mMainFragment;
-
-    private View mView;
     private TextView bpmText;
     private SeekBar bpmSeekBar;
     private TextView shuffleText;
@@ -35,7 +29,6 @@ public class BeatsFragment extends OMGFragment {
         View view = inflater.inflate(R.layout.beats_fragment,
                 container, false);
 
-        mView = view;
         bpmText = (TextView)view.findViewById(R.id.bpm_caption);
         bpmSeekBar = (SeekBar)view.findViewById(R.id.bpm_seekbar);
         bpmSeekBar.setMax(200);
@@ -47,23 +40,14 @@ public class BeatsFragment extends OMGFragment {
         beatsText = (TextView)view.findViewById(R.id.timesig);
         beatsSeekBar = (SeekBar)view.findViewById(R.id.beats_seekbar);
 
-        if (mJam != null)
-            setup();
+        setup();
 
         return view;
     }
 
-    public void setJam(Jam jam, MainFragment mainFragment) {
-        mJam = jam;
-        mMainFragment = mainFragment;
-
-        if (mView != null)
-            setup();
-    }
-
     private void setup() {
 
-        int bpm = mJam.getBPM();
+        int bpm = getJam().getBPM();
         bpmText.setText(Integer.toString(bpm) + " bpm");
         bpmSeekBar.setProgress(bpm - 20);
 
@@ -73,7 +57,7 @@ public class BeatsFragment extends OMGFragment {
                 if (b) {
                     int newbpm = 20 + i;
                     bpmText.setText(Integer.toString(newbpm) + " bpm");
-                    mJam.setBPM(newbpm);
+                    getJam().setBPM(newbpm);
                 }
             }
 
@@ -84,7 +68,7 @@ public class BeatsFragment extends OMGFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mMainFragment.updateBPMUI();
+
             }
         });
 
@@ -93,7 +77,7 @@ public class BeatsFragment extends OMGFragment {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 if (b) {
                     shuffleText.setText(Integer.toString(i) + "% shuffle");
-                    mJam.setShuffle(i / 100.0f);
+                    getJam().setShuffle(i / 100.0f);
                 }
             }
 
@@ -104,14 +88,14 @@ public class BeatsFragment extends OMGFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mMainFragment.updateBPMUI();
+
             }
         });
-        int shuffle = (int)(mJam.getShuffle() * 100);
+        int shuffle = (int)(getJam().getShuffle() * 100);
         shuffleText.setText(Integer.toString(shuffle) + "% shuffle");
         shuffleSeekBar.setProgress(shuffle);
 
-        int measures = mJam.getMeasures();
+        int measures = getJam().getMeasures();
         measuresText.setText(measures + " Measures");
         measuresSeekBar.setProgress(measures);
         measuresSeekBar.setMax(8);
@@ -122,7 +106,7 @@ public class BeatsFragment extends OMGFragment {
                 if (b) {
                     if (i > 0) {
                         measuresText.setText(i + " Measures");
-                        mJam.setMeasures(i);
+                        getJam().setMeasures(i);
                     }
                 }
             }
@@ -134,11 +118,11 @@ public class BeatsFragment extends OMGFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mMainFragment.updateBPMUI();
+
             }
         });
 
-        int beats = mJam.getBeats();
+        int beats = getJam().getBeats();
         beatsText.setText(beats + " Beats");
         beatsSeekBar.setProgress(beats);
         beatsSeekBar.setMax(8);
@@ -149,7 +133,7 @@ public class BeatsFragment extends OMGFragment {
                 if (b) {
                     if (i > 0) {
                         beatsText.setText(i + " Beats");
-                        mJam.setBeats(i);
+                        getJam().setBeats(i);
                     }
                 }
             }
@@ -161,7 +145,7 @@ public class BeatsFragment extends OMGFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mMainFragment.updateBPMUI();
+
             }
         });
 

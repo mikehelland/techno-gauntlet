@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.OnGetSoundSetListener;
+import com.mikehelland.omgtechnogauntlet.jam.OnSoundLoadedListener;
+import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 import com.mikehelland.omgtechnogauntlet.jam.SoundManager;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
@@ -41,18 +43,37 @@ public class Main extends Activity {
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
 
         mDatabase = new DatabaseContainer(Main.this);
-
-        jam = new Jam(new SoundManager(this), new OnGetSoundSetListener() {
+        OnGetSoundSetListener getSoundSetFromDatabase = new OnGetSoundSetListener() {
             @Override
             public SoundSet onGetSoundSet(String url) {
+                //todo what if it's not in the database? go online? gonna need a callback
+                //although, it should only really affect external jam's loaded by URL
                 return mDatabase.getSoundSetData().getSoundSetByURL(url);
             }
-        });
+        };
+
+        OnSoundLoadedListener updateBeatViewWithLoadProgress = new OnSoundLoadedListener() {
+            @Override
+            public void onSoundLoaded(int howManyLoaded, int howManyTotal) {
+                mBeatView.setLoadingStatus(howManyLoaded, howManyTotal);
+            }
+        };
+
+        SoundManager soundManager = new SoundManager(this, updateBeatViewWithLoadProgress);
+        jam = new Jam(soundManager, getSoundSetFromDatabase);
 
         int defaultJam = BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
         jam.loadFromJSON(getResources().getString(defaultJam));
 
+        //todo does beatView even have to know about Jam?
         mBeatView.setJam(jam);
+
+        jam.addOnSubbeatListener(new OnSubbeatListener() {
+            @Override
+            public void onSubbeat(int subbeat) {
+                mBeatView.postInvalidate();
+            }
+        });
 
         //todo whats this jam.addPlayStatusChangeListener
         //jam.addInvalidateOnBeatListener(mBeatView);
@@ -66,6 +87,7 @@ public class Main extends Activity {
                 else {
                     jam.play();
                 }
+                mBeatView.postInvalidate();
             }
         });
 
@@ -126,7 +148,7 @@ public class Main extends Activity {
     public void onDestroy() {
         super.onDestroy();
         jam.finish();
-        mBtf.cleanUp();
+        //todo mBtf.cleanUp();
         mDatabase.close();
     }
 

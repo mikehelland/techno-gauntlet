@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
@@ -70,7 +71,7 @@ public class BeatView extends View {
         }
         canvas.drawLine(0, getHeight() - 2, getWidth(), getHeight() - 2, paintWhite);
 
-        if (!mInitialized || mShowingLoadProgress) {
+        if (mShowingLoadProgress) {
             canvas.drawRect(0, 0, getWidth() * ((float)mProgressI / mProgressMax), getHeight(), paintBlue);
             mText = "Loading Sounds...";
         }
@@ -96,21 +97,11 @@ public class BeatView extends View {
         postInvalidate();
     }
 
-    boolean isShowingLoadProgress() {return mShowingLoadProgress;}
-
-    void showLoadProgress(int max) {
-        mProgressMax = max;
-        mProgressI = 0;
-        mShowingLoadProgress = true;
-        mInitialized = true;
-    }
-
-    void incrementProgress() {
-        mProgressI++;
-        if (mProgressI >= mProgressMax) {
-            mProgressI = 0;
-            mShowingLoadProgress = false;
-        }
+    void setLoadingStatus(int howManyLoaded, int howManyTotal) {
+        mProgressI = howManyLoaded;
+        mProgressMax = howManyTotal;
+        mShowingLoadProgress = howManyLoaded < howManyTotal;
+        Log.d("MGH bv loading status", "loaded: " + howManyLoaded + ", total: " + howManyTotal);
         postInvalidate();
     }
 }

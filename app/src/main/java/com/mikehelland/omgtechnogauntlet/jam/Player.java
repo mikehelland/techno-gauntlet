@@ -1,5 +1,9 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
+import android.util.Log;
+
+import java.util.ArrayList;
+
 class Player {
 
     final static int STATE_STOPPED = 0;
@@ -10,7 +14,7 @@ class Player {
 
     private int state = 0;
 
-    private OnPlayerStateChangeListener onStateChangeListener;
+    ArrayList<OnSubbeatListener> onSubbeatListeners = new ArrayList<>();
 
     private Section section;
 
@@ -18,7 +22,6 @@ class Player {
     long timeSinceLast;
     long lastBeatPlayed;
 
-    int subbeatLength;
     int totalSubbeats;
 
     private SoundManager soundManager;
@@ -27,8 +30,6 @@ class Player {
 
     private boolean cancelPlaybackThread = false;
 
-    private boolean playing = false;
-
     private int progressionI = -1;
 
     private int currentChord = 0;
@@ -36,7 +37,6 @@ class Player {
     private long mSyncTime = 0L;
 
     Player() {
-        //onStateChangeListener = listener;
     }
 
     private void playBeatSampler(int subbeat) {
@@ -53,11 +53,13 @@ class Player {
 
         this.section = section;
 
-        if (!playing) {
+        if (state != STATE_PLAYING) {
             cancelPlaybackThread = false;
             playbackThread = new PlaybackThread();
             playbackThread.start();
         }
+
+        state = STATE_PLAYING;
 
         //todo call onStart()
     }
@@ -143,7 +145,7 @@ class Player {
     }
 
     boolean isPlaying() {
-        return playing;
+        return state == STATE_PLAYING;
     }
 
 
@@ -161,11 +163,12 @@ class Player {
                     doTheThing();
                 }
             }
+            Log.d("MGH playback", "looks like we're done");
         }
     }
 
     private void startPlayback() {
-        playing = true;
+        Log.d("MGH playback", "startPlayback");
         progressionI = -1; // gets incremented by onNewLoop
         onNewLoop();
 
@@ -174,7 +177,7 @@ class Player {
     }
 
     private boolean isTime() {
-
+        //Log.d("MGH playback", "isTime?");
         long timeUntilNext;
         long now;
 
@@ -187,13 +190,13 @@ class Player {
         if (now >= timeUntilNext) {
             return true;
         }
-
+        //Log.d("MGH playback", "isubbeat:" + isubbeat + ", timeUntilNext-now:" + (timeUntilNext - now));
         //todo better spot for this?
         pollFinishedNotes(now);
 
         if (timeUntilNext - now > 50) {
             try {
-                Thread.sleep(subbeatLength - 50);
+                Thread.sleep(section.beatParameters.subbeatLength - 50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -203,25 +206,26 @@ class Player {
 
     private void doTheThing() {
         totalSubbeats = BeatParameters.getTotalSubbeats(section.beatParameters);
+        Log.d("MGH playback", "doTheThing " + isubbeat + "/" + totalSubbeats);
         if (isubbeat < totalSubbeats) {
-            lastBeatPlayed += subbeatLength;
+            lastBeatPlayed += section.beatParameters.subbeatLength;
             playBeatSampler(isubbeat);
+        }
+
+        for (OnSubbeatListener subbeatListener : onSubbeatListeners) {
+            subbeatListener.onSubbeat(isubbeat);
         }
 
         isubbeat++;
 
         if (mSyncTime > 0) {
             isubbeat = 1;
-            lastBeatPlayed = mSyncTime + subbeatLength;
+            lastBeatPlayed = mSyncTime + section.beatParameters.subbeatLength;
             mSyncTime = 0;
         }
         if (isubbeat >= totalSubbeats) {
             isubbeat = 0;
             onNewLoop();
-        }
-
-        if (onStateChangeListener != null) {
-            onStateChangeListener.onSubbeat(isubbeat);
         }
     }
 
@@ -238,11 +242,5 @@ class Player {
             }
         }
         catch  (Exception ignore) {}
-    }
-
-    static class OnPlayerStateChangeListener {
-        void onPlay() {};
-        void onStop() {};
-        void onSubbeat(int subbeat) {};
     }
 }

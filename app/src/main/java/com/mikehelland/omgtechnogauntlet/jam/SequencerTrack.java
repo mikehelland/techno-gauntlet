@@ -8,6 +8,7 @@ public class SequencerTrack {
     private String name = "";
     AudioParameters audioParameters;
     private boolean[] data = new boolean[512];
+    int poolId = -1;
 
     public String getName() {return name;}
     public boolean isMuted() {return audioParameters.mute;}

@@ -25,6 +25,7 @@ public class SoundManager {
     private ArrayList<Dac> mDacs = new ArrayList<>();
 
     private SoundPool soundPool = new SoundPool(32, AudioManager.STREAM_MUSIC, 100);
+    private OnSoundLoadedListener onSoundLoadedListener;
 
     private ConcurrentHashMap<String, Integer> loadedUrls = new ConcurrentHashMap<>();
 
@@ -33,13 +34,22 @@ public class SoundManager {
     Runnable onAllLoadsFinishedCallback = null;
 
     private Context mContext;
-    int soundsToLoad = 0;
+    private int soundsToLoadThisTime = 0;
+    private int soundsLoadedThisTime = 0;
 
     private boolean mShowedFileLimit = false;
 
-    public SoundManager(Context context) {
+    public SoundManager(Context context, final OnSoundLoadedListener onSoundLoadedListener) {
         mContext = context;
+        this.onSoundLoadedListener = onSoundLoadedListener;
 
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int i, int i1) {
+                soundsLoadedThisTime++;
+                onSoundLoadedListener.onSoundLoaded(soundsLoadedThisTime, soundsToLoadThisTime);
+            }
+        });
     }
 
     void cancelLoading() {
@@ -96,9 +106,10 @@ public class SoundManager {
         isLoading = true;
 
         // used by the onLoadListener
-        soundsToLoad = mSoundsToLoad.size();
+        soundsToLoadThisTime = mSoundsToLoad.size();
+        soundsLoadedThisTime = 0;
 
-        if (soundsToLoad == 0) {
+        if (soundsToLoadThisTime == 0) {
             isLoading = false;
 
             // because the listener won't fire without sounds to load
