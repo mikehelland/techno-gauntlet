@@ -40,15 +40,15 @@ public class TrackSubMixerFragment extends OMGFragment {
             mixerView.setJam(track.getName(), new MixerView.MixerViewController() {
                 @Override
                 void onMuteChange(boolean mute) {
-                    getJam().setPartTrackMute(part, mute);
+                    getJam().setPartTrackMute(part, track, mute);
                 }
                 @Override
                 void onVolumeChange(float volume) {
-                    getJam().setPartTrackVolume(part, volume);
+                    getJam().setPartTrackVolume(part, track, volume);
                 }
                 @Override
                 void onPanChange(float pan) {
-                    getJam().setPartTrackPan(part, pan);
+                    getJam().setPartTrackPan(part, track, pan);
                 }
 
                 @Override

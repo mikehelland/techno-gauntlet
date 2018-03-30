@@ -166,4 +166,9 @@ public class SoundManager {
         }
         soundPool.release();
     }
+
+    public void playSound(PlaySoundCommand command) {
+        soundPool.play(command.poolId, command.stereoVolume[0], command.stereoVolume[1],
+                10, 0, command.speed);
+    }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 public class Jam {
 
     private Section section;
-    private Player player = new Player();
+    private Player player;
     private SoundManager soundManager;
 
     private ArrayList<OnJamChangeListener> onJamChangeListeners = new ArrayList<>();
@@ -17,6 +17,7 @@ public class Jam {
     public Jam(SoundManager soundManager, OnGetSoundSetListener onGetSoundSetListener) {
         this.soundManager = soundManager;
         this.onGetSoundSetListener = onGetSoundSetListener;
+        this.player = new Player(soundManager);
     }
 
     public void loadFromJSON(String json) {
@@ -200,16 +201,16 @@ public class Jam {
         part.audioParameters.speed = speed;
     }
 
-    public void setPartTrackMute(Part part, boolean mute) {
-        part.audioParameters.mute = mute;
+    public void setPartTrackMute(Part part, SequencerTrack track, boolean mute) {
+        track.audioParameters.mute = mute;
     }
 
-    public void setPartTrackVolume(Part part, float volume) {
-        part.audioParameters.volume = volume;
+    public void setPartTrackVolume(Part part, SequencerTrack track, float volume) {
+        track.audioParameters.volume = volume;
     }
 
-    public void setPartTrackPan(Part part, float pan) {
-        part.audioParameters.pan = pan;
+    public void setPartTrackPan(Part part, SequencerTrack track, float pan) {
+        track.audioParameters.pan = pan;
     }
 
     public void addOnSubbeatListener(OnSubbeatListener listener) {

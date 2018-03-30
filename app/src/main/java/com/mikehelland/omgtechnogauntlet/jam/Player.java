@@ -36,17 +36,10 @@ class Player {
 
     private long mSyncTime = 0L;
 
-    Player() {
-    }
+    private ArrayList<PlaySoundCommand> commands = new ArrayList<>();
 
-    private void playBeatSampler(int subbeat) {
-
-        for (Part part : section.parts) {
-            if (subbeat == 0) {
-                //todo part.resetI();
-            }
-            //todo part.getSoundsToPlayForBeat(subbeat);
-        }
+    Player(SoundManager soundManager) {
+        this.soundManager = soundManager;
     }
 
     void play(Section section) {
@@ -65,6 +58,24 @@ class Player {
     }
 
 
+    private void playBeatSampler(int subbeat) {
+
+        for (Part part : section.parts) {
+            if (subbeat == 0) {
+                //todo part.resetI();
+            }
+
+            PartPlayer.getSoundsToPlayForPartAtSubbeat(commands, part, subbeat);
+            //todo part.getSoundsToPlayForBeat(subbeat);
+            //and play them
+        }
+
+        for (PlaySoundCommand command : commands) {
+            soundManager.playSound(command);
+        }
+        //could be first, but might be faster down here?
+        commands.clear();
+    }
 
     int getCurrentSubbeat() {
         return isubbeat;
@@ -242,5 +253,9 @@ class Player {
             }
         }
         catch  (Exception ignore) {}
+    }
+
+    void getSoundsToPlayForPart(Part part) {
+
     }
 }

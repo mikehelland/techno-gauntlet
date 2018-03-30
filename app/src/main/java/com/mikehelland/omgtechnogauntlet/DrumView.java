@@ -266,9 +266,8 @@ public class DrumView extends View {
     }
 
     private void handleTouch(int x, int y) {
-        //todo
-        //((Main)getContext()).onModify();
 
+        //todo this hits the data directly. Should be going through jam
         if (firstRowButton == -1) {
             x = x * mJam.getSubbeats();
 
@@ -287,25 +286,13 @@ public class DrumView extends View {
 
     public void setJam(Jam jam, Part channel) {
         mJam = jam;
+        part = channel;
+
+        //todo what if there are more sounds in the soundset than the track listing, hmm?
+        tall = part.getSoundSet().getSounds().size();
         wide = mJam.getTotalBeats();
 
-        setPart(channel);
-    }
-
-    void setPart(Part channel) {
-        part = channel;
-        tall = part.getSoundSet().getSounds().size();
-
-        data = part.getPattern(); //new boolean[tall][wide];
-        int subbeats = mJam.getSubbeats();
-
-        /*for (int i = 0; i < tall; i++) {
-            for (int j = 0; j < wide; j++) {
-                if (i < part.pattern.length &&
-                        j * subbeats < part.pattern[i].length)
-                    data[i][j] = part.pattern[i][j * subbeats];
-            }
-        }*/
+        data = part.getPattern();
     }
 
 
@@ -316,7 +303,8 @@ public class DrumView extends View {
 
         long now = System.currentTimeMillis();
         if (now - mLastClickTime < 200) {
-            mJam.setPartTrackMute(part, !part.getSequencerPattern().getTrack(y).isMuted());
+            mJam.setPartTrackMute(part, part.getSequencerPattern().getTrack(y),
+                    !part.getSequencerPattern().getTrack(y).isMuted());
         }
         Log.d("MGH", "lastclick =  " + (now - mLastClickTime));
         mLastClickTime = now;

@@ -56,6 +56,11 @@ public class Main extends Activity {
             @Override
             public void onSoundLoaded(int howManyLoaded, int howManyTotal) {
                 mBeatView.setLoadingStatus(howManyLoaded, howManyTotal);
+                //todo this shouldn't be here because sounds may not need to be loaded
+                //also make sure there are no fragments on the popstack
+                if (howManyLoaded >= howManyTotal) {
+                    mWelcomeFragment.animateFragment(new MainFragment(), 1);
+                }
             }
         };
 
