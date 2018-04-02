@@ -13,28 +13,35 @@ public class Part {
 
     int octave = 3;
 
-    //calculated vaules from volume and pan
-    float leftVolume = 0.75f;
-    float rightVolume = 0.75f;
-
-    int arpeggiate = 0;
-    Note[] arpNotes = new Note[10];
-    int nextArpNote = 0;
-    int arpNotesCount = 0;
-
     SoundSet soundSet;
     Surface surface;
 
     NoteList notes = new NoteList();
     SequencerPattern sequencerPattern = new SequencerPattern();
 
+    //short cut to all the sequencerPattern's track's data
     boolean[][] pattern;
+
+    //the part shouldn't really have to know these? But probably makes it faster?
     int[] poolIds;
 
+    //also not quite part of the data but used by the player to keep track of where we are
+    //for performance
+    Note nextNote;
+    float nextBeat = 0f;
+    int nextNoteIndex = 0;
 
-    //todo we have soundset, pattern and patternInfo all kind of doing the same thign
-    //find the the best way to separate them but stay performant
 
+    //calculated vaules from volume and pan
+    //todo not used but might be optimal to precalculate and reuse?
+    float leftVolume = 0.75f;
+    float rightVolume = 0.75f;
+
+    Note[] liveNotes = null;
+    int[] liveNoteHandles;
+    int arpeggiate = 0;
+    int nextArpNote = 0;
+    int arpNotesCount = 0;
 
     Part(Section section) {
         id = UUID.randomUUID().toString();
@@ -47,10 +54,6 @@ public class Part {
         soundSet.setURL("");
 
         surface = new Surface();
-
-        //todo maybe the pattern should be part of .... the squence pattern
-
-        pattern = new boolean[8][256]; // use a high limit [mJam.getTotalSubbeats()];
     }
 
     private void clearPattern() {
@@ -60,40 +63,6 @@ public class Part {
             }
         }
     }
-
-
-
-    void fitNotesToInstrument() {
-
-        for (Note note : notes) {
-
-            int noteToPlay = note.getScaledNote() + 12 * octave;
-            while (noteToPlay < soundSet.getLowNote()) {
-                noteToPlay += 12;
-            }
-            while (noteToPlay > soundSet.getHighNote()) {
-                noteToPlay -= 12;
-            }
-
-            note.setInstrumentNote(noteToPlay - soundSet.getLowNote());
-        }
-    }
-
-    int getInstrumentNoteNumber(int scaledNote) {
-        int noteToPlay = scaledNote + octave * 12;
-
-        while (noteToPlay < soundSet.getLowNote()) {
-            noteToPlay += 12;
-        }
-        while (noteToPlay > soundSet.getHighNote()) {
-            noteToPlay -= 12;
-        }
-
-        noteToPlay -= soundSet.getLowNote();
-
-        return noteToPlay;
-    }
-
 
     void clear() {
         notes.clear();

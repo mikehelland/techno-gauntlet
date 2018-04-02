@@ -94,9 +94,9 @@ public class MainFragment extends OMGFragment {
                 return;
             }
 
+            getJam().setCurrentPart(part);
             if (part.useSequencer()) {
                 DrumFragment f = new DrumFragment();
-                getJam().setCurrentPart(part);
                 animateFragment(f, 0);
             }
             else {

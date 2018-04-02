@@ -241,6 +241,29 @@ public class Jam {
         return section != null;
     }
 
+    public void startPartLiveNotes(Part part, Note  note) {
+        part.liveNotes =  new Note[] {note};
+        player.playPartLiveNote(part, note);
+    }
+
+    public void updatePartLiveNotes(Part part, Note[] notes) {
+        part.liveNotes =  notes;
+        player.playPartLiveNotes(part, notes);
+    }
+
+    public void removeFromPartLiveNotes(Part part, Note note, Note[] notes) {
+        part.liveNotes =  notes;
+        player.stopPartNote(part, note);
+
+    }
+
+    public void endPartLiveNotes(Part part) {
+        if (part.liveNotes.length > 0) {
+            player.stopPartNote(part, part.liveNotes[0]);
+        }
+        part.liveNotes = null;
+    }
+
     //I'm not too sure these should be here, but where?
     private void loadSoundSetForPart(Part part) {
         if (onGetSoundSetListener == null) {

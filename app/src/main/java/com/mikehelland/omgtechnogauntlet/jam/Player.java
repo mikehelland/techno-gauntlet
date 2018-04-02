@@ -16,6 +16,8 @@ class Player {
 
     ArrayList<OnSubbeatListener> onSubbeatListeners = new ArrayList<>();
 
+    private ArrayList<Note> playingNotes = new ArrayList<>();
+
     private Section section;
 
     int isubbeat;
@@ -61,13 +63,8 @@ class Player {
     private void playBeatSampler(int subbeat) {
 
         for (Part part : section.parts) {
-            if (subbeat == 0) {
-                //todo part.resetI();
-            }
-
-            PartPlayer.getSoundsToPlayForPartAtSubbeat(commands, part, subbeat);
-            //todo part.getSoundsToPlayForBeat(subbeat);
-            //and play them
+            PartPlayer.getSoundsToPlayForPartAtSubbeat(commands, section, part,
+                    subbeat, currentChord);
         }
 
         for (PlaySoundCommand command : commands) {
@@ -164,6 +161,25 @@ class Player {
         return progressionI;
     }
 
+    void playPartLiveNote(Part part, Note note) {
+        note.playingHandle = soundManager.playSound(PartPlayer.getCommandForNote(part, note));
+        playingNotes.add(note);
+    }
+
+    void playPartLiveNotes(Part part, Note[] notes) {
+        for (Note note : notes) {
+            if (note.playingHandle == -1) {
+                playPartLiveNote(part, note);
+            }
+        }
+    }
+
+    void stopPartNote(Part part, Note note) {
+        if (note.playingHandle > -1) {
+            soundManager.stopSound(note.playingHandle);
+        }
+    }
+
     private class PlaybackThread extends Thread {
 
         public void run() {
@@ -217,7 +233,7 @@ class Player {
 
     private void doTheThing() {
         totalSubbeats = BeatParameters.getTotalSubbeats(section.beatParameters);
-        Log.d("MGH playback", "doTheThing " + isubbeat + "/" + totalSubbeats);
+        //Log.d("MGH playback", "doTheThing " + isubbeat + "/" + totalSubbeats);
         if (isubbeat < totalSubbeats) {
             lastBeatPlayed += section.beatParameters.subbeatLength;
             playBeatSampler(isubbeat);
@@ -253,9 +269,5 @@ class Player {
             }
         }
         catch  (Exception ignore) {}
-    }
-
-    void getSoundsToPlayForPart(Part part) {
-
     }
 }

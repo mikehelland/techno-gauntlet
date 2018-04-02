@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
@@ -101,7 +100,6 @@ public class BeatView extends View {
         mProgressI = howManyLoaded;
         mProgressMax = howManyTotal;
         mShowingLoadProgress = howManyLoaded < howManyTotal;
-        Log.d("MGH bv loading status", "loaded: " + howManyLoaded + ", total: " + howManyTotal);
         postInvalidate();
     }
 }

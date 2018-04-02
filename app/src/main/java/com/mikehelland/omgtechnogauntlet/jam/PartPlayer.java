@@ -4,14 +4,35 @@ import java.util.ArrayList;
 
 /**
  * Created by m on 3/30/18.
+ * used by Player to do the Part stuff
  */
 
-public class PartPlayer {
-    static void getSoundsToPlayForPartAtSubbeat(ArrayList<PlaySoundCommand> commands, Part part, int subbeat) {
+class PartPlayer {
+
+    static PlaySoundCommand getCommandForNote(Part part, Note note) {
+        return new PlaySoundCommand(part, note);
+    }
+
+    static PlaySoundCommand[] getCommandsForNotes(Part part, Note[] notes) {
+        PlaySoundCommand[] commands = new PlaySoundCommand[notes.length];
+        for (int i = 0; i < notes.length; i++) {
+            if (notes[i].isPlaying()) {
+                commands[i] = null;
+            }
+            else {
+                commands[i] = getCommandForNote(part, notes[i]);
+            }
+        }
+        return commands;
+    }
+
+    static void getSoundsToPlayForPartAtSubbeat(ArrayList<PlaySoundCommand> commands,
+                                                Section section, Part part,
+                                                int subbeat, int chord) {
         if (part.useSequencer()) {
             getDrumbeatSounds(commands, part, subbeat);
         } else {
-
+            getNoteSounds(commands, section, part, subbeat, chord);
         }
     }
 
@@ -28,25 +49,49 @@ public class PartPlayer {
                 }
                 i++;
             }
+        }
+    }
 
-            /*for (int i = 0; i < part.getPattern().length; i++) {
-                try {
-                    if (part.getPattern()[i][subbeat] && !mPatternInfo.getTrack(i).isMuted()) {
-                        if (i < ids.length) {
-                            //playingId = mPool.play(ids[i], leftVolume, rightVolume, 10, 0, mSampleSpeed);
-                            float volume = mPatternInfo.getTrack(i).getVolume() * this.volume;
-                            float pan = mPatternInfo.getTrack(i).getPan() + this.pan;
-                            float[] stereoVolume = calculateStereoVolume(volume, pan);
-                            playingId = mPool.play(ids[i], stereoVolume[0], stereoVolume[1],
-                                    10, 0, mSampleSpeed);
-                        }
-                    }
-                }
-                catch (Exception excp) {
-                    excp.printStackTrace();
-                }
-            }*/
+    private static void getNoteSounds(ArrayList<PlaySoundCommand> commands,
+                                      Section section, Part part, int subbeat, int chord) {
+
+        if (part.notes.size() == 0) {
+            return;
         }
 
+        //todo skipping oscillators for now but add them
+        if (part.soundSet.isOscillator()) {
+            return;
+        }
+
+        if (subbeat == 0) {
+            part.nextBeat = 0;
+            part.nextNote = part.notes.get(0);
+            part.nextNoteIndex = 0;
+
+            if (part.soundSet.isChromatic()) {
+                KeyHelper.applyScaleToPart(section, part, chord);
+            }
+        }
+
+        if (part.nextNote == null) {
+            return;
+        }
+
+        if (part.nextBeat == subbeat / (float)section.beatParameters.subbeats) {
+
+            if (!part.getMute() && !part.nextNote.isRest()) {
+                commands.add(new PlaySoundCommand(part.poolIds[part.nextNote.getInstrumentNote()],
+                        part.nextNote.getInstrumentNote(), (float) part.nextNote.getBeats(),
+                        part.audioParameters.volume,
+                        part.audioParameters.pan,
+                        part.audioParameters.speed));
+            }
+
+            part.nextBeat += part.nextNote.getBeats();
+            part.nextNoteIndex++;
+            part.nextNote = part.nextNoteIndex < part.notes.size() ?
+                    part.notes.get(part.nextNoteIndex) : null;
+        }
     }
 }

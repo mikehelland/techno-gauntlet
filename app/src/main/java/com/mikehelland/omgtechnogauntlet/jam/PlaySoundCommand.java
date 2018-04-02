@@ -11,6 +11,18 @@ class PlaySoundCommand {
     float[] stereoVolume = new float[] {0.75f, 0.75f};
     float speed = 1f;
 
+    Note note = null;
+
+    PlaySoundCommand(Part part, Note note) {
+        poolId = part.poolIds[note.getInstrumentNote()];
+        instrumentNote = note.getInstrumentNote();
+        duration = (float)note.getBeats();
+        calculateStereoVolume(part.audioParameters.volume, part.audioParameters.pan);
+        speed = part.audioParameters.speed;
+
+        this.note = note;
+
+    }
     PlaySoundCommand(int poolId, int instrumentNote, float duration, float volume, float pan, float speed) {
         this.poolId = poolId;
         this.instrumentNote = instrumentNote;

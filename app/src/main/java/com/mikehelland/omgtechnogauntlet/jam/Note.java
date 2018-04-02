@@ -8,7 +8,6 @@ package com.mikehelland.omgtechnogauntlet.jam;
 public class Note {
 
     private double mBeats;
-//    private int noteNumber;
 
     private int basicNote;
     private int scaledNote;
@@ -17,7 +16,23 @@ public class Note {
 
     private boolean isrest = false;
 
-    private boolean isplaying = false;
+    int playingHandle = -1;
+
+    boolean finishNow = false;
+    Note lastNote = null;
+
+    Note() {
+
+    }
+
+    public Note(boolean rest, int basicNote, int scaledNote, int instrumentNote, double beats, Note lastNote) {
+        isrest = rest;
+        this.basicNote = basicNote;
+        this.scaledNote = scaledNote;
+        this.instrumentNoteNumber = instrumentNote;
+        this.mBeats = beats;
+        this.lastNote = lastNote;
+    }
 
     void setBeats(double beats) {
 
@@ -76,10 +91,6 @@ public class Note {
 
 
     public boolean isPlaying() {
-        return isplaying;
+        return playingHandle > -1;
     }
-    public void isPlaying(boolean value) {
-        isplaying = value;
-    }
-
 }

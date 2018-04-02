@@ -167,8 +167,12 @@ public class SoundManager {
         soundPool.release();
     }
 
-    public void playSound(PlaySoundCommand command) {
-        soundPool.play(command.poolId, command.stereoVolume[0], command.stereoVolume[1],
+    int playSound(PlaySoundCommand command) {
+        return soundPool.play(command.poolId, command.stereoVolume[0], command.stereoVolume[1],
                 10, 0, command.speed);
+    }
+
+    void stopSound(int playingHandle) {
+        soundPool.stop(playingHandle);
     }
 }

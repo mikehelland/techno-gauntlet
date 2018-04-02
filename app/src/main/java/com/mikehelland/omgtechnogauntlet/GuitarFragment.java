@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 
 /**
@@ -14,7 +15,6 @@ import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
  */
 public class GuitarFragment extends OMGFragment {
 
-    private GuitarView guitarView;
     private OnSubbeatListener onSubbeatListener;
 
     private boolean mZoomMode = false;
@@ -25,7 +25,31 @@ public class GuitarFragment extends OMGFragment {
         View view = inflater.inflate(R.layout.guitar_fragment,
                 container, false);
 
-        guitarView = (GuitarView)view.findViewById(R.id.guitarfrets);
+        final VerticalView guitarView = (VerticalView) view.findViewById(R.id.guitarfrets);
+
+        VerticalView.OnGestureListener onGestureListener = new VerticalView.OnGestureListener() {
+            @Override
+            void onStart(Note note) {
+                getJam().startPartLiveNotes(getPart(), note);
+            }
+
+            @Override
+            void onUpdate(Note[] notes) {
+                getJam().updatePartLiveNotes(getPart(), notes);
+            }
+
+            @Override
+            void onRemove(Note note, Note[] notes) {
+                getJam().removeFromPartLiveNotes(getPart(), note, notes);
+            }
+
+            @Override
+            void onEnd() {
+                getJam().endPartLiveNotes(getPart());
+            }
+        };
+
+        guitarView.setJam(getJam(), getPart(), onGestureListener);
 
         onSubbeatListener = new OnSubbeatListener() {
             @Override
