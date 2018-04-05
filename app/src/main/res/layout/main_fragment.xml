@@ -18,27 +18,18 @@
         />
 
 
-    <Button android:id="@+id/play_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play"
-        android:layout_toLeftOf="@id/main_banana"
-        android:visibility="invisible"
-        />
-
-
     <Button android:id="@+id/mixer_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Mixer"
-        android:layout_toLeftOf="@id/play_button"
+        android:layout_alignParentLeft="true"
         />
 
 
     <Button
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_toLeftOf="@id/mixer_button"
+        android:layout_toRightOf="@id/mixer_button"
         android:id="@+id/bt_button"
         android:text="Sync"
         >
@@ -46,36 +37,7 @@
     </Button>
 
 
-    <ImageView
-            android:src="@drawable/icon48"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:id="@+id/libeniz_head"
-            android:paddingLeft="5dp"
-            android:layout_alignParentLeft="true">
-            </ImageView>
-
-
-    <TextView
-            android:id="@+id/welcome_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Press the Monkey to Change"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="10dip"
-            android:background="@drawable/statusbox"
-            android:padding="8dip"
-            android:textColor="#000000"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="8dip"
-            android:visibility="gone"
-            >
-
-    </TextView>
-
-
-
-    <LinearLayout android:layout_below="@id/libeniz_head"
+    <LinearLayout android:layout_below="@id/mixer_button"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/back"

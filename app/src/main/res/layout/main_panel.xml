@@ -10,40 +10,30 @@
               android:gravity="center_vertical">
 
 
-    <ImageView
-        android:src="@drawable/icon48"
-        android:layout_height="48dip"
-        android:layout_width="wrap_content"
-        android:id="@+id/libeniz_head"
-        android:layout_alignParentLeft="true">
-        <!--android:layout_toLeftOf="@id/mute_button"
-        android:layout_marginRight="8dip">-->
-
-    </ImageView>
-
-
     <Button
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/libeniz_head"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
             android:text="Name"
             android:id="@+id/track_button"
             android:background="#888888"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             />
        <!--     android:background="?android:attr/selectableItemBackground"-->
 
 
     <Button android:layout_width="48dip"
-            android:layout_height="48dip"
+            android:layout_height="match_parent"
             android:id="@+id/mute_button"
             android:text="M"
             android:layout_alignParentRight="true"
             android:textColor="#FFFFFFFF"
-            android:background="#FF00FF00"
+            android:background="#8800FF00"
             />
 
     <ImageButton android:layout_width="48dip"
-        android:layout_height="48dip"
+        android:layout_height="match_parent"
         android:id="@+id/options_button"
         android:text=""
         android:layout_toRightOf="@id/track_button"

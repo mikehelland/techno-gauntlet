@@ -16,10 +16,9 @@ import android.widget.Toast;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 import com.mikehelland.omgtechnogauntlet.jam.Part;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class MainFragment extends OMGFragment {
 
@@ -33,13 +32,14 @@ public class MainFragment extends OMGFragment {
     private LayoutInflater mInflater;
     private ViewGroup mContainer;
 
-    private List<View> monkeyHeads = new ArrayList<>();
-
     private OnJamChangeListener mJamListener;
 
     private HashMap<Part, View> channelViewMap = new HashMap<>();
 
     private boolean mLeavingNow = false;
+
+    private int mColorRed = Color.argb(128, 255, 0, 0);
+    private int mColorGreen = Color.argb(128, 0, 255, 0);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -127,11 +127,11 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
                 boolean newMute = !part.getMute();
                 getJam().setPartMute(part, newMute, null);
-                muteButton.setBackgroundColor(newMute ? Color.RED : Color.GREEN);
+                muteButton.setBackgroundColor(newMute ? mColorRed : mColorGreen);
             }
         });
         muteButton.setBackgroundColor(!part.getMute() ?
-                Color.GREEN : Color.RED);
+                mColorGreen : mColorRed);
         muteButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -140,51 +140,19 @@ public class MainFragment extends OMGFragment {
             }
         });
 
-        /*View monkeyHead = controls.findViewById(R.id.libeniz_head);
-        monkeyHeads.add(monkeyHead);
-        monkeyHead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                play();
-
-                getJam().monkeyWithPart(part);
-
-                Activity activity = getActivity(); if (activity == null)  return;
-                Animation turnin = AnimationUtils.loadAnimation(activity, R.anim.rotate);
-                view.startAnimation(turnin);
-
-            }
-        });*/
-
         controls.findViewById(R.id.options_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                SoundSetFragment f = new SoundSetFragment();
-                getJam().setCurrentPart(part);
-                animateFragment(f, 0);
-
-            }
-        });
-
-        controls.findViewById(R.id.options_button).setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-
                 if (!part.isValid()) {
-                    return false;
+                    return;
                 }
 
                 PartOptionsFragment f = new PartOptionsFragment();
                 getJam().setCurrentPart(part);
                 animateFragment(f, 0);
-
-                return true;
-
             }
         });
-
-
     }
 
     public void setupSectionInfoPanel() {
@@ -251,19 +219,13 @@ public class MainFragment extends OMGFragment {
                     return;
                 }
 
-                //todo oh oh oh how to create a new part before even adding it?
-                /*final Part channel = new Part( getJam(), mPool);
-
                 SoundSetFragment f = new SoundSetFragment();
-                f.setJam(getJam(), channel);
                 f.setCallback(new SoundSetFragment.ChoiceCallback() {
                     void onChoice(SoundSet soundSet) {
-                        getJam().addPart(channel);
-                        //todo nah, do this next line from a listener of the above line, you fine?
-                        mBtf.sendCommandToDevices(CommandProcessor.getNewPartCommand(channel), null);
+                        getJam().newPart(soundSet);
                     }
                 });
-                animateFragment(f, 0);*/
+                animateFragment(f, 0);
 
             }
         });
@@ -291,7 +253,6 @@ public class MainFragment extends OMGFragment {
                     return;
                 }
                 MixerFragment fragment = new MixerFragment();
-                //fragment.setJam(getJam(), MainFragment.this);
                 animateFragment(fragment, 0);
 
             }
@@ -307,30 +268,10 @@ public class MainFragment extends OMGFragment {
                     return true;
                 }
                 SampleSpeedFragment fragment = new SampleSpeedFragment();
-                //fragment.setJam(getJam(), MainFragment.this);
                 animateFragment(fragment, 0);
                 return true;
             }
         });
-
-        /*ImageView mainLibenizHead = (ImageView)mView.findViewById(R.id.libeniz_head);
-        mainLibenizHead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                play();
-                getJam().monkeyWithEverything();
-
-                Activity activity = getActivity(); if (activity == null)  return;
-                Animation turnin = AnimationUtils.loadAnimation(activity, R.anim.rotate);
-                view.startAnimation(turnin);
-
-                for (View monkeyhead : monkeyHeads) {
-                    monkeyhead.startAnimation(turnin);
-                }
-
-                //updateUI();
-            }
-        })*/;
 
         setupUploadButton();
 
@@ -506,7 +447,7 @@ public class MainFragment extends OMGFragment {
                             View panel = channelViewMap.get(channel);
                             if (panel != null)
                                 panel.findViewById(R.id.mute_button).setBackgroundColor(
-                                        enabled ? Color.GREEN : Color.RED);
+                                        enabled ? mColorGreen : mColorRed);
                         }
                     });
             }

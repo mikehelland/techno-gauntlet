@@ -313,4 +313,25 @@ public class Jam {
     public int getChordInProgression() {
         return player.getChordInProgression();
     }
+
+    public void newPart(SoundSet soundSet) {
+        Part part = new Part(section);
+        part.soundSet = soundSet;
+        section.parts.add(part);
+        loadSoundSetForPart(part);
+        loadSounds();
+    }
+
+    private void loadSounds() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                soundManager.loadSounds();
+
+                for (Part part : section.parts) {
+                    setPoolIdsForPart(part);
+                }
+            }
+        }).start();
+    }
 }

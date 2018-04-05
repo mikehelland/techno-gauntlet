@@ -50,6 +50,8 @@ public class Part {
         keyParameters = section.keyParameters;
         beatParameters = section.beatParameters;
 
+        audioParameters = new AudioParameters();
+
         soundSet = new SoundSet();
         soundSet.setName("DRUMBEAT");
         soundSet.setURL("");

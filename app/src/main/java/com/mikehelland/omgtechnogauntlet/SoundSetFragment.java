@@ -101,8 +101,6 @@ public class SoundSetFragment extends OMGFragment {
             return;
         }
 
-        setupOptionsButton();
-
         SoundSetDataOpenHelper openHelper = ((Main)context).getDatabase().getSoundSetData();
         mCursor = openHelper.getCursor();
 
@@ -122,22 +120,13 @@ public class SoundSetFragment extends OMGFragment {
 
                 mCursor.moveToPosition(i);
 
-                //todo should this all be in the callback?
-                /*part.prepareSoundSet(new SoundSet(mCursor));
                 if (mCallback != null)
-                    mCallback.onChoice(part.getSoundSet());
+                    mCallback.onChoice(new SoundSet(mCursor));
 
                 Activity activity = getActivity();
                 if (activity != null)
                     activity.getFragmentManager().popBackStack();
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mPool.loadSounds();
-                        part.loadSoundSetIds();
-                    }
-                }).start();*/
             }
         });
 
@@ -282,32 +271,13 @@ public class SoundSetFragment extends OMGFragment {
             return;
         }
 
-        //todo should this all be in the callback?
-        /*part.prepareSoundSet(soundSet);
         if (mCallback != null)
-            mCallback.onChoice(part.getSoundSet());
+            mCallback.onChoice(soundSet);
 
         Activity activity = getActivity();
         if (activity != null)
             activity.getFragmentManager().popBackStack();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mPool.loadSounds();
-                part.loadSoundSetIds();
-            }
-        }).start();*/
-
     }
 
-    private void setupOptionsButton() {
-        mView.findViewById(R.id.more_channel_options_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PartOptionsFragment f = new PartOptionsFragment();
-                animateFragment(f, 0);
-            }
-        });
-    }
 }

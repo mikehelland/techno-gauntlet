@@ -10,6 +10,7 @@ import android.widget.RadioButton;
 import android.widget.SeekBar;
 
 import com.mikehelland.omgtechnogauntlet.jam.Part;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 import com.mikehelland.omgtechnogauntlet.jam.Surface;
 
 /**
@@ -127,6 +128,20 @@ public class PartOptionsFragment extends OMGFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
+
+        mView.findViewById(R.id.choose_a_soundset).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SoundSetFragment f = new SoundSetFragment();
+                f.setCallback(new SoundSetFragment.ChoiceCallback() {
+                    @Override
+                    void onChoice(SoundSet soundSet) {
+
+                    }
+                });
+                animateFragment(f, 0);
+            }
         });
 
         View zoomButton = mView.findViewById(R.id.zoom_vertical_view);

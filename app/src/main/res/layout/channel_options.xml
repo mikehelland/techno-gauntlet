@@ -12,10 +12,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Part Options"
-            android:textSize="32sp"
-            android:padding="8dp"
-            android:layout_marginTop="20dp"
+            android:textSize="30sp"
+            android:padding="6dp"
             android:textAlignment="center"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose a different SoundSet"
+            android:id="@+id/choose_a_soundset"/>
 
         <TextView
         android:layout_width="match_parent"
@@ -36,7 +41,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="40dp" />
+            android:layout_height="10dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -79,7 +84,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="30dp" />
+            android:layout_height="10dp" />
 
 
         <TextView

@@ -1,6 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.View;
@@ -47,7 +48,7 @@ public class Main extends Activity {
             @Override
             public SoundSet onGetSoundSet(String url) {
                 //todo what if it's not in the database? go online? gonna need a callback
-                //although, it should only really affect external jam's loaded by URL
+                //although, it should only really affect external jam's loaded by URL (so download them then?)
                 return mDatabase.getSoundSetData().getSoundSetByURL(url);
             }
         };
@@ -57,8 +58,8 @@ public class Main extends Activity {
             public void onSoundLoaded(int howManyLoaded, int howManyTotal) {
                 mBeatView.setLoadingStatus(howManyLoaded, howManyTotal);
                 //todo this shouldn't be here because sounds may not need to be loaded
-                //also make sure there are no fragments on the popstack
-                if (howManyLoaded >= howManyTotal) {
+                FragmentManager fm = getFragmentManager();
+                if (howManyLoaded >= howManyTotal && fm != null && fm.getBackStackEntryCount() == 0) {
                     mWelcomeFragment.animateFragment(new MainFragment(), 1);
                 }
             }
@@ -112,28 +113,6 @@ public class Main extends Activity {
                 } catch (Exception ignore) { }
             }
         }).start();
-
-        //todo put this in the soundManager? um
-        /*mPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int i, int i1) {
-                if (!mBeatView.isShowingLoadProgress()) {
-                    mBeatView.showLoadProgress(mPool.soundsToLoad);
-                }
-                mBeatView.incrementProgress();
-
-                mPool.soundsToLoad--;
-                if (mPool.soundsToLoad <= 0) {
-
-                    mPool.setLoaded();
-
-                    if (!mPool.isCanceled() && mPool.onAllLoadsFinishedCallback != null)
-                        mPool.onAllLoadsFinishedCallback.run();
-                }
-            }
-        });*/
-
-        Toast.makeText(this, "Press the MONKEY for random changes!", Toast.LENGTH_SHORT).show();
 
         mImages = new ImageLoader(this);
     }
@@ -253,87 +232,6 @@ public class Main extends Activity {
         };
     }
     */
-
-
-    /* don't think we'll need this
-    void loadJam(String json) {
-
-        //is this here because we could be called from bluetooth, so back out to welcome?
-        boolean allGood = true;
-        int backstack = getFragmentManager().getBackStackEntryCount();
-        while (backstack > 0) {
-            try {
-                getFragmentManager().popBackStack();
-            } catch (Exception e) {
-                e.printStackTrace(); //happens maybe as we're backing out
-                allGood = false;
-            }
-            backstack--;
-        }
-
-        if (!allGood) return;
-
-        Jam tjam = null;
-        try {
-            Log.e("MGH load json", json);
-            tjam = JamLoader.load(json, this);
-        } catch (final Exception e) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            });
-            e.printStackTrace();
-        }
-        if (tjam == null) {
-            return null;
-        }
-
-        final Jam jam = tjam;
-
-        if (mJamCallback != null)
-            jam.addStateChangeListener(mJamCallback);
-
-        final Runnable callback = new Runnable() {
-            @Override
-            public void run() {
-
-                Jam oldJam = mJam;
-                mJam = jam;
-                mJam.addInvalidateOnBeatListener(mBeatView);
-                mBeatView.setJam(mJam);
-
-                mPool.loadSounds();
-                jam.loadSoundSets();
-
-                //pretty lousy spot for this
-                CommandProcessor cp;
-                for (BluetoothConnection connection : mBtf.getConnections()) {
-                    cp = (CommandProcessor)connection.getDataCallback();
-                    if (cp == null) {
-                        cp = new CommandProcessor(Main.this);
-                        cp.setup(connection, jam, null);
-                        connection.setDataCallback(cp);
-                    }
-                    else {
-                        cp.setup(connection, jam, null);
-                    }
-                }
-                oldJam.pause();
-                oldJam.finish();
-                mJam.kickIt();
-            }
-        };
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                callback.run();
-            }
-        }).start();
-        return jam;
-    }*/
 
     DatabaseContainer getDatabase() {return mDatabase;}
     ImageLoader getImages() {return mImages;}
