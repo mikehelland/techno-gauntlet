@@ -591,8 +591,8 @@ public class VerticalView extends View {
                 touch.onFret -rootFret,
                 fretMapping[touch.onFret],
                 fretMapping[touch.onFret]-lowNote,
-                -1,
-                touch.note);
+                -1
+        );
 
         //todo auto touch, auto beat needs a more accurate name I think
         // mPart.setArpeggiator(touch.onString);

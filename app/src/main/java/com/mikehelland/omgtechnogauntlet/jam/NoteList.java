@@ -1,20 +1,26 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
+import android.util.Log;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 
+//todo this is basically one method, shouldn't really be part of NoteList anyway, maybe a NoteListOverwrite class
 public class NoteList extends CopyOnWriteArrayList<Note> {
 
     private int beats = 8;
     //todo this should come from the jam, which we don't have access to!
 
-    void overwrite(Note note, double beat) {
+    void overwrite(Note note) {
         if (note == null) {
             return;
         }
 
         Note existingNote;
+        Log.d("MGH ovewerite time", "" + System.currentTimeMillis());
+        final double beat = note.startedPlayingAtSubbeat / 4d; //todo hardcoded subbeats
         double beatsUsed = 0.0d;
         double beatsDisplaced = note.getBeats();
+        Log.d("MGH notelist overwrite", "beat playing at: " + beat + ", beatsDisplayed: " + beatsDisplaced);
         int j;
 
         if (size() == 0) {
@@ -35,15 +41,29 @@ public class NoteList extends CopyOnWriteArrayList<Note> {
             if (existingNote == null)
                 return;
 
-            // if we past it, get the last
-            if (beatsUsed > beat) {
+            // if we past it, get the last and cut it short
+            if (beatsUsed > beat && i > 0) {
                 Note lastNote = get(i - 1);
-                lastNote.setBeats(lastNote.getBeats() - (beatsUsed - beat));
+                double lastNoteBeats = lastNote.getBeats();
+
+                lastNote.setBeats(lastNoteBeats - (beatsUsed - beat));
                 beatsUsed = beat;
+
+                //if we cut off more beats than we're replacing it by, add a rest to compensate
+                if (lastNoteBeats - lastNote.getBeats() > beatsDisplaced) {
+                    add(i, new Note(true,
+                            -1, -1, -1,
+                            lastNoteBeats - lastNote.getBeats() - beatsDisplaced));
+                    beatsDisplaced = 0;
+                }
+                else {
+                    beatsDisplaced -= lastNoteBeats - lastNote.getBeats();
+                }
+
             }
 
             // this is right where the note is supposed to start
-            if (beatsUsed == beat) {
+            if (beatsUsed >= beat) {
 
                 // if this eight note is over writing another, chop it in two
                 /*if (!existingNote.isRest() && note.getTotalBeats() == 0.5d && existingNote.getTotalBeats() == 0.5d) {
@@ -57,6 +77,7 @@ public class NoteList extends CopyOnWriteArrayList<Note> {
                     j = i + 1;
                     while (beatsDisplaced > 0 && j < size()) {
                         existingNote = get(j);
+                        Log.d("MGH overwrite bd", "nextNote.beats: " + existingNote.getBeats());
 
                         //probably a concurrency thing //todo CopyOnWriteArrayList?
                         if (existingNote == null)
@@ -64,6 +85,7 @@ public class NoteList extends CopyOnWriteArrayList<Note> {
 
                         if (existingNote.getBeats() <= beatsDisplaced) {
                             remove(j);
+                            Log.d("MGH overwrite bd", "nextNote.beats: " + existingNote.getBeats());
                         }
                         else {
                             existingNote.setBeats(existingNote.getBeats() - beatsDisplaced);

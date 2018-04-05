@@ -32,7 +32,12 @@ class PartPlayer {
         if (part.useSequencer()) {
             getDrumbeatSounds(commands, part, subbeat);
         } else {
-            getNoteSounds(commands, section, part, subbeat, chord);
+            if (part.liveNotes == null || part.liveNotes.length == 0) {
+                getNoteSounds(commands, section, part, subbeat, chord);
+            }
+            else if (part.autoBeat > 0) {
+                //
+            }
         }
     }
 
@@ -81,11 +86,7 @@ class PartPlayer {
         if (part.nextBeat == subbeat / (float)section.beatParameters.subbeats) {
 
             if (!part.getMute() && !part.nextNote.isRest()) {
-                commands.add(new PlaySoundCommand(part.poolIds[part.nextNote.getInstrumentNote()],
-                        part.nextNote.getInstrumentNote(), (float) part.nextNote.getBeats(),
-                        part.audioParameters.volume,
-                        part.audioParameters.pan,
-                        part.audioParameters.speed));
+                commands.add(new PlaySoundCommand(part, part.nextNote));
             }
 
             part.nextBeat += part.nextNote.getBeats();

@@ -1,5 +1,7 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
+import android.util.Log;
+
 /**
  * User: m
  * Date: 11/15/13
@@ -17,21 +19,22 @@ public class Note {
     private boolean isrest = false;
 
     int playingHandle = -1;
+    int startedPlayingAtSubbeat = 0;
+    long createdAtTime = System.currentTimeMillis();
 
     boolean finishNow = false;
-    Note lastNote = null;
 
     Note() {
 
     }
 
-    public Note(boolean rest, int basicNote, int scaledNote, int instrumentNote, double beats, Note lastNote) {
+    public Note(boolean rest, int basicNote, int scaledNote, int instrumentNote, double beats) {
         isrest = rest;
         this.basicNote = basicNote;
         this.scaledNote = scaledNote;
         this.instrumentNoteNumber = instrumentNote;
         this.mBeats = beats;
-        this.lastNote = lastNote;
+        Log.d("MGH note created at", "" + createdAtTime);
     }
 
     void setBeats(double beats) {

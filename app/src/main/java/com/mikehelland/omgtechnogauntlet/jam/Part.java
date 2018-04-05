@@ -38,6 +38,7 @@ public class Part {
     float rightVolume = 0.75f;
 
     Note[] liveNotes = null;
+    int autoBeat = 0;
     int[] liveNoteHandles;
     int arpeggiate = 0;
     int nextArpNote = 0;
@@ -65,8 +66,12 @@ public class Part {
     }
 
     void clear() {
-        notes.clear();
-        clearPattern();
+        if (useSequencer()) {
+            clearPattern();
+        }
+        else {
+            notes.clear();
+        }
     }
 
     public String getName() {

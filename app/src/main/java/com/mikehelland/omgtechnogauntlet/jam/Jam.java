@@ -190,6 +190,7 @@ public class Jam {
     }
 
     public void clearPart(Part part) {
+        part.clear();
 
     }
 
@@ -253,13 +254,12 @@ public class Jam {
 
     public void removeFromPartLiveNotes(Part part, Note note, Note[] notes) {
         part.liveNotes =  notes;
-        player.stopPartNote(part, note);
-
+        player.stopPartLiveNote(part, note);
     }
 
     public void endPartLiveNotes(Part part) {
         if (part.liveNotes.length > 0) {
-            player.stopPartNote(part, part.liveNotes[0]);
+            player.stopPartLiveNote(part, part.liveNotes[0]);
         }
         part.liveNotes = null;
     }

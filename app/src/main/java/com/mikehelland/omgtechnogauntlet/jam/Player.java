@@ -21,8 +21,7 @@ class Player {
     private Section section;
 
     int isubbeat;
-    long timeSinceLast;
-    long lastBeatPlayed;
+    long timeOfLastBeatPlayed;
 
     int totalSubbeats;
 
@@ -68,7 +67,17 @@ class Player {
         }
 
         for (PlaySoundCommand command : commands) {
-            soundManager.playSound(command);
+            if (command.note != null) {
+                command.note.playingHandle = soundManager.playSound(command);
+            } else {
+                soundManager.playSound(command);
+            }
+        }
+        for (PlaySoundCommand command : commands) {
+            if (command.note != null) {
+                command.note.startedPlayingAtSubbeat = isubbeat;
+                playingNotes.add(command.note);
+            }
         }
         //could be first, but might be faster down here?
         commands.clear();
@@ -85,35 +94,27 @@ class Player {
 
     }
 
-    /*int getClosestSubbeat(DebugTouch debugTouch) {
+    int getClosestSubbeat() {
         if (playbackThread == null)
             return 0;
 
-        int i = isubbeat;
+        Log.d("MGH getclosestsubbeat", "isubbeat: " + isubbeat +
+                ", timesincelast: " + (System.currentTimeMillis() - timeOfLastBeatPlayed));
+        Log.d("MGH closest", "" + System.currentTimeMillis());
+        //if (isubbeat % section.beatParameters.subbeats == section.beatParameters.subbeats - 1) {
+        //    return (isubbeat + 1) % totalSubbeats;
+        //}
 
-        debugTouch.iclosestsubbeat = i;
-        debugTouch.dbeat = (i + playbackThread.timeSinceLast / (double)subbeatLength) / subbeats;
-
-        // don't use 16th notes
-        //if (i % 2 > 0)
-        //    i = (i - 1) % (totalsubbeats);
-
-        //if (i < 0) i = totalsubbeats - 1;
-
-        if (playbackThread.timeSinceLast > subbeatLength / 2) {
-            i = i + 1;
-            if (i == getTotalSubbeats())
-                i = 0;
-
-            //if (i == -1) i = beats * subbeats - 1;
+        if (System.currentTimeMillis() - timeOfLastBeatPlayed < section.beatParameters.subbeatLength / 2) {
+            return isubbeat - 1;
         }
 
-        debugTouch.isubbeatgiven = i;
+        return isubbeat;
 
-
-        return i;
-
-    }*/
+        //todo don't use 16th notes
+        //if (i % 2 > 0)
+        //    i = (i - 1) % (totalsubbeats);
+    }
 
     private void onNewLoop() {
         progressionI++;
@@ -163,7 +164,8 @@ class Player {
 
     void playPartLiveNote(Part part, Note note) {
         note.playingHandle = soundManager.playSound(PartPlayer.getCommandForNote(part, note));
-        playingNotes.add(note);
+        note.startedPlayingAtSubbeat = getClosestSubbeat(); //todo note.createdAt
+        //playingNotes.add(note);
     }
 
     void playPartLiveNotes(Part part, Note[] notes) {
@@ -174,9 +176,14 @@ class Player {
         }
     }
 
-    void stopPartNote(Part part, Note note) {
+    void stopPartLiveNote(Part part, Note note) {
         if (note.playingHandle > -1) {
             soundManager.stopSound(note.playingHandle);
+        }
+        if (isPlaying() && !part.getMute()) {
+            note.setBeats(Math.max(1, 1 + isubbeat - note.startedPlayingAtSubbeat) /
+                    (double)section.beatParameters.subbeats);
+            part.notes.overwrite(note);
         }
     }
 
@@ -200,7 +207,7 @@ class Player {
         onNewLoop();
 
         isubbeat = 0;
-        lastBeatPlayed = System.currentTimeMillis() - section.beatParameters.subbeatLength;
+        timeOfLastBeatPlayed = System.currentTimeMillis() - section.beatParameters.subbeatLength;
     }
 
     private boolean isTime() {
@@ -209,7 +216,7 @@ class Player {
         long now;
 
         now = System.currentTimeMillis();
-        timeUntilNext = lastBeatPlayed + section.beatParameters.subbeatLength;
+        timeUntilNext = timeOfLastBeatPlayed + section.beatParameters.subbeatLength;
         if (isubbeat % section.beatParameters.subbeats != 0 && section.beatParameters.shuffle > 0) {
             timeUntilNext += (int) (section.beatParameters.subbeatLength * section.beatParameters.shuffle);
         }
@@ -218,8 +225,6 @@ class Player {
             return true;
         }
         //Log.d("MGH playback", "isubbeat:" + isubbeat + ", timeUntilNext-now:" + (timeUntilNext - now));
-        //todo better spot for this?
-        pollFinishedNotes(now);
 
         if (timeUntilNext - now > 50) {
             try {
@@ -227,6 +232,9 @@ class Player {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            //todo better spot for this?
+            pollFinishedNotes(now);
         }
         return false;
     }
@@ -235,7 +243,7 @@ class Player {
         totalSubbeats = BeatParameters.getTotalSubbeats(section.beatParameters);
         //Log.d("MGH playback", "doTheThing " + isubbeat + "/" + totalSubbeats);
         if (isubbeat < totalSubbeats) {
-            lastBeatPlayed += section.beatParameters.subbeatLength;
+            timeOfLastBeatPlayed += section.beatParameters.subbeatLength;
             playBeatSampler(isubbeat);
         }
 
@@ -247,7 +255,7 @@ class Player {
 
         if (mSyncTime > 0) {
             isubbeat = 1;
-            lastBeatPlayed = mSyncTime + section.beatParameters.subbeatLength;
+            timeOfLastBeatPlayed = mSyncTime + section.beatParameters.subbeatLength;
             mSyncTime = 0;
         }
         if (isubbeat >= totalSubbeats) {
@@ -258,16 +266,21 @@ class Player {
 
     void pollFinishedNotes(long now) {
         long finishAt;
-        try {
-            for (Part part : section.parts) {
-                //todo
+        //try {
+        for (int i = 0; i < playingNotes.size(); i++) {
+            Note note = playingNotes.get(i);
+            if (note.startedPlayingAtSubbeat + section.beatParameters.subbeats * note.getBeats() <= isubbeat) {
+                soundManager.stopSound(note.playingHandle);
+                playingNotes.remove(note);
+                i--;
+            }
+            //todo
                 /*finishAt = part.getFinishAt();
                 if (finishAt > 0 && now >= finishAt) {
                     part.mute();
                     part.finishCurrentNoteAt(0);
                 }*/
-            }
         }
-        catch  (Exception ignore) {}
+        //} catch (Exception ignore) {}
     }
 }
