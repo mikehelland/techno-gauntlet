@@ -13,6 +13,7 @@ public class Jam {
     private OnGetSoundSetListener onGetSoundSetListener;
 
     private Part currentPart;
+    private String keyName = "";
 
     public Jam(SoundManager soundManager, OnGetSoundSetListener onGetSoundSetListener) {
         this.soundManager = soundManager;
@@ -23,6 +24,7 @@ public class Jam {
     public void loadFromJSON(String json) {
         try {
             section = SectionFromJSON.fromJSON(json);
+            updateKeyName();
 
             for (Part part : section.parts) {
                 loadSoundSetForPart(part);
@@ -100,6 +102,7 @@ public class Jam {
 
     public void setScale(int[] scale, String sourceDevice) {
         section.keyParameters.scale = scale;
+        updateKeyName();
     }
 
     public int getKey() {
@@ -108,6 +111,7 @@ public class Jam {
 
     public void setKey(int key, String sourceDevice) {
         section.keyParameters.rootNote = key;
+        updateKeyName();
     }
 
     public int[] getProgression() {
@@ -116,6 +120,17 @@ public class Jam {
 
     public void setProgression(int[] progression) {
         section.progression = progression;
+        if (progression.length == 1) {
+            updateNotesWithChord(section.progression[0]);
+        }
+    }
+
+    private void updateNotesWithChord(int chord) {
+        for (Part part : section.parts) {
+            if (part.soundSet.isChromatic()) {
+                KeyHelper.applyScaleToPart(section, part, chord);
+            }
+        }
     }
 
     public List<Part> getParts() {
@@ -136,7 +151,7 @@ public class Jam {
         return section.beatParameters.beats * section.beatParameters.measures;
     }
     public String getKeyName() {
-        return "Figure keyname out";
+        return keyName;
     }
     public int getBPM() {
         return 60000 / (section.beatParameters.subbeatLength * section.beatParameters.subbeats);
@@ -291,4 +306,11 @@ public class Jam {
         }
     }
 
+    private void updateKeyName() {
+        keyName = KeyHelper.getKeyName(section.keyParameters.rootNote, section.keyParameters.scale);
+    }
+
+    public int getChordInProgression() {
+        return player.getChordInProgression();
+    }
 }

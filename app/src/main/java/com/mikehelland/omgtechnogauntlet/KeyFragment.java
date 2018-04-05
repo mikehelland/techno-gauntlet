@@ -1,13 +1,16 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.Button;
+import android.widget.LinearLayout;
+
+import com.mikehelland.omgtechnogauntlet.jam.KeyHelper;
+
+import java.util.Arrays;
 
 /**
  * User: m
@@ -16,61 +19,86 @@ import android.widget.ListView;
  */
 public class KeyFragment extends OMGFragment {
 
-    private View mView;
-    private MainFragment mainFragment;
+    private Button mKeyButton;
+    private Button mScaleButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.choosekey,
+        View view = inflater.inflate(R.layout.key_fragment,
                 container, false);
 
-        setup();
+        ViewGroup keysLayout = (ViewGroup)view.findViewById(R.id.list_of_keys);
+        ViewGroup scalesLayout = (ViewGroup)view.findViewById(R.id.list_of_scales);
 
-        return mView;
+        makeKeyButtons(keysLayout);
+        makeScaleButtons(scalesLayout);
+
+        return view;
     }
 
-    public void setup() {
-        Activity activity = getActivity(); if (activity == null)  return;
+    private void makeKeyButtons(ViewGroup list) {
+        for (int i = 0; i <  KeyHelper.KEY_CAPTIONS.length; i++) {
+            list.addView(makeKeyButton(i, KeyHelper.KEY_CAPTIONS[i]));
+        }
+    }
+    private void makeScaleButtons(ViewGroup list) {
+        for (int i = 0; i <  KeyHelper.SCALE_CAPTIONS.length; i++) {
+            list.addView(makeScaleButton(i, KeyHelper.SCALE_CAPTIONS[i]));
+        }
+    }
+    private View makeKeyButton(final int i, String caption) {
+        final Button button = new Button(getActivity());
+        button.setBackgroundColor(Color.WHITE);
+        button.setTextColor(Color.BLACK);
+        button.setTextSize(22);
+        button.setText(caption);
+        button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
 
-        String[] roots = getResources().getStringArray(R.array.keys_captions);
-        String[] scales = getResources().getStringArray(R.array.quantizer_entries);
-
-        ListView rootsList = (ListView)mView.findViewById(R.id.roots_list);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity,
-                android.R.layout.simple_list_item_single_choice, roots);
-        rootsList.setAdapter(adapter);
-
-        rootsList.setItemChecked(getJam().getKey(), true);
-
-        ListView scalesList = (ListView)mView.findViewById(R.id.scales_list);
-        ArrayAdapter<String> scaleAdapter = new ArrayAdapter<String>(activity,
-                android.R.layout.simple_list_item_single_choice, scales);
-        scalesList.setAdapter(scaleAdapter);
-
-        //todo make a keyHelper or just scan the list and manually set it
-        //scalesList.setItemChecked(getJam().getScaleIndex(), true);
-
-
-        rootsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //todo getJam().setKey(i);
-
-                //todo this doesn't look right: mainFragment.updateKeyUI();
-            }
-
-        });
-
-        scalesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //todo getJam().setScale();
-
-                //todo this doesn't look right: mainFragment.updateKeyUI();
+            public void onClick(View view) {
+                if (mKeyButton != null) {
+                    mKeyButton.setBackgroundColor(Color.WHITE);
+                }
+                mKeyButton = button;
+                mKeyButton.setBackgroundColor(Color.GREEN);
+                getJam().setKey(i, null);
             }
         });
 
+        if (getJam().getKey() == i) {
+            mKeyButton = button;
+            mKeyButton.setBackgroundColor(Color.GREEN);
+        }
 
+        return button;
+    }
+    private View makeScaleButton(final int i, String caption) {
+        final Button button = new Button(getActivity());
+        button.setBackgroundColor(Color.WHITE);
+        button.setTextColor(Color.BLACK);
+        button.setTextSize(24);
+        button.setText(caption);
+        button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mScaleButton != null)
+                    mScaleButton.setBackgroundColor(Color.WHITE);
+                mScaleButton = button;
+                mScaleButton.setBackgroundColor(Color.GREEN);
+                getJam().setScale(KeyHelper.SCALES[i], null);
+            }
+        });
+
+        if (Arrays.equals(getJam().getScale(), KeyHelper.SCALES[i])) {
+        //if (getJam().getScaleString().equals(KeyHelper.SCALES[i])) {
+            mScaleButton = button;
+            mScaleButton.setBackgroundColor(Color.GREEN);
+        }
+
+        return button;
     }
 }

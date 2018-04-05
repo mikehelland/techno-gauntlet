@@ -68,8 +68,7 @@ public class ChordsView extends View {
         if (mJam != null) {
             chords = mJam.getProgression();
             scale = mJam.getScale();
-            //todo chordInProgression = mJam.getChordInProgression();
-            //current chord?
+            chordInProgression = mJam.getChordInProgression();
         }
 
         if (chords == null)

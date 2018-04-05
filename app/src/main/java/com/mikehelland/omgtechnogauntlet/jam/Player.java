@@ -33,7 +33,7 @@ class Player {
 
     private int progressionI = -1;
 
-    private int currentChord = 0;
+    int currentChord = 0;
 
     private long mSyncTime = 0L;
 
@@ -122,9 +122,9 @@ class Player {
         if (progressionI >= section.progression.length || progressionI < 0) {
             progressionI = 0;
         }
-        int chord = section.progression[progressionI];
+        currentChord = section.progression[progressionI];
 
-        updateChord(chord);
+        //updateChord(chord);
 
     }
 
