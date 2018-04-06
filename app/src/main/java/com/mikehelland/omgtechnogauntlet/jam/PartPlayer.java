@@ -9,6 +9,18 @@ import java.util.ArrayList;
 
 class PartPlayer {
 
+    Section section;
+    Part part;
+
+    Note nextNote;
+    float nextBeat = 0f;
+    int nextNoteIndex = 0;
+
+    PartPlayer(Section section, Part part) {
+        this.section = section;
+        this.part = part;
+    }
+
     static PlaySoundCommand getCommandForNote(Part part, Note note) {
         return new PlaySoundCommand(part, note);
     }
@@ -26,14 +38,13 @@ class PartPlayer {
         return commands;
     }
 
-    static void getSoundsToPlayForPartAtSubbeat(ArrayList<PlaySoundCommand> commands,
-                                                Section section, Part part,
+    void getSoundsToPlayForPartAtSubbeat(ArrayList<PlaySoundCommand> commands,
                                                 int subbeat, int chord) {
         if (part.useSequencer()) {
-            getDrumbeatSounds(commands, part, subbeat);
+            getDrumbeatSounds(commands, subbeat);
         } else {
             if (part.liveNotes == null || part.liveNotes.length == 0) {
-                getNoteSounds(commands, section, part, subbeat, chord);
+                getNoteSounds(commands, subbeat, chord);
             }
             else if (part.autoBeat > 0) {
                 //
@@ -41,7 +52,7 @@ class PartPlayer {
         }
     }
 
-    private static void getDrumbeatSounds(ArrayList<PlaySoundCommand> commands, Part part, int subbeat) {
+    private void getDrumbeatSounds(ArrayList<PlaySoundCommand> commands, int subbeat) {
         if (!part.audioParameters.mute) {
             int i = 0;
             for (SequencerTrack track : part.sequencerPattern.getTracks()) {
@@ -57,42 +68,36 @@ class PartPlayer {
         }
     }
 
-    private static void getNoteSounds(ArrayList<PlaySoundCommand> commands,
-                                      Section section, Part part, int subbeat, int chord) {
+    private void getNoteSounds(ArrayList<PlaySoundCommand> commands, int subbeat, int chord) {
 
         if (part.notes.size() == 0) {
             return;
         }
 
-        //todo skipping oscillators for now but add them
-        if (part.soundSet.isOscillator()) {
-            return;
-        }
-
         if (subbeat == 0) {
-            part.nextBeat = 0;
-            part.nextNote = part.notes.get(0);
-            part.nextNoteIndex = 0;
+            nextBeat = 0;
+            nextNote = part.notes.get(0);
+            nextNoteIndex = 0;
 
             if (part.soundSet.isChromatic()) {
                 KeyHelper.applyScaleToPart(section, part, chord);
             }
         }
 
-        if (part.nextNote == null) {
+        if (nextNote == null) {
             return;
         }
 
-        if (part.nextBeat == subbeat / (float)section.beatParameters.subbeats) {
+        if (nextBeat == subbeat / (float)section.beatParameters.subbeats) {
 
-            if (!part.getMute() && !part.nextNote.isRest()) {
-                commands.add(new PlaySoundCommand(part, part.nextNote));
+            if (!part.getMute() && !nextNote.isRest()) {
+                commands.add(new PlaySoundCommand(part, nextNote));
             }
 
-            part.nextBeat += part.nextNote.getBeats();
-            part.nextNoteIndex++;
-            part.nextNote = part.nextNoteIndex < part.notes.size() ?
-                    part.notes.get(part.nextNoteIndex) : null;
+            nextBeat += nextNote.getBeats();
+            nextNoteIndex++;
+            nextNote = nextNoteIndex < part.notes.size() ?
+                    part.notes.get(nextNoteIndex) : null;
         }
     }
 }

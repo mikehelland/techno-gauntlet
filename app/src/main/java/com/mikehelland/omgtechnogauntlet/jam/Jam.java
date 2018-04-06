@@ -278,6 +278,7 @@ public class Jam {
             return;
         }
 
+        //todo check to see if the soundSet needs to be loaded, it might already be setup
         SoundSet soundSet = onGetSoundSetListener.onGetSoundSet(part.soundSet.getURL());
         if (soundSet == null) {
             return;
@@ -285,8 +286,13 @@ public class Jam {
 
         part.soundSet = soundSet;
 
-        for (SoundSet.Sound sound : soundSet.getSounds()) {
-            soundManager.addSoundToLoad(sound);
+        if (part.soundSet.isOscillator()) {
+            soundManager.addDac(part.soundSet.getOscillator().ugDac);
+        }
+        else {
+            for (SoundSet.Sound sound : soundSet.getSounds()) {
+                soundManager.addSoundToLoad(sound);
+            }
         }
     }
     private void setPoolIdsForPart(Part part) {

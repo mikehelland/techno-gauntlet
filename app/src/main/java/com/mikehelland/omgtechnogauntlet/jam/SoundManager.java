@@ -169,6 +169,7 @@ public class SoundManager {
 
     int playSound(PlaySoundCommand command) {
         if (command.osc != null && command.note != null) {
+            makeSureDspIsRunning();
             return command.osc.playNote(command.note, false);
         }
         else {
@@ -177,7 +178,16 @@ public class SoundManager {
         }
     }
 
-    void stopSound(int playingHandle) {
-        soundPool.stop(playingHandle);
+    void stopSound(PlaySoundCommand command) {
+        if (command.osc != null) {
+            command.osc.mute();
+        }
+        else if (command.note != null) {
+            soundPool.stop(command.note.playingHandle);
+        }
+    }
+
+    void stopSound(int handle) {
+        soundPool.stop(handle);
     }
 }

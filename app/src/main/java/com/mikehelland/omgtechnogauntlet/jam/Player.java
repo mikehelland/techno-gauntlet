@@ -3,6 +3,7 @@ package com.mikehelland.omgtechnogauntlet.jam;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class Player {
 
@@ -14,9 +15,11 @@ class Player {
 
     private int state = 0;
 
-    ArrayList<OnSubbeatListener> onSubbeatListeners = new ArrayList<>();
+    CopyOnWriteArrayList<OnSubbeatListener> onSubbeatListeners = new CopyOnWriteArrayList<>();
 
-    private ArrayList<Note> playingNotes = new ArrayList<>();
+    private ArrayList<PlaySoundCommand> playingCommands = new ArrayList<>();
+
+    private ArrayList<PartPlayer> partPlayers = new ArrayList<>();
 
     private Section section;
 
@@ -45,7 +48,7 @@ class Player {
 
     void play(Section section) {
 
-        this.section = section;
+        loadSection(section);
 
         if (state != STATE_PLAYING) {
             cancelPlaybackThread = false;
@@ -58,15 +61,22 @@ class Player {
         //todo call onStart()
     }
 
+    private void loadSection(Section section) {
+        this.section = section;
+
+        for (Part part : section.parts) {
+            partPlayers.add(new PartPlayer(section, part));
+        }
+    }
 
     private void playBeatSampler(int subbeat) {
 
         //this was a class member to avoid allocating every beat, but throws concurrent modification errors
         //todo is that because multiple threads tried to access it? shouldn't be happening
         ArrayList<PlaySoundCommand> commands = new ArrayList<>();
-        for (Part part : section.parts) {
-            PartPlayer.getSoundsToPlayForPartAtSubbeat(commands, section, part,
-                    subbeat, currentChord);
+
+        for (PartPlayer partPlayer : partPlayers) {
+            partPlayer.getSoundsToPlayForPartAtSubbeat(commands, subbeat, currentChord);
         }
 
         for (PlaySoundCommand command : commands) {
@@ -79,7 +89,7 @@ class Player {
         for (PlaySoundCommand command : commands) {
             if (command.note != null) {
                 command.note.startedPlayingAtSubbeat = isubbeat;
-                playingNotes.add(command.note);
+                playingCommands.add(command);
             }
         }
         //could be first, but might be faster down here?
@@ -119,17 +129,6 @@ class Player {
             progressionI = 0;
         }
         currentChord = section.progression[progressionI];
-
-        //updateChord(chord);
-
-    }
-
-    private void updateChord(int chord) {
-        for (Part part : section.parts) {
-            if (part.soundSet.isChromatic()) {
-                //todo mm.applyScale(part, chord);
-            }
-        }
     }
 
     void stop() {
@@ -138,7 +137,9 @@ class Player {
 
         if (section != null) {
             for (Part part : section.parts) {
-                //todo part.mute();
+                if (part.soundSet.isOscillator()) {
+                    part.soundSet.getOscillator().mute();
+                }
             }
         }
 
@@ -147,8 +148,9 @@ class Player {
 
     void finish() {
         for (Part part : section.parts) {
-            //todo part.finish();
+            //part.finish();
         }
+        soundManager.cleanUp();
         state = STATE_FINISHED;
     }
 
@@ -176,6 +178,9 @@ class Player {
     }
 
     void stopPartLiveNote(Part part, Note note) {
+        if (part.soundSet.isOscillator()) {
+            part.soundSet.getOscillator().mute();
+        }
         if (note.playingHandle > -1) {
             soundManager.stopSound(note.playingHandle);
         }
@@ -232,7 +237,7 @@ class Player {
             }
 
             //todo better spot for this?
-            pollFinishedNotes(now);
+            pollFinishedNotes();
         }
         return false;
     }
@@ -262,22 +267,16 @@ class Player {
         }
     }
 
-    void pollFinishedNotes(long now) {
-        long finishAt;
+    void pollFinishedNotes() {
         //try {
-        for (int i = 0; i < playingNotes.size(); i++) {
-            Note note = playingNotes.get(i);
-            if (note.startedPlayingAtSubbeat + section.beatParameters.subbeats * note.getBeats() <= isubbeat) {
-                soundManager.stopSound(note.playingHandle);
-                playingNotes.remove(note);
+        PlaySoundCommand command;
+        for (int i = 0; i < playingCommands.size(); i++) {
+            command = playingCommands.get(i);
+            if (command.note.startedPlayingAtSubbeat + section.beatParameters.subbeats * command.note.getBeats() <= isubbeat) {
+                soundManager.stopSound(command);
+                playingCommands.remove(i);
                 i--;
             }
-            //todo
-                /*finishAt = part.getFinishAt();
-                if (finishAt > 0 && now >= finishAt) {
-                    part.mute();
-                    part.finishCurrentNoteAt(0);
-                }*/
         }
         //} catch (Exception ignore) {}
     }

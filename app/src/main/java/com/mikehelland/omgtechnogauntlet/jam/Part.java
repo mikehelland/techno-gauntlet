@@ -22,15 +22,7 @@ public class Part {
     //short cut to all the sequencerPattern's track's data
     boolean[][] pattern;
 
-    //the part shouldn't really have to know these? But probably makes it faster?
     int[] poolIds;
-
-    //also not quite part of the data but used by the player to keep track of where we are
-    //for performance
-    Note nextNote;
-    float nextBeat = 0f;
-    int nextNoteIndex = 0;
-
 
     //calculated vaules from volume and pan
     //todo not used but might be optimal to precalculate and reuse?
