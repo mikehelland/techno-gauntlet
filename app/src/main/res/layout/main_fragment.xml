@@ -47,20 +47,20 @@
                     android:orientation="horizontal">
 
         <Button
-                android:id="@+id/key_button"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.3"
-                android:text="C Major"
-                android:singleLine="true"
-                android:ellipsize="marquee"/>
-
-        <Button
                 android:id="@+id/tempo_button"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:text="120 bpm"/>
+
+        <Button
+            android:id="@+id/key_button"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.3"
+            android:text="C Major"
+            android:singleLine="true"
+            android:ellipsize="marquee"/>
 
         <com.mikehelland.omgtechnogauntlet.ChordsView
                 android:id="@+id/chordprogression_button"

@@ -30,7 +30,7 @@ public class TrackSubMixerFragment extends OMGFragment {
 
         ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
         View controls;
-        final Part part = getJam().getCurrentPart();
+        final Part part = getPart();
         for (final SequencerTrack track : part.getTracks()) {
 
             controls = inflater.inflate(R.layout.mixer_panel, container, false);

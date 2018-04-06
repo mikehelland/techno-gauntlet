@@ -1,5 +1,7 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
+import android.util.Log;
+
 /**
  * Created by m on 3/24/18.
  */
@@ -10,15 +12,28 @@ class PlaySoundCommand {
     float duration = 1;
     float[] stereoVolume = new float[] {0.75f, 0.75f};
     float speed = 1f;
+    Oscillator osc = null;
 
     Note note = null;
 
     PlaySoundCommand(Part part, Note note) {
-        poolId = part.poolIds[note.getInstrumentNote()];
         instrumentNote = note.getInstrumentNote();
         duration = (float)note.getBeats();
         calculateStereoVolume(part.audioParameters.volume, part.audioParameters.pan);
         speed = part.audioParameters.speed;
+        if (part.soundSet.isOscillator()) {
+            osc = part.soundSet.getOscillator();
+        }
+        else {
+            if (part.poolIds != null && part.poolIds.length > note.getInstrumentNote()) {
+                poolId = part.poolIds[note.getInstrumentNote()];
+            }
+            else {
+                Log.e("MGH PlaySoundCommand()", "couldn't load poolId " + note.getInstrumentNote() +
+                        "for part " + part.getName());
+            }
+        }
+
 
         this.note = note;
 

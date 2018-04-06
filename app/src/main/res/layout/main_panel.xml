@@ -5,41 +5,36 @@
               android:layout_height="0dip"
               android:layout_weight="1"
               android:background="@drawable/back"
-              android:padding="1dip"
-              android:layout_margin="1dip"
-              android:gravity="center_vertical">
+              android:padding="1dip">
 
+    <ImageButton android:layout_width="48dip"
+        android:layout_height="match_parent"
+        android:id="@+id/options_button"
+        android:text=""
+        android:layout_alignParentLeft="true"
+        android:textColor="#FFFFFFFF"
+        android:src="@drawable/ic_options"
+        />
+
+    <Button android:layout_width="48dip"
+        android:layout_height="match_parent"
+        android:id="@+id/mute_button"
+        android:text="M"
+        android:layout_alignParentRight="true"
+        android:textColor="#FFFFFFFF"
+        android:background="#8800FF00"
+        />
 
     <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@id/options_button"
+            android:layout_toLeftOf="@id/mute_button"
             android:text="Name"
             android:id="@+id/track_button"
             android:background="#888888"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             />
-       <!--     android:background="?android:attr/selectableItemBackground"-->
-
-
-    <Button android:layout_width="48dip"
-            android:layout_height="match_parent"
-            android:id="@+id/mute_button"
-            android:text="M"
-            android:layout_alignParentRight="true"
-            android:textColor="#FFFFFFFF"
-            android:background="#8800FF00"
-            />
-
-    <ImageButton android:layout_width="48dip"
-        android:layout_height="match_parent"
-        android:id="@+id/options_button"
-        android:text=""
-        android:layout_toRightOf="@id/track_button"
-        android:textColor="#FFFFFFFF"
-        android:src="@drawable/ic_options"
-        />
-
 
 </RelativeLayout>

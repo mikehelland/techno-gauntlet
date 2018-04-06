@@ -1,10 +1,10 @@
 package com.mikehelland.omgtechnogauntlet;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -306,7 +306,7 @@ public class DrumView extends View {
             mJam.setPartTrackMute(part, part.getSequencerPattern().getTrack(y),
                     !part.getSequencerPattern().getTrack(y).isMuted());
         }
-        Log.d("MGH", "lastclick =  " + (now - mLastClickTime));
+
         mLastClickTime = now;
 
         if (firstRowButton == y) {

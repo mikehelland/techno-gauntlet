@@ -125,7 +125,9 @@ public class Main extends Activity {
         //todo relocate
         // if (!mPool.isLoaded())
         //    mPool.cancelLoading();
-        jam.stop();
+        if (jam.isPlaying()) {
+            jam.stop();
+        }
     }
 
     @Override

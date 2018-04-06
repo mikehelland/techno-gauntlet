@@ -1,11 +1,11 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
-import com.mikehelland.omgtechnogauntlet.dsp.Dac;
-import com.mikehelland.omgtechnogauntlet.dsp.Delay;
-import com.mikehelland.omgtechnogauntlet.dsp.ExpEnv;
-import com.mikehelland.omgtechnogauntlet.dsp.Flange;
-import com.mikehelland.omgtechnogauntlet.dsp.UGen;
-import com.mikehelland.omgtechnogauntlet.dsp.WtOsc;
+import com.mikehelland.omgtechnogauntlet.jam.dsp.Dac;
+import com.mikehelland.omgtechnogauntlet.jam.dsp.Delay;
+import com.mikehelland.omgtechnogauntlet.jam.dsp.ExpEnv;
+import com.mikehelland.omgtechnogauntlet.jam.dsp.Flange;
+import com.mikehelland.omgtechnogauntlet.jam.dsp.UGen;
+import com.mikehelland.omgtechnogauntlet.jam.dsp.WtOsc;
 
 /**
  * User: m

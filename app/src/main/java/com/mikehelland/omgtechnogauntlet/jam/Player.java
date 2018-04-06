@@ -61,6 +61,9 @@ class Player {
 
     private void playBeatSampler(int subbeat) {
 
+        //this was a class member to avoid allocating every beat, but throws concurrent modification errors
+        //todo is that because multiple threads tried to access it? shouldn't be happening
+        ArrayList<PlaySoundCommand> commands = new ArrayList<>();
         for (Part part : section.parts) {
             PartPlayer.getSoundsToPlayForPartAtSubbeat(commands, section, part,
                     subbeat, currentChord);
@@ -98,13 +101,6 @@ class Player {
         if (playbackThread == null)
             return 0;
 
-        Log.d("MGH getclosestsubbeat", "isubbeat: " + isubbeat +
-                ", timesincelast: " + (System.currentTimeMillis() - timeOfLastBeatPlayed));
-        Log.d("MGH closest", "" + System.currentTimeMillis());
-        //if (isubbeat % section.beatParameters.subbeats == section.beatParameters.subbeats - 1) {
-        //    return (isubbeat + 1) % totalSubbeats;
-        //}
-
         if (System.currentTimeMillis() - timeOfLastBeatPlayed < section.beatParameters.subbeatLength / 2) {
             return isubbeat - 1;
         }
@@ -140,9 +136,12 @@ class Player {
         state = STATE_STOPPING;
         cancelPlaybackThread = true;
 
-        for (Part part : section.parts) {
-            //todo part.mute();
+        if (section != null) {
+            for (Part part : section.parts) {
+                //todo part.mute();
+            }
         }
+
         state = STATE_STOPPED;
     }
 
@@ -197,12 +196,11 @@ class Player {
                     doTheThing();
                 }
             }
-            Log.d("MGH playback", "looks like we're done");
         }
     }
 
     private void startPlayback() {
-        Log.d("MGH playback", "startPlayback");
+        Log.d("MGH start playback", "" + Thread.currentThread().getId());
         progressionI = -1; // gets incremented by onNewLoop
         onNewLoop();
 

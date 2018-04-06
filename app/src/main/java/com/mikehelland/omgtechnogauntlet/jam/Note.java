@@ -1,7 +1,5 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
-import android.util.Log;
-
 /**
  * User: m
  * Date: 11/15/13
@@ -34,7 +32,6 @@ public class Note {
         this.scaledNote = scaledNote;
         this.instrumentNoteNumber = instrumentNote;
         this.mBeats = beats;
-        Log.d("MGH note created at", "" + createdAtTime);
     }
 
     void setBeats(double beats) {

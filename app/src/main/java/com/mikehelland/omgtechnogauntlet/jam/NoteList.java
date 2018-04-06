@@ -16,11 +16,11 @@ public class NoteList extends CopyOnWriteArrayList<Note> {
         }
 
         Note existingNote;
-        Log.d("MGH ovewerite time", "" + System.currentTimeMillis());
+
         final double beat = note.startedPlayingAtSubbeat / 4d; //todo hardcoded subbeats
         double beatsUsed = 0.0d;
         double beatsDisplaced = note.getBeats();
-        Log.d("MGH notelist overwrite", "beat playing at: " + beat + ", beatsDisplayed: " + beatsDisplaced);
+
         int j;
 
         if (size() == 0) {
@@ -77,7 +77,6 @@ public class NoteList extends CopyOnWriteArrayList<Note> {
                     j = i + 1;
                     while (beatsDisplaced > 0 && j < size()) {
                         existingNote = get(j);
-                        Log.d("MGH overwrite bd", "nextNote.beats: " + existingNote.getBeats());
 
                         //probably a concurrency thing //todo CopyOnWriteArrayList?
                         if (existingNote == null)

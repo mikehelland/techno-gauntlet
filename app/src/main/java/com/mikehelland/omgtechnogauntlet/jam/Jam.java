@@ -12,7 +12,6 @@ public class Jam {
     private ArrayList<OnJamChangeListener> onJamChangeListeners = new ArrayList<>();
     private OnGetSoundSetListener onGetSoundSetListener;
 
-    private Part currentPart;
     private String keyName = "";
 
     public Jam(SoundManager soundManager, OnGetSoundSetListener onGetSoundSetListener) {
@@ -165,7 +164,9 @@ public class Jam {
     }
 
     public void stop() {
-        player.stop();
+        if (player.isPlaying()) {
+            player.stop();
+        }
     }
 
     public void finish() {
@@ -244,14 +245,6 @@ public class Jam {
     public void removeOnJamChangeListener(OnJamChangeListener listener) {
         onJamChangeListeners.remove(listener);
     }
-
-    public void setCurrentPart(Part currentPart) {
-        this.currentPart = currentPart;
-    }
-    public Part getCurrentPart() {
-        return currentPart;
-    }
-
 
     public boolean isReady() {
         return section != null;

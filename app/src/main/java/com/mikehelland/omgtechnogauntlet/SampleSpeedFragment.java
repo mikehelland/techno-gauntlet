@@ -37,7 +37,7 @@ public class SampleSpeedFragment extends OMGFragment {
             container.addView(controls);
 
             SampleSpeedView mixerView = (SampleSpeedView) controls.findViewById(R.id.levels_view);
-            mixerView.setJam(getJam(), getJam().getCurrentPart(), getJam().getCurrentPart().getName());
+            mixerView.setJam(getJam(), part, part.getName());
             i++;
         }
 

@@ -16,6 +16,7 @@ public class OMGFragment extends Fragment{
     protected Jam jam;
     protected BluetoothManager mBtf;
     //protected Jam.StateChangeCallback mJamCallback;
+    private Part part;
 
     protected void getActivityMembers() {
 
@@ -28,7 +29,10 @@ public class OMGFragment extends Fragment{
     protected Jam getJam() {
         return jam;
     }
-    protected Part getPart() { return jam.getCurrentPart();}
+    protected Part getPart() { return part;}
+    void setPart(Part part) {
+        this.part = part;
+    }
 
     protected void animateFragment(OMGFragment f, int direction) {
         f.jam = jam;

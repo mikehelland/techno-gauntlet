@@ -35,7 +35,7 @@ public class PartOptionsFragment extends OMGFragment {
 
     public void setup() {
 
-        final Part part = getJam().getCurrentPart();
+        final Part part = getPart();
 
         mView.findViewById(R.id.remove_channel_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,6 +163,7 @@ public class PartOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 TrackSubMixerFragment f = new TrackSubMixerFragment();
+                f.setPart(part);
                 animateFragment(f, 0);
             }
         });

@@ -1,6 +1,6 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
-import com.mikehelland.omgtechnogauntlet.dsp.Dac;
+import com.mikehelland.omgtechnogauntlet.jam.dsp.Dac;
 
 import java.util.ArrayList;
 

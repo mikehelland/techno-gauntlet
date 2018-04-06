@@ -25,7 +25,7 @@ public class DrumFragment extends OMGFragment {
 
         drumMachine = (DrumView)view.findViewById(R.id.drummachine);
 
-        drumMachine.setJam(getJam(), getJam().getCurrentPart());
+        drumMachine.setJam(getJam(), getPart());
 
         onSubbeatListener = new OnSubbeatListener() {
             @Override

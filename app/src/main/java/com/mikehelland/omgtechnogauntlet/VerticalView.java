@@ -602,7 +602,6 @@ public class VerticalView extends View {
         Note[] notes = new Note[touches.size()];
         for (int i = 0; i < notes.length; i++) {
             notes[i] = touches.get(i).note;
-            Log.d("MGH getnotearray", notes[i].getInstrumentNote() + (notes[i].isPlaying() ? "isPlaying" : "isNotePlaying"));
         }
         return notes;
     }

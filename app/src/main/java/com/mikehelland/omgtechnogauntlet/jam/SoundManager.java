@@ -5,7 +5,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.Log;
 
-import com.mikehelland.omgtechnogauntlet.dsp.Dac;
+import com.mikehelland.omgtechnogauntlet.jam.dsp.Dac;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -168,8 +168,13 @@ public class SoundManager {
     }
 
     int playSound(PlaySoundCommand command) {
-        return soundPool.play(command.poolId, command.stereoVolume[0], command.stereoVolume[1],
-                10, 0, command.speed);
+        if (command.osc != null && command.note != null) {
+            return command.osc.playNote(command.note, false);
+        }
+        else {
+            return soundPool.play(command.poolId, command.stereoVolume[0], command.stereoVolume[1],
+                    10, 0, command.speed);
+        }
     }
 
     void stopSound(int playingHandle) {

@@ -94,13 +94,14 @@ public class MainFragment extends OMGFragment {
                 return;
             }
 
-            getJam().setCurrentPart(part);
             if (part.useSequencer()) {
                 DrumFragment f = new DrumFragment();
+                f.setPart(part);
                 animateFragment(f, 0);
             }
             else {
                 GuitarFragment f = new GuitarFragment();
+                f.setPart(part);
                 animateFragment(f, 0);
             }
             }
@@ -149,7 +150,7 @@ public class MainFragment extends OMGFragment {
                 }
 
                 PartOptionsFragment f = new PartOptionsFragment();
-                getJam().setCurrentPart(part);
+                f.setPart(part);
                 animateFragment(f, 0);
             }
         });
