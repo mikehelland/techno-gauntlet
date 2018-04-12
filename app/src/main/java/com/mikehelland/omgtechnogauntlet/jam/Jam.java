@@ -274,23 +274,25 @@ public class Jam {
 
     //I'm not too sure these should be here, but where?
     private void loadSoundSetForPart(Part part) {
-        if (onGetSoundSetListener == null) {
-            return;
-        }
+        //todo maybe an isloaded instead of isvalid here
+        if (!part.soundSet.isValid()) {
+            if (onGetSoundSetListener == null) {
+                return;
+            }
 
-        //todo check to see if the soundSet needs to be loaded, it might already be setup
-        SoundSet soundSet = onGetSoundSetListener.onGetSoundSet(part.soundSet.getURL());
-        if (soundSet == null) {
-            return;
-        }
+            SoundSet soundSet = onGetSoundSetListener.onGetSoundSet(part.soundSet.getURL());
+            if (soundSet == null) {
+                return;
+            }
 
-        part.soundSet = soundSet;
+            part.soundSet = soundSet;
+        }
 
         if (part.soundSet.isOscillator()) {
             soundManager.addDac(part.soundSet.getOscillator().ugDac);
         }
         else {
-            for (SoundSet.Sound sound : soundSet.getSounds()) {
+            for (SoundSet.Sound sound : part.soundSet.getSounds()) {
                 soundManager.addSoundToLoad(sound);
             }
         }
@@ -317,6 +319,15 @@ public class Jam {
         Part part = new Part(section);
         part.soundSet = soundSet;
         section.parts.add(part);
+
+        String defaultSurface = soundSet.getDefaultSurface();
+        if (defaultSurface != null) {
+            part.surface = new Surface(defaultSurface);
+        }
+        if (part.useSequencer()) {
+            setupSequencerPatternForPart(part);
+        }
+
         loadSoundSetForPart(part);
         loadSounds();
     }
@@ -332,5 +343,21 @@ public class Jam {
                 }
             }
         }).start();
+    }
+
+    public void setPartSurface(Part part, Surface surface) {
+        if (surface != null) {
+            part.surface = surface;
+        }
+    }
+
+    public void setupSequencerPatternForPart(Part part) {
+        part.pattern = new boolean[part.soundSet.getSounds().size()][];
+        int i = 0;
+        for (SoundSet.Sound sound : part.soundSet.getSounds()) {
+            part.getTracks().add(new SequencerTrack(sound.getName()));
+            part.pattern[i] = part.getTracks().get(i).getData();
+            i++;
+        }
     }
 }

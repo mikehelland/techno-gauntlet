@@ -69,6 +69,9 @@ public class PartOptionsFragment extends OMGFragment {
         rbSequencer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (part.getPattern() == null) {
+                    getJam().setupSequencerPatternForPart(part);
+                }
                 setPartSurface(part, new Surface(Surface.PRESET_SEQUENCER));
                 finish();
             }
@@ -95,6 +98,7 @@ public class PartOptionsFragment extends OMGFragment {
                 finish();
             }
         });
+        rbFretboard.setVisibility(View.GONE);
 
         final Button resetButton = (Button)mView.findViewById(R.id.reset_sample_speed);
         resetButton.setOnClickListener(new View.OnClickListener() {
@@ -182,6 +186,6 @@ public class PartOptionsFragment extends OMGFragment {
     }
 
     private void setPartSurface(Part part, Surface surface) {
-        //todo use the jam .. part.setSurface(new Surface(Surface.PRESET_SEQUENCER));
+        getJam().setPartSurface(part, surface);
     }
 }

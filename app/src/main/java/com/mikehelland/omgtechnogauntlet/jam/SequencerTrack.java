@@ -6,7 +6,7 @@ package com.mikehelland.omgtechnogauntlet.jam;
 
 public class SequencerTrack {
     private String name = "";
-    AudioParameters audioParameters;
+    AudioParameters audioParameters = new AudioParameters();
     private boolean[] data = new boolean[512];
     int poolId = -1;
 
