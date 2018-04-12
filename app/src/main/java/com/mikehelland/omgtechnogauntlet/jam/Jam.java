@@ -250,14 +250,20 @@ public class Jam {
         return section != null;
     }
 
-    public void startPartLiveNotes(Part part, Note  note) {
+    public void startPartLiveNotes(Part part, Note  note, int autoBeat) {
         part.liveNotes =  new Note[] {note};
-        player.playPartLiveNote(part, note);
+        if (autoBeat == 0) {
+            player.playPartLiveNote(part, note);
+        }
+        part.autoBeat = autoBeat;
     }
 
-    public void updatePartLiveNotes(Part part, Note[] notes) {
+    public void updatePartLiveNotes(Part part, Note[] notes, int autoBeat) {
         part.liveNotes =  notes;
-        player.playPartLiveNotes(part, notes);
+        if (autoBeat == 0) {
+            player.playPartLiveNotes(part, notes);
+        }
+        part.autoBeat = autoBeat;
     }
 
     public void removeFromPartLiveNotes(Part part, Note note, Note[] notes) {

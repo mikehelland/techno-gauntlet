@@ -29,13 +29,13 @@ public class GuitarFragment extends OMGFragment {
 
         VerticalView.OnGestureListener onGestureListener = new VerticalView.OnGestureListener() {
             @Override
-            void onStart(Note note) {
-                getJam().startPartLiveNotes(getPart(), note);
+            void onStart(Note note, int autoBeat) {
+                getJam().startPartLiveNotes(getPart(), note, autoBeat);
             }
 
             @Override
-            void onUpdate(Note[] notes) {
-                getJam().updatePartLiveNotes(getPart(), notes);
+            void onUpdate(Note[] notes, int autoBeat) {
+                getJam().updatePartLiveNotes(getPart(), notes, autoBeat);
             }
 
             @Override

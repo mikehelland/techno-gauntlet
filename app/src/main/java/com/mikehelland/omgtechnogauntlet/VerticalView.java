@@ -95,6 +95,8 @@ public class VerticalView extends View {
 
     private OnGestureListener onGestureListener;
 
+    private int autoBeat = 0;
+
     public VerticalView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -522,7 +524,7 @@ public class VerticalView extends View {
         touches.add(touch);
 
         if (onGestureListener != null)
-            onGestureListener.onStart(touch.note);
+            onGestureListener.onStart(touch.note, touch.onString);
     }
 
     private void onUp(MotionEvent event) {
@@ -537,7 +539,7 @@ public class VerticalView extends View {
         touches.add(touch);
 
         if (onGestureListener != null)
-            onGestureListener.onUpdate(getNoteArrayFromTouches());
+            onGestureListener.onUpdate(getNoteArrayFromTouches(), touch.onString);
     }
 
     private void onPointerUp(MotionEvent event, int index) {
@@ -558,10 +560,12 @@ public class VerticalView extends View {
     private void onMove(MotionEvent event) {
         boolean update = false;
         int id;
+        autoBeat = 0;
         for (int ip = 0; ip < event.getPointerCount(); ip++) {
             id = event.getPointerId(ip);
             for (Touch touch : touches) {
                 if (id == touch.id) {
+
 
                     touch.lastFret = touch.onFret;
                     touch.lastString = touch.onString;
@@ -570,6 +574,9 @@ public class VerticalView extends View {
                     touch.y = event.getY(ip);
                     touch.onFret = getTouchingFret(touch.y);
                     touch.onString = getTouchingString(touch.x);
+
+                    if (touch.onString > 0 && (autoBeat == 0 || touch.onString < autoBeat))
+                        autoBeat = touch.onString;
 
                     if (touch.lastFret != touch.onFret || touch.lastString != touch.onString) {
                         onGestureListener.onRemove(touch.note, getNoteArrayFromTouches());
@@ -581,7 +588,7 @@ public class VerticalView extends View {
             }
         }
         if (update) {
-            onGestureListener.onUpdate(getNoteArrayFromTouches());
+            onGestureListener.onUpdate(getNoteArrayFromTouches(), autoBeat);
         }
     }
 
@@ -607,8 +614,8 @@ public class VerticalView extends View {
     }
 
     abstract static class OnGestureListener {
-        abstract void onStart(Note note);
-        abstract void onUpdate(Note[] notes);
+        abstract void onStart(Note note, int autoBeat);
+        abstract void onUpdate(Note[] notes, int autoBeat);
         abstract void onRemove(Note note, Note[] notes);
         abstract void onEnd();
     }
