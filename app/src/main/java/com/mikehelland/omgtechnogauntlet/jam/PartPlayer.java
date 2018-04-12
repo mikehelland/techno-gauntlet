@@ -67,7 +67,7 @@ class PartPlayer {
                             -1, -1,
                             track.audioParameters.volume * part.audioParameters.volume,
                             track.audioParameters.pan + part.audioParameters.pan,
-                            track.audioParameters.speed));
+                            part.audioParameters.speed * track.audioParameters.speed));
                 }
                 i++;
             }

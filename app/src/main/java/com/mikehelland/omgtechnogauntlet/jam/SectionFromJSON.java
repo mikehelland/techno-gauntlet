@@ -263,8 +263,10 @@ class SectionFromJSON {
         if (jsonData.has("pan")) {
             audioParameters.pan = (float)jsonData.getDouble("pan");
         }
-        if (jsonData.has("sampleSpeed")) {
-            audioParameters.speed = (float)jsonData.getDouble("sampleSpeed");
+        if (jsonData.has("speed")) {
+            audioParameters.speed = (float)jsonData.getDouble("speed");
+        } else if (jsonData.has("sampleSpeed")) { //the old way
+            audioParameters.speed = (float) jsonData.getDouble("sampleSpeed");
         }
         return audioParameters;
     }

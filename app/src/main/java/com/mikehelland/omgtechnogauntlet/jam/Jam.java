@@ -214,7 +214,7 @@ public class Jam {
 
     }
 
-    public void setPartSpeed(Part part, float speed) {
+    public void setPartSpeed(Part part, float speed, String source) {
         part.audioParameters.speed = speed;
     }
 
@@ -252,7 +252,7 @@ public class Jam {
 
     public void startPartLiveNotes(Part part, Note  note, int autoBeat) {
         part.liveNotes =  new Note[] {note};
-        if (autoBeat == 0) {
+        if (!player.isPlaying() || autoBeat == 0) {
             player.playPartLiveNote(part, note);
         }
         part.autoBeat = autoBeat;
@@ -260,7 +260,7 @@ public class Jam {
 
     public void updatePartLiveNotes(Part part, Note[] notes, int autoBeat) {
         part.liveNotes =  notes;
-        if (autoBeat == 0) {
+        if (!player.isPlaying() || autoBeat == 0) {
             player.playPartLiveNotes(part, notes);
         }
         part.autoBeat = autoBeat;

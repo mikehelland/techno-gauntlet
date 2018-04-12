@@ -38,7 +38,6 @@ public class SampleSpeedView extends View {
     private int touchingArea = TOUCHING_AREA_NONE;
 
     private String channelName = "";
-    private float channelNameWidth2;
 
     private int labelTextSize = 48;
 
@@ -47,8 +46,7 @@ public class SampleSpeedView extends View {
     private float controlMargin = 5;
     private float speedWidth = -1;
 
-    //todo channel number? should be id
-    private int channelNumber = 0;
+    private float lastSpeed = 1;
 
     public SampleSpeedView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -76,8 +74,6 @@ public class SampleSpeedView extends View {
 
     public void setPartName(String newPartName) {
         channelName = newPartName;
-        channelNameWidth2 = paintText.measureText(channelName) / 2;
-
     }
 
     public void onDraw(Canvas canvas) {
@@ -120,8 +116,13 @@ public class SampleSpeedView extends View {
         if (action == MotionEvent.ACTION_DOWN) {
 
             if (x <= resetButtonWidth) {
-                //mPart.setSampleSpeed(1);
-                //todo jam.setPartSpeed(part, 1);
+                if (part.getSpeed() == 1) {
+                    jam.setPartSpeed(part, lastSpeed, null);
+                }
+                else {
+                    lastSpeed = part.getSpeed();
+                    jam.setPartSpeed(part, 1, null);
+                }
                 touchingArea = TOUCHING_AREA_RESET;
             }
             else if (x <= speedStart + speedWidth) {
@@ -155,12 +156,9 @@ public class SampleSpeedView extends View {
 
     private void performTouch(float x) {
         if (touchingArea == TOUCHING_AREA_SPEED) {
-            float volume = Math.max(0, Math.min(1, (x - speedStart) / speedWidth));
-
             float speed = Math.max(0, Math.min(2.0f, ((x - speedStart) / speedWidth) * 2));
 
-            //mPart.setSampleSpeed(speed);
-            //todo jam.setPartSpeed(part, speed);
+            jam.setPartSpeed(part, speed, null);
         }
     }
 }
