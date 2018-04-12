@@ -57,10 +57,13 @@ public class Main extends Activity {
             @Override
             public void onSoundLoaded(int howManyLoaded, int howManyTotal) {
                 mBeatView.setLoadingStatus(howManyLoaded, howManyTotal);
-                //todo this shouldn't be here because sounds may not need to be loaded
-                FragmentManager fm = getFragmentManager();
-                if (howManyLoaded >= howManyTotal && fm != null && fm.getBackStackEntryCount() == 0) {
-                    mWelcomeFragment.animateFragment(new MainFragment(), 1);
+
+                if (howManyLoaded >= howManyTotal) {
+                    jam.play();
+                    FragmentManager fm = getFragmentManager();
+                    if (fm != null && fm.getBackStackEntryCount() == 0) {
+                        mWelcomeFragment.animateFragment(new MainFragment(), 1);
+                    }
                 }
             }
         };

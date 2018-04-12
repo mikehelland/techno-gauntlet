@@ -113,8 +113,8 @@ public class SoundManager {
             isLoading = false;
 
             // because the listener won't fire without sounds to load
-            if (onAllLoadsFinishedCallback != null) {
-                onAllLoadsFinishedCallback.run();
+            if (onSoundLoadedListener != null) {
+                onSoundLoadedListener.onSoundLoaded(1, 1);
             }
             return;
         }

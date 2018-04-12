@@ -19,7 +19,7 @@ class Player {
 
     private ArrayList<PlaySoundCommand> playingCommands = new ArrayList<>();
 
-    private ArrayList<PartPlayer> partPlayers = new ArrayList<>();
+    private CopyOnWriteArrayList<PartPlayer> partPlayers = new CopyOnWriteArrayList<>();
 
     private Section section;
 
@@ -31,8 +31,6 @@ class Player {
     private SoundManager soundManager;
 
     private PlaybackThread playbackThread;
-
-    private boolean cancelPlaybackThread = false;
 
     private int progressionI = -1;
 
@@ -51,7 +49,6 @@ class Player {
         loadSection(section);
 
         if (state != STATE_PLAYING) {
-            cancelPlaybackThread = false;
             playbackThread = new PlaybackThread();
             playbackThread.start();
         }
@@ -63,7 +60,7 @@ class Player {
 
     private void loadSection(Section section) {
         this.section = section;
-
+        partPlayers.clear();
         for (Part part : section.parts) {
             partPlayers.add(new PartPlayer(section, part));
         }
@@ -133,7 +130,10 @@ class Player {
 
     void stop() {
         state = STATE_STOPPING;
-        cancelPlaybackThread = true;
+
+        if (playbackThread != null) {
+            playbackThread.cancel = true;
+        }
 
         if (section != null) {
             for (Part part : section.parts) {
@@ -143,12 +143,18 @@ class Player {
             }
         }
 
+        for (OnSubbeatListener subbeatListener : onSubbeatListeners) {
+            subbeatListener.onSubbeat(-1);
+        }
+
         state = STATE_STOPPED;
     }
 
     void finish() {
-        for (Part part : section.parts) {
-            //part.finish();
+        if (section != null && section.parts != null) {
+            for (Part part : section.parts) {
+                //part.finish();
+            }
         }
         soundManager.cleanUp();
         state = STATE_FINISHED;
@@ -192,11 +198,11 @@ class Player {
     }
 
     private class PlaybackThread extends Thread {
-
+        boolean cancel = false;
         public void run() {
 
             startPlayback();
-            while (!cancelPlaybackThread) {
+            while (!cancel) {
                 if (isTime()) {
                     doTheThing();
                 }
@@ -270,12 +276,15 @@ class Player {
     void pollFinishedNotes() {
         //try {
         PlaySoundCommand command;
+        Log.d("MGH pollfinishnotes", "commands size = " + playingCommands.size());
         for (int i = 0; i < playingCommands.size(); i++) {
             command = playingCommands.get(i);
-            if (command.note.startedPlayingAtSubbeat + section.beatParameters.subbeats * command.note.getBeats() <= isubbeat) {
-                soundManager.stopSound(command);
-                playingCommands.remove(i);
-                i--;
+            if (command != null && command.note != null) {
+                if (command.note.startedPlayingAtSubbeat + section.beatParameters.subbeats * command.note.getBeats() <= isubbeat) {
+                    soundManager.stopSound(command);
+                    playingCommands.remove(i);
+                    i--;
+                }
             }
         }
         //} catch (Exception ignore) {}

@@ -1,6 +1,5 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 class Section {
@@ -9,6 +8,6 @@ class Section {
     BeatParameters beatParameters;
     KeyParameters keyParameters;
     int[] progression = {0};
-    List<Part> parts = new CopyOnWriteArrayList<>();
+    CopyOnWriteArrayList<Part> parts = new CopyOnWriteArrayList<>();
 
 }

@@ -1,7 +1,7 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Jam {
 
@@ -132,7 +132,7 @@ public class Jam {
         }
     }
 
-    public List<Part> getParts() {
+    public CopyOnWriteArrayList<Part> getParts() {
         return section.parts;
     }
 

@@ -107,20 +107,6 @@ public class MainFragment extends OMGFragment {
             }
         });
 
-        button.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-
-                if (!part.isValid()) {
-                    return false;
-                }
-
-                PartOptionsFragment f = new PartOptionsFragment();
-                animateFragment(f, 0);
-
-                return true;
-            }
-        });
 
         final Button muteButton = (Button)controls.findViewById(R.id.mute_button);
         muteButton.setOnClickListener(new View.OnClickListener() {

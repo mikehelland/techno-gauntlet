@@ -1,7 +1,5 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
-import android.util.Log;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 
 //todo this is basically one method, shouldn't really be part of NoteList anyway, maybe a NoteListOverwrite class
@@ -63,7 +61,7 @@ public class NoteList extends CopyOnWriteArrayList<Note> {
             }
 
             // this is right where the note is supposed to start
-            if (beatsUsed >= beat) {
+            if (beatsUsed == beat) {
 
                 // if this eight note is over writing another, chop it in two
                 /*if (!existingNote.isRest() && note.getTotalBeats() == 0.5d && existingNote.getTotalBeats() == 0.5d) {
@@ -84,7 +82,7 @@ public class NoteList extends CopyOnWriteArrayList<Note> {
 
                         if (existingNote.getBeats() <= beatsDisplaced) {
                             remove(j);
-                            Log.d("MGH overwrite bd", "nextNote.beats: " + existingNote.getBeats());
+                            //Log.d("MGH overwrite bd", "nextNote.beats: " + existingNote.getBeats());
                         }
                         else {
                             existingNote.setBeats(existingNote.getBeats() - beatsDisplaced);

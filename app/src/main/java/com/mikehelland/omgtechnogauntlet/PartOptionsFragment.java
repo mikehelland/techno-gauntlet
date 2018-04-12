@@ -150,6 +150,7 @@ public class PartOptionsFragment extends OMGFragment {
             public void onClick(View view) {
                 //ZoomFragment f = new ZoomFragment();
                 GuitarFragment f = new GuitarFragment();
+                f.setPart(getPart());
                 f.setZoomModeOn();
                 animateFragment(f, 0);
             }

@@ -58,7 +58,7 @@ public class SectionToJSON {
 
         boolean useSequencer = part.surface.getURL().equals(Surface.PRESET_SEQUENCER);
         sb.append("{\"type\" : \"PART\", ");
-        sb.append("\", \"surface\" : ");
+        sb.append("\"surface\" : ");
         part.surface.getData(sb);
         sb.append(", \"soundSet\" : ");
         part.soundSet.getData(sb);
@@ -78,7 +78,7 @@ public class SectionToJSON {
 
     static private void getNoteData(StringBuilder sb, Part part) {
 
-        sb.append(", \"octave\": ");
+        sb.append("\"octave\": ");
         sb.append(part.octave);
         sb.append(", \"notes\" : [");
 
@@ -104,7 +104,7 @@ public class SectionToJSON {
     }
 
     static private void getTrackData(StringBuilder sb, Part part, Section section) {
-        sb.append(", \"tracks\": [");
+        sb.append("\"tracks\": [");
 
         int totalSubbeats = BeatParameters.getTotalSubbeats(section.beatParameters);
         ArrayList<SoundSet.Sound> sounds = part.soundSet.getSounds();

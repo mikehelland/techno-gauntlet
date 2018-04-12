@@ -170,7 +170,7 @@ class SectionFromJSON {
         final SoundSet soundSet = new SoundSet();
 
         JSONObject jsonObject = jsonData;
-        if (jsonData.has("soundset")) {
+        if (jsonData.has("soundSet")) {
             jsonObject = jsonData.getJSONObject("soundSet");
 
             if (jsonObject.has("name")) {

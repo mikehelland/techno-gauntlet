@@ -118,6 +118,8 @@ public class WelcomeFragment extends OMGFragment {
             }
         };*/
 
+        getJam().stop();
+
         Activity activity = getActivity(); if (activity == null) return;
 
         getJam().loadFromJSON(json);
