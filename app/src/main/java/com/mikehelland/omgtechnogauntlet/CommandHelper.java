@@ -11,7 +11,66 @@ import com.mikehelland.omgtechnogauntlet.jam.Part;
  * Created by m on 7/31/16.
  * the layer between the bluetooth connection and the jam
  */
-class CommandProcessor extends BluetoothDataCallback {
+class CommandHelper extends BluetoothDataCallback {
+
+    static String getPartEnabledCommand(String id, boolean enabled) {
+        return "CHANNEL_ENABLED=" + (enabled?"1,":"0,") + id;
+    }
+    static String getPartVolumeCommand(String id, float volume) {
+        return "CHANNEL_VOLUME=" + volume + "," + id;
+    }
+    static String getPartPanCommand(String id, float pan) {
+        return "CHANNEL_PAN=" + pan + "," + id;
+    }
+
+
+    static String getNewPartCommand(Part channel) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("NEW_CHANNEL=");
+        getPartInfo(sb, channel);
+        return sb.toString();
+    }
+
+    static private String getPartsInfo(Jam jam) {
+        StringBuilder setParts = new StringBuilder();
+        for (int i = 0; i < jam.getParts().size(); i++) {
+            Part channel = jam.getParts().get(i);
+
+            getPartInfo(setParts, channel);
+
+            if (i < jam.getParts().size() - 1) {
+                setParts.append("|");
+            }
+        }
+        return setParts.toString();
+    }
+
+
+    static private void getPartInfo(StringBuilder sb, Part channel) {
+
+        String surfaceURL = channel.getSurfaceURL();
+        String surface = "0";
+        if ("PRESET_SEQUENCER".equals(surfaceURL))
+            surface = "0";
+        if ("PRESET_VERTICAL".equals(surfaceURL))
+            surface = "1";
+        if ("PRESET_FRETBOARD".equals(surfaceURL))
+            surface = "2";
+
+        sb.append(channel.getId());
+        sb.append(",");
+        sb.append(channel.getMute() ? "0," : "1,");
+        sb.append(channel.getSoundSet().isChromatic() ? "1," : "0,");
+        sb.append(surface);
+        sb.append(",");
+        sb.append(channel.getName());
+        sb.append(",");
+        sb.append(channel.getVolume());
+        sb.append(",");
+        sb.append(channel.getPan());
+        sb.append(",");
+        sb.append(channel.getSpeed());
+    }
 
     final static String JAMINFO_SUBBEATLENGTH = "JAMINFO_SUBBEATLENGTH";
     final static String JAMINFO_KEY = "JAMINFO_KEY";
@@ -22,7 +81,7 @@ class CommandProcessor extends BluetoothDataCallback {
     private Jam mJam;
     private Part mPart = null;
 
-    private Jam mPeerJam;
+    //private JamInfo mPeerJam;
     //private OnPeerChangeListener mOnPeerChangeListener;
 
     final private DatabaseContainer mDatabase;
@@ -30,7 +89,7 @@ class CommandProcessor extends BluetoothDataCallback {
 
     private boolean mSync = false;
 
-    CommandProcessor(Context context) {
+    CommandHelper(Context context) {
         //todo storing the context because I need to load the jam
         //maybe this should be done somehow else
         mContext = (Main)context;
@@ -48,15 +107,10 @@ class CommandProcessor extends BluetoothDataCallback {
         // sendJamInfo();
     }
 
-    Jam getPeerJam() {
-        return mPeerJam;
-    }
-
-
     @Override
     public void newData(String name, String value) {
-
-/*        Log.d("MGH BT newdata", name + (value != null ? ("=" + value) : ""));
+/*
+        Log.d("MGH BT newdata", name + (value != null ? ("=" + value) : ""));
 
         switch (name) {
             case "SET_PLAY":
@@ -194,45 +248,6 @@ class CommandProcessor extends BluetoothDataCallback {
 
 
 
-    static private String getPartsInfo(Jam jam) {
-        StringBuilder setParts = new StringBuilder();
-        for (int i = 0; i < jam.getParts().size(); i++) {
-            Part channel = jam.getParts().get(i);
-
-            getPartInfo(setParts, channel);
-
-            if (i < jam.getParts().size() - 1) {
-                setParts.append("|");
-            }
-        }
-        return setParts.toString();
-    }
-
-    static private void getPartInfo(StringBuilder sb, Part channel) {
-
-        String surfaceURL = channel.getSurfaceURL();
-        String surface = "0";
-        if ("PRESET_SEQUENCER".equals(surfaceURL))
-            surface = "0";
-        if ("PRESET_VERTICAL".equals(surfaceURL))
-            surface = "1";
-        if ("PRESET_FRETBOARD".equals(surfaceURL))
-            surface = "2";
-
-        sb.append(channel.getId());
-        sb.append(",");
-        sb.append(channel.getMute() ? "0," : "1,");
-        sb.append(channel.getSoundSet().isChromatic() ? "1," : "0,");
-        sb.append(surface);
-        sb.append(",");
-        sb.append(channel.getName());
-        sb.append(",");
-        sb.append(channel.getVolume());
-        sb.append(",");
-        sb.append(channel.getPan());
-        sb.append(",");
-        sb.append(channel.getSpeed());
-    }
 
     private void sendPartInfo() {
         if (mPart == null)
@@ -308,7 +323,7 @@ class CommandProcessor extends BluetoothDataCallback {
         mPeerJam.setSubbeatLength(Integer.parseInt(subbeatLength));
         if (mOnPeerChangeListener != null) mOnPeerChangeListener.onChange(mPeerJam);
     }
-    private void onSetParts(String channelInfo) {
+    /*private void onSetParts(String channelInfo) {
         if (channelInfo != null) {
             channelInfo.split("");
         }
@@ -335,6 +350,9 @@ class CommandProcessor extends BluetoothDataCallback {
         mOnPeerChangeListener = listener;
     }
 
+    JamInfo getPeerJam() {
+        return mPeerJam;
+    }
 
     private void sendSavedJams() {
         Cursor cursor = mDatabase.getSavedData().getSavedCursor();
@@ -435,16 +453,6 @@ class CommandProcessor extends BluetoothDataCallback {
         catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    static String getPartEnabledCommand(String id, boolean enabled) {
-        return "CHANNEL_ENABLED=" + (enabled?"1,":"0,") + id;
-    }
-    static String getPartVolumeCommand(String id, float volume) {
-        return "CHANNEL_VOLUME=" + volume + "," + id;
-    }
-    static String getPartPanCommand(String id, float pan) {
-        return "CHANNEL_PAN=" + pan + "," + id;
     }
 
     void setSync(boolean sync) {

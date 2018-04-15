@@ -9,6 +9,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.OnGetSoundSetListener;
@@ -21,7 +23,7 @@ public class Main extends Activity {
 
     Jam jam;
 
-    BluetoothManager mBtf;
+    BluetoothManager bluetoothManager;
     DatabaseContainer mDatabase;
 
     private WelcomeFragment mWelcomeFragment;
@@ -84,9 +86,6 @@ public class Main extends Activity {
             }
         });
 
-        //todo whats this jam.addPlayStatusChangeListener
-        //jam.addInvalidateOnBeatListener(mBeatView);
-
         mBeatView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,11 +95,11 @@ public class Main extends Activity {
                 else {
                     jam.play();
                 }
-                mBeatView.postInvalidate();
+                //mBeatView.postInvalidate();
             }
         });
 
-        //todo setupBluetooth();
+        setupBluetooth();
 
         new Thread(new Runnable() {
             @Override
@@ -152,74 +151,12 @@ public class Main extends Activity {
 
     }
 
-    /*private void setupBluetooth() {
-        mBtf = new BluetoothManager(this);
-        if (mBtf.isBlueToothOn()) {
-            mBtf.startAccepting(makeConnectCallback());
-
-            setupBluetoothJamCallback();
+    private void setupBluetooth() {
+        bluetoothManager = new BluetoothManager(this);
+        if (bluetoothManager.isBlueToothOn()) {
+            bluetoothManager.startAccepting(makeConnectCallback());
+            jam.addOnJamChangeListener(new BluetoothForwarder(bluetoothManager));
         }
-    }
-
-    private void setupBluetoothJamCallback() {
-
-        mJamCallback = new Jam.StateChangeCallback() {
-
-            @Override
-            void newState(String state, Object... args) {
-                if (state.equals("PLAY") || state.equals("STOP"))
-                    mBtf.sendCommandToDevices(state, null);
-
-                if (state.equals("ON_NEW_LOOP"))
-                    mBtf.sendCommandToDevices(state, null);
-            }
-
-            @Override
-            void onSubbeatLengthChange(int length, String source) {
-                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SUBBEATLENGTH,
-                        Integer.toString(length), source);
-            }
-
-            @Override
-            void onKeyChange(int key, String source) {
-                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_KEY,
-                        Integer.toString(key), source);
-            }
-
-            @Override
-            void onScaleChange(String scale, String source) {
-                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SCALE,
-                        scale, source);
-            }
-
-            @Override
-            void onChordProgressionChange(int[] chords) {
-
-            }
-
-            @Override
-            void onNewPart(Part channel) {
-                mBtf.sendCommandToDevices(CommandProcessor.getNewPartCommand(channel), null);
-            }
-            @Override
-            void onPartEnabledChanged(Part channel, boolean enabled, String source) {
-                mBtf.sendCommandToDevices(
-                        CommandProcessor.getPartEnabledCommand(channel.getID(), enabled), source);
-            }
-
-            @Override
-            void onPartVolumeChanged(Part channel, float volume, String source) {
-                mBtf.sendCommandToDevices(
-                        CommandProcessor.getPartVolumeCommand(channel.getID(), volume), source);
-            }
-
-            @Override
-            void onPartPanChanged(Part channel, float pan, String source) {
-                mBtf.sendCommandToDevices(
-                        CommandProcessor.getPartPanCommand(channel.getID(), pan), source);
-            }
-        };
-        mJam.addStateChangeListener(mJamCallback);
     }
 
     BluetoothConnectCallback makeConnectCallback() {
@@ -229,14 +166,13 @@ public class Main extends Activity {
             @Override
             public void onConnected(BluetoothConnection connection) {
                 final CommandProcessor cp = new CommandProcessor(Main.this);
-                cp.setup(connection, mJam, null);
+                cp.setup(connection, jam, null);
                 connection.setDataCallback(cp);
             }
 
             public void onDisconnected(final BluetoothConnection connection) {}
         };
     }
-    */
 
     DatabaseContainer getDatabase() {return mDatabase;}
     ImageLoader getImages() {return mImages;}

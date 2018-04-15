@@ -16,8 +16,6 @@ public class TrackSubMixerFragment extends OMGFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        getActivityMembers();
-
         mView = inflater.inflate(R.layout.mixer_fragment,
                 container, false);
 

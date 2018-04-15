@@ -7,24 +7,13 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 
-import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.Part;
 
 public class OMGFragment extends Fragment{
 
     protected Jam jam;
-    protected BluetoothManager mBtf;
-    //protected Jam.StateChangeCallback mJamCallback;
     private Part part;
-
-    protected void getActivityMembers() {
-
-        Main main = ((Main)getActivity());
-        //mJam = main.mJam;
-        mBtf = main.mBtf;
-        //mJamCallback = main.mJamCallback;
-    }
 
     protected Jam getJam() {
         return jam;

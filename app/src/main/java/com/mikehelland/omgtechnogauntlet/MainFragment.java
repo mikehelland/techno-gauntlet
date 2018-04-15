@@ -45,8 +45,6 @@ public class MainFragment extends OMGFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        getActivityMembers();
-
         mLeavingNow = false;
 
         mView = inflater.inflate(R.layout.main_fragment,

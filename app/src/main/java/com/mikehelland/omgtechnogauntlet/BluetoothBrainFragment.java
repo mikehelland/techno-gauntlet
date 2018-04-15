@@ -7,11 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothReadyCallback;
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +25,8 @@ public class BluetoothBrainFragment extends OMGFragment {
 
     private View mView;
     private HashMap<String, BtRelativeLayout> mViewMap = new HashMap<>();
+    
+    private BluetoothManager bluetoothManager;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
@@ -29,10 +34,10 @@ public class BluetoothBrainFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.bluetooth_brains,
                 container, false);
 
-        getActivityMembers();
+        
+        bluetoothManager = ((Main)getActivity()).bluetoothManager;
 
-
-        mBtf.whenReady(new BluetoothReadyCallback() {
+        bluetoothManager.whenReady(new BluetoothReadyCallback() {
             @Override
             public void onReady() {
                 Activity activity = getActivity();
@@ -47,11 +52,11 @@ public class BluetoothBrainFragment extends OMGFragment {
                         setupBrainList(inflater);
                     }
                 });
-                if (!mBtf.isAccepting()) {
-                    mBtf.startAccepting(makeConnectCallback(null));
+                if (!bluetoothManager.isAccepting()) {
+                    bluetoothManager.startAccepting(makeConnectCallback(null));
                 }
                 else {
-                    mBtf.addAcceptThreadCallback(makeConnectCallback(null));
+                    bluetoothManager.addAcceptThreadCallback(makeConnectCallback(null));
                 }
             }
         });
@@ -84,7 +89,7 @@ public class BluetoothBrainFragment extends OMGFragment {
 
         ViewGroup viewGroup = (ViewGroup) mView.findViewById(R.id.brain_devices);
         for (String macAddress : list) {
-            for (BluetoothDevice device : mBtf.getPairedDevices()) {
+            for (BluetoothDevice device : bluetoothManager.getPairedDevices()) {
                 if (macAddress.equals(device.getAddress())) {
                     setupDeviceButton(inflater, viewGroup, device);
                     break;
@@ -104,13 +109,13 @@ public class BluetoothBrainFragment extends OMGFragment {
 
     private void setup() {
 
-        mBtf.checkConnections();
+        bluetoothManager.checkConnections();
 
     }
 
 
     private void connectToDevice(final BluetoothDevice device, final View controls) {
-        mBtf.connectTo(device, makeConnectCallback(controls));
+        bluetoothManager.connectTo(device, makeConnectCallback(controls));
     }
 
     private CommandProcessor setupDataCallBackForConnection(BluetoothConnection connection) {
@@ -123,7 +128,7 @@ public class BluetoothBrainFragment extends OMGFragment {
                 return null;
             }
             cp = new CommandProcessor(activity);
-            cp.setup(connection, getJam(), null);
+            cp.setup(connection, getPeerJam(), null);
             connection.setDataCallback(cp);
         }
 
@@ -158,16 +163,16 @@ public class BluetoothBrainFragment extends OMGFragment {
         ((TextView)controls.findViewById(R.id.bt_device_name)).setText(device.getName());
 
         CommandProcessor cp;
-        for (BluetoothConnection connection : mBtf.getConnections()) {
+        for (BluetoothConnection connection : bluetoothManager.getConnections()) {
             if (connection.getDevice().getAddress().equals(device.getAddress())) {
 
                 if (!connection.isDisconnected()) {
                     //todo
                     /*cp = (CommandProcessor)connection.getDataCallback();
-                    if (cp != null && cp.getJam() != null) {
+                    if (cp != null && cp.getPeerJam() != null) {
                         cp.setOnPeerChangeListener(makeOnChangeListener(controls));
                         onPanelConnected(controls, cp);
-                        setPanelInfo(controls, cp.getJam());
+                        setPanelInfo(controls, cp.getPeerJam());
                         connection.addConnectedCallback(makeConnectCallback(null));
                     }*/
                 }
@@ -244,7 +249,7 @@ public class BluetoothBrainFragment extends OMGFragment {
         return new CommandProcessor.OnPeerChangeListener() {
 
             @Override
-            void onChange(final JamInfo jam) {
+            void onChange(final Jam jam) {
                 Activity activity = getActivity();
                 if (activity == null)
                     return;
@@ -258,15 +263,15 @@ public class BluetoothBrainFragment extends OMGFragment {
             }
         };
 
-    }
+    }*/
 
     private void onPanelConnected(View controls, final CommandProcessor cp) {
 
         controls.findViewById(R.id.tempo_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (cp != null && cp.getJam() != null) {
-                    mJam.setSubbeatLength(cp.getJam().getSubbeatLength());
+                if (cp != null && cp.getPeerJam() != null) {
+                    getJam().setSubbeatLength(cp.getPeerJam().getSubbeatLength(), null);
                 }
             }
         });
@@ -274,9 +279,9 @@ public class BluetoothBrainFragment extends OMGFragment {
         controls.findViewById(R.id.key_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (cp != null && cp.getJam() != null) {
-                    mJam.setKey(cp.getJam().getKey());
-                    mJam.setScale(cp.getJam().getScale());
+                if (cp != null && cp.getPeerJam() != null) {
+                    getJam().setKey(cp.getPeerJam().getKey(), null);
+                    getJam().setScale(cp.getPeerJam().getScale(), null);
                 }
             }
         });
@@ -285,14 +290,14 @@ public class BluetoothBrainFragment extends OMGFragment {
         syncButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (cp.isSynced()) {
+                /*if (cp.isSynced()) {
                     cp.setSync(false);
                     syncButton.setText(R.string.syncbeats);
                 }
                 else {
                     cp.setSync(true);
                     syncButton.setText(R.string.unsyncbeats);
-                }
+                }*/
             }
         });
 
@@ -334,7 +339,7 @@ public class BluetoothBrainFragment extends OMGFragment {
         });
     }
 
-    private void setPanelInfo(BtRelativeLayout controls, JamInfo jam) {
+    private void setPanelInfo(BtRelativeLayout controls, Jam jam) {
 
         if (jam == null || controls == null) {
             return;
@@ -351,9 +356,9 @@ public class BluetoothBrainFragment extends OMGFragment {
         }
 
         ((Button)controls.findViewById(R.id.tempo_button)).
-                setText(String.format("%s bpm", Integer.toString(JamInfo.getBPM(jam))));
+                setText(String.format("%s bpm", Integer.toString(jam.getBPM())));
         ((Button)controls.findViewById(R.id.key_button)).
-                setText(JamInfo.getKeyName(jam));
+                setText(jam.getKeyName());
     }
 
     private void resetPanel(BtRelativeLayout controls) {
@@ -363,5 +368,5 @@ public class BluetoothBrainFragment extends OMGFragment {
         controls.findViewById(R.id.bt_brain_connect_button).setVisibility(View.VISIBLE);
         controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
         controls.findViewById(R.id.sync_button).setVisibility(View.GONE);
-    }*/
+    }
 }

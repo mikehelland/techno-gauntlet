@@ -25,8 +25,6 @@ public class WelcomeFragment extends OMGFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        getActivityMembers();
-
         mView = inflater.inflate(R.layout.welcome, container, false);
 
         populateSavedListView();

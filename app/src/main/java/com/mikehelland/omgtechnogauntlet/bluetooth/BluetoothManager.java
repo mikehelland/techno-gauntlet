@@ -41,7 +41,7 @@ public class BluetoothManager {
 
     boolean cleaningUp = false;
 
-    BluetoothManager(Activity context) {
+    public BluetoothManager(Activity context) {
         ctx = context;
         mBluetooth = BluetoothAdapter.getDefaultAdapter();
     }
@@ -71,7 +71,7 @@ public class BluetoothManager {
         }
     };
 
-    boolean isBlueToothOn() {
+    public boolean isBlueToothOn() {
         return mBluetooth != null && mBluetooth.isEnabled();
     }
 
@@ -105,7 +105,7 @@ public class BluetoothManager {
         return MY_UUID;
     }
 
-    void sendCommandToDevices(String command, String exceptAddress) {
+    public void sendCommandToDevices(String command, String exceptAddress) {
         boolean clearDisconnectedConnections = false;
         for(BluetoothConnection conn : connectionThreads) {
             if (conn.isDisconnected()) {
@@ -120,7 +120,7 @@ public class BluetoothManager {
             checkConnections();
     }
 
-    void sendNameValuePairToDevices(String name, String value, String exceptAddress) {
+    public void sendNameValuePairToDevices(String name, String value, String exceptAddress) {
         boolean clearDisconnectedConnections = false;
         for(BluetoothConnection conn : connectionThreads) {
             if (conn.isDisconnected()) {

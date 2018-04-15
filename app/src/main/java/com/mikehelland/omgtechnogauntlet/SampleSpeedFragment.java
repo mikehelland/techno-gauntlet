@@ -15,8 +15,6 @@ public class SampleSpeedFragment extends OMGFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        getActivityMembers();
-
         mView = inflater.inflate(R.layout.samplespeed_fragment,
                 container, false);
 

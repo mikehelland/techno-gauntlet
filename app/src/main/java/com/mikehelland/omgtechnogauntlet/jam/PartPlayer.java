@@ -17,6 +17,7 @@ class PartPlayer {
     int nextNoteIndex = 0;
 
     int nextLiveNoteI = 0;
+    Note lastLiveNote = null;
 
     PartPlayer(Section section, Part part) {
         this.section = section;
@@ -52,7 +53,12 @@ class PartPlayer {
                 if (nextLiveNoteI >= part.liveNotes.length) {
                     nextLiveNoteI = 0;
                 }
+                if (lastLiveNote != null) {
+                    //lastLiveNote.playingHandle
+                }
+                //part.liveNotes[nextLiveNoteI].setBeats(part.autoBeat / (float)section.beatParameters.subbeats);
                 commands.add(new PlaySoundCommand(part, part.liveNotes[nextLiveNoteI]));
+                lastLiveNote = part.liveNotes[nextLiveNoteI];
                 nextLiveNoteI++;
             }
         }

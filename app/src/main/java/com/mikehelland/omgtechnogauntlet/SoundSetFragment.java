@@ -88,7 +88,6 @@ public class SoundSetFragment extends OMGFragment {
             }
         });
 
-        getActivityMembers();
         setup();
 
         return mView;

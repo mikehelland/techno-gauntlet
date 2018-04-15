@@ -1,21 +1,8 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothDevice;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-
-import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
-import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
-import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothReadyCallback;
-
 public class BluetoothConnectFragment extends OMGFragment {
 
-    private View mView;
+/*    private View mView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -23,7 +10,6 @@ public class BluetoothConnectFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.bluetooth_connect,
                 container, false);
 
-        getActivityMembers();
 
         mBtf.whenReady(new BluetoothReadyCallback() {
             @Override
@@ -136,7 +122,7 @@ public class BluetoothConnectFragment extends OMGFragment {
         }
 
         CommandProcessor cp = new CommandProcessor(activity);
-        cp.setup(connection, getJam(), null);
+        cp.setup(connection, getPeerJam(), null);
         connection.setDataCallback(cp);
-    }
+    }*/
 }

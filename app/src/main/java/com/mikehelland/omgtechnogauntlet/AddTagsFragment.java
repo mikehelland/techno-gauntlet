@@ -34,8 +34,6 @@ public class AddTagsFragment extends OMGFragment {
 
         mView = view;
 
-        getActivityMembers();
-
         setup();
         return view;
     }

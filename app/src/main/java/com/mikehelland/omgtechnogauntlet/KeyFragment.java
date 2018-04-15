@@ -94,7 +94,7 @@ public class KeyFragment extends OMGFragment {
         });
 
         if (Arrays.equals(getJam().getScale(), KeyHelper.SCALES[i])) {
-        //if (getJam().getScaleString().equals(KeyHelper.SCALES[i])) {
+        //if (getPeerJam().getScaleString().equals(KeyHelper.SCALES[i])) {
             mScaleButton = button;
             mScaleButton.setBackgroundColor(Color.GREEN);
         }

@@ -31,7 +31,6 @@ public class LoadFromURLFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.load_from_url,
                 container, false);
 
-        getActivityMembers();
         setup();
 
         return mView;
