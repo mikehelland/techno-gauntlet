@@ -1,9 +1,9 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,7 +19,7 @@ import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 import com.mikehelland.omgtechnogauntlet.jam.SoundManager;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
-public class Main extends Activity {
+public class Main extends FragmentActivity {
 
     Jam jam;
 
@@ -62,7 +62,7 @@ public class Main extends Activity {
 
                 if (howManyLoaded >= howManyTotal) {
                     jam.play();
-                    FragmentManager fm = getFragmentManager();
+                    FragmentManager fm = getSupportFragmentManager();
                     if (fm != null && fm.getBackStackEntryCount() == 0) {
                         mWelcomeFragment.animateFragment(new MainFragment(), 1);
                     }
@@ -109,7 +109,7 @@ public class Main extends Activity {
                     mWelcomeFragment.setJam(jam);
                 }
                 try {
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.add(R.id.main_layout, mWelcomeFragment);
                     ft.commit();
                 } catch (Exception ignore) { }
@@ -142,7 +142,7 @@ public class Main extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() == 0) {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
             Toast.makeText(this, "Can't back out now! \nHit the 'EXIT' button.", Toast.LENGTH_SHORT).show();
 
         } else {

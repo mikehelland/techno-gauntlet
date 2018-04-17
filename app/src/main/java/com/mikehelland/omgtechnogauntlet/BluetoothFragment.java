@@ -21,7 +21,7 @@ import java.util.List;
 
 //import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothDeviceDataHelper;
 
-public class BluetoothBrainFragment extends OMGFragment {
+public class BluetoothFragment extends OMGFragment {
 
     private View mView;
     private HashMap<String, BtRelativeLayout> mViewMap = new HashMap<>();
@@ -31,7 +31,7 @@ public class BluetoothBrainFragment extends OMGFragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.bluetooth_brains,
+        mView = inflater.inflate(R.layout.bluetooth_fragment,
                 container, false);
 
         
@@ -48,7 +48,7 @@ public class BluetoothBrainFragment extends OMGFragment {
                     @Override
                     public void run() {
                         setup();
-                        setupAddDeviceButton();
+                        setupMainButtons();
                         setupBrainList(inflater);
                     }
                 });
@@ -64,13 +64,21 @@ public class BluetoothBrainFragment extends OMGFragment {
         return mView;
     }
 
-    private void setupAddDeviceButton() {
+    private void setupMainButtons() {
+        Button remoteButton = (Button) mView.findViewById(R.id.bt_be_a_remote);
+        remoteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseHost();
+            }
+        });
+
         Button addButton = (Button) mView.findViewById(R.id.bt_add_device);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 BluetoothChooseDeviceFragment f = new BluetoothChooseDeviceFragment();
-                f.setCallback(new BluetoothChooseDeviceFragment.Callback() {
+                f.setCallback(bluetoothManager, new BluetoothChooseDeviceFragment.Callback() {
                     @Override
                     void run(BluetoothDevice device) {
                         addDevice(device);
@@ -369,4 +377,19 @@ public class BluetoothBrainFragment extends OMGFragment {
         controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
         controls.findViewById(R.id.sync_button).setVisibility(View.GONE);
     }
+
+    private void chooseHost() {
+
+        BluetoothChooseDeviceFragment f = new BluetoothChooseDeviceFragment();
+        f.setCallback(bluetoothManager, new BluetoothChooseDeviceFragment.Callback() {
+            @Override
+            void run(BluetoothDevice device) {
+                ConnectToHostFragment connectToHostFragment = new ConnectToHostFragment();
+                connectToHostFragment.setDevice(device);
+                animateFragment(connectToHostFragment, 1);
+            }
+        });
+        animateFragment(f, 1);
+    }
+
 }

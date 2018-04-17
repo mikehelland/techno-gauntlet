@@ -49,7 +49,7 @@ public class Note {
         basicNote = number;
     }
 
-    int getBasicNote() {
+    public int getBasicNote() {
         return basicNote;
     }
 

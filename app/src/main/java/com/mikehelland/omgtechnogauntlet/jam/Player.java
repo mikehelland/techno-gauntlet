@@ -276,7 +276,7 @@ class Player {
     void pollFinishedNotes() {
         //try {
         PlaySoundCommand command;
-        Log.d("MGH pollfinishnotes", "commands size = " + playingCommands.size());
+        //Log.d("MGH pollfinishnotes", "commands size = " + playingCommands.size());
         for (int i = 0; i < playingCommands.size(); i++) {
             command = playingCommands.get(i);
             if (command != null && command.note != null) {

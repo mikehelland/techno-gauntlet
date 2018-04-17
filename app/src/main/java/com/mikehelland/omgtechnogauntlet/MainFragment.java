@@ -220,7 +220,7 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
                 if (ActivityManager.isUserAMonkey()) return;
 
-                OMGFragment f = new BluetoothBrainFragment();
+                OMGFragment f = new BluetoothFragment();
                 animateFragment(f, 1);
             }
         });

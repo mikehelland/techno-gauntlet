@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BluetoothManager {
 
-    static final String STATUS_IO_CONNECTED_THREAD  = "IOException in ConnectedThread";
+    public static final String STATUS_IO_CONNECTED_THREAD  = "IOException in ConnectedThread";
     static final String STATUS_IO_OPEN_STREAMS  = "IOException opening streams";
     static final String STATUS_ACCEPTING_CONNECTIONS = "Accepting Connections";
     static final String STATUS_CONNECTING_TO = "Searching ...";
@@ -179,7 +180,8 @@ public class BluetoothManager {
 
         // if this doesn't end with semicolon, save it for when it does
         // total nasty hack for now
-
+        Log.d("MGH btnew data raw", newData);
+        Log.d("MGH btnew so far", partialTransmission);
         if (!newData.substring(newData.length() - 1).equals(";")) {
             partialTransmission = partialTransmission + newData;
             return;

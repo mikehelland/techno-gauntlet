@@ -149,6 +149,9 @@ public class Jam {
     public int getTotalBeats() {
         return section.beatParameters.beats * section.beatParameters.measures;
     }
+    public int getTotalSubbeats() {
+        return section.beatParameters.subbeats * section.beatParameters.beats * section.beatParameters.measures;
+    }
     public String getKeyName() {
         return keyName;
     }
