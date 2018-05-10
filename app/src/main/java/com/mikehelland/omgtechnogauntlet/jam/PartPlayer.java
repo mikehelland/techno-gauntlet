@@ -48,10 +48,7 @@ class PartPlayer {
         if (jamPart.useSequencer()) {
             getDrumbeatSounds(commands, subbeat);
         } else {
-            if (jamPart.live && jamPart.liveNote != null) {
-                jamPart.liveNote.setBeats(jamPart.liveNote.getBeats() + 1.0f / section.beatParameters.subbeats);
-            }
-            else if (part.liveNotes == null || part.liveNotes.length == 0) {
+            if (part.liveNotes == null || part.liveNotes.length == 0) {
                 getNoteSounds(commands, subbeat, chord);
             }
             else if (part.autoBeat > 0 && (subbeat % part.autoBeat) == 0) {
@@ -61,10 +58,16 @@ class PartPlayer {
                 if (lastLiveNote != null) {
                     //lastLiveNote.playingHandle
                 }
-                part.liveNotes[nextLiveNoteI].setBeats(part.autoBeat / (float)section.beatParameters.subbeats);
-                commands.add(new PlaySoundCommand(part, part.liveNotes[nextLiveNoteI]));
+                jamPart.liveNote = part.liveNotes[nextLiveNoteI].cloneNote();
+                jamPart.liveNote.setBeats(part.autoBeat / (float)section.beatParameters.subbeats);
+                //jamPart.liveNote.setBeats(1.0f / section.beatParameters.subbeats);
+                jamPart.liveNote = NoteWriter.addNote(jamPart.liveNote, subbeat, jamPart.getNotes(), section.beatParameters);
+                commands.add(new PlaySoundCommand(part, jamPart.liveNote));
                 lastLiveNote = part.liveNotes[nextLiveNoteI];
                 nextLiveNoteI++;
+            }
+            else if (jamPart.live && jamPart.liveNote != null && part.autoBeat == 0) {
+                NoteWriter.extendNote(jamPart.liveNote, jamPart.part.notes, section.beatParameters);
             }
         }
     }

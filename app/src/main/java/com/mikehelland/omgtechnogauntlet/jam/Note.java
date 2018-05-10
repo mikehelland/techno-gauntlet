@@ -1,5 +1,7 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
+import android.util.Log;
+
 /**
  * User: m
  * Date: 11/15/13
@@ -35,7 +37,9 @@ public class Note {
     }
 
     void setBeats(double beats) {
-
+        if (beats < 0) {
+            Log.d("MGH setBeats", "negative beats");
+        }
         mBeats = beats;
 
     }

@@ -292,24 +292,26 @@ public class Jam {
     public void startPartLiveNotes(JamPart jamPart, Note  note, int autoBeat) {
         jamPart.stopPlayingSounds();
         jamPart.live = true;
+        jamPart.liveNote = note;
 
         if (!player.isPlaying() || autoBeat == 0) {
             player.playPartLiveNote(jamPart.part, note);
+            note.setBeats(1.0f / currentSection.beatParameters.subbeats);
+            jamPart.liveNote = NoteWriter.addNote(note, Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
         }
 
         note.setBeats(1.0f / currentSection.beatParameters.subbeats);
-        jamPart.liveNote = note;
-
         jamPart.part.liveNotes =  new Note[] {note};
         jamPart.part.autoBeat = autoBeat;
-
-        NoteWriter.addNote(note, player.isubbeat, jamPart.getNotes(), currentSection.beatParameters);
     }
 
     public void updatePartLiveNotes(JamPart jamPart, Note[] notes, int autoBeat) {
+        Log.d("MGH updatelive note", "" + notes[0].getBeats());
         jamPart.part.liveNotes =  notes;
         if (!player.isPlaying() || autoBeat == 0) {
+            notes[0].setBeats(1.0f / currentSection.beatParameters.subbeats);
             player.playPartLiveNotes(jamPart.part, notes);
+            jamPart.liveNote = NoteWriter.addNote(notes[0], Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
         }
         jamPart.part.autoBeat = autoBeat;
     }

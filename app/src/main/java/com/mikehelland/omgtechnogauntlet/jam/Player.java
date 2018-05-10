@@ -278,10 +278,9 @@ class Player {
             command = playingCommands.get(i);
             if (command != null && command.note != null) {
                 if (command.note.startedPlayingAtSubbeat + section.beatParameters.subbeats * command.note.getBeats() <= isubbeat) {
-                    Log.d("MGH finishing note", "command.note.startedPlayingAtSubbeat: " + command.note.startedPlayingAtSubbeat);
-                    Log.d("MGH finishing note", "command.note.getBeats(): " + command.note.getBeats());
-                    Log.d("MGH finishing note", command.note.startedPlayingAtSubbeat + section.beatParameters.subbeats * command.note.getBeats()
-                     +" <= " + isubbeat);
+                    //Log.d("MGH finishing note", "command.note.startedPlayingAtSubbeat: " + command.note.startedPlayingAtSubbeat);
+                    //Log.d("MGH finishing note", "command.note.getBeats(): " + command.note.getBeats());
+                    //Log.d("MGH finishing note", command.note.startedPlayingAtSubbeat + section.beatParameters.subbeats * command.note.getBeats()+" <= " + isubbeat);
                     soundManager.stopSound(command);
                     playingCommands.remove(i);
                     i--;
