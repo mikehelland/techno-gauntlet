@@ -1,11 +1,18 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Jam {
 
-    private Section section;
+    //this gets set to false when acting as a remote control
+    boolean localPlayBack = true;
+
+    private Song currentSong;
+    private Section currentSection;
+    private int currentSectionI = 0;
     private Player player;
     private SoundManager soundManager;
 
@@ -20,120 +27,142 @@ public class Jam {
         this.player = new Player(soundManager);
     }
 
-    public void loadFromJSON(String json) {
-        try {
-            section = SectionFromJSON.fromJSON(json);
-            updateKeyName();
+    public String loadRemoteFromJSON(String json) {
+        localPlayBack = false;
+        return loadJSON(json);
+    }
+    public String loadFromJSON(String json) {
 
+        String errorMessage = loadJSON(json);
+        if (errorMessage != null) {
+            return errorMessage;
+        }
+
+        updateKeyName();
+
+        for (Section section: currentSong.sections) {
             for (Part part : section.parts) {
-                loadSoundSetForPart(part);
+                prepareSoundSetForPart(part);
             }
+        }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    soundManager.loadSounds();
+        //load them off the UI thread
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                soundManager.loadSounds();
 
+                for (Section section: currentSong.sections) {
                     for (Part part : section.parts) {
                         setPoolIdsForPart(part);
                     }
                 }
-            }).start();
+            }
+        }).start();
 
-        } catch (Exception e) {
-            //todo warn something here
-            e.printStackTrace();
+        return null; //all seems good, no error message and the jam is loading
+    }
+
+    private String loadJSON(String json) {
+        Log.d("MGH loadJSON", json);
+        try {
+            currentSong = JamLoader.load(json);
+            currentSection = currentSong.sections.get(0);
+
+        } catch (JamLoaderException e) {
+            return e.message;
         }
+        return null; //all seems good, no error message and the jam is loading
     }
 
 
     public String getTags() {
-        return section.tags;
+        return currentSection.tags;
     }
 
     public void setTags(String tags) {
-        section.tags = tags;
+        currentSection.tags = tags;
     }
 
     public int getSubbeatLength() {
-        return section.beatParameters.subbeatLength;
+        return currentSection.beatParameters.subbeatLength;
     }
 
     public void setSubbeatLength(int subbeatLength, String sourceDevice) {
-        section.beatParameters.subbeatLength = subbeatLength;
+        currentSection.beatParameters.subbeatLength = subbeatLength;
     }
 
     public int getSubbeats() {
-        return section.beatParameters.subbeats;
+        return currentSection.beatParameters.subbeats;
     }
 
     public void setSubbeats(int subbeats) {
-        section.beatParameters.subbeats = subbeats;
+        currentSection.beatParameters.subbeats = subbeats;
     }
 
     public int getBeats() {
-        return section.beatParameters.beats;
+        return currentSection.beatParameters.beats;
     }
 
     public void setBeats(int beats) {
-        section.beatParameters.beats = beats;
+        currentSection.beatParameters.beats = beats;
     }
 
     public int getMeasures() {
-        return section.beatParameters.measures;
+        return currentSection.beatParameters.measures;
     }
 
     public void setMeasures(int measures) {
-        section.beatParameters.measures = measures;
+        currentSection.beatParameters.measures = measures;
     }
 
     public float getShuffle() {
-        return section.beatParameters.shuffle;
+        return currentSection.beatParameters.shuffle;
     }
 
     public void setShuffle(float shuffle) {
-        section.beatParameters.shuffle = shuffle;
+        currentSection.beatParameters.shuffle = shuffle;
     }
 
     public int[] getScale() {
-        return section.keyParameters.scale;
+        return currentSection.keyParameters.scale;
     }
 
     public void setScale(int[] scale, String sourceDevice) {
-        section.keyParameters.scale = scale;
+        currentSection.keyParameters.scale = scale;
         updateKeyName();
     }
 
     public int getKey() {
-        return section.keyParameters.rootNote;
+        return currentSection.keyParameters.rootNote;
     }
 
     public void setKey(int key, String sourceDevice) {
-        section.keyParameters.rootNote = key;
+        currentSection.keyParameters.rootNote = key;
         updateKeyName();
     }
 
     public int[] getProgression() {
-        return section.progression;
+        return currentSection.progression;
     }
 
     public void setProgression(int[] progression) {
-        section.progression = progression;
+        currentSection.progression = progression;
         if (progression.length == 1) {
-            updateNotesWithChord(section.progression[0]);
+            updateNotesWithChord(currentSection.progression[0]);
         }
     }
 
     private void updateNotesWithChord(int chord) {
-        for (Part part : section.parts) {
+        for (Part part : currentSection.parts) {
             if (part.soundSet.isChromatic()) {
-                KeyHelper.applyScaleToPart(section, part, chord);
+                KeyHelper.applyScaleToPart(currentSection, part, chord);
             }
         }
     }
 
     public CopyOnWriteArrayList<Part> getParts() {
-        return section.parts;
+        return currentSection.parts;
     }
 
 
@@ -147,23 +176,23 @@ public class Jam {
     //todo set totalSubbeats in the Jam instead of calculating it everytime
     // a couple helper functions
     public int getTotalBeats() {
-        return section.beatParameters.beats * section.beatParameters.measures;
+        return currentSection.beatParameters.beats * currentSection.beatParameters.measures;
     }
     public int getTotalSubbeats() {
-        return section.beatParameters.subbeats * section.beatParameters.beats * section.beatParameters.measures;
+        return currentSection.beatParameters.subbeats * currentSection.beatParameters.beats * currentSection.beatParameters.measures;
     }
     public String getKeyName() {
         return keyName;
     }
     public int getBPM() {
-        return 60000 / (section.beatParameters.subbeatLength * section.beatParameters.subbeats);
+        return 60000 / (currentSection.beatParameters.subbeatLength * currentSection.beatParameters.subbeats);
     }
     public void setBPM(float bpm) {
-        setSubbeatLength((int)((60000 / bpm) / section.beatParameters.subbeats), null);
+        setSubbeatLength((int)((60000 / bpm) / currentSection.beatParameters.subbeats), null);
     }
 
     public void play() {
-        player.play(section);
+        player.play(currentSection);
     }
 
     public void stop() {
@@ -201,7 +230,7 @@ public class Jam {
     }
 
     public String getData() {
-        return SectionToJSON.getData(section);
+        return SectionToJSON.getData(currentSection);
     }
 
     public void removePart(Part part) {
@@ -250,7 +279,7 @@ public class Jam {
     }
 
     public boolean isReady() {
-        return section != null;
+        return currentSection != null;
     }
 
     public void startPartLiveNotes(Part part, Note  note, int autoBeat) {
@@ -282,7 +311,7 @@ public class Jam {
     }
 
     //I'm not too sure these should be here, but where?
-    private void loadSoundSetForPart(Part part) {
+    private void prepareSoundSetForPart(Part part) {
         //todo maybe an isloaded instead of isvalid here
         if (!part.soundSet.isValid()) {
             if (onGetSoundSetListener == null) {
@@ -317,7 +346,7 @@ public class Jam {
     }
 
     private void updateKeyName() {
-        keyName = KeyHelper.getKeyName(section.keyParameters.rootNote, section.keyParameters.scale);
+        keyName = KeyHelper.getKeyName(currentSection.keyParameters.rootNote, currentSection.keyParameters.scale);
     }
 
     public int getChordInProgression() {
@@ -325,9 +354,9 @@ public class Jam {
     }
 
     public void newPart(SoundSet soundSet) {
-        Part part = new Part(section);
+        Part part = new Part(currentSection);
         part.soundSet = soundSet;
-        section.parts.add(part);
+        currentSection.parts.add(part);
 
         String defaultSurface = soundSet.getDefaultSurface();
         if (defaultSurface != null) {
@@ -337,7 +366,7 @@ public class Jam {
             setupSequencerPatternForPart(part);
         }
 
-        loadSoundSetForPart(part);
+        prepareSoundSetForPart(part);
         loadSounds();
     }
 
@@ -347,7 +376,7 @@ public class Jam {
             public void run() {
                 soundManager.loadSounds();
 
-                for (Part part : section.parts) {
+                for (Part part : currentSection.parts) {
                     setPoolIdsForPart(part);
                 }
             }

@@ -3,7 +3,6 @@ package com.mikehelland.omgtechnogauntlet.jam;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.util.Log;
 
 import com.mikehelland.omgtechnogauntlet.R;
 
@@ -18,38 +17,25 @@ import org.json.JSONObject;
 
 class SectionFromJSON {
 
-    static Section fromJSON(String json) throws Exception {
+    static Section fromJSON(JSONObject jsonData) throws JSONException {
 
         Section section = new Section();
+        section.progression = loadChordProgession(jsonData);
 
-        try {
+        section.beatParameters = JamLoader.loadBeatParameters(jsonData);
+        section.keyParameters = JamLoader.loadKeyParameters(jsonData);
 
-            JSONObject jsonData = new JSONObject(json);
+        JSONArray parts;
+        parts = jsonData.getJSONArray("parts");
 
-            if (jsonData.has("tags")) {
-                section.tags = jsonData.getString("tags");
-            }
+        Part part;
 
-            section.beatParameters = loadBeatParameters(jsonData);
-            section.keyParameters = loadKeyParameters(jsonData);
+        for (int ip = 0; ip < parts.length(); ip++) {
+            JSONObject partJSON = parts.getJSONObject(ip);
 
-            section.progression = loadChordProgession(jsonData);
-
-            JSONArray parts;
-            parts = jsonData.getJSONArray("parts");
-
-            Part part;
-
-            for (int ip = 0; ip < parts.length(); ip++) {
-                JSONObject partJSON = parts.getJSONObject(ip);
-
-                part = new Part(section);
-                loadPart(part, partJSON);
-                section.parts.add(part);
-            }
-        } catch (final JSONException e) {
-            Log.e("MGH loaddata exception", e.getMessage());
-            throw new Exception("Could not load data: " + e.getMessage());
+            part = new Part(section);
+            loadPart(part, partJSON);
+            section.parts.add(part);
         }
 
         return section;
@@ -195,57 +181,6 @@ class SectionFromJSON {
         return  soundSet;
     }
 
-    private static BeatParameters loadBeatParameters(JSONObject jsonData) throws JSONException {
-        BeatParameters beatParameters = new BeatParameters();
-
-        if (jsonData.has("beatParameters")) {
-            jsonData = jsonData.getJSONObject("beatParameters");
-        }
-
-        if (jsonData.has("measures")) {
-            beatParameters.measures = jsonData.getInt("measures");
-        }
-        if (jsonData.has("beats")) {
-            beatParameters.beats = jsonData.getInt("beats");
-        }
-        if (jsonData.has("subbeats")) {
-            beatParameters.subbeats = jsonData.getInt("subbeats");
-        }
-        if (jsonData.has("subbeatMillis")) {
-            beatParameters.subbeatLength = jsonData.getInt("subbeatMillis");
-        }
-        if (jsonData.has("shuffle")) {
-            beatParameters.shuffle = (float)jsonData.getDouble("shuffle");
-        }
-        return beatParameters;
-    }
-
-    private static KeyParameters loadKeyParameters(JSONObject jsonData) throws JSONException {
-        KeyParameters keyParameters = new KeyParameters();
-        if (jsonData.has("keyParameters")) {
-            jsonData = jsonData.getJSONObject("keyParameters");
-        }
-
-        if (jsonData.has("rootNote")) {
-            keyParameters.rootNote = jsonData.getInt("rootNote") % 12;
-        }
-
-        JSONArray scaleJSON = null;
-        if (jsonData.has("ascale")) { // the old way
-            scaleJSON = jsonData.getJSONArray("ascale");
-        }
-        else if (jsonData.has("scale")) {
-            scaleJSON = jsonData.getJSONArray("scale");
-        }
-        if (scaleJSON != null) {
-            int[] scale = new int[scaleJSON.length()];
-            for (int i = 0; i < scaleJSON.length(); i++) {
-                scale[i] = scaleJSON.getInt(i);
-            }
-            keyParameters.scale = scale;
-        }
-        return keyParameters;
-    }
 
     private static AudioParameters loadAudioParameters(JSONObject jsonData) throws JSONException{
         AudioParameters audioParameters = new AudioParameters();

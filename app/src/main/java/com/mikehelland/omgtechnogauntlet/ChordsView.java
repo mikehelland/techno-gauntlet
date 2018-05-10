@@ -69,7 +69,7 @@ public class ChordsView extends View {
             marginY = (height - boxHeight) / 2;
         }
 
-        //canvas.drawRect(15, 15, width - 15, height - 15, paintBackground);
+        canvas.drawRect(0, 0, width, height, paintBackground);
 
         int chordInProgression = -1;
 
