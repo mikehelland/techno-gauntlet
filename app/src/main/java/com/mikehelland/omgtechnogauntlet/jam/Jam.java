@@ -220,6 +220,9 @@ public class Jam {
 
     public void setPartVolume(JamPart jamPart, float volume, String device) {
         jamPart.part.audioParameters.volume = volume;
+        if (jamPart.getSoundSet().isOscillator()) {
+            jamPart.getSoundSet().getOscillator().ugEnvA.setGain(volume);
+        }
     }
 
     public void setPartPan(JamPart jamPart, float pan, String device) {
@@ -297,7 +300,9 @@ public class Jam {
         if (!player.isPlaying() || autoBeat == 0) {
             player.playPartLiveNote(jamPart.part, note);
             note.setBeats(1.0f / currentSection.beatParameters.subbeats);
-            jamPart.liveNote = NoteWriter.addNote(note, Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
+            if (!jamPart.getMute()) {
+                jamPart.liveNote = NoteWriter.addNote(note, Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
+            }
         }
 
         note.setBeats(1.0f / currentSection.beatParameters.subbeats);
@@ -311,7 +316,9 @@ public class Jam {
         if (!player.isPlaying() || autoBeat == 0) {
             notes[0].setBeats(1.0f / currentSection.beatParameters.subbeats);
             player.playPartLiveNotes(jamPart.part, notes);
-            jamPart.liveNote = NoteWriter.addNote(notes[0], Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
+            if (!jamPart.getMute()) {
+                jamPart.liveNote = NoteWriter.addNote(notes[0], Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
+            }
         }
         jamPart.part.autoBeat = autoBeat;
     }

@@ -61,13 +61,17 @@ class PartPlayer {
                 jamPart.liveNote = part.liveNotes[nextLiveNoteI].cloneNote();
                 jamPart.liveNote.setBeats(part.autoBeat / (float)section.beatParameters.subbeats);
                 //jamPart.liveNote.setBeats(1.0f / section.beatParameters.subbeats);
-                jamPart.liveNote = NoteWriter.addNote(jamPart.liveNote, subbeat, jamPart.getNotes(), section.beatParameters);
+                if (!jamPart.getMute()) {
+                    jamPart.liveNote = NoteWriter.addNote(jamPart.liveNote, subbeat, jamPart.getNotes(), section.beatParameters);
+                }
                 commands.add(new PlaySoundCommand(part, jamPart.liveNote));
                 lastLiveNote = part.liveNotes[nextLiveNoteI];
                 nextLiveNoteI++;
             }
             else if (jamPart.live && jamPart.liveNote != null && part.autoBeat == 0) {
-                NoteWriter.extendNote(jamPart.liveNote, jamPart.part.notes, section.beatParameters);
+                if (!jamPart.getMute()) {
+                    NoteWriter.extendNote(jamPart.liveNote, jamPart.part.notes, section.beatParameters);
+                }
             }
         }
     }
