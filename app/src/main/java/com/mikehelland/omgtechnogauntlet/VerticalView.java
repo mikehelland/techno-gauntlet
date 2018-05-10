@@ -12,9 +12,9 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.NoteList;
-import com.mikehelland.omgtechnogauntlet.jam.Part;
 
 import java.util.ArrayList;
 
@@ -40,7 +40,7 @@ public class VerticalView extends View {
     private float boxHeightHalf;
 
     private Jam mJam;
-    private Part mPart;
+    private JamPart mPart;
 
     private Paint topPanelPaint;
     private Paint paintText;
@@ -147,7 +147,7 @@ public class VerticalView extends View {
 
     }
 
-    public void setJam(Jam jam, Part channel, OnGestureListener onGestureListener) {
+    public void setJam(Jam jam, JamPart channel, OnGestureListener onGestureListener) {
         mJam = jam;
         mPart = channel;
         this.onGestureListener = onGestureListener;

@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 
-import com.mikehelland.omgtechnogauntlet.jam.Part;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 import com.mikehelland.omgtechnogauntlet.jam.Surface;
 
@@ -35,7 +35,7 @@ public class PartOptionsFragment extends OMGFragment {
 
     public void setup() {
 
-        final Part part = getPart();
+        final JamPart part = getPart();
 
         mView.findViewById(R.id.remove_channel_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,7 +185,7 @@ public class PartOptionsFragment extends OMGFragment {
         activity.getFragmentManager().popBackStack();
     }
 
-    private void setPartSurface(Part part, Surface surface) {
+    private void setPartSurface(JamPart part, Surface surface) {
         getJam().setPartSurface(part, surface);
     }
 }

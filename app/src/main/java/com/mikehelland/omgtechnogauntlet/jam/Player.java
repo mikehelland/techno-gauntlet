@@ -62,7 +62,7 @@ class Player {
         this.section = section;
         partPlayers.clear();
         for (Part part : section.parts) {
-            partPlayers.add(new PartPlayer(section, part));
+            partPlayers.add(new PartPlayer(section, new JamPart(part))); //todo uggly
         }
     }
 
@@ -190,7 +190,7 @@ class Player {
         if (note.playingHandle > -1) {
             soundManager.stopSound(note.playingHandle);
         }
-        if (isPlaying() && !part.getMute()) {
+        if (isPlaying() && !part.audioParameters.mute) {
             note.setBeats(Math.max(1, 1 + isubbeat - note.startedPlayingAtSubbeat) /
                     (double)section.beatParameters.subbeats);
             part.notes.overwrite(note);
@@ -281,6 +281,10 @@ class Player {
             command = playingCommands.get(i);
             if (command != null && command.note != null) {
                 if (command.note.startedPlayingAtSubbeat + section.beatParameters.subbeats * command.note.getBeats() <= isubbeat) {
+                    Log.d("MGH finishing note", "command.note.startedPlayingAtSubbeat: " + command.note.startedPlayingAtSubbeat);
+                    Log.d("MGH finishing note", "command.note.getBeats(): " + command.note.getBeats());
+                    Log.d("MGH finishing note", command.note.startedPlayingAtSubbeat + section.beatParameters.subbeats * command.note.getBeats()
+                     +" <= " + isubbeat);
                     soundManager.stopSound(command);
                     playingCommands.remove(i);
                     i--;

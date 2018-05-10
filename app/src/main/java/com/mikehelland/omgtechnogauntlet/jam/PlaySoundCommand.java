@@ -30,7 +30,7 @@ class PlaySoundCommand {
             }
             else {
                 Log.e("MGH PlaySoundCommand()", "couldn't load poolId " + note.getInstrumentNote() +
-                        "for part " + part.getName());
+                        "for part " + part.soundSet.getName());
             }
         }
 

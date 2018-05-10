@@ -9,7 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
-import com.mikehelland.omgtechnogauntlet.jam.Part;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class DrumView extends View {
     private int lastX = -1;
     private int lastY = -1;
 
-    private Part part;
+    private JamPart part;
 
     private long mLastClickTime = 0;
 
@@ -284,7 +284,7 @@ public class DrumView extends View {
         }
     }
 
-    public void setJam(Jam jam, Part channel) {
+    public void setJam(Jam jam, JamPart channel) {
         mJam = jam;
         part = channel;
 

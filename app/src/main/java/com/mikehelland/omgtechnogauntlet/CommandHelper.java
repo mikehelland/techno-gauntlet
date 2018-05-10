@@ -1,6 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import com.mikehelland.omgtechnogauntlet.jam.Part;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 
 class CommandHelper {
 
@@ -15,16 +15,16 @@ class CommandHelper {
     }
 
 
-    static String getNewPartCommand(Part channel) {
+    static String getNewPartCommand(JamPart jamPart) {
         StringBuilder sb = new StringBuilder();
         sb.append("NEW_CHANNEL=");
-        getPartInfo(sb, channel);
+        getPartInfo(sb, jamPart);
         return sb.toString();
     }
 
-    static void getPartInfo(StringBuilder sb, Part channel) {
+    static void getPartInfo(StringBuilder sb, JamPart jamPart) {
 
-        String surfaceURL = channel.getSurfaceURL();
+        String surfaceURL = jamPart.getSurfaceURL();
         String surface = "0";
         if ("PRESET_SEQUENCER".equals(surfaceURL))
             surface = "0";
@@ -33,19 +33,19 @@ class CommandHelper {
         if ("PRESET_FRETBOARD".equals(surfaceURL))
             surface = "2";
 
-        sb.append(channel.getId());
+        sb.append(jamPart.getId());
         sb.append(",");
-        sb.append(channel.getMute() ? "0," : "1,");
-        sb.append(channel.getSoundSet().isChromatic() ? "1," : "0,");
+        sb.append(jamPart.getMute() ? "0," : "1,");
+        sb.append(jamPart.getSoundSet().isChromatic() ? "1," : "0,");
         sb.append(surface);
         sb.append(",");
-        sb.append(channel.getName());
+        sb.append(jamPart.getName());
         sb.append(",");
-        sb.append(channel.getVolume());
+        sb.append(jamPart.getVolume());
         sb.append(",");
-        sb.append(channel.getPan());
+        sb.append(jamPart.getPan());
         sb.append(",");
-        sb.append(channel.getSpeed());
+        sb.append(jamPart.getSpeed());
     }
 
 }

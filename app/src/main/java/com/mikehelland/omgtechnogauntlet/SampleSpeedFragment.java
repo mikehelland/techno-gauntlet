@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mikehelland.omgtechnogauntlet.jam.Part;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 
 public class SampleSpeedFragment extends OMGFragment {
 
@@ -29,7 +29,7 @@ public class SampleSpeedFragment extends OMGFragment {
         ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
         View controls;
         int i = 0;
-        for (final Part part : getJam().getParts()) {
+        for (final JamPart part : getJam().getParts()) {
 
             controls = inflater.inflate(R.layout.samplespeed_panel, container, false);
             container.addView(controls);

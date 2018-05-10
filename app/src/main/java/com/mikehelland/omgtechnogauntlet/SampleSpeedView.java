@@ -9,7 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
-import com.mikehelland.omgtechnogauntlet.jam.Part;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 
 /**
  * User: m
@@ -19,7 +19,7 @@ import com.mikehelland.omgtechnogauntlet.jam.Part;
 public class SampleSpeedView extends View {
 
     private Jam jam;
-    private Part part;
+    private JamPart part;
 
     private Paint paint;
     private Paint paintOrange;
@@ -146,7 +146,7 @@ public class SampleSpeedView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Part channel, String name) {
+    public void setJam(Jam jam, JamPart channel, String name) {
         this.jam = jam;
         part = channel;
 

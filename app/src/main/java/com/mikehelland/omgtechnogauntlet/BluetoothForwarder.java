@@ -1,8 +1,8 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
-import com.mikehelland.omgtechnogauntlet.jam.Part;
 
 /**
  * Created by m on 4/12/18.
@@ -41,24 +41,24 @@ public class BluetoothForwarder extends OnJamChangeListener {
     }
 
     @Override
-    public void onNewPart(Part part) {
+    public void onNewPart(JamPart part) {
         bluetoothManager.sendCommandToDevices(CommandHelper.getNewPartCommand(part), null);
     }
 
     @Override
-    public void onPartEnabledChanged(Part part, boolean enabled, String source) {
+    public void onPartEnabledChanged(JamPart part, boolean enabled, String source) {
         bluetoothManager.sendCommandToDevices(
                 CommandHelper.getPartEnabledCommand(part.getId(), enabled), source);
     }
 
     @Override
-    public void onPartVolumeChanged(Part part, float volume, String source) {
+    public void onPartVolumeChanged(JamPart part, float volume, String source) {
         bluetoothManager.sendCommandToDevices(
                 CommandHelper.getPartVolumeCommand(part.getId(), volume), source);
     }
 
     @Override
-    public void onPartPanChanged(Part part, float pan, String source) {
+    public void onPartPanChanged(JamPart part, float pan, String source) {
         bluetoothManager.sendCommandToDevices(
                 CommandHelper.getPartPanCommand(part.getId(), pan), source);
     }

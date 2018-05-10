@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mikehelland.omgtechnogauntlet.jam.Part;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 
 import java.util.HashMap;
 
@@ -66,7 +66,7 @@ public class MixerFragment extends OMGFragment {
 
         ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
         View controls;
-        for (final Part part : getJam().getParts()) {
+        for (final JamPart part : getJam().getParts()) {
 
             controls = inflater.inflate(R.layout.mixer_panel, container, false);
             container.addView(controls);
@@ -75,7 +75,7 @@ public class MixerFragment extends OMGFragment {
         }
     }
 
-    private void setupPanel(View controls, final Part part) {
+    private void setupPanel(View controls, final JamPart part) {
         MixerView mixerView = (MixerView) controls.findViewById(R.id.mixer_view);
         mixerView.setJam(part.getName(), new MixerView.MixerViewController() {
             @Override

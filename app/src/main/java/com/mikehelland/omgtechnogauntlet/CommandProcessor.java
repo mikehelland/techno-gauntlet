@@ -6,8 +6,8 @@ import android.util.Log;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothDataCallback;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
-import com.mikehelland.omgtechnogauntlet.jam.Part;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
 /**
@@ -23,7 +23,7 @@ class CommandProcessor extends BluetoothDataCallback {
 
     private BluetoothConnection mConnection;
     private Jam mJam;
-    private Part mPart = null;
+    private JamPart mPart = null;
 
     private Jam mPeerJam;
     //private OnPeerChangeListener mOnPeerChangeListener;
@@ -40,7 +40,7 @@ class CommandProcessor extends BluetoothDataCallback {
         mDatabase = mContext.getDatabase();
     }
 
-    void setup(BluetoothConnection connection, Jam jam, Part channel) {
+    void setup(BluetoothConnection connection, Jam jam, JamPart channel) {
         mJam = jam;
         mConnection = connection;
 
@@ -215,7 +215,7 @@ class CommandProcessor extends BluetoothDataCallback {
     static private String getPartsInfo(Jam jam) {
         StringBuilder setParts = new StringBuilder();
         for (int i = 0; i < jam.getParts().size(); i++) {
-            Part channel = jam.getParts().get(i);
+            JamPart channel = jam.getParts().get(i);
 
             CommandHelper.getPartInfo(setParts, channel);
 
@@ -232,7 +232,7 @@ class CommandProcessor extends BluetoothDataCallback {
         if (mPart == null)
             return;
 
-        Part channel = mPart;
+        JamPart channel = mPart;
 
         String drumbeatInfo = getDrumbeatInfo(channel) + ";";
         mConnection.sendNameValuePair("DRUMBEAT_INFO", drumbeatInfo);
@@ -245,7 +245,7 @@ class CommandProcessor extends BluetoothDataCallback {
         mConnection.sendNameValuePair("NOTE_INFO", noteInfo);
     }
 
-    private String getNoteInfo(Part channel) {
+    private String getNoteInfo(JamPart channel) {
 
         StringBuilder info = new StringBuilder();
         int i = 0;
@@ -261,7 +261,7 @@ class CommandProcessor extends BluetoothDataCallback {
         return info.toString();
     }
 
-    private String getDrumbeatInfo(Part channel) {
+    private String getDrumbeatInfo(JamPart channel) {
         StringBuilder info = new StringBuilder();
         int subbeatTotal = mJam.getTotalSubbeats();
         int channels = Math.min(channel.getPattern().length, channel.getSoundSet().getSounds().size());

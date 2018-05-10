@@ -21,6 +21,8 @@ public class Jam {
 
     private String keyName = "";
 
+    private CopyOnWriteArrayList<JamPart> jamParts = new CopyOnWriteArrayList<>();
+
     public Jam(SoundManager soundManager, OnGetSoundSetListener onGetSoundSetListener) {
         this.soundManager = soundManager;
         this.onGetSoundSetListener = onGetSoundSetListener;
@@ -69,6 +71,10 @@ public class Jam {
             currentSong = JamLoader.load(json);
             currentSection = currentSong.sections.get(0);
 
+            jamParts.clear();
+            for (Part part : currentSection.parts) {
+                jamParts.add(new JamPart(part));
+            }
         } catch (JamLoaderException e) {
             return e.message;
         }
@@ -161,8 +167,9 @@ public class Jam {
         }
     }
 
-    public CopyOnWriteArrayList<Part> getParts() {
-        return currentSection.parts;
+    public CopyOnWriteArrayList<JamPart> getParts() {
+        //todo currentsection jamParts!?
+        return jamParts;
     }
 
 
@@ -207,58 +214,58 @@ public class Jam {
         //todo unref everything here
     }
 
-    public void setPartMute(Part part, boolean mute, String device) {
-        part.audioParameters.mute = mute;
+    public void setPartMute(JamPart jamPart, boolean mute, String device) {
+        jamPart.part.audioParameters.mute = mute;
     }
 
-    public void setPartVolume(Part part, float volume, String device) {
-        part.audioParameters.volume = volume;
+    public void setPartVolume(JamPart jamPart, float volume, String device) {
+        jamPart.part.audioParameters.volume = volume;
     }
 
-    public void setPartPan(Part part, float pan, String device) {
-        part.audioParameters.pan = pan;
+    public void setPartPan(JamPart jamPart, float pan, String device) {
+        jamPart.part.audioParameters.pan = pan;
     }
 
-    public boolean getPartMute(Part part) {
-        return part.audioParameters.mute;
+    public boolean getPartMute(JamPart jamPart) {
+        return jamPart.part.audioParameters.mute;
     }
-    public float getPartVolume(Part part) {
-        return part.audioParameters.volume;
+    public float getPartVolume(JamPart jamPart) {
+        return jamPart.part.audioParameters.volume;
     }
-    public float getPartPan(Part part) {
-        return part.audioParameters.pan;
+    public float getPartPan(JamPart jamPart) {
+        return jamPart.part.audioParameters.pan;
     }
 
     public String getData() {
         return SectionToJSON.getData(currentSection);
     }
 
-    public void removePart(Part part) {
+    public void removePart(JamPart jamPart) {
 
     }
 
-    public void clearPart(Part part) {
-        part.clear();
+    public void clearPart(JamPart jamPart) {
+        jamPart.clear();
 
     }
 
-    public void copyPart(Part part) {
+    public void copyPart(JamPart jamPart) {
 
     }
 
-    public void setPartSpeed(Part part, float speed, String source) {
-        part.audioParameters.speed = speed;
+    public void setPartSpeed(JamPart jamPart, float speed, String source) {
+        jamPart.part.audioParameters.speed = speed;
     }
 
-    public void setPartTrackMute(Part part, SequencerTrack track, boolean mute) {
+    public void setPartTrackMute(JamPart jamPart, SequencerTrack track, boolean mute) {
         track.audioParameters.mute = mute;
     }
 
-    public void setPartTrackVolume(Part part, SequencerTrack track, float volume) {
+    public void setPartTrackVolume(JamPart jamPart, SequencerTrack track, float volume) {
         track.audioParameters.volume = volume;
     }
 
-    public void setPartTrackPan(Part part, SequencerTrack track, float pan) {
+    public void setPartTrackPan(JamPart jamPart, SequencerTrack track, float pan) {
         track.audioParameters.pan = pan;
     }
 
@@ -282,32 +289,32 @@ public class Jam {
         return currentSection != null;
     }
 
-    public void startPartLiveNotes(Part part, Note  note, int autoBeat) {
-        part.liveNotes =  new Note[] {note};
+    public void startPartLiveNotes(JamPart jamPart, Note  note, int autoBeat) {
+        jamPart.part.liveNotes =  new Note[] {note};
         if (!player.isPlaying() || autoBeat == 0) {
-            player.playPartLiveNote(part, note);
+            player.playPartLiveNote(jamPart.part, note);
         }
-        part.autoBeat = autoBeat;
+        jamPart.part.autoBeat = autoBeat;
     }
 
-    public void updatePartLiveNotes(Part part, Note[] notes, int autoBeat) {
-        part.liveNotes =  notes;
+    public void updatePartLiveNotes(JamPart jamPart, Note[] notes, int autoBeat) {
+        jamPart.part.liveNotes =  notes;
         if (!player.isPlaying() || autoBeat == 0) {
-            player.playPartLiveNotes(part, notes);
+            player.playPartLiveNotes(jamPart.part, notes);
         }
-        part.autoBeat = autoBeat;
+        jamPart.part.autoBeat = autoBeat;
     }
 
-    public void removeFromPartLiveNotes(Part part, Note note, Note[] notes) {
-        part.liveNotes =  notes;
-        player.stopPartLiveNote(part, note);
+    public void removeFromPartLiveNotes(JamPart jamPart, Note note, Note[] notes) {
+        jamPart.part.liveNotes =  notes;
+        player.stopPartLiveNote(jamPart.part, note);
     }
 
-    public void endPartLiveNotes(Part part) {
-        if (part.liveNotes.length > 0) {
-            player.stopPartLiveNote(part, part.liveNotes[0]);
+    public void endPartLiveNotes(JamPart jamPart) {
+        if (jamPart.part.liveNotes.length > 0) {
+            player.stopPartLiveNote(jamPart.part, jamPart.part.liveNotes[0]);
         }
-        part.liveNotes = null;
+        jamPart.part.liveNotes = null;
     }
 
     //I'm not too sure these should be here, but where?
@@ -357,13 +364,15 @@ public class Jam {
         Part part = new Part(currentSection);
         part.soundSet = soundSet;
         currentSection.parts.add(part);
+        JamPart jamPart = new JamPart(part);
+        jamParts.add(jamPart);
 
         String defaultSurface = soundSet.getDefaultSurface();
         if (defaultSurface != null) {
             part.surface = new Surface(defaultSurface);
         }
-        if (part.useSequencer()) {
-            setupSequencerPatternForPart(part);
+        if (jamPart.useSequencer()) {
+            setupSequencerPatternForPart(jamPart);
         }
 
         prepareSoundSetForPart(part);
@@ -383,18 +392,18 @@ public class Jam {
         }).start();
     }
 
-    public void setPartSurface(Part part, Surface surface) {
+    public void setPartSurface(JamPart jamPart, Surface surface) {
         if (surface != null) {
-            part.surface = surface;
+            jamPart.part.surface = surface;
         }
     }
 
-    public void setupSequencerPatternForPart(Part part) {
-        part.pattern = new boolean[part.soundSet.getSounds().size()][];
+    public void setupSequencerPatternForPart(JamPart jamPart) {
+        jamPart.part.pattern = new boolean[jamPart.part.soundSet.getSounds().size()][];
         int i = 0;
-        for (SoundSet.Sound sound : part.soundSet.getSounds()) {
-            part.getTracks().add(new SequencerTrack(sound.getName()));
-            part.pattern[i] = part.getTracks().get(i).getData();
+        for (SoundSet.Sound sound : jamPart.part.soundSet.getSounds()) {
+            jamPart.getTracks().add(new SequencerTrack(sound.getName()));
+            jamPart.part.pattern[i] = jamPart.getTracks().get(i).getData();
             i++;
         }
     }

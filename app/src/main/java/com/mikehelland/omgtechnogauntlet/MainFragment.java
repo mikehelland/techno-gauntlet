@@ -13,9 +13,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
-import com.mikehelland.omgtechnogauntlet.jam.Part;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class MainFragment extends OMGFragment {
 
     private OnJamChangeListener mJamListener;
 
-    private HashMap<Part, View> channelViewMap = new HashMap<>();
+    private HashMap<JamPart, View> channelViewMap = new HashMap<>();
 
     private boolean mLeavingNow = false;
 
@@ -64,12 +64,12 @@ public class MainFragment extends OMGFragment {
 
         mContainer = (ViewGroup) mView.findViewById(R.id.channel_list);
         //View controls;
-        for (Part channel : getJam().getParts()) {
+        for (JamPart channel : getJam().getParts()) {
             setupPanel(channel);
         }
     }
 
-    private void setupPanel(final Part part) {
+    private void setupPanel(final JamPart part) {
 
         View controls = mInflater.inflate(R.layout.main_panel, mContainer, false);
         channelViewMap.put(part, controls);
@@ -414,7 +414,7 @@ public class MainFragment extends OMGFragment {
                     });
             }
             @Override
-            public void onNewPart(final Part channel) {
+            public void onNewPart(final JamPart channel) {
                 Activity activity = getActivity(); if (activity == null)  return;
                 activity.runOnUiThread(new Runnable() {
                         @Override
@@ -424,7 +424,7 @@ public class MainFragment extends OMGFragment {
                     });
             }
             @Override
-            public void onPartEnabledChanged(final Part channel, final boolean enabled, String source) {
+            public void onPartEnabledChanged(final JamPart channel, final boolean enabled, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
                 activity.runOnUiThread(new Runnable() {
                         @Override
@@ -438,9 +438,9 @@ public class MainFragment extends OMGFragment {
             }
 
             @Override
-            public void onPartVolumeChanged(Part channel, float volume, String source) {}
+            public void onPartVolumeChanged(JamPart channel, float volume, String source) {}
             @Override
-            public void onPartPanChanged(Part channel, float pan, String source) {}
+            public void onPartPanChanged(JamPart channel, float pan, String source) {}
         };
 
         getJam().addOnJamChangeListener(mJamListener);

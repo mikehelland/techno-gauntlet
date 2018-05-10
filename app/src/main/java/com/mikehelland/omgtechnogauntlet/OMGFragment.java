@@ -5,18 +5,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
-import com.mikehelland.omgtechnogauntlet.jam.Part;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 
 public class OMGFragment extends Fragment {
 
     protected Jam jam;
-    private Part part;
+    private JamPart part;
 
     protected Jam getJam() {
         return jam;
     }
-    protected Part getPart() { return part;}
-    void setPart(Part part) {
+    protected JamPart getPart() { return part;}
+    void setPart(JamPart part) {
         this.part = part;
     }
 

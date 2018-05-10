@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mikehelland.omgtechnogauntlet.jam.Part;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.SequencerTrack;
 
 public class TrackSubMixerFragment extends OMGFragment {
@@ -28,7 +28,7 @@ public class TrackSubMixerFragment extends OMGFragment {
 
         ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
         View controls;
-        final Part part = getPart();
+        final JamPart part = getPart();
         for (final SequencerTrack track : part.getTracks()) {
 
             controls = inflater.inflate(R.layout.mixer_panel, container, false);

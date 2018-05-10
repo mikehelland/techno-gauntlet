@@ -11,6 +11,7 @@ class PartPlayer {
 
     Section section;
     Part part;
+    JamPart jamPart;
 
     Note nextNote;
     float nextBeat = 0f;
@@ -19,9 +20,10 @@ class PartPlayer {
     int nextLiveNoteI = 0;
     Note lastLiveNote = null;
 
-    PartPlayer(Section section, Part part) {
+    PartPlayer(Section section, JamPart jamPart) {
         this.section = section;
-        this.part = part;
+        this.jamPart = jamPart;
+        this.part = jamPart.part;
     }
 
     static PlaySoundCommand getCommandForNote(Part part, Note note) {
@@ -43,7 +45,7 @@ class PartPlayer {
 
     void getSoundsToPlayForPartAtSubbeat(ArrayList<PlaySoundCommand> commands,
                                                 int subbeat, int chord) {
-        if (part.useSequencer()) {
+        if (jamPart.useSequencer()) {
             getDrumbeatSounds(commands, subbeat);
         } else {
             if (part.liveNotes == null || part.liveNotes.length == 0) {
@@ -56,7 +58,7 @@ class PartPlayer {
                 if (lastLiveNote != null) {
                     //lastLiveNote.playingHandle
                 }
-                //part.liveNotes[nextLiveNoteI].setBeats(part.autoBeat / (float)section.beatParameters.subbeats);
+                part.liveNotes[nextLiveNoteI].setBeats(part.autoBeat / (float)section.beatParameters.subbeats);
                 commands.add(new PlaySoundCommand(part, part.liveNotes[nextLiveNoteI]));
                 lastLiveNote = part.liveNotes[nextLiveNoteI];
                 nextLiveNoteI++;
@@ -102,7 +104,7 @@ class PartPlayer {
 
         if (nextBeat == subbeat / (float)section.beatParameters.subbeats) {
 
-            if (!part.getMute() && !nextNote.isRest()) {
+            if (!jamPart.getMute() && !nextNote.isRest()) {
                 commands.add(new PlaySoundCommand(part, nextNote));
             }
 

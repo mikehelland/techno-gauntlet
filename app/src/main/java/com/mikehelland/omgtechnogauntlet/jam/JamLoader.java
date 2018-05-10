@@ -10,7 +10,7 @@ import org.json.JSONObject;
  * Created by m on 4/29/18.
  */
 
-public class JamLoader {
+class JamLoader {
     static Song load(String json) throws JamLoaderException {
 
         Song song = new Song();
