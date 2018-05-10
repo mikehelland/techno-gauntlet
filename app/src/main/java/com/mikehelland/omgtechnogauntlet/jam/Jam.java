@@ -199,7 +199,7 @@ public class Jam {
     }
 
     public void play() {
-        player.play(currentSection);
+        player.play(currentSection, jamParts);
     }
 
     public void stop() {
@@ -290,11 +290,20 @@ public class Jam {
     }
 
     public void startPartLiveNotes(JamPart jamPart, Note  note, int autoBeat) {
-        jamPart.part.liveNotes =  new Note[] {note};
+        jamPart.stopPlayingSounds();
+        jamPart.live = true;
+
         if (!player.isPlaying() || autoBeat == 0) {
             player.playPartLiveNote(jamPart.part, note);
         }
+
+        note.setBeats(1.0f / currentSection.beatParameters.subbeats);
+        jamPart.liveNote = note;
+
+        jamPart.part.liveNotes =  new Note[] {note};
         jamPart.part.autoBeat = autoBeat;
+
+        NoteWriter.addNote(note, player.isubbeat, jamPart.getNotes(), currentSection.beatParameters);
     }
 
     public void updatePartLiveNotes(JamPart jamPart, Note[] notes, int autoBeat) {
@@ -315,6 +324,9 @@ public class Jam {
             player.stopPartLiveNote(jamPart.part, jamPart.part.liveNotes[0]);
         }
         jamPart.part.liveNotes = null;
+
+        jamPart.live = false;
+        jamPart.liveNote = null;
     }
 
     //I'm not too sure these should be here, but where?

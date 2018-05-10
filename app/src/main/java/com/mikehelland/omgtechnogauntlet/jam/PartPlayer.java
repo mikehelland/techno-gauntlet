@@ -48,7 +48,10 @@ class PartPlayer {
         if (jamPart.useSequencer()) {
             getDrumbeatSounds(commands, subbeat);
         } else {
-            if (part.liveNotes == null || part.liveNotes.length == 0) {
+            if (jamPart.live && jamPart.liveNote != null) {
+                jamPart.liveNote.setBeats(jamPart.liveNote.getBeats() + 1.0f / section.beatParameters.subbeats);
+            }
+            else if (part.liveNotes == null || part.liveNotes.length == 0) {
                 getNoteSounds(commands, subbeat, chord);
             }
             else if (part.autoBeat > 0 && (subbeat % part.autoBeat) == 0) {

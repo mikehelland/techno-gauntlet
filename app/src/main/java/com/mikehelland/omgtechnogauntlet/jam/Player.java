@@ -19,7 +19,8 @@ class Player {
 
     private ArrayList<PlaySoundCommand> playingCommands = new ArrayList<>();
 
-    private CopyOnWriteArrayList<PartPlayer> partPlayers = new CopyOnWriteArrayList<>();
+    //private CopyOnWriteArrayList<PartPlayer> partPlayers = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<JamPart> jamParts = new CopyOnWriteArrayList<>();
 
     private Section section;
 
@@ -44,10 +45,14 @@ class Player {
         this.soundManager = soundManager;
     }
 
-    void play(Section section) {
+    void play(Section section, CopyOnWriteArrayList<JamPart> jamParts) {
 
-        loadSection(section);
+        this.section = section;
+        this.jamParts = jamParts;
 
+        for (JamPart jamPart : jamParts) {
+            jamPart.partPlayer = new PartPlayer(section, jamPart); //todo uggly
+        }
         if (state != STATE_PLAYING) {
             playbackThread = new PlaybackThread();
             playbackThread.start();
@@ -58,22 +63,14 @@ class Player {
         //todo call onStart()
     }
 
-    private void loadSection(Section section) {
-        this.section = section;
-        partPlayers.clear();
-        for (Part part : section.parts) {
-            partPlayers.add(new PartPlayer(section, new JamPart(part))); //todo uggly
-        }
-    }
-
     private void playBeatSampler(int subbeat) {
 
         //this was a class member to avoid allocating every beat, but throws concurrent modification errors
         //todo is that because multiple threads tried to access it? shouldn't be happening
         ArrayList<PlaySoundCommand> commands = new ArrayList<>();
 
-        for (PartPlayer partPlayer : partPlayers) {
-            partPlayer.getSoundsToPlayForPartAtSubbeat(commands, subbeat, currentChord);
+        for (JamPart jamPart : jamParts) {
+            jamPart.partPlayer.getSoundsToPlayForPartAtSubbeat(commands, subbeat, currentChord);
         }
 
         for (PlaySoundCommand command : commands) {
@@ -191,9 +188,9 @@ class Player {
             soundManager.stopSound(note.playingHandle);
         }
         if (isPlaying() && !part.audioParameters.mute) {
-            note.setBeats(Math.max(1, 1 + isubbeat - note.startedPlayingAtSubbeat) /
-                    (double)section.beatParameters.subbeats);
-            part.notes.overwrite(note);
+            //note.setBeats(Math.max(1, 1 + isubbeat - note.startedPlayingAtSubbeat) /
+            //        (double)section.beatParameters.subbeats);
+            //part.notes.overwrite(note);
         }
     }
 

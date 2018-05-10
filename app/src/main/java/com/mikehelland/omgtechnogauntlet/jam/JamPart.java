@@ -8,12 +8,23 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class JamPart {
 
+    //this is true when a user is playing the part live, not a recorded part
+    boolean live = false;
+    Note liveNote = null;
+
     Part part;
     PartPlayer partPlayer;
 
     JamPart (Part part) {
         this.part = part;
     }
+
+    void stopPlayingSounds() {
+        //todo get a list of playing handles and stop them
+        //or maybe just store the list here and let the Player class stop them
+    }
+
+
 
     public String getName() {
         return part.soundSet.getName();
