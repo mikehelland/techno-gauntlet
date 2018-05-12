@@ -9,7 +9,8 @@ import java.util.ArrayList;
 
 class PartPlayer {
 
-    Section section;
+    BeatParameters beatParameters;
+    KeyParameters keyParameters;
     Part part;
     JamPart jamPart;
 
@@ -20,10 +21,11 @@ class PartPlayer {
     int nextLiveNoteI = 0;
     Note lastLiveNote = null;
 
-    PartPlayer(Section section, JamPart jamPart) {
-        this.section = section;
+    PartPlayer(JamPart jamPart, BeatParameters beatParameters, KeyParameters keyParameters) {
         this.jamPart = jamPart;
         this.part = jamPart.part;
+        this.beatParameters = beatParameters;
+        this.keyParameters = keyParameters;
     }
 
     static PlaySoundCommand getCommandForNote(Part part, Note note) {
@@ -59,10 +61,10 @@ class PartPlayer {
                     //lastLiveNote.playingHandle
                 }
                 jamPart.liveNote = part.liveNotes[nextLiveNoteI].cloneNote();
-                jamPart.liveNote.setBeats(part.autoBeat / (float)section.beatParameters.subbeats);
+                jamPart.liveNote.setBeats(part.autoBeat / (float)beatParameters.subbeats);
                 //jamPart.liveNote.setBeats(1.0f / section.beatParameters.subbeats);
                 if (!jamPart.getMute()) {
-                    jamPart.liveNote = NoteWriter.addNote(jamPart.liveNote, subbeat, jamPart.getNotes(), section.beatParameters);
+                    jamPart.liveNote = NoteWriter.addNote(jamPart.liveNote, subbeat, jamPart.getNotes(), beatParameters);
                 }
                 commands.add(new PlaySoundCommand(part, jamPart.liveNote));
                 lastLiveNote = part.liveNotes[nextLiveNoteI];
@@ -70,7 +72,7 @@ class PartPlayer {
             }
             else if (jamPart.live && jamPart.liveNote != null && part.autoBeat == 0) {
                 if (!jamPart.getMute()) {
-                    NoteWriter.extendNote(jamPart.liveNote, jamPart.part.notes, section.beatParameters);
+                    NoteWriter.extendNote(jamPart.liveNote, jamPart.part.notes, beatParameters);
                 }
             }
         }
@@ -104,7 +106,7 @@ class PartPlayer {
             nextNoteIndex = 0;
 
             if (part.soundSet.isChromatic()) {
-                KeyHelper.applyScaleToPart(section, part, chord);
+                KeyHelper.applyScaleToPart(part, chord, keyParameters);
             }
         }
 
@@ -112,7 +114,7 @@ class PartPlayer {
             return;
         }
 
-        if (nextBeat == subbeat / (float)section.beatParameters.subbeats) {
+        if (nextBeat == subbeat / (float)beatParameters.subbeats) {
 
             if (!jamPart.getMute() && !nextNote.isRest()) {
                 commands.add(new PlaySoundCommand(part, nextNote));

@@ -33,19 +33,19 @@ public class KeyHelper {
         return KEY_CAPTIONS[rootNote] + " " + scaleName;
     }
 
-    static void applyScaleToPart(Section section, Part part, int chord) {
+    static void applyScaleToPart(Part part, int chord, KeyParameters keyParameters) {
         for (Note note : part.notes) {
 
             if (note.isRest()) {
                 continue;
             }
 
-            note.setScaledNote(scaleNote(section, note.getBasicNote(), chord));
+            note.setScaledNote(scaleNote(note.getBasicNote(), chord, keyParameters));
             note.setInstrumentNote(getInstrumentNote(part, note.getScaledNote()));
         }
     }
 
-    private static int scaleNote(Section section, int oldNoteNumber, int chord) {
+    private static int scaleNote(int oldNoteNumber, int chord, KeyParameters keyParameters) {
         int newNoteNumber;
         int octaves;
 
@@ -53,19 +53,19 @@ public class KeyHelper {
 
         newNoteNumber = oldNoteNumber + chord;
 
-        while (newNoteNumber >= section.keyParameters.scale.length) {
+        while (newNoteNumber >= keyParameters.scale.length) {
             octaves++;
-            newNoteNumber = newNoteNumber - section.keyParameters.scale.length;
+            newNoteNumber = newNoteNumber - keyParameters.scale.length;
         }
 
         while (newNoteNumber < 0) {
             octaves--;
-            newNoteNumber = newNoteNumber + section.keyParameters.scale.length;
+            newNoteNumber = newNoteNumber + keyParameters.scale.length;
         }
 
-        newNoteNumber = section.keyParameters.scale[newNoteNumber];
+        newNoteNumber = keyParameters.scale[newNoteNumber];
 
-        return section.keyParameters.rootNote + newNoteNumber + octaves * 12;
+        return keyParameters.rootNote + newNoteNumber + octaves * 12;
     }
 
     private static int getInstrumentNote(Part part, int scaledNote) {

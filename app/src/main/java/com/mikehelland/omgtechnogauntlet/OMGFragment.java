@@ -27,10 +27,10 @@ public class OMGFragment extends Fragment {
             if (fm != null) {
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
 
-                //todo haha yeah do this animation
                 //0 is right, 1 is down, 2 is left, 3 is up
                 /*if (direction == 1) {
                     ft.setCustomAnimations(R.animator.slide_in_down, R.animator.slide_out_up,
+
                             R.animator.slide_in_up, R.animator.slide_out_down
                     );
                 }

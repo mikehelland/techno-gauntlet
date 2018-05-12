@@ -50,9 +50,6 @@ class Player {
         this.section = section;
         this.jamParts = jamParts;
 
-        for (JamPart jamPart : jamParts) {
-            jamPart.partPlayer = new PartPlayer(section, jamPart); //todo uggly
-        }
         if (state != STATE_PLAYING) {
             playbackThread = new PlaybackThread();
             playbackThread.start();

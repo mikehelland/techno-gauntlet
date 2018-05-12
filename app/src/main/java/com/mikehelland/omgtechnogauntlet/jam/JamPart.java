@@ -13,10 +13,11 @@ public class JamPart {
     Note liveNote = null;
 
     Part part;
-    PartPlayer partPlayer;
+    PartPlayer partPlayer = null;
 
     JamPart (Part part) {
         this.part = part;
+        this.partPlayer = new PartPlayer(this, part.beatParameters, part.keyParameters);
     }
 
     void stopPlayingSounds() {

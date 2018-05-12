@@ -162,7 +162,7 @@ public class Jam {
     private void updateNotesWithChord(int chord) {
         for (Part part : currentSection.parts) {
             if (part.soundSet.isChromatic()) {
-                KeyHelper.applyScaleToPart(currentSection, part, chord);
+                KeyHelper.applyScaleToPart(part, chord, currentSection.keyParameters);
             }
         }
     }
