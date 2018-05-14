@@ -14,7 +14,15 @@
             android:layout_height="wrap_content"
             android:text="@string/start_a_blank_jam"
             android:id="@+id/blank_jam_button"
+            android:background="?android:attr/selectableItemBackground"
             />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="4dip"
+            android:background="?android:attr/dividerVertical"/>
 
         <Button
             android:layout_width="0dp"
@@ -22,7 +30,15 @@
             android:layout_height="wrap_content"
             android:text="@string/load_from_url"
             android:id="@+id/load_from_url_button"
+            android:background="?android:attr/selectableItemBackground"
             />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="4dip"
+            android:background="?android:attr/dividerVertical"/>
 
         <Button android:text="@string/return_to_jam"
             android:layout_width="0dp"
@@ -30,6 +46,7 @@
             android:layout_height="wrap_content"
             android:drawableRight="@android:drawable/ic_media_ff"
             android:id="@+id/return_to_omg_bananas"
+            android:background="?android:attr/selectableItemBackground"
             />
 
     </LinearLayout>
@@ -58,7 +75,8 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@android:drawable/ic_media_rew"
         android:id="@+id/exit_button"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/selectableItemBackground"/>
 
 
     <ListView android:id="@+id/saved_list"

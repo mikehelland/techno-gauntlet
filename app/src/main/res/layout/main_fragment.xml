@@ -23,8 +23,8 @@
         android:layout_height="wrap_content"
         android:text="Mixer"
         android:layout_alignParentLeft="true"
+        android:background="?android:attr/selectableItemBackground"
         />
-
 
     <Button
         android:layout_height="wrap_content"
@@ -32,6 +32,7 @@
         android:layout_toRightOf="@id/mixer_button"
         android:id="@+id/bt_button"
         android:text="Sync"
+        android:background="?android:attr/selectableItemBackground"
         >
 
     </Button>
@@ -51,7 +52,15 @@
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
-                android:text="120 bpm"/>
+                android:text="120 bpm"
+                android:background="?android:attr/selectableItemBackground"/>
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="4dip"
+            android:background="?android:attr/dividerVertical"/>
 
         <Button
             android:id="@+id/key_button"
@@ -60,7 +69,8 @@
             android:layout_weight="1.3"
             android:text="C Major"
             android:singleLine="true"
-            android:ellipsize="marquee"/>
+            android:ellipsize="marquee"
+            android:background="?android:attr/selectableItemBackground"/>
 
         <com.mikehelland.omgtechnogauntlet.ChordsView
                 android:id="@+id/chordprogression_button"
@@ -84,7 +94,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/add_channel_button"
-            android:text="+ Add Part"/>
+            android:text="+ Add Part"
+            android:background="?android:attr/selectableItemBackground"/>
 
 
     </LinearLayout>

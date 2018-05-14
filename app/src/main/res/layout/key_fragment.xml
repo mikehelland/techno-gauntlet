@@ -11,7 +11,6 @@
         android:layout_width="0dip"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@drawable/back"
         android:padding="1dip"
         android:layout_margin="1dip"
         android:id="@+id/list_of_keys"
@@ -24,9 +23,8 @@
         android:layout_width="0dip"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@drawable/back"
-        android:padding="5dip"
-        android:layout_margin="5dip"
+        android:padding="1dip"
+        android:layout_margin="1dip"
         android:id="@+id/list_of_scales"
         android:orientation="vertical">
 

@@ -14,6 +14,7 @@
         android:layout_alignParentLeft="true"
         android:textColor="#FFFFFFFF"
         android:src="@drawable/ic_options"
+        android:background="?android:attr/selectableItemBackground"
         />
 
     <Button android:layout_width="48dip"
