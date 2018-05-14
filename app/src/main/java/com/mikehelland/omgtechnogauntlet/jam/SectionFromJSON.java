@@ -70,10 +70,16 @@ class SectionFromJSON {
         // this assumes things are in the right order
         //todo right, the assumption is the tracks array has the same 1-to-1 as the soundset, fix it?
 
+        String trackName = "";
+
         for (int i = 0; i < tracks.length(); i++) {
             trackJSON = tracks.getJSONObject(i);
 
-            track = new SequencerTrack("todo"); //todo
+            if (trackJSON.has("name")) {
+                trackName = trackJSON.getString("name");
+            }
+
+            track = new SequencerTrack(trackName);
             track.audioParameters = loadAudioParameters(trackJSON);
             part.sequencerPattern.getTracks().add(track);
             pattern[i] = track.getData();

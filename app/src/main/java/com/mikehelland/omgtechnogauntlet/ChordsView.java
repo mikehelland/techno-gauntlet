@@ -50,7 +50,8 @@ public class ChordsView extends View {
         paintCurrentBeat.setStyle(Paint.Style.FILL_AND_STROKE);
 
         paintBackground = new Paint();
-        paintBackground.setARGB(255, 255, 255, 255);
+        //paintBackground.setARGB(255, 255, 255, 255);
+        paintBackground.setARGB(0, 0, 0, 0);
         paintBackground.setStyle(Paint.Style.FILL);
 
 
@@ -69,6 +70,7 @@ public class ChordsView extends View {
             marginY = (height - boxHeight) / 2;
         }
 
+        //canvas.drawRect(0, 0, width, height, paintBackground);
         canvas.drawRect(0, 0, width, height, paintBackground);
 
         int chordInProgression = -1;
@@ -90,11 +92,6 @@ public class ChordsView extends View {
 
             at = startAt + boxWidth * i;
 
-            scalei = chords[i] % scale.length;
-            if (scalei < 0)
-                scalei += scale.length;
-            drawChord(canvas, scale[scalei], at);
-
             if (chordInProgression == i) {
                 canvas.drawRect(at, marginY,
                         at + boxWidth,
@@ -102,6 +99,11 @@ public class ChordsView extends View {
                         paintCurrentBeat);
 
             }
+
+            scalei = chords[i] % scale.length;
+            if (scalei < 0)
+                scalei += scale.length;
+            drawChord(canvas, scale[scalei], at);
         }
     }
 

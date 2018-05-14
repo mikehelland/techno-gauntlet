@@ -72,6 +72,13 @@
             android:ellipsize="marquee"
             android:background="?android:attr/selectableItemBackground"/>
 
+        <View
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="4dip"
+            android:background="?android:attr/dividerVertical"/>
+
         <com.mikehelland.omgtechnogauntlet.ChordsView
                 android:id="@+id/chordprogression_button"
                 android:layout_width="0dip"
