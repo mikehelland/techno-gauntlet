@@ -26,10 +26,36 @@
         android:background="?android:attr/selectableItemBackground"
         />
 
+    <View
+        android:layout_width="1dip"
+        android:layout_height="48dip"
+        android:layout_marginLeft="4dip"
+        android:layout_marginRight="4dip"
+        android:layout_toRightOf="@id/mixer_button"
+        android:background="?android:attr/dividerVertical"
+        android:id="@+id/mixer_divider"/>
+
+    <Button android:id="@+id/speed_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Warp"
+        android:layout_toRightOf="@id/mixer_divider"
+        android:background="?android:attr/selectableItemBackground"
+        />
+
+    <View
+        android:layout_width="1dip"
+        android:layout_height="48dip"
+        android:layout_marginLeft="4dip"
+        android:layout_marginRight="4dip"
+        android:background="?android:attr/dividerVertical"
+        android:layout_toRightOf="@id/speed_button"
+        android:id="@+id/speed_divider"/>
+
     <Button
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_toRightOf="@id/mixer_button"
+        android:layout_toRightOf="@id/speed_divider"
         android:id="@+id/bt_button"
         android:text="Sync"
         android:background="?android:attr/selectableItemBackground"

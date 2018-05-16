@@ -175,6 +175,18 @@ public class PartOptionsFragment extends OMGFragment {
         if (!surfaceURL.equals(Surface.PRESET_SEQUENCER)) {
             subMixerButton.setVisibility(View.GONE);
         }
+        View warpTracksButton = mView.findViewById(R.id.track_warp_button);
+        warpTracksButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TrackWarpFragment f = new TrackWarpFragment();
+                f.setPart(part);
+                animateFragment(f, 0);
+            }
+        });
+        if (!surfaceURL.equals(Surface.PRESET_SEQUENCER)) {
+            subMixerButton.setVisibility(View.GONE);
+        }
 
     }
 

@@ -68,9 +68,13 @@ class JamLoader {
         if (jsonData.has("measures")) {
             beatParameters.measures = jsonData.getInt("measures");
         }
+        else {
+            beatParameters.measures = 1;
+        }
         if (jsonData.has("beats")) {
             beatParameters.beats = jsonData.getInt("beats");
         }
+
         if (jsonData.has("subbeats")) {
             beatParameters.subbeats = jsonData.getInt("subbeats");
         }

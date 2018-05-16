@@ -242,19 +242,18 @@ public class MainFragment extends OMGFragment {
 
             }
         });
-        mixerButton.setOnLongClickListener(new View.OnLongClickListener() {
+        mView.findViewById(R.id.speed_button).setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
+            public void onClick(View view) {
                 if (getJam().getParts().size() == 0) {
                     Activity context = getActivity();
                     if (context != null) {
                         Toast.makeText(context, "Add Parts before you mix them!", Toast.LENGTH_LONG).show();
                     }
-                    return true;
+                    return;
                 }
                 SampleSpeedFragment fragment = new SampleSpeedFragment();
                 animateFragment(fragment, 0);
-                return true;
             }
         });
 

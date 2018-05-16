@@ -36,4 +36,7 @@ public class SequencerTrack {
     void setVolume(float volume) {audioParameters.volume = volume;}
     public float getVolume() {return audioParameters.volume;}
 
+    public float getSpeed() {
+        return audioParameters.speed;
+    }
 }

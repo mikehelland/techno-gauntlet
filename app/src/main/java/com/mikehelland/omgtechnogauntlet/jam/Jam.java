@@ -272,6 +272,10 @@ public class Jam {
         track.audioParameters.pan = pan;
     }
 
+    public void setPartTrackWarp(JamPart jamPart, SequencerTrack track, float warp) {
+        track.audioParameters.speed = warp;
+    }
+
     public void addOnSubbeatListener(OnSubbeatListener listener) {
         player.onSubbeatListeners.add(listener);
     }
@@ -300,7 +304,7 @@ public class Jam {
         if (!player.isPlaying() || autoBeat == 0) {
             player.playPartLiveNote(jamPart.part, note);
             note.setBeats(1.0f / currentSection.beatParameters.subbeats);
-            if (!jamPart.getMute()) {
+            if (player.isPlaying() && !jamPart.getMute()) {
                 jamPart.liveNote = NoteWriter.addNote(note, Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
             }
         }

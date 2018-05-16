@@ -6,8 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.SequencerTrack;
 
-public class SampleSpeedFragment extends OMGFragment {
+public class TrackWarpFragment extends OMGFragment {
 
     private View mView;
 
@@ -15,7 +16,7 @@ public class SampleSpeedFragment extends OMGFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mView = inflater.inflate(R.layout.samplespeed_fragment,
+        mView = inflater.inflate(R.layout.mixer_fragment,
                 container, false);
 
         setupPanels(inflater);
@@ -25,26 +26,22 @@ public class SampleSpeedFragment extends OMGFragment {
 
     void setupPanels(LayoutInflater inflater) {
 
-
         ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
         View controls;
-        int i = 0;
-        for (final JamPart part : getJam().getParts()) {
+        final JamPart part = getPart();
+        for (final SequencerTrack track : part.getTracks()) {
 
             controls = inflater.inflate(R.layout.samplespeed_panel, container, false);
             container.addView(controls);
 
             SampleSpeedView mixerView = (SampleSpeedView) controls.findViewById(R.id.levels_view);
-            mixerView.setJam(part.getName(), part.getSpeed(), new SampleSpeedView.LevelViewController() {
+            mixerView.setJam(track.getName(), track.getSpeed(), new SampleSpeedView.LevelViewController() {
                 @Override
                 void onLevelChange(float level) {
-                    getJam().setPartSpeed(part, level, null);
+                    getJam().setPartTrackWarp(part, track, level);
                 }
             });
-            i++;
         }
-
     }
-
 }
 

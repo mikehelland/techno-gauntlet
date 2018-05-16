@@ -79,6 +79,11 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Warp Tracks"
+            android:id="@+id/track_warp_button"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="Copy Part"
             android:id="@+id/copy_channel_button"/>
 

@@ -8,9 +8,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.mikehelland.omgtechnogauntlet.jam.Jam;
-import com.mikehelland.omgtechnogauntlet.jam.JamPart;
-
 /**
  * User: m
  * Date: 11/15/13
@@ -18,8 +15,7 @@ import com.mikehelland.omgtechnogauntlet.jam.JamPart;
  */
 public class SampleSpeedView extends View {
 
-    private Jam jam;
-    private JamPart part;
+    private LevelViewController controller;
 
     private Paint paint;
     private Paint paintOrange;
@@ -46,6 +42,7 @@ public class SampleSpeedView extends View {
     private float controlMargin = 5;
     private float speedWidth = -1;
 
+    private float speed = 1;
     private float lastSpeed = 1;
 
     public SampleSpeedView(Context context, AttributeSet attrs) {
@@ -88,13 +85,10 @@ public class SampleSpeedView extends View {
             speedWidth = (width - speedStart) - 2 * controlMargin;
         }
 
-        float speed = part.getSpeed();
-
         float height2 = height / 2;
 
         canvas.drawRect(0, 0, resetButtonWidth, height, paintOrange);
         canvas.drawText(" Reset ", 0, height2, paintText);
-
 
         canvas.drawLine(speedStart + controlMargin, height2, speedStart + speedWidth - controlMargin,
                 height2, paint);
@@ -116,12 +110,12 @@ public class SampleSpeedView extends View {
         if (action == MotionEvent.ACTION_DOWN) {
 
             if (x <= resetButtonWidth) {
-                if (part.getSpeed() == 1) {
-                    jam.setPartSpeed(part, lastSpeed, null);
+                if (speed == 1) {
+                    speed = lastSpeed;
                 }
                 else {
-                    lastSpeed = part.getSpeed();
-                    jam.setPartSpeed(part, 1, null);
+                    lastSpeed = speed;
+                    speed = 1;
                 }
                 touchingArea = TOUCHING_AREA_RESET;
             }
@@ -146,9 +140,9 @@ public class SampleSpeedView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, JamPart channel, String name) {
-        this.jam = jam;
-        part = channel;
+    public void setJam(String name, float level, LevelViewController controller) {
+        this.controller = controller;
+        speed = level;
 
         setPartName(name);
 
@@ -156,9 +150,15 @@ public class SampleSpeedView extends View {
 
     private void performTouch(float x) {
         if (touchingArea == TOUCHING_AREA_SPEED) {
-            float speed = Math.max(0, Math.min(2.0f, ((x - speedStart) / speedWidth) * 2));
-
-            jam.setPartSpeed(part, speed, null);
+            speed = Math.max(0, Math.min(2.0f, ((x - speedStart) / speedWidth) * 2));
         }
+
+        if (controller != null) {
+            controller.onLevelChange(speed);
+        }
+    }
+
+    abstract static class LevelViewController {
+        abstract void onLevelChange(float level);
     }
 }
