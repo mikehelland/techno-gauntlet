@@ -198,7 +198,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     private void setupOscillatorSoundSet(SQLiteDatabase db) {
 
-        String proto = "\"type\" : \"SOUNDSET\", \"cshromatic\": true, " +
+        String proto = "\"type\" : \"SOUNDSET\", \"chromatic\": true, " +
                 "\"defaultSurface\": \"PRESET_VERTICAL\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 

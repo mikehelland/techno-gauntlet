@@ -23,7 +23,7 @@ repositories {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    //buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "com.mikehelland.omgtechnogauntlet"
@@ -59,7 +59,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
-        transitive = true;
+        transitive = true
     }
     compile 'com.google.firebase:firebase-core:11.8.0'
 
