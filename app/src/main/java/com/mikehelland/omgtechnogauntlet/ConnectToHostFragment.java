@@ -134,9 +134,14 @@ public class ConnectToHostFragment extends OMGFragment {
 
                 Activity activity = getActivity(); if (activity == null) return;
 
+                //process any incoming messages from this connection
                 final CommandProcessor cp = new CommandProcessor(activity);
+                cp.setSync(true); 
                 cp.setup(connection, jam, null);
                 connection.setDataCallback(cp);
+
+                //send any changes to this jam to the host
+                jam.addOnJamChangeListener(new BluetoothRemoteJamListener(connection));
 
 
                 activity.runOnUiThread(new Runnable() {
@@ -144,7 +149,8 @@ public class ConnectToHostFragment extends OMGFragment {
                     public void run() {
                         mStatusText.setText(R.string.getting_jam_info);
                         mImageView.setImageResource(R.drawable.device_blue);
-                        RemoteControlBluetoothHelper.getJamInfo(connection); //, new GetJamInfoCallback() {
+                        RemoteControlBluetoothHelper.setupRemote(connection);
+
                         //todo get the jam as json from the host
                         //load it, and show the main fragment
 
@@ -154,7 +160,7 @@ public class ConnectToHostFragment extends OMGFragment {
 
             @Override
             public void onDisconnected(BluetoothConnection connection) {
-
+                //todo
             }
         });
     }

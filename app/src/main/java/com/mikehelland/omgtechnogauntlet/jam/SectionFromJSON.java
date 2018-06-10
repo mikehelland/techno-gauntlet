@@ -43,6 +43,10 @@ class SectionFromJSON {
 
     static private void loadPart(Part part, JSONObject partJSON) throws  JSONException {
 
+        if (partJSON.has("id")) {
+            part.id = partJSON.getString("id");
+        }
+
         part.surface = loadSurface(partJSON);
         part.soundSet = loadSoundSet(partJSON);
 

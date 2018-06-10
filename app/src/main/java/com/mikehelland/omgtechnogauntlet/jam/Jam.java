@@ -96,6 +96,10 @@ public class Jam {
 
     public void setSubbeatLength(int subbeatLength, String sourceDevice) {
         currentSection.beatParameters.subbeatLength = subbeatLength;
+
+        for (OnJamChangeListener listener : onJamChangeListeners) {
+            listener.onSubbeatLengthChange(subbeatLength, sourceDevice);
+        }
     }
 
     public int getSubbeats() {
@@ -172,6 +176,15 @@ public class Jam {
         return jamParts;
     }
 
+    public JamPart getPart(String id) {
+        for (JamPart jamPart : jamParts) {
+            if (jamPart.getId().equals(id)) {
+                return jamPart;
+            }
+        }
+        return null;
+    }
+
 
     public int getCurrentSubbeat() {
         return player.getCurrentSubbeat();
@@ -199,12 +212,26 @@ public class Jam {
     }
 
     public void play() {
+        play(null);
+    }
+    public void play(String source) {
         player.play(currentSection, jamParts);
+
+        for (OnJamChangeListener listener : onJamChangeListeners) {
+            listener.onPlay(source);
+        }
     }
 
     public void stop() {
+        stop(null);
+    }
+    public void stop(String source) {
         if (player.isPlaying()) {
             player.stop();
+        }
+
+        for (OnJamChangeListener listener : onJamChangeListeners) {
+            listener.onStop(source);
         }
     }
 
@@ -340,6 +367,17 @@ public class Jam {
 
         jamPart.live = false;
         jamPart.liveNote = null;
+    }
+
+    public void setPartTrackValue(JamPart jamPart, int track, int subbeat, boolean value) {
+        setPartTrackValue(jamPart, track, subbeat, value, null);
+    }
+    public void setPartTrackValue(JamPart jamPart, int track, int subbeat, boolean value, String source) {
+        jamPart.getPattern()[track][subbeat] = value;
+
+        for (OnJamChangeListener listener : onJamChangeListeners) {
+            listener.onPartTrackValueChange(jamPart, track, subbeat, value, source);
+        }
     }
 
     //I'm not too sure these should be here, but where?

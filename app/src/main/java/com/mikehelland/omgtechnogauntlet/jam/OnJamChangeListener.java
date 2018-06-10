@@ -14,5 +14,9 @@ public abstract class OnJamChangeListener {
     public abstract void onPartVolumeChanged(JamPart part, float volume, String source);
     public abstract void onPartPanChanged(JamPart part, float pan, String source);
 
-    public abstract void newState(String stateChange, Object... args);
+    public abstract void onPlay(String source);
+    public abstract void onStop(String source);
+    public abstract void onNewLoop(String source);
+
+    public abstract void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source);
 }

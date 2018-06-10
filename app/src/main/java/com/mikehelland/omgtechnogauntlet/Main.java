@@ -155,7 +155,7 @@ public class Main extends FragmentActivity {
         bluetoothManager = new BluetoothManager(this);
         if (bluetoothManager.isBlueToothOn()) {
             bluetoothManager.startAccepting(makeConnectCallback());
-            jam.addOnJamChangeListener(new BluetoothForwarder(bluetoothManager));
+            jam.addOnJamChangeListener(new BluetoothHostJamListener(bluetoothManager));
         }
     }
 

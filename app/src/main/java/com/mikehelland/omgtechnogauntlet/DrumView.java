@@ -272,14 +272,16 @@ public class DrumView extends View {
             x = x * mJam.getSubbeats();
 
             if (y > -1 && y < data.length && x > -1 && x < data[y].length) {
-                data[y][x] = !data[y][x];
+                mJam.setPartTrackValue(part, y, x, !data[y][x]);
+                //data[y][x] = !data[y][x];
             }
         }
         else {
             int i = x % wide + y * wide;
 
             if (i >= 0 && firstRowButton < data.length && i < data[firstRowButton].length) {
-                data[firstRowButton][i] = !data[firstRowButton][i];
+                mJam.setPartTrackValue(part, firstRowButton, i, !data[firstRowButton][i]);
+                //data[firstRowButton][i] = !data[firstRowButton][i];
             }
         }
     }

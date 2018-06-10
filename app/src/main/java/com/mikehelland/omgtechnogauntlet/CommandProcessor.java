@@ -16,10 +16,17 @@ import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
  */
 class CommandProcessor extends BluetoothDataCallback {
 
-    final static String JAMINFO_SUBBEATLENGTH = "JAMINFO_SUBBEATLENGTH";
+    final static String REMOTE_CONTROL = "REMOTE_CONTROL";
+
     final static String JAMINFO_KEY = "JAMINFO_KEY";
     final static String JAMINFO_SCALE = "JAMINFO_SCALE";
     private final static String CHANNEL_SET_ARPNOTES = "CHANNEL_SET_ARPNOTES";
+
+    final static String SET_PLAY = "SET_PLAY";
+    final static String SET_STOP = "SET_STOP";
+
+    final static String SET_SUBBEATLENGTH = "SET_SUBBEATLENGTH";
+    final static String SET_PART_TRACK_VALUE = "SET_PART_TRACK_VALUE";
 
     private BluetoothConnection mConnection;
     private Jam mJam;
@@ -62,15 +69,22 @@ class CommandProcessor extends BluetoothDataCallback {
         Log.d("MGH BT newdata", name + (value != null ? ("=" + value) : ""));
 
         switch (name) {
-            case "SET_PLAY":
-                mJam.play();
+            case REMOTE_CONTROL:
+                mSync = true;
+                sendJamJSON();
                 return;
-            case "SET_STOP":
-                mJam.stop();
+
+            case SET_PLAY:
+                if (mSync) {
+                    mJam.play(getAddress());
+                }
                 return;
-            case "GET_JAM_INFO":
-                sendJamInfo();
+            case SET_STOP:
+                if (mSync) {
+                    mJam.stop(getAddress());
+                }
                 return;
+
             case "GET_JAM_JSON":
                 sendJamJSON();
                 return;
@@ -90,20 +104,29 @@ class CommandProcessor extends BluetoothDataCallback {
             return;
 
         switch (name) {
+            case SET_SUBBEATLENGTH:
+                if (mSync) {
+                    mJam.setSubbeatLength(Integer.parseInt(value), getAddress());
+                }
+                return;
+
+            case SET_PART_TRACK_VALUE:
+                if (mSync) {
+                    setPartTrackValue(value);
+                }
+                return;
+
             case "ADD_CHANNEL":
                 addPart(Long.parseLong(value));
                 return;
             case "LOAD_JAM":
                 loadJam(Long.parseLong(value));
                 return;
-            case "SET_SUBBEATLENGTH":
-                mJam.setSubbeatLength(Integer.parseInt(value), mConnection.getDevice().getAddress());
-                return;
             case "SET_KEY":
-                mJam.setKey(Integer.parseInt(value), mConnection.getDevice().getAddress());
+                mJam.setKey(Integer.parseInt(value), getAddress());
                 return;
             case "SET_SCALE":
-                //todo mJam.setScale(value, mConnection.getDevice().getAddress());
+                //todo mJam.setScale(value, getAddress());
                 return;
             case "SET_CHANNEL":
                 //todo mPart = mJam.getPartByID(value);
@@ -127,15 +150,6 @@ class CommandProcessor extends BluetoothDataCallback {
                 clearPart(value);
                 return;
 
-            case JAMINFO_KEY:
-                onSetKey(value);
-                return;
-            case JAMINFO_SCALE:
-                onSetScale(value);
-                return;
-            case JAMINFO_SUBBEATLENGTH:
-                onSetSubbeatLength(value);
-                return;
             case "JAMINFO_CHANNELS":
                 //onSetParts(value);
                 return;
@@ -166,12 +180,29 @@ class CommandProcessor extends BluetoothDataCallback {
         }
     }
 
+    private void setPartTrackValue(String value) {
+        String[] params = value.split(",");
+        JamPart jamPart = mJam.getPart(params[0]);
+
+        int track = Integer.parseInt(params[1]);
+        int subbeat = Integer.parseInt(params[2]);
+        boolean patternValue = !params[3].equals("0");
+
+        if (mSync) {
+            mJam.setPartTrackValue(jamPart, track, subbeat, patternValue, getAddress());
+        }
+    }
+
+    //old way, old remote
     private void channelSetPattern(String value) {
         String[] params = value.split(",");
         int track = Integer.parseInt(params[0]);
         int subbeat = Integer.parseInt(params[1]);
         boolean patternValue = params[2].equals("true");
-        //todo mPart.setPattern(track, subbeat, patternValue);
+
+        if (mSync) {
+            mJam.setPartTrackValue(mPart, track, subbeat, patternValue, getAddress());
+        }
     }
 
     private void channelPlayNote(String value) {
@@ -190,26 +221,12 @@ class CommandProcessor extends BluetoothDataCallback {
         mPart.playLiveNote(note);*/
     }
 
-    private void sendJamInfo() {
-        //should this be JSON? Maybe faster this way tho
-        //this is the old way for the old remote app
-        mConnection.sendNameValuePair(JAMINFO_KEY, Integer.toString(mJam.getKey()));
-        //todo? mConnection.sendNameValuePair(JAMINFO_SCALE, mJam.getScaleString());
-        mConnection.sendNameValuePair(JAMINFO_SUBBEATLENGTH,
-                Integer.toString(mJam.getSubbeatLength()));
-
-        String setParts = getPartsInfo(mJam);
-        mConnection.sendNameValuePair("JAMINFO_CHANNELS", setParts);
-
-        mConnection.sendCommand(mJam.isPlaying() ? "PLAY" : "STOP");
-    }
-
 
     private void sendJamJSON() {
         mConnection.sendNameValuePair("JAM_JSON", mJam.getData());
 
         //todo send when we started, or at least do the on new loop regular updates
-        mConnection.sendCommand(mJam.isPlaying() ? "PLAY" : "STOP");
+        mConnection.sendCommand(mJam.isPlaying() ? SET_PLAY : SET_STOP);
     }
 
     static private String getPartsInfo(Jam jam) {
@@ -465,5 +482,9 @@ class CommandProcessor extends BluetoothDataCallback {
             channel.clearNotes();
         }*/
 
+    }
+
+    private String getAddress() {
+        return mConnection.getDevice().getAddress();
     }
 }

@@ -9,17 +9,17 @@ import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
  *
  */
 
-public class BluetoothForwarder extends OnJamChangeListener {
+public class BluetoothHostJamListener extends OnJamChangeListener {
     
     private BluetoothManager bluetoothManager;
-    
-    BluetoothForwarder(BluetoothManager bluetoothManager) {
+
+    BluetoothHostJamListener(BluetoothManager bluetoothManager) {
         this.bluetoothManager = bluetoothManager;
     }
     
     @Override
     public void onSubbeatLengthChange(int length, String source) {
-        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SUBBEATLENGTH,
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_SUBBEATLENGTH,
                 Integer.toString(length), source);
     }
 
@@ -64,12 +64,21 @@ public class BluetoothForwarder extends OnJamChangeListener {
     }
 
     @Override
-    public void newState(String state, Object... args) {
-        if (state.equals("PLAY") || state.equals("STOP"))
-            bluetoothManager.sendCommandToDevices(state, null);
+    public void onPlay(String source) {
+        bluetoothManager.sendCommandToDevices(CommandProcessor.SET_PLAY, source);
+    }
+    @Override
+    public void onStop(String source) {
+        bluetoothManager.sendCommandToDevices(CommandProcessor.SET_STOP, source);
+    }
+    @Override
+    public void onNewLoop(String source) {
+        bluetoothManager.sendCommandToDevices("ON_NEW_LOOP", source);
+    }
 
-        if (state.equals("ON_NEW_LOOP"))
-            bluetoothManager.sendCommandToDevices(state, null);
-
+    @Override
+    public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) {
+        bluetoothManager.sendNameValuePairToDevices("SET_PART_TRACK_VALUE",
+                jamPart.getId() + "," + track + "," + subbeat + "," + (value ? 1 : 0), source);
     }
 }

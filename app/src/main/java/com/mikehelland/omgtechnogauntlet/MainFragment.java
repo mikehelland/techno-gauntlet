@@ -363,7 +363,18 @@ public class MainFragment extends OMGFragment {
         mJamListener = new OnJamChangeListener() {
 
             @Override
-            public void newState(final String state, Object... args) {
+            public void onPlay(final String source) {
+            }
+            @Override
+            public void onStop(final String source) {
+            }
+            @Override
+            public void onNewLoop(final String source) {
+            }
+
+            @Override
+            public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) {
+
             }
 
 

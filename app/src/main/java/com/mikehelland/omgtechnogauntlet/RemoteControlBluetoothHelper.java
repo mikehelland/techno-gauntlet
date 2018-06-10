@@ -33,8 +33,8 @@ class RemoteControlBluetoothHelper {
 
     }
 
-    static void getJamInfo(BluetoothConnection connection) {
-        connection.sendCommand("GET_JAM_JSON");
+    static void setupRemote(BluetoothConnection connection) {
+        connection.sendCommand(CommandProcessor.REMOTE_CONTROL);
     }
 
     static void setPlay(BluetoothConnection connection) {

@@ -64,7 +64,9 @@ public class SectionToJSON {
         part.soundSet.getData(sb);
         sb.append(", \"audioParameters\" : ");
         part.audioParameters.getData(sb);
-        sb.append(", ");
+        sb.append(", \"id\" : \"");
+        sb.append(part.id);
+        sb.append("\", ");
         ///todo add beat and rootNote objects from jam
 
         if (useSequencer) {
