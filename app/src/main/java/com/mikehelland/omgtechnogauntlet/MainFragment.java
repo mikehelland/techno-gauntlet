@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.OnBeatChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
+import com.mikehelland.omgtechnogauntlet.jam.OnKeyChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
@@ -34,6 +36,8 @@ public class MainFragment extends OMGFragment {
     private ViewGroup mContainer;
 
     private OnJamChangeListener mJamListener;
+    private OnKeyChangeListener mKeyListener;
+    private OnBeatChangeListener mBeatListener;
 
     private HashMap<JamPart, View> channelViewMap = new HashMap<>();
 
@@ -361,11 +365,12 @@ public class MainFragment extends OMGFragment {
     }
 
     private void setupJamStateListener() {
-        mJamListener = new OnJamChangeListener() {
 
+        mBeatListener = new OnBeatChangeListener() {
             @Override
             public void onSubbeatLengthChange(int length, String source) {
-                Activity activity = getActivity(); if (activity == null)  return;
+                Activity activity = getActivity();
+                if (activity == null) return;
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -374,16 +379,18 @@ public class MainFragment extends OMGFragment {
                     }
                 });
             }
+        };
 
+        mKeyListener = new OnKeyChangeListener() {
             @Override
             public void onKeyChange(int key, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
                 activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateKeyUI();
-                        }
-                    });
+                    @Override
+                    public void run() {
+                        updateKeyUI();
+                    }
+                });
             }
 
             @Override
@@ -391,12 +398,15 @@ public class MainFragment extends OMGFragment {
                 Activity activity = getActivity(); if (activity == null)  return;
 
                 activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateKeyUI();
-                        }
-                    });
+                    @Override
+                    public void run() {
+                        updateKeyUI();
+                    }
+                });
             }
+        };
+
+        mJamListener = new OnJamChangeListener() {
 
             @Override
             public void onChordProgressionChange(int[] chords) {
@@ -446,12 +456,16 @@ public class MainFragment extends OMGFragment {
         };
 
         getJam().addOnJamChangeListener(mJamListener);
+        getJam().addOnKeyChangeListener(mKeyListener);
+        getJam().addOnBeatChangeListener(mBeatListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         getJam().removeOnJamChangeListener(mJamListener);
+        getJam().removeOnKeyChangeListener(mKeyListener);
+        getJam().removeOnBeatChangeListener(mBeatListener);
     }
 }
 

@@ -76,29 +76,6 @@ public class BluetoothRemoteJamListener extends OnJamChangeListener {
     }
 
     @Override
-    public void onSubbeatLengthChange(int length, String source) {
-        RemoteControlBluetoothHelper.sendNewSubbeatLength(connection, length);
-    }
-
-    @Override
-    public void onKeyChange(int key, String source) {
-        connection.sendNameValuePair(CommandProcessor.SET_KEY, Integer.toString(key));
-    }
-
-    @Override
-    public void onScaleChange(int[] scale, String source) {
-        StringBuilder sb = new StringBuilder();
-        if (scale.length > 0) {
-            sb.append(scale[0]);
-        }
-        for (int i = 1; i < scale.length; i++) {
-            sb.append(",");
-            sb.append(scale[i]);
-        }
-        connection.sendNameValuePair(CommandProcessor.SET_SCALE, sb.toString());
-    }
-
-    @Override
     public void onChordProgressionChange(int[] chords) {
 
     }

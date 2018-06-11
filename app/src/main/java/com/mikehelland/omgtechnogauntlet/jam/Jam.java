@@ -17,6 +17,8 @@ public class Jam {
     private SoundManager soundManager;
 
     private ArrayList<OnJamChangeListener> onJamChangeListeners = new ArrayList<>();
+    private ArrayList<OnKeyChangeListener> onKeyChangeListeners = new ArrayList<>();
+    private ArrayList<OnBeatChangeListener> onBeatChangeListeners = new ArrayList<>();
     private OnGetSoundSetListener onGetSoundSetListener;
 
     private String keyName = "";
@@ -97,7 +99,7 @@ public class Jam {
     public void setSubbeatLength(int subbeatLength, String sourceDevice) {
         currentSection.beatParameters.subbeatLength = subbeatLength;
 
-        for (OnJamChangeListener listener : onJamChangeListeners) {
+        for (OnBeatChangeListener listener : onBeatChangeListeners) {
             listener.onSubbeatLengthChange(subbeatLength, sourceDevice);
         }
     }
@@ -142,7 +144,7 @@ public class Jam {
         currentSection.keyParameters.scale = scale;
         updateKeyName();
 
-        for (OnJamChangeListener listener : onJamChangeListeners) {
+        for (OnKeyChangeListener listener : onKeyChangeListeners) {
             listener.onScaleChange(scale, sourceDevice);
         }
     }
@@ -155,7 +157,7 @@ public class Jam {
         currentSection.keyParameters.rootNote = key;
         updateKeyName();
 
-        for (OnJamChangeListener listener : onJamChangeListeners) {
+        for (OnKeyChangeListener listener : onKeyChangeListeners) {
             listener.onKeyChange(key, sourceDevice);
         }
     }
@@ -322,9 +324,21 @@ public class Jam {
     public void addOnJamChangeListener(OnJamChangeListener listener) {
         onJamChangeListeners.add(listener);
     }
+    public void addOnBeatChangeListener(OnBeatChangeListener listener) {
+        onBeatChangeListeners.add(listener);
+    }
+    public void addOnKeyChangeListener(OnKeyChangeListener listener) {
+        onKeyChangeListeners.add(listener);
+    }
 
     public void removeOnJamChangeListener(OnJamChangeListener listener) {
         onJamChangeListeners.remove(listener);
+    }
+    public void removeOnBeatChangeListener(OnBeatChangeListener listener) {
+        onBeatChangeListeners.remove(listener);
+    }
+    public void removeOnKeyChangeListener(OnKeyChangeListener listener) {
+        onKeyChangeListeners.remove(listener);
     }
 
     public boolean isReady() {

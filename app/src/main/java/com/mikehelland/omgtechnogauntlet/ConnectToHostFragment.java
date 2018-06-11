@@ -142,6 +142,8 @@ public class ConnectToHostFragment extends OMGFragment {
 
                 //send any changes to this jam to the host
                 jam.addOnJamChangeListener(new BluetoothRemoteJamListener(connection));
+                jam.addOnKeyChangeListener(new BluetoothRemoteKeyListener(connection));
+                jam.addOnBeatChangeListener(new BluetoothRemoteBeatListener(connection));
 
 
                 activity.runOnUiThread(new Runnable() {
@@ -160,7 +162,7 @@ public class ConnectToHostFragment extends OMGFragment {
 
             @Override
             public void onDisconnected(BluetoothConnection connection) {
-                //todo
+                //todo remove the listeners, at least
             }
         });
     }

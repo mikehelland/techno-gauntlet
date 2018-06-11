@@ -17,32 +17,6 @@ public class BluetoothHostJamListener extends OnJamChangeListener {
     BluetoothHostJamListener(BluetoothManager bluetoothManager) {
         this.bluetoothManager = bluetoothManager;
     }
-    
-    @Override
-    public void onSubbeatLengthChange(int length, String source) {
-        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_SUBBEATLENGTH,
-                Integer.toString(length), source);
-    }
-
-    @Override
-    public void onKeyChange(int key, String source) {
-        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_KEY,
-                Integer.toString(key), source);
-    }
-
-    @Override
-    public void onScaleChange(int[] scale, String source) {
-        StringBuilder sb = new StringBuilder();
-        if (scale.length > 0) {
-            sb.append(scale[0]);
-        }
-        for (int i = 1; i < scale.length; i++) {
-            sb.append(",");
-            sb.append(scale[i]);
-        }
-        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_SCALE,
-                sb.toString(), source);
-    }
 
     @Override
     public void onChordProgressionChange(int[] chords) {

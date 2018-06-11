@@ -1,11 +1,17 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.OnBeatChangeListener;
+import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 
 /**
  * User: m
@@ -22,6 +28,8 @@ public class BeatsFragment extends OMGFragment {
     private SeekBar measuresSeekBar;
     private TextView beatsText;
     private SeekBar beatsSeekBar;
+
+    private OnBeatChangeListener mJamListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,15 +49,13 @@ public class BeatsFragment extends OMGFragment {
         beatsSeekBar = (SeekBar)view.findViewById(R.id.beats_seekbar);
 
         setup();
+        refresh();
+        setupListener();
 
         return view;
     }
 
     private void setup() {
-
-        int bpm = getJam().getBPM();
-        bpmText.setText(Integer.toString(bpm) + " bpm");
-        bpmSeekBar.setProgress(bpm - 20);
 
         bpmSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -91,13 +97,7 @@ public class BeatsFragment extends OMGFragment {
 
             }
         });
-        int shuffle = (int)(getJam().getShuffle() * 100);
-        shuffleText.setText(Integer.toString(shuffle) + "% shuffle");
-        shuffleSeekBar.setProgress(shuffle);
 
-        int measures = getJam().getMeasures();
-        measuresText.setText(measures + " Measures");
-        measuresSeekBar.setProgress(measures);
         measuresSeekBar.setMax(8);
 
         measuresSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -122,9 +122,6 @@ public class BeatsFragment extends OMGFragment {
             }
         });
 
-        int beats = getJam().getBeats();
-        beatsText.setText(beats + " Beats");
-        beatsSeekBar.setProgress(beats);
         beatsSeekBar.setMax(8);
 
         beatsSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -151,5 +148,46 @@ public class BeatsFragment extends OMGFragment {
 
     }
 
+    private void refresh() {
+
+        int bpm = getJam().getBPM();
+        bpmText.setText(Integer.toString(bpm) + " bpm");
+        bpmSeekBar.setProgress(bpm - 20);
+
+        int shuffle = (int)(getJam().getShuffle() * 100);
+        shuffleText.setText(Integer.toString(shuffle) + "% shuffle");
+        shuffleSeekBar.setProgress(shuffle);
+
+        int measures = getJam().getMeasures();
+        measuresText.setText(measures + " Measures");
+        measuresSeekBar.setProgress(measures);
+
+        int beats = getJam().getBeats();
+        beatsText.setText(beats + " Beats");
+        beatsSeekBar.setProgress(beats);
+
+    }
+
+    private void setupListener() {
+        mJamListener = new OnBeatChangeListener() {
+            @Override public void onSubbeatLengthChange(int length, String source) {
+                FragmentActivity activity = getActivity(); if (activity == null) return;
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        refresh();
+                    }
+                });
+            }
+        };
+        getJam().addOnBeatChangeListener(mJamListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getJam().removeOnBeatChangeListener(mJamListener);
+    }
 
 }
