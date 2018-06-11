@@ -4,7 +4,7 @@ import java.util.UUID;
 
 class Part {
 
-    String id;
+    String uuid;
 
     KeyParameters keyParameters;
     BeatParameters beatParameters;
@@ -36,7 +36,7 @@ class Part {
     int arpNotesCount = 0;
 
     Part(Section section) {
-        id = UUID.randomUUID().toString();
+        uuid = UUID.randomUUID().toString();
 
         keyParameters = section.keyParameters;
         beatParameters = section.beatParameters;

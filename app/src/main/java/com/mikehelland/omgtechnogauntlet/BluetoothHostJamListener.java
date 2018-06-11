@@ -2,6 +2,7 @@ package com.mikehelland.omgtechnogauntlet;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 
 /**
@@ -25,14 +26,22 @@ public class BluetoothHostJamListener extends OnJamChangeListener {
 
     @Override
     public void onKeyChange(int key, String source) {
-        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAMINFO_KEY,
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_KEY,
                 Integer.toString(key), source);
     }
 
     @Override
-    public void onScaleChange(String scale, String source) {
-        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SCALE,
-                scale, source);
+    public void onScaleChange(int[] scale, String source) {
+        StringBuilder sb = new StringBuilder();
+        if (scale.length > 0) {
+            sb.append(scale[0]);
+        }
+        for (int i = 1; i < scale.length; i++) {
+            sb.append(",");
+            sb.append(scale[i]);
+        }
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_SCALE,
+                sb.toString(), source);
     }
 
     @Override
@@ -80,5 +89,25 @@ public class BluetoothHostJamListener extends OnJamChangeListener {
     public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) {
         bluetoothManager.sendNameValuePairToDevices("SET_PART_TRACK_VALUE",
                 jamPart.getId() + "," + track + "," + subbeat + "," + (value ? 1 : 0), source);
+    }
+
+    @Override
+    public void onPartStartLiveNotes(JamPart jamPart, Note note, int autoBeat, String source) {
+
+    }
+
+    @Override
+    public void onPartUpdateLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source) {
+
+    }
+
+    @Override
+    public void onPartRemoveLiveNotes(JamPart jamPart, Note note, Note[] notes, String source) {
+
+    }
+
+    @Override
+    public void onPartEndLiveNotes(JamPart jamPart, String source) {
+        //todo broad cast new notes
     }
 }

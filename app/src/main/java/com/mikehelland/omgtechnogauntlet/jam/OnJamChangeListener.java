@@ -7,7 +7,7 @@ package com.mikehelland.omgtechnogauntlet.jam;
 public abstract class OnJamChangeListener {
     public abstract void onSubbeatLengthChange(int length, String source);
     public abstract void onKeyChange(int key, String source);
-    public abstract void onScaleChange(String scale, String source);
+    public abstract void onScaleChange(int[] scale, String source);
     public abstract void onChordProgressionChange(int[] chords);
     public abstract void onNewPart(JamPart part);
     public abstract void onPartEnabledChanged(JamPart part, boolean enabled, String source);
@@ -19,4 +19,9 @@ public abstract class OnJamChangeListener {
     public abstract void onNewLoop(String source);
 
     public abstract void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source);
+    public abstract void onPartStartLiveNotes(JamPart jamPart, Note note, int autoBeat, String source);
+    public abstract void onPartUpdateLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source);
+    public abstract void onPartRemoveLiveNotes(JamPart jamPart, Note note, Note[] notes, String source);
+    public abstract void onPartEndLiveNotes(JamPart jamPart, String source);
+
 }

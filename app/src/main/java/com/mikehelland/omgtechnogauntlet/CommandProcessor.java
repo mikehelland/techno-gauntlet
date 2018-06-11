@@ -7,6 +7,7 @@ import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothDataCallback;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.KeyHelper;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
@@ -26,7 +27,14 @@ class CommandProcessor extends BluetoothDataCallback {
     final static String SET_STOP = "SET_STOP";
 
     final static String SET_SUBBEATLENGTH = "SET_SUBBEATLENGTH";
+    final static String SET_KEY = "SET_KEY";
+    final static String SET_SCALE = "SET_SCALE";
+
     final static String SET_PART_TRACK_VALUE = "SET_PART_TRACK_VALUE";
+    final static String SET_PART_LIVE_START = "SET_PART_LIVE_START";
+    final static String SET_PART_LIVE_UPDATE = "SET_PART_LIVE_UPDATE";
+    final static String SET_PART_LIVE_REMOVE = "SET_PART_LIVE_REMOVE";
+    final static String SET_PART_LIVE_END = "SET_PART_LIVE_END";
 
     private BluetoothConnection mConnection;
     private Jam mJam;
@@ -109,10 +117,40 @@ class CommandProcessor extends BluetoothDataCallback {
                     mJam.setSubbeatLength(Integer.parseInt(value), getAddress());
                 }
                 return;
+            case SET_KEY:
+                if (mSync) {
+                    mJam.setKey(Integer.parseInt(value), getAddress());
+                }
+                return;
+            case SET_SCALE:
+                if (mSync) {
+                    setScale(value);
+                }
+                return;
 
             case SET_PART_TRACK_VALUE:
                 if (mSync) {
                     setPartTrackValue(value);
+                }
+                return;
+            case SET_PART_LIVE_START:
+                if (mSync) {
+                    onPartLiveStart(value);
+                }
+                return;
+            case SET_PART_LIVE_UPDATE:
+                if (mSync) {
+                    onPartLiveUpdate(value);
+                }
+                return;
+            case SET_PART_LIVE_REMOVE:
+                if (mSync) {
+                    onPartLiveRemove(value);
+                }
+                return;
+            case SET_PART_LIVE_END:
+                if (mSync) {
+                    onPartLiveEnd(value);
                 }
                 return;
 
@@ -121,12 +159,6 @@ class CommandProcessor extends BluetoothDataCallback {
                 return;
             case "LOAD_JAM":
                 loadJam(Long.parseLong(value));
-                return;
-            case "SET_KEY":
-                mJam.setKey(Integer.parseInt(value), getAddress());
-                return;
-            case "SET_SCALE":
-                //todo mJam.setScale(value, getAddress());
                 return;
             case "SET_CHANNEL":
                 //todo mPart = mJam.getPartByID(value);
@@ -180,19 +212,6 @@ class CommandProcessor extends BluetoothDataCallback {
         }
     }
 
-    private void setPartTrackValue(String value) {
-        String[] params = value.split(",");
-        JamPart jamPart = mJam.getPart(params[0]);
-
-        int track = Integer.parseInt(params[1]);
-        int subbeat = Integer.parseInt(params[2]);
-        boolean patternValue = !params[3].equals("0");
-
-        if (mSync) {
-            mJam.setPartTrackValue(jamPart, track, subbeat, patternValue, getAddress());
-        }
-    }
-
     //old way, old remote
     private void channelSetPattern(String value) {
         String[] params = value.split(",");
@@ -206,7 +225,7 @@ class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void channelPlayNote(String value) {
-        //todo
+        //todo for old omg-remote
         /*Note note = new Note();
         String[] noteInfo = value.split(",");
         int basicNoteNumber = Integer.parseInt(noteInfo[0]);
@@ -486,5 +505,87 @@ class CommandProcessor extends BluetoothDataCallback {
 
     private String getAddress() {
         return mConnection.getDevice().getAddress();
+    }
+
+
+
+    private void setPartTrackValue(String value) {
+        String[] params = value.split(",");
+        JamPart jamPart = mJam.getPart(params[0]);
+
+        int track = Integer.parseInt(params[1]);
+        int subbeat = Integer.parseInt(params[2]);
+        boolean patternValue = !params[3].equals("0");
+
+        if (mSync) {
+            mJam.setPartTrackValue(jamPart, track, subbeat, patternValue, getAddress());
+        }
+    }
+    private void onPartLiveStart(String value) {
+
+        String[] noteInfo = value.split(",");
+        int autoBeat = Integer.parseInt(noteInfo[1]);
+        int basicNoteNumber = Integer.parseInt(noteInfo[2]);
+        int instrumentNoteNumber = Integer.parseInt(noteInfo[3]);
+
+        Note note = new Note(false, basicNoteNumber, 0, instrumentNoteNumber, -1);
+
+        mJam.startPartLiveNotes(mJam.getPart(noteInfo[0]), note, autoBeat, getAddress());
+    }
+
+    private void onPartLiveUpdate(String value) {
+
+        String[] noteInfo = value.split(",");
+        int autoBeat = Integer.parseInt(noteInfo[1]);
+
+        int i = 2;
+        int noteI = 0;
+        int basicNote;
+        int instrumentNote;
+        Note[] notes = new Note[(noteInfo.length - 2) / 2];
+        while (i < noteInfo.length) {
+            basicNote = Integer.parseInt(noteInfo[i++]);
+            instrumentNote = Integer.parseInt(noteInfo[i++]);
+            notes[noteI++] = new Note(false,
+                    basicNote, 0, instrumentNote, -1);
+        }
+
+        mJam.updatePartLiveNotes(mJam.getPart(noteInfo[0]), notes, autoBeat, getAddress());
+    }
+
+    private void onPartLiveRemove(String value) {
+
+        String[] noteInfo = value.split(",");
+        int basicNoteNumber = Integer.parseInt(noteInfo[1]);
+        int instrumentNoteNumber = Integer.parseInt(noteInfo[2]);
+
+        Note note = new Note(false, basicNoteNumber, 0, instrumentNoteNumber, -1);
+
+        int i = 3;
+        int noteI = 0;
+        int basicNote;
+        int instrumentNote;
+        Note[] notes = new Note[(noteInfo.length - 3) / 2];
+        while (i < noteInfo.length) {
+            basicNote = Integer.parseInt(noteInfo[i++]);
+            instrumentNote = Integer.parseInt(noteInfo[i++]);
+            notes[noteI++] = new Note(false,
+                    basicNote, 0, instrumentNote, -1);
+        }
+
+        mJam.removeFromPartLiveNotes(mJam.getPart(noteInfo[0]), note, notes, getAddress());
+    }
+
+    private void onPartLiveEnd(String value) {
+        mJam.endPartLiveNotes(mJam.getPart(value), getAddress());
+    }
+
+    private void setScale(String value) {
+        String[] ints = value.split(",");
+        int[] scale = new int[ints.length];
+        for (int i = 0; i < ints.length; i++) {
+            scale[i] = Integer.parseInt(ints[i]);
+        }
+        mJam.setScale(scale, getAddress());
     }
 }

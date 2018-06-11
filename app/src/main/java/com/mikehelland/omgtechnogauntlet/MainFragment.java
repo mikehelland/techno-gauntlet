@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
@@ -363,22 +364,6 @@ public class MainFragment extends OMGFragment {
         mJamListener = new OnJamChangeListener() {
 
             @Override
-            public void onPlay(final String source) {
-            }
-            @Override
-            public void onStop(final String source) {
-            }
-            @Override
-            public void onNewLoop(final String source) {
-            }
-
-            @Override
-            public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) {
-
-            }
-
-
-            @Override
             public void onSubbeatLengthChange(int length, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
 
@@ -402,7 +387,7 @@ public class MainFragment extends OMGFragment {
             }
 
             @Override
-            public void onScaleChange(String scale, String source) {
+            public void onScaleChange(int[] scale, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
 
                 activity.runOnUiThread(new Runnable() {
@@ -447,10 +432,17 @@ public class MainFragment extends OMGFragment {
                     });
             }
 
-            @Override
-            public void onPartVolumeChanged(JamPart channel, float volume, String source) {}
-            @Override
-            public void onPartPanChanged(JamPart channel, float pan, String source) {}
+            @Override public void onPartVolumeChanged(JamPart channel, float volume, String source) {}
+            @Override public void onPartPanChanged(JamPart channel, float pan, String source) {}
+            @Override public void onPlay(final String source) { }
+            @Override public void onStop(final String source) { }
+            @Override public void onNewLoop(final String source) { }
+            @Override public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) { }
+            @Override public void onPartStartLiveNotes(JamPart jamPart, Note note, int autoBeat, String source) { }
+            @Override public void onPartUpdateLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source) { }
+            @Override public void onPartRemoveLiveNotes(JamPart jamPart, Note note, Note[] notes, String source) { }
+            @Override public void onPartEndLiveNotes(JamPart jamPart, String source) { }
+
         };
 
         getJam().addOnJamChangeListener(mJamListener);

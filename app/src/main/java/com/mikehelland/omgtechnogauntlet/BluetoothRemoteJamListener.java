@@ -1,8 +1,8 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
-import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 
 /**
@@ -17,7 +17,64 @@ public class BluetoothRemoteJamListener extends OnJamChangeListener {
     BluetoothRemoteJamListener(BluetoothConnection connection) {
         this.connection = connection;
     }
-    
+
+    @Override
+    public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) {
+        if (source == null) {
+            connection.sendNameValuePair(CommandProcessor.SET_PART_TRACK_VALUE,
+                    jamPart.getId() + "," + track + "," + subbeat + "," + (value ? 1 : 0));
+        }
+    }
+
+    @Override
+    public void onPartStartLiveNotes(JamPart jamPart, Note note, int autoBeat, String source) {
+        if (source == null) {
+            connection.sendNameValuePair(CommandProcessor.SET_PART_LIVE_START,
+                    jamPart.getId() + "," + autoBeat + "," +
+                            note.getBasicNote() + "," + note.getInstrumentNote());
+        }
+    }
+
+    @Override
+    public void onPartUpdateLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source) {
+        if (source == null) {
+            StringBuilder sb = new StringBuilder();
+            for (Note note : notes) {
+                sb.append(",");
+                sb.append(note.getBasicNote());
+                sb.append(",");
+                sb.append(note.getInstrumentNote());
+            }
+            connection.sendNameValuePair(CommandProcessor.SET_PART_LIVE_UPDATE,
+                    jamPart.getId() + "," + autoBeat + sb.toString());
+        }
+    }
+
+    @Override
+    public void onPartRemoveLiveNotes(JamPart jamPart, Note noteToRemove, Note[] notes, String source) {
+        if (source == null) {
+            StringBuilder sb = new StringBuilder();
+            for (Note note : notes) {
+                sb.append(",");
+                sb.append(note.getBasicNote());
+                sb.append(",");
+                sb.append(note.getInstrumentNote());
+            }
+            connection.sendNameValuePair(CommandProcessor.SET_PART_LIVE_REMOVE,
+                    jamPart.getId() + "," +
+                            noteToRemove.getBasicNote() + "," +
+                            noteToRemove.getInstrumentNote() + sb.toString());
+        }
+    }
+
+    @Override
+    public void onPartEndLiveNotes(JamPart jamPart, String source) {
+        if (source == null) {
+            connection.sendNameValuePair(CommandProcessor.SET_PART_LIVE_END,
+                    jamPart.getId());
+        }
+    }
+
     @Override
     public void onSubbeatLengthChange(int length, String source) {
         RemoteControlBluetoothHelper.sendNewSubbeatLength(connection, length);
@@ -25,12 +82,20 @@ public class BluetoothRemoteJamListener extends OnJamChangeListener {
 
     @Override
     public void onKeyChange(int key, String source) {
-        //bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAMINFO_KEY,Integer.toString(key), source);
+        connection.sendNameValuePair(CommandProcessor.SET_KEY, Integer.toString(key));
     }
 
     @Override
-    public void onScaleChange(String scale, String source) {
-        //bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SCALE,                scale, source);
+    public void onScaleChange(int[] scale, String source) {
+        StringBuilder sb = new StringBuilder();
+        if (scale.length > 0) {
+            sb.append(scale[0]);
+        }
+        for (int i = 1; i < scale.length; i++) {
+            sb.append(",");
+            sb.append(scale[i]);
+        }
+        connection.sendNameValuePair(CommandProcessor.SET_SCALE, sb.toString());
     }
 
     @Override
@@ -71,15 +136,7 @@ public class BluetoothRemoteJamListener extends OnJamChangeListener {
         }
     }
     @Override
-    public void onNewLoop(String source) {
-        //RemoteControlBluetoothHelper.setPlay(connection);
-    }
+    public void onNewLoop(String source) { }
 
-    @Override
-    public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) {
-        if (source == null) {
-            connection.sendNameValuePair("SET_PART_TRACK_VALUE",
-                    jamPart.getId() + "," + track + "," + subbeat + "," + (value ? 1 : 0));
-        }
-    }
+
 }

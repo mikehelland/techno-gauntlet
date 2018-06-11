@@ -178,7 +178,7 @@ public class SoundSet {
     }
 
     //public void setID(long ID) {
-    //    this.id = ID;
+    //    this.uuid = ID;
     //}
     public long getID() {
         return mID;

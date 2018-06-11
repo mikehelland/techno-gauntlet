@@ -43,8 +43,8 @@ class SectionFromJSON {
 
     static private void loadPart(Part part, JSONObject partJSON) throws  JSONException {
 
-        if (partJSON.has("id")) {
-            part.id = partJSON.getString("id");
+        if (partJSON.has("uuid")) {
+            part.uuid = partJSON.getString("uuid");
         }
 
         part.surface = loadSurface(partJSON);

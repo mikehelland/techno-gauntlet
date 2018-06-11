@@ -32,7 +32,7 @@ public class JamPart {
     }
 
     public String getId() {
-        return part.id;
+        return part.uuid;
     }
 
     public float getSpeed() {
