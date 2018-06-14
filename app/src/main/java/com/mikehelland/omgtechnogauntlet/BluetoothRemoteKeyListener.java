@@ -1,9 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
-import com.mikehelland.omgtechnogauntlet.jam.JamPart;
-import com.mikehelland.omgtechnogauntlet.jam.Note;
-import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnKeyChangeListener;
 
 /**
@@ -21,11 +18,17 @@ public class BluetoothRemoteKeyListener extends OnKeyChangeListener {
 
     @Override
     public void onKeyChange(int key, String source) {
+        if (source != null)
+            return;
+
         connection.sendNameValuePair(CommandProcessor.SET_KEY, Integer.toString(key));
     }
 
     @Override
     public void onScaleChange(int[] scale, String source) {
+        if (source != null)
+            return;
+
         StringBuilder sb = new StringBuilder();
         if (scale.length > 0) {
             sb.append(scale[0]);

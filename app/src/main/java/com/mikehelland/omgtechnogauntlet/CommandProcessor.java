@@ -14,7 +14,7 @@ import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
  * Created by m on 7/31/16.
  * the layer between the bluetooth connection and the jam
  */
-class CommandProcessor extends BluetoothDataCallback {
+public class CommandProcessor extends BluetoothDataCallback {
 
     final static String REMOTE_CONTROL = "REMOTE_CONTROL";
 
@@ -24,10 +24,14 @@ class CommandProcessor extends BluetoothDataCallback {
 
     final static String SET_PLAY = "SET_PLAY";
     final static String SET_STOP = "SET_STOP";
+    final static String SET_CHORDS = "SET_CHORDS";
 
-    final static String SET_SUBBEATLENGTH = "SET_SUBBEATLENGTH";
-    final static String SET_KEY = "SET_KEY";
-    final static String SET_SCALE = "SET_SCALE";
+    public final static String SET_SUBBEATLENGTH = "SET_SUBBEATLENGTH";
+    public final static String SET_BEATS = "SET_BEATS";
+    public final static String SET_MEASURES = "SET_MEASURES";
+    public final static String SET_SHUFFLE = "SET_SHUFFLE";
+    public final static String SET_KEY = "SET_KEY";
+    public final static String SET_SCALE = "SET_SCALE";
 
     final static String SET_PART_TRACK_VALUE = "SET_PART_TRACK_VALUE";
     final static String SET_PART_LIVE_START = "SET_PART_LIVE_START";
@@ -125,6 +129,21 @@ class CommandProcessor extends BluetoothDataCallback {
                     mJam.setSubbeatLength(Integer.parseInt(value), getAddress());
                 }
                 return;
+            case SET_BEATS:
+                if (mSync) {
+                    mJam.setBeats(Integer.parseInt(value), getAddress());
+                }
+                return;
+            case SET_MEASURES:
+                if (mSync) {
+                    mJam.setMeasures(Integer.parseInt(value), getAddress());
+                }
+                return;
+            case SET_SHUFFLE:
+                if (mSync) {
+                    mJam.setShuffle(Float.parseFloat(value), getAddress());
+                }
+                return;
             case SET_KEY:
                 if (mSync) {
                     mJam.setKey(Integer.parseInt(value), getAddress());
@@ -159,6 +178,11 @@ class CommandProcessor extends BluetoothDataCallback {
             case SET_PART_LIVE_END:
                 if (mSync) {
                     onPartLiveEnd(value);
+                }
+                return;
+            case SET_CHORDS:
+                if (mSync) {
+                    onChordsChange(value);
                 }
                 return;
 
@@ -612,5 +636,14 @@ class CommandProcessor extends BluetoothDataCallback {
             scale[i] = Integer.parseInt(ints[i]);
         }
         mJam.setScale(scale, getAddress());
+    }
+
+    private void onChordsChange(String value) {
+        String[] valueSplit = value.split(",");
+        int[] chords = new int[valueSplit.length];
+        for (int i = 0; i < valueSplit.length; i++) {
+            chords[i] = Integer.parseInt(valueSplit[i]);
+        }
+        mJam.setProgression(chords, getAddress());
     }
 }

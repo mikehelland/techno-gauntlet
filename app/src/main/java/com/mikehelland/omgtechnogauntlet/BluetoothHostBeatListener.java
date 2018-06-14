@@ -1,10 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
-import com.mikehelland.omgtechnogauntlet.jam.JamPart;
-import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnBeatChangeListener;
-import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 
 /**
  * Created by m on 4/12/18.
@@ -23,4 +20,23 @@ public class BluetoothHostBeatListener extends OnBeatChangeListener {
     public void onSubbeatLengthChange(int length, String source) {
         bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_SUBBEATLENGTH,
                 Integer.toString(length), source);
-    }}
+    }
+
+    @Override
+    public void onBeatsChange(int length, String source) {
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_BEATS,
+                Integer.toString(length), source);
+    }
+
+    @Override
+    public void onMeasuresChange(int length, String source) {
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_MEASURES,
+                Integer.toString(length), source);
+    }
+
+    @Override
+    public void onShuffleChange(float length, String source) {
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_SHUFFLE,
+                Float.toString(length), source);
+    }
+}

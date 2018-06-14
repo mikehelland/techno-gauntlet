@@ -76,8 +76,10 @@ public class BluetoothRemoteJamListener extends OnJamChangeListener {
     }
 
     @Override
-    public void onChordProgressionChange(int[] chords) {
-
+    public void onChordProgressionChange(int[] chords, String source) {
+        if (source == null) {
+            RemoteControlBluetoothHelper.setChords(connection, chords);
+        }
     }
 
     @Override

@@ -6,7 +6,7 @@ package com.mikehelland.omgtechnogauntlet.jam;
 
 public abstract class OnJamChangeListener {
 
-    public abstract void onChordProgressionChange(int[] chords);
+    public abstract void onChordProgressionChange(int[] chords, String source);
     public abstract void onNewPart(JamPart part);
 
     public abstract void onPlay(String source);

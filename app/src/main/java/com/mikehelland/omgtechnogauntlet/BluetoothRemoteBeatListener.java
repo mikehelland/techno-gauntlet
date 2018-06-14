@@ -1,10 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
-import com.mikehelland.omgtechnogauntlet.jam.JamPart;
-import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnBeatChangeListener;
-import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 
 /**
  * Created by m on 4/12/18.
@@ -21,6 +18,33 @@ public class BluetoothRemoteBeatListener extends OnBeatChangeListener {
 
     @Override
     public void onSubbeatLengthChange(int length, String source) {
+        if (source != null)
+            return;
+
         RemoteControlBluetoothHelper.sendNewSubbeatLength(connection, length);
+    }
+
+    @Override
+    public void onBeatsChange(int beats, String source) {
+        if (source != null)
+            return;
+
+        RemoteControlBluetoothHelper.sendNewBeats(connection, beats);
+    }
+
+    @Override
+    public void onMeasuresChange(int measures, String source) {
+        if (source != null)
+            return;
+
+        RemoteControlBluetoothHelper.sendNewMeasures(connection, measures);
+    }
+
+    @Override
+    public void onShuffleChange(float shuffle, String source) {
+        if (source != null)
+            return;
+
+        RemoteControlBluetoothHelper.sendNewShuffle(connection, shuffle);
     }
 }

@@ -9,6 +9,9 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 
 /**
@@ -96,11 +99,30 @@ public class ChordsFragment extends OMGFragment {
         mChordsView.setJam(getJam());
 
         getJam().addOnSubbeatListener(onSubbeatListener);
+        getJam().addOnJamChangeListener(onJamChangeListener);
     }
+
+    private OnJamChangeListener onJamChangeListener = new OnJamChangeListener() {
+        @Override
+        public void onChordProgressionChange(int[] chords, String source) {
+            mChordsView.postInvalidate();
+        }
+
+        @Override public void onNewPart(JamPart part) { }
+        @Override public void onPlay(String source) { }
+        @Override public void onStop(String source) { }
+        @Override public void onNewLoop(String source) { }
+        @Override public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) { }
+        @Override public void onPartStartLiveNotes(JamPart jamPart, Note note, int autoBeat, String source) { }
+        @Override public void onPartUpdateLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source) { }
+        @Override public void onPartRemoveLiveNotes(JamPart jamPart, Note note, Note[] notes, String source) { }
+        @Override public void onPartEndLiveNotes(JamPart jamPart, String source) { }
+    };
 
     @Override
     public void onPause() {
         super.onPause();
         getJam().removeOnSubbeatListener(onSubbeatListener);
+        getJam().removeOnJamChangeListener(onJamChangeListener);
     }
 }

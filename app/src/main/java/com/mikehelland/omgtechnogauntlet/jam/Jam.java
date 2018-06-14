@@ -2,7 +2,6 @@ package com.mikehelland.omgtechnogauntlet.jam;
 
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Jam {
@@ -16,10 +15,10 @@ public class Jam {
     private Player player;
     private SoundManager soundManager;
 
-    private ArrayList<OnJamChangeListener> onJamChangeListeners = new ArrayList<>();
-    private ArrayList<OnKeyChangeListener> onKeyChangeListeners = new ArrayList<>();
-    private ArrayList<OnBeatChangeListener> onBeatChangeListeners = new ArrayList<>();
-    private ArrayList<OnMixerChangeListener> onMixerChangeListeners = new ArrayList<>();
+    private CopyOnWriteArrayList<OnJamChangeListener> onJamChangeListeners = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<OnKeyChangeListener> onKeyChangeListeners = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<OnBeatChangeListener> onBeatChangeListeners = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<OnMixerChangeListener> onMixerChangeListeners = new CopyOnWriteArrayList<>();
     private OnGetSoundSetListener onGetSoundSetListener;
 
     private String keyName = "";
@@ -36,6 +35,7 @@ public class Jam {
         localPlayBack = false;
         return loadJSON(json);
     }
+
     public String loadFromJSON(String json) {
 
         String errorMessage = loadJSON(json);
@@ -45,7 +45,7 @@ public class Jam {
 
         updateKeyName();
 
-        for (Section section: currentSong.sections) {
+        for (Section section : currentSong.sections) {
             for (Part part : section.parts) {
                 prepareSoundSetForPart(part);
             }
@@ -57,7 +57,7 @@ public class Jam {
             public void run() {
                 soundManager.loadSounds();
 
-                for (Section section: currentSong.sections) {
+                for (Section section : currentSong.sections) {
                     for (Part part : section.parts) {
                         setPoolIdsForPart(part);
                     }
@@ -101,6 +101,7 @@ public class Jam {
     public int getCurrentSubbeat() {
         return player.getCurrentSubbeat();
     }
+
     public boolean isPlaying() {
         return player.isPlaying();
     }
@@ -108,6 +109,7 @@ public class Jam {
     public void play() {
         play(null);
     }
+
     public void play(String source) {
         player.play(currentSection, jamParts);
 
@@ -119,6 +121,7 @@ public class Jam {
     public void stop() {
         stop(null);
     }
+
     public void stop(String source) {
         if (player.isPlaying()) {
             player.stop();
@@ -136,7 +139,6 @@ public class Jam {
     }
 
 
-
     // BEAT functions //
 
     public int getSubbeatLength() {
@@ -152,24 +154,50 @@ public class Jam {
     }
 
     public void setBeats(int beats) {
-        currentSection.beatParameters.beats = beats;
+        setBeats(beats, null);
     }
+
     public void setMeasures(int measures) {
-        currentSection.beatParameters.measures = measures;
+        setMeasures(measures, null);
     }
+
     public void setShuffle(float shuffle) {
+        setShuffle(shuffle, null);
+    }
+
+    public void setBeats(int beats, String source) {
+        currentSection.beatParameters.beats = beats;
+        for (OnBeatChangeListener listener : onBeatChangeListeners) {
+            listener.onBeatsChange(beats, source);
+        }
+    }
+
+    public void setMeasures(int measures, String source) {
+        currentSection.beatParameters.measures = measures;
+        for (OnBeatChangeListener listener : onBeatChangeListeners) {
+            listener.onMeasuresChange(measures, source);
+        }
+    }
+
+    public void setShuffle(float shuffle, String source) {
         currentSection.beatParameters.shuffle = shuffle;
+        for (OnBeatChangeListener listener : onBeatChangeListeners) {
+            listener.onShuffleChange(shuffle, source);
+        }
     }
 
     public int getSubbeats() {
         return currentSection.beatParameters.subbeats;
     }
+
     public int getBeats() {
         return currentSection.beatParameters.beats;
     }
+
     public int getMeasures() {
         return currentSection.beatParameters.measures;
     }
+
     public float getShuffle() {
         return currentSection.beatParameters.shuffle;
     }
@@ -179,14 +207,17 @@ public class Jam {
     public int getTotalBeats() {
         return currentSection.beatParameters.beats * currentSection.beatParameters.measures;
     }
+
     public int getTotalSubbeats() {
         return currentSection.beatParameters.subbeats * currentSection.beatParameters.beats * currentSection.beatParameters.measures;
     }
+
     public int getBPM() {
         return 60000 / (currentSection.beatParameters.subbeatLength * currentSection.beatParameters.subbeats);
     }
+
     public void setBPM(float bpm) {
-        setSubbeatLength((int)((60000 / bpm) / currentSection.beatParameters.subbeats), null);
+        setSubbeatLength((int) ((60000 / bpm) / currentSection.beatParameters.subbeats), null);
     }
 
 
@@ -200,6 +231,7 @@ public class Jam {
             listener.onScaleChange(scale, sourceDevice);
         }
     }
+
     public void setKey(int key, String sourceDevice) {
         currentSection.keyParameters.rootNote = key;
         updateKeyName();
@@ -212,6 +244,7 @@ public class Jam {
     public int[] getScale() {
         return currentSection.keyParameters.scale;
     }
+
     public int getKey() {
         return currentSection.keyParameters.rootNote;
     }
@@ -281,9 +314,11 @@ public class Jam {
     public boolean getPartMute(JamPart jamPart) {
         return jamPart.part.audioParameters.mute;
     }
+
     public float getPartVolume(JamPart jamPart) {
         return jamPart.part.audioParameters.volume;
     }
+
     public float getPartPan(JamPart jamPart) {
         return jamPart.part.audioParameters.pan;
     }
@@ -297,9 +332,16 @@ public class Jam {
     }
 
     public void setProgression(int[] progression) {
+        setProgression(progression, null);
+    }
+    public void setProgression(int[] progression, String source) {
         currentSection.progression = progression;
         if (progression.length == 1) {
             updateNotesWithChord(currentSection.progression[0]);
+        }
+
+        for (OnJamChangeListener listener : onJamChangeListeners) {
+            listener.onChordProgressionChange(progression, source);
         }
     }
 

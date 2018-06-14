@@ -9,15 +9,32 @@ import com.mikehelland.omgtechnogauntlet.jam.Note;
 
 class RemoteControlBluetoothHelper {
     static void sendNewSubbeatLength(BluetoothConnection connection, int subbeatLength) {
-        connection.sendNameValuePair("SET_SUBBEATLENGTH", "" + subbeatLength);
+        connection.sendNameValuePair(CommandProcessor.SET_SUBBEATLENGTH, "" + subbeatLength);
     }
+    static void sendNewBeats(BluetoothConnection connection, int beats) {
+        connection.sendNameValuePair(CommandProcessor.SET_BEATS, "" + beats);
+    }
+    static void sendNewMeasures(BluetoothConnection connection, int measures) {
+        connection.sendNameValuePair(CommandProcessor.SET_MEASURES, "" + measures);
+    }
+    static void sendNewShuffle(BluetoothConnection connection, float shuffle) {
+        connection.sendNameValuePair(CommandProcessor.SET_SHUFFLE, "" + shuffle);
+    }
+
 
     static void setChannel(BluetoothConnection connection, String channelID) {
         connection.sendNameValuePair("SET_CHANNEL",  channelID );
     }
 
-    static void setChord(BluetoothConnection connection, int value) {
-        connection.sendNameValuePair("SET_CHORD", value + "");
+    static void setChords(BluetoothConnection connection, int[] chords) {
+        String output = "";
+        for (int i = 0; i < chords.length; i++) {
+            if (i > 0) {
+                output += ",";
+            }
+            output += chords[i];
+        }
+        connection.sendNameValuePair(CommandProcessor.SET_CHORDS, output);
     }
     static void setKey(BluetoothConnection connection, int value) {
         connection.sendNameValuePair("SET_KEY", value + "");

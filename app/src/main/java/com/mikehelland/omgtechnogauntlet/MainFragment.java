@@ -378,6 +378,10 @@ public class MainFragment extends OMGFragment {
                     }
                 });
             }
+
+            @Override public void onBeatsChange(int length, String source) { }
+            @Override public void onMeasuresChange(int length, String source) { }
+            @Override public void onShuffleChange(float length, String source) { }
         };
 
         mKeyListener = new OnKeyChangeListener() {
@@ -408,7 +412,7 @@ public class MainFragment extends OMGFragment {
         mJamListener = new OnJamChangeListener() {
 
             @Override
-            public void onChordProgressionChange(int[] chords) {
+            public void onChordProgressionChange(int[] chords, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
                 activity.runOnUiThread(new Runnable() {
                         @Override

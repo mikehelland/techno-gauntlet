@@ -8,10 +8,7 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.mikehelland.omgtechnogauntlet.jam.JamPart;
-import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnBeatChangeListener;
-import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 
 /**
  * User: m
@@ -171,17 +168,36 @@ public class BeatsFragment extends OMGFragment {
     private void setupListener() {
         mJamListener = new OnBeatChangeListener() {
             @Override public void onSubbeatLengthChange(int length, String source) {
-                FragmentActivity activity = getActivity(); if (activity == null) return;
+                onChange();
+            }
 
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        refresh();
-                    }
-                });
+            @Override
+            public void onBeatsChange(int length, String source) {
+                onChange();
+            }
+
+            @Override
+            public void onMeasuresChange(int length, String source) {
+                onChange();
+            }
+
+            @Override
+            public void onShuffleChange(float length, String source) {
+                onChange();
             }
         };
         getJam().addOnBeatChangeListener(mJamListener);
+    }
+
+    private void onChange() {
+        FragmentActivity activity = getActivity(); if (activity == null) return;
+
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                refresh();
+            }
+        });
     }
 
     @Override

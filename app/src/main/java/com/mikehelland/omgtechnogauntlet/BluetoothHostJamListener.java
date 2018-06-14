@@ -19,8 +19,15 @@ public class BluetoothHostJamListener extends OnJamChangeListener {
     }
 
     @Override
-    public void onChordProgressionChange(int[] chords) {
-
+    public void onChordProgressionChange(int[] chords, String source) {
+        String output = "";
+        for (int i = 0; i < chords.length; i++) {
+            if (i > 0) {
+                output += ",";
+            }
+            output += chords[i];
+        }
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.SET_CHORDS, output, source);
     }
 
     @Override
