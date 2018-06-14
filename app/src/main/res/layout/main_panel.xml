@@ -23,7 +23,9 @@
         android:text="M"
         android:layout_alignParentRight="true"
         android:textColor="#FFFFFFFF"
-        android:background="#8800FF00"
+        android:background="@drawable/mute_button_green"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
         />
 
     <Button
@@ -33,9 +35,9 @@
             android:layout_toLeftOf="@id/mute_button"
             android:text="Name"
             android:id="@+id/track_button"
-            android:background="#888888"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
+            android:background="@drawable/part_button"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
             />
 
 </RelativeLayout>

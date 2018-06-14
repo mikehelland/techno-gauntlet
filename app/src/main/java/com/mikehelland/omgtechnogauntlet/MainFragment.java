@@ -2,7 +2,6 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,9 +43,6 @@ public class MainFragment extends OMGFragment {
     private HashMap<JamPart, View> channelViewMap = new HashMap<>();
 
     private boolean mLeavingNow = false;
-
-    private int mColorRed = Color.argb(128, 255, 0, 0);
-    private int mColorGreen = Color.argb(128, 0, 255, 0);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,11 +115,12 @@ public class MainFragment extends OMGFragment {
             public void onClick(View view) {
                 boolean newMute = !part.getMute();
                 getJam().setPartMute(part, newMute, null);
-                muteButton.setBackgroundColor(newMute ? mColorRed : mColorGreen);
+                muteButton.setBackgroundResource(newMute ?
+                        R.drawable.mute_button_red : R.drawable.mute_button_green);
             }
         });
-        muteButton.setBackgroundColor(!part.getMute() ?
-                mColorGreen : mColorRed);
+        muteButton.setBackgroundResource(part.getMute() ?
+                R.drawable.mute_button_red : R.drawable.mute_button_green);
         muteButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -451,8 +448,8 @@ public class MainFragment extends OMGFragment {
                     public void run() {
                         View panel = channelViewMap.get(part);
                         if (panel != null)
-                            panel.findViewById(R.id.mute_button).setBackgroundColor(
-                                    mute ? mColorRed : mColorGreen);
+                            panel.findViewById(R.id.mute_button).setBackgroundResource(!part.getMute() ?
+                                            R.drawable.mute_button_green : R.drawable.mute_button_red);
                     }
                 });
             }
