@@ -29,24 +29,6 @@ public class BluetoothHostJamListener extends OnJamChangeListener {
     }
 
     @Override
-    public void onPartEnabledChanged(JamPart part, boolean enabled, String source) {
-        bluetoothManager.sendCommandToDevices(
-                CommandHelper.getPartEnabledCommand(part.getId(), enabled), source);
-    }
-
-    @Override
-    public void onPartVolumeChanged(JamPart part, float volume, String source) {
-        bluetoothManager.sendCommandToDevices(
-                CommandHelper.getPartVolumeCommand(part.getId(), volume), source);
-    }
-
-    @Override
-    public void onPartPanChanged(JamPart part, float pan, String source) {
-        bluetoothManager.sendCommandToDevices(
-                CommandHelper.getPartPanCommand(part.getId(), pan), source);
-    }
-
-    @Override
     public void onPlay(String source) {
         bluetoothManager.sendCommandToDevices(CommandProcessor.SET_PLAY, source);
     }

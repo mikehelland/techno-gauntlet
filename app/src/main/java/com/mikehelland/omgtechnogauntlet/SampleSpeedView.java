@@ -42,7 +42,7 @@ public class SampleSpeedView extends View {
     private float controlMargin = 5;
     private float speedWidth = -1;
 
-    private float speed = 1;
+    //private float speed = 1;
     private float lastSpeed = 1;
 
     public SampleSpeedView(Context context, AttributeSet attrs) {
@@ -86,6 +86,7 @@ public class SampleSpeedView extends View {
         }
 
         float height2 = height / 2;
+        float speed = controller.onGetLevel();
 
         canvas.drawRect(0, 0, resetButtonWidth, height, paintOrange);
         canvas.drawText(" Reset ", 0, height2, paintText);
@@ -105,6 +106,7 @@ public class SampleSpeedView extends View {
 
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
+        float speed = controller.onGetLevel();
 
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
@@ -118,6 +120,9 @@ public class SampleSpeedView extends View {
                     speed = 1;
                 }
                 touchingArea = TOUCHING_AREA_RESET;
+                if (controller != null) {
+                    controller.onLevelChange(speed);
+                }
             }
             else if (x <= speedStart + speedWidth) {
                 touchingArea = TOUCHING_AREA_SPEED;
@@ -140,9 +145,9 @@ public class SampleSpeedView extends View {
         return true;
     }
 
-    public void setJam(String name, float level, LevelViewController controller) {
+    public void setJam(String name, LevelViewController controller) {
         this.controller = controller;
-        speed = level;
+
 
         setPartName(name);
 
@@ -150,15 +155,15 @@ public class SampleSpeedView extends View {
 
     private void performTouch(float x) {
         if (touchingArea == TOUCHING_AREA_SPEED) {
-            speed = Math.max(0, Math.min(2.0f, ((x - speedStart) / speedWidth) * 2));
-        }
-
-        if (controller != null) {
-            controller.onLevelChange(speed);
+            float speed = Math.max(0, Math.min(2.0f, ((x - speedStart) / speedWidth) * 2));
+            if (controller != null) {
+                controller.onLevelChange(speed);
+            }
         }
     }
 
     abstract static class LevelViewController {
         abstract void onLevelChange(float level);
+        abstract float onGetLevel();
     }
 }

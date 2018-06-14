@@ -19,6 +19,7 @@ public class Jam {
     private ArrayList<OnJamChangeListener> onJamChangeListeners = new ArrayList<>();
     private ArrayList<OnKeyChangeListener> onKeyChangeListeners = new ArrayList<>();
     private ArrayList<OnBeatChangeListener> onBeatChangeListeners = new ArrayList<>();
+    private ArrayList<OnMixerChangeListener> onMixerChangeListeners = new ArrayList<>();
     private OnGetSoundSetListener onGetSoundSetListener;
 
     private String keyName = "";
@@ -83,6 +84,9 @@ public class Jam {
         return null; //all seems good, no error message and the jam is loading
     }
 
+    public String getData() {
+        return SectionToJSON.getData(currentSection);
+    }
 
     public String getTags() {
         return currentSection.tags;
@@ -92,133 +96,13 @@ public class Jam {
         currentSection.tags = tags;
     }
 
-    public int getSubbeatLength() {
-        return currentSection.beatParameters.subbeatLength;
-    }
-
-    public void setSubbeatLength(int subbeatLength, String sourceDevice) {
-        currentSection.beatParameters.subbeatLength = subbeatLength;
-
-        for (OnBeatChangeListener listener : onBeatChangeListeners) {
-            listener.onSubbeatLengthChange(subbeatLength, sourceDevice);
-        }
-    }
-
-    public int getSubbeats() {
-        return currentSection.beatParameters.subbeats;
-    }
-
-    public void setSubbeats(int subbeats) {
-        currentSection.beatParameters.subbeats = subbeats;
-    }
-
-    public int getBeats() {
-        return currentSection.beatParameters.beats;
-    }
-
-    public void setBeats(int beats) {
-        currentSection.beatParameters.beats = beats;
-    }
-
-    public int getMeasures() {
-        return currentSection.beatParameters.measures;
-    }
-
-    public void setMeasures(int measures) {
-        currentSection.beatParameters.measures = measures;
-    }
-
-    public float getShuffle() {
-        return currentSection.beatParameters.shuffle;
-    }
-
-    public void setShuffle(float shuffle) {
-        currentSection.beatParameters.shuffle = shuffle;
-    }
-
-    public int[] getScale() {
-        return currentSection.keyParameters.scale;
-    }
-
-    public void setScale(int[] scale, String sourceDevice) {
-        currentSection.keyParameters.scale = scale;
-        updateKeyName();
-
-        for (OnKeyChangeListener listener : onKeyChangeListeners) {
-            listener.onScaleChange(scale, sourceDevice);
-        }
-    }
-
-    public int getKey() {
-        return currentSection.keyParameters.rootNote;
-    }
-
-    public void setKey(int key, String sourceDevice) {
-        currentSection.keyParameters.rootNote = key;
-        updateKeyName();
-
-        for (OnKeyChangeListener listener : onKeyChangeListeners) {
-            listener.onKeyChange(key, sourceDevice);
-        }
-    }
-
-    public int[] getProgression() {
-        return currentSection.progression;
-    }
-
-    public void setProgression(int[] progression) {
-        currentSection.progression = progression;
-        if (progression.length == 1) {
-            updateNotesWithChord(currentSection.progression[0]);
-        }
-    }
-
-    private void updateNotesWithChord(int chord) {
-        for (Part part : currentSection.parts) {
-            if (part.soundSet.isChromatic()) {
-                KeyHelper.applyScaleToPart(part, chord, currentSection.keyParameters);
-            }
-        }
-    }
-
-    public CopyOnWriteArrayList<JamPart> getParts() {
-        //todo currentsection jamParts!?
-        return jamParts;
-    }
-
-    public JamPart getPart(String id) {
-        for (JamPart jamPart : jamParts) {
-            if (jamPart.getId().equals(id)) {
-                return jamPart;
-            }
-        }
-        return null;
-    }
-
+    // Main Controls //
 
     public int getCurrentSubbeat() {
         return player.getCurrentSubbeat();
     }
     public boolean isPlaying() {
         return player.isPlaying();
-    }
-
-    //todo set totalSubbeats in the Jam instead of calculating it everytime
-    // a couple helper functions
-    public int getTotalBeats() {
-        return currentSection.beatParameters.beats * currentSection.beatParameters.measures;
-    }
-    public int getTotalSubbeats() {
-        return currentSection.beatParameters.subbeats * currentSection.beatParameters.beats * currentSection.beatParameters.measures;
-    }
-    public String getKeyName() {
-        return keyName;
-    }
-    public int getBPM() {
-        return 60000 / (currentSection.beatParameters.subbeatLength * currentSection.beatParameters.subbeats);
-    }
-    public void setBPM(float bpm) {
-        setSubbeatLength((int)((60000 / bpm) / currentSection.beatParameters.subbeats), null);
     }
 
     public void play() {
@@ -251,8 +135,103 @@ public class Jam {
         //todo unref everything here
     }
 
+
+
+    // BEAT functions //
+
+    public int getSubbeatLength() {
+        return currentSection.beatParameters.subbeatLength;
+    }
+
+    public void setSubbeatLength(int subbeatLength, String sourceDevice) {
+        currentSection.beatParameters.subbeatLength = subbeatLength;
+
+        for (OnBeatChangeListener listener : onBeatChangeListeners) {
+            listener.onSubbeatLengthChange(subbeatLength, sourceDevice);
+        }
+    }
+
+    public void setBeats(int beats) {
+        currentSection.beatParameters.beats = beats;
+    }
+    public void setMeasures(int measures) {
+        currentSection.beatParameters.measures = measures;
+    }
+    public void setShuffle(float shuffle) {
+        currentSection.beatParameters.shuffle = shuffle;
+    }
+
+    public int getSubbeats() {
+        return currentSection.beatParameters.subbeats;
+    }
+    public int getBeats() {
+        return currentSection.beatParameters.beats;
+    }
+    public int getMeasures() {
+        return currentSection.beatParameters.measures;
+    }
+    public float getShuffle() {
+        return currentSection.beatParameters.shuffle;
+    }
+
+    //todo set totalSubbeats in the Jam instead of calculating it everytime
+    // a couple helper functions
+    public int getTotalBeats() {
+        return currentSection.beatParameters.beats * currentSection.beatParameters.measures;
+    }
+    public int getTotalSubbeats() {
+        return currentSection.beatParameters.subbeats * currentSection.beatParameters.beats * currentSection.beatParameters.measures;
+    }
+    public int getBPM() {
+        return 60000 / (currentSection.beatParameters.subbeatLength * currentSection.beatParameters.subbeats);
+    }
+    public void setBPM(float bpm) {
+        setSubbeatLength((int)((60000 / bpm) / currentSection.beatParameters.subbeats), null);
+    }
+
+
+    // KEY FUNCTIONS //
+
+    public void setScale(int[] scale, String sourceDevice) {
+        currentSection.keyParameters.scale = scale;
+        updateKeyName();
+
+        for (OnKeyChangeListener listener : onKeyChangeListeners) {
+            listener.onScaleChange(scale, sourceDevice);
+        }
+    }
+    public void setKey(int key, String sourceDevice) {
+        currentSection.keyParameters.rootNote = key;
+        updateKeyName();
+
+        for (OnKeyChangeListener listener : onKeyChangeListeners) {
+            listener.onKeyChange(key, sourceDevice);
+        }
+    }
+
+    public int[] getScale() {
+        return currentSection.keyParameters.scale;
+    }
+    public int getKey() {
+        return currentSection.keyParameters.rootNote;
+    }
+
+    public String getKeyName() {
+        return keyName;
+    }
+
+    private void updateKeyName() {
+        keyName = KeyHelper.getKeyName(currentSection.keyParameters.rootNote, currentSection.keyParameters.scale);
+    }
+
+    // MIXER functions //
+
     public void setPartMute(JamPart jamPart, boolean mute, String device) {
         jamPart.part.audioParameters.mute = mute;
+
+        for (OnMixerChangeListener listener : onMixerChangeListeners) {
+            listener.onPartMuteChanged(jamPart, mute, device);
+        }
     }
 
     public void setPartVolume(JamPart jamPart, float volume, String device) {
@@ -260,41 +239,26 @@ public class Jam {
         if (jamPart.getSoundSet().isOscillator()) {
             jamPart.getSoundSet().getOscillator().ugEnvA.setGain(volume);
         }
+
+        for (OnMixerChangeListener listener : onMixerChangeListeners) {
+            listener.onPartVolumeChanged(jamPart, volume, device);
+        }
     }
 
     public void setPartPan(JamPart jamPart, float pan, String device) {
         jamPart.part.audioParameters.pan = pan;
+
+        for (OnMixerChangeListener listener : onMixerChangeListeners) {
+            listener.onPartPanChanged(jamPart, pan, device);
+        }
     }
 
-    public boolean getPartMute(JamPart jamPart) {
-        return jamPart.part.audioParameters.mute;
-    }
-    public float getPartVolume(JamPart jamPart) {
-        return jamPart.part.audioParameters.volume;
-    }
-    public float getPartPan(JamPart jamPart) {
-        return jamPart.part.audioParameters.pan;
-    }
-
-    public String getData() {
-        return SectionToJSON.getData(currentSection);
-    }
-
-    public void removePart(JamPart jamPart) {
-
-    }
-
-    public void clearPart(JamPart jamPart) {
-        jamPart.clear();
-
-    }
-
-    public void copyPart(JamPart jamPart) {
-
-    }
-
-    public void setPartSpeed(JamPart jamPart, float speed, String source) {
+    public void setPartWarp(JamPart jamPart, float speed, String source) {
         jamPart.part.audioParameters.speed = speed;
+
+        for (OnMixerChangeListener listener : onMixerChangeListeners) {
+            listener.onPartWarpChanged(jamPart, speed, source);
+        }
     }
 
     public void setPartTrackMute(JamPart jamPart, SequencerTrack track, boolean mute) {
@@ -313,6 +277,79 @@ public class Jam {
         track.audioParameters.speed = warp;
     }
 
+
+    public boolean getPartMute(JamPart jamPart) {
+        return jamPart.part.audioParameters.mute;
+    }
+    public float getPartVolume(JamPart jamPart) {
+        return jamPart.part.audioParameters.volume;
+    }
+    public float getPartPan(JamPart jamPart) {
+        return jamPart.part.audioParameters.pan;
+    }
+
+
+    // CHORD PROGRESSION stuff
+
+
+    public int[] getProgression() {
+        return currentSection.progression;
+    }
+
+    public void setProgression(int[] progression) {
+        currentSection.progression = progression;
+        if (progression.length == 1) {
+            updateNotesWithChord(currentSection.progression[0]);
+        }
+    }
+
+    private void updateNotesWithChord(int chord) {
+        for (Part part : currentSection.parts) {
+            if (part.soundSet.isChromatic()) {
+                KeyHelper.applyScaleToPart(part, chord, currentSection.keyParameters);
+            }
+        }
+    }
+
+
+    public int getChordInProgression() {
+        return player.getChordInProgression();
+    }
+
+
+
+
+    // PART funcitons //
+
+    public CopyOnWriteArrayList<JamPart> getParts() {
+        //todo currentsection jamParts!?
+        return jamParts;
+    }
+
+    public JamPart getPart(String id) {
+        for (JamPart jamPart : jamParts) {
+            if (jamPart.getId().equals(id)) {
+                return jamPart;
+            }
+        }
+        return null;
+    }
+
+    public void removePart(JamPart jamPart) {
+
+    }
+
+    public void clearPart(JamPart jamPart) {
+        jamPart.clear();
+    }
+
+    public void copyPart(JamPart jamPart) {
+
+    }
+
+
+    // ADD and REMOVE LISTENER FUNCTIONS
+
     public void addOnSubbeatListener(OnSubbeatListener listener) {
         player.onSubbeatListeners.add(listener);
     }
@@ -330,6 +367,9 @@ public class Jam {
     public void addOnKeyChangeListener(OnKeyChangeListener listener) {
         onKeyChangeListeners.add(listener);
     }
+    public void addOnMixerChangeListener(OnMixerChangeListener listener) {
+        onMixerChangeListeners.add(listener);
+    }
 
     public void removeOnJamChangeListener(OnJamChangeListener listener) {
         onJamChangeListeners.remove(listener);
@@ -340,10 +380,16 @@ public class Jam {
     public void removeOnKeyChangeListener(OnKeyChangeListener listener) {
         onKeyChangeListeners.remove(listener);
     }
+    public void removeOnMixerChangeListener(OnMixerChangeListener listener) {
+        onMixerChangeListeners.remove(listener);
+    }
 
     public boolean isReady() {
         return currentSection != null;
     }
+
+
+    // LIVE NOTE FUNCTIONS //
 
     public void startPartLiveNotes(JamPart jamPart, Note  note, int autoBeat) {
         startPartLiveNotes(jamPart, note, autoBeat, null);
@@ -430,6 +476,8 @@ public class Jam {
         }
     }
 
+
+
     //I'm not too sure these should be here, but where?
     private void prepareSoundSetForPart(Part part) {
         //todo maybe an isloaded instead of isvalid here
@@ -465,13 +513,6 @@ public class Jam {
         }
     }
 
-    private void updateKeyName() {
-        keyName = KeyHelper.getKeyName(currentSection.keyParameters.rootNote, currentSection.keyParameters.scale);
-    }
-
-    public int getChordInProgression() {
-        return player.getChordInProgression();
-    }
 
     public void newPart(SoundSet soundSet) {
         Part part = new Part(currentSection);

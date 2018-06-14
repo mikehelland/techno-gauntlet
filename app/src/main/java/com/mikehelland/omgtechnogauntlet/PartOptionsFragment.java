@@ -105,7 +105,7 @@ public class PartOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 resetButton.setText("100%");
-                getJam().setPartSpeed(part, 1, null);
+                getJam().setPartWarp(part, 1, null);
             }
         });
 
@@ -122,7 +122,7 @@ public class PartOptionsFragment extends OMGFragment {
                     float newSpeed = i / 100.0f;
                     resetButton.setText(Math.round(newSpeed * 100) + "% - Press to Reset");
                     if (newSpeed > 0) {
-                        getJam().setPartSpeed(part, newSpeed, null);
+                        getJam().setPartWarp(part, newSpeed, null);
                     }
                 }
             }

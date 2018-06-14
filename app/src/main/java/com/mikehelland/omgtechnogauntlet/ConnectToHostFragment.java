@@ -144,6 +144,7 @@ public class ConnectToHostFragment extends OMGFragment {
                 jam.addOnJamChangeListener(new BluetoothRemoteJamListener(connection));
                 jam.addOnKeyChangeListener(new BluetoothRemoteKeyListener(connection));
                 jam.addOnBeatChangeListener(new BluetoothRemoteBeatListener(connection));
+                jam.addOnMixerChangeListener(new BluetoothRemoteMixerListener(connection));
 
 
                 activity.runOnUiThread(new Runnable() {

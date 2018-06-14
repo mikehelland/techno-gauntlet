@@ -7,7 +7,6 @@ import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothDataCallback;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
-import com.mikehelland.omgtechnogauntlet.jam.KeyHelper;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
@@ -35,6 +34,15 @@ class CommandProcessor extends BluetoothDataCallback {
     final static String SET_PART_LIVE_UPDATE = "SET_PART_LIVE_UPDATE";
     final static String SET_PART_LIVE_REMOVE = "SET_PART_LIVE_REMOVE";
     final static String SET_PART_LIVE_END = "SET_PART_LIVE_END";
+
+    final static String SET_PART_PAN = "SET_PART_PAN";
+    final static String SET_PART_MUTE = "SET_PART_MUTE";
+    final static String SET_PART_WARP = "SET_PART_WARP";
+    final static String SET_PART_VOLUME = "SET_PART_VOLUME";
+    final static String SET_PART_TRACK_PAN = "SET_PART_TRACK_PAN";
+    final static String SET_PART_TRACK_MUTE = "SET_PART_TRACK_MUTE";
+    final static String SET_PART_TRACK_WARP = "SET_PART_TRACK_vWARP";
+    final static String SET_PART_TRACK_VOLUME = "SET_PART_TRACK_VOLUME";
 
     private BluetoothConnection mConnection;
     private Jam mJam;
@@ -169,15 +177,20 @@ class CommandProcessor extends BluetoothDataCallback {
                 int[] chords = {chordI};
                 mJam.setProgression(chords);
                 return;
-            case "SET_CHANNEL_VOLUME":
+
+            case SET_PART_VOLUME:
                 setPartVolume(value);
                 return;
-            case "SET_CHANNEL_PAN":
+            case SET_PART_PAN:
                 setPartPan(value);
                 return;
-            case "SET_CHANNEL_ENABLED":
-                setPartEnabled(value);
+            case SET_PART_MUTE:
+                setPartMute(value);
                 return;
+            case SET_PART_WARP:
+                setPartWarp(value);
+                return;
+
             case "CLEAR_CHANNEL":
                 clearPart(value);
                 return;
@@ -427,9 +440,9 @@ class CommandProcessor extends BluetoothDataCallback {
     private void setPartVolume(String params) {
         try {
             String[] data = params.split(",");
-            float volume = Float.parseFloat(data[0]);
+            float volume = Float.parseFloat(data[1]);
 
-            //todo mJam.setPartVolume(data[1], volume, mConnection.getDevice().getAddress());
+            mJam.setPartVolume(mJam.getPart(data[0]), volume, getAddress());
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -438,20 +451,32 @@ class CommandProcessor extends BluetoothDataCallback {
     private void setPartPan(String params) {
         try {
             String[] data = params.split(",");
-            float pan = Float.parseFloat(data[0]);
+            float pan = Float.parseFloat(data[1]);
 
-            //todo mJam.setPartPan(data[1], pan, mConnection.getDevice().getAddress());
+            mJam.setPartPan(mJam.getPart(data[0]), pan, getAddress());
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
-    private void setPartEnabled(String params) {
+    private void setPartMute(String params) {
         try {
             String[] data = params.split(",");
-            boolean on = !data[0].equals("0");
+            boolean on = !data[1].equals("0");
 
-            //todo mJam.setPartEnabled(data[1], on, mConnection.getDevice().getAddress());
+            mJam.setPartMute(mJam.getPart(data[0]), on, getAddress());
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void setPartWarp(String params) {
+        try {
+            String[] data = params.split(",");
+            float speed = Float.parseFloat(data[1]);
+
+            mJam.setPartWarp(mJam.getPart(data[0]), speed, mConnection.getDevice().getAddress());
 
         }
         catch (Exception e) {

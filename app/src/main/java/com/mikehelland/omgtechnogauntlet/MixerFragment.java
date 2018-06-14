@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.OnMixerChangeListener;
 
 import java.util.HashMap;
 
@@ -15,7 +16,7 @@ public class MixerFragment extends OMGFragment {
 
     private HashMap<String, View> mPanels = new HashMap<>();
 
-    //private Jam.StateChangeCallback mCallback;
+    private OnMixerChangeListener onMixerChangeListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -27,37 +28,44 @@ public class MixerFragment extends OMGFragment {
         setupPanels(inflater);
 
 
-        /*mCallback = new Jam.StateChangeCallback() {
-            @Override void newState(String state, Object... args) {}
-            @Override void onSubbeatLengthChange(int length, String source) {}
-            @Override void onKeyChange(int key, String source) {}
-            @Override void onScaleChange(String scale, String source) {}
-            @Override void onChordProgressionChange(int[] chords) {}
-            @Override void onNewPart(Part channel) {}
-
+        onMixerChangeListener = new OnMixerChangeListener() {
             @Override
-            void onPartEnabledChanged(Part channel, boolean enabled, String source) {
-                View panel = mPanels.get(channel);
+            public void onPartMuteChanged(JamPart part, boolean enabled, String source) {
+                View panel = mPanels.get(part.getId());
                 if (panel != null)
                     panel.postInvalidate();
             }
 
             @Override
-            void onPartVolumeChanged(Part channel, float v, String source) {
-                View panel = mPanels.get(channel);
-                if (panel != null)
-                    panel.postInvalidate();
-            }
-            @Override
-            void onPartPanChanged(Part channel, float p, String source) {
-                View panel = mPanels.get(channel);
+            public void onPartVolumeChanged(JamPart part, float volume, String source) {
+                View panel = mPanels.get(part.getId());
                 if (panel != null)
                     panel.postInvalidate();
             }
 
+            @Override
+            public void onPartPanChanged(JamPart part, float pan, String source) {
+                View panel = mPanels.get(part.getId());
+                if (panel != null)
+                    panel.postInvalidate();
+            }
+
+            @Override public void onPartWarpChanged(JamPart part, float speed, String source) { }
+            @Override public void onPartTrackMuteChanged(JamPart part, int track, boolean enabled, String source) {
+
+            }
+            @Override public void onPartTrackVolumeChanged(JamPart part, int track, float volume, String source) {
+
+            }
+            @Override public void onPartTrackPanChanged(JamPart part, int track, float pan, String source) {
+
+            }
+            @Override public void onPartTrackWarpChanged(JamPart part, int track, float speed, String source) {
+
+            }
         };
-        mJam.addStateChangeListener(mCallback);
-        */
+
+        getJam().addOnMixerChangeListener(onMixerChangeListener);
 
         return mView;
     }
@@ -115,7 +123,7 @@ public class MixerFragment extends OMGFragment {
     @Override
     public void onPause() {
         super.onPause();
-        //mJam.removeStateChangeListener(mCallback);
+        getJam().removeOnMixerChangeListener(onMixerChangeListener);
     }
 
 }

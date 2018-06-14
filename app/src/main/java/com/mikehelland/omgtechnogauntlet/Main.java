@@ -158,6 +158,7 @@ public class Main extends FragmentActivity {
             jam.addOnJamChangeListener(new BluetoothHostJamListener(bluetoothManager));
             jam.addOnKeyChangeListener(new BluetoothHostKeyListener(bluetoothManager));
             jam.addOnBeatChangeListener(new BluetoothHostBeatListener(bluetoothManager));
+            jam.addOnMixerChangeListener(new BluetoothHostMixerListener(bluetoothManager));
         }
     }
 

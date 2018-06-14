@@ -8,9 +8,6 @@ public abstract class OnJamChangeListener {
 
     public abstract void onChordProgressionChange(int[] chords);
     public abstract void onNewPart(JamPart part);
-    public abstract void onPartEnabledChanged(JamPart part, boolean enabled, String source);
-    public abstract void onPartVolumeChanged(JamPart part, float volume, String source);
-    public abstract void onPartPanChanged(JamPart part, float pan, String source);
 
     public abstract void onPlay(String source);
     public abstract void onStop(String source);

@@ -6,10 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.OnMixerChangeListener;
+
+import java.util.ArrayList;
 
 public class SampleSpeedFragment extends OMGFragment {
 
     private View mView;
+
+    private OnMixerChangeListener onMixerChangeListener;
+
+    private ArrayList<SampleSpeedView> mPanels = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -19,6 +26,7 @@ public class SampleSpeedFragment extends OMGFragment {
                 container, false);
 
         setupPanels(inflater);
+        setupListener();
 
         return mView;
     }
@@ -35,16 +43,55 @@ public class SampleSpeedFragment extends OMGFragment {
             container.addView(controls);
 
             SampleSpeedView mixerView = (SampleSpeedView) controls.findViewById(R.id.levels_view);
-            mixerView.setJam(part.getName(), part.getSpeed(), new SampleSpeedView.LevelViewController() {
+            mixerView.setJam(part.getName(), new SampleSpeedView.LevelViewController() {
                 @Override
                 void onLevelChange(float level) {
-                    getJam().setPartSpeed(part, level, null);
+                    getJam().setPartWarp(part, level, null);
+                }
+                @Override
+                float onGetLevel() {
+                    return part.getSpeed();
                 }
             });
             i++;
+
+            mPanels.add(mixerView);
         }
 
     }
 
+    private void setupListener() {
+        onMixerChangeListener = new OnMixerChangeListener() {
+            @Override public void onPartWarpChanged(JamPart part, float speed, String source) {
+                for (SampleSpeedView panel : mPanels) {
+                    panel.postInvalidate();
+                }
+            }
+
+            @Override public void onPartMuteChanged(JamPart part, boolean enabled, String source) { }
+            @Override public void onPartVolumeChanged(JamPart part, float volume, String source) { }
+            @Override public void onPartPanChanged(JamPart part, float pan, String source) { }
+            @Override public void onPartTrackMuteChanged(JamPart part, int track, boolean enabled, String source) {
+
+            }
+            @Override public void onPartTrackVolumeChanged(JamPart part, int track, float volume, String source) {
+
+            }
+            @Override public void onPartTrackPanChanged(JamPart part, int track, float pan, String source) {
+
+            }
+            @Override public void onPartTrackWarpChanged(JamPart part, int track, float speed, String source) {
+
+            }
+        };
+
+        getJam().addOnMixerChangeListener(onMixerChangeListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getJam().removeOnMixerChangeListener(onMixerChangeListener);
+    }
 }
 

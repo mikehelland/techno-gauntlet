@@ -18,6 +18,7 @@ import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnBeatChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnKeyChangeListener;
+import com.mikehelland.omgtechnogauntlet.jam.OnMixerChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
@@ -37,6 +38,7 @@ public class MainFragment extends OMGFragment {
 
     private OnJamChangeListener mJamListener;
     private OnKeyChangeListener mKeyListener;
+    private OnMixerChangeListener mMixerListener;
     private OnBeatChangeListener mBeatListener;
 
     private HashMap<JamPart, View> channelViewMap = new HashMap<>();
@@ -428,22 +430,7 @@ public class MainFragment extends OMGFragment {
                         }
                     });
             }
-            @Override
-            public void onPartEnabledChanged(final JamPart channel, final boolean enabled, String source) {
-                Activity activity = getActivity(); if (activity == null)  return;
-                activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            View panel = channelViewMap.get(channel);
-                            if (panel != null)
-                                panel.findViewById(R.id.mute_button).setBackgroundColor(
-                                        enabled ? mColorGreen : mColorRed);
-                        }
-                    });
-            }
 
-            @Override public void onPartVolumeChanged(JamPart channel, float volume, String source) {}
-            @Override public void onPartPanChanged(JamPart channel, float pan, String source) {}
             @Override public void onPlay(final String source) { }
             @Override public void onStop(final String source) { }
             @Override public void onNewLoop(final String source) { }
@@ -455,9 +442,34 @@ public class MainFragment extends OMGFragment {
 
         };
 
+        mMixerListener = new OnMixerChangeListener() {
+            @Override
+            public void onPartMuteChanged(final JamPart part, final boolean mute, String source) {
+                Activity activity = getActivity(); if (activity == null)  return;
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        View panel = channelViewMap.get(part);
+                        if (panel != null)
+                            panel.findViewById(R.id.mute_button).setBackgroundColor(
+                                    mute ? mColorRed : mColorGreen);
+                    }
+                });
+            }
+
+            @Override public void onPartVolumeChanged(JamPart part, float volume, String source) { }
+            @Override public void onPartPanChanged(JamPart part, float pan, String source) { }
+            @Override public void onPartWarpChanged(JamPart part, float speed, String source) { }
+            @Override public void onPartTrackMuteChanged(JamPart part, int track, boolean enabled, String source) { }
+            @Override public void onPartTrackVolumeChanged(JamPart part, int track, float volume, String source) { }
+            @Override public void onPartTrackPanChanged(JamPart part, int track, float pan, String source) { }
+            @Override public void onPartTrackWarpChanged(JamPart part, int track, float speed, String source) { }
+        };
+
         getJam().addOnJamChangeListener(mJamListener);
         getJam().addOnKeyChangeListener(mKeyListener);
         getJam().addOnBeatChangeListener(mBeatListener);
+        getJam().addOnMixerChangeListener(mMixerListener);
     }
 
     @Override
@@ -466,6 +478,7 @@ public class MainFragment extends OMGFragment {
         getJam().removeOnJamChangeListener(mJamListener);
         getJam().removeOnKeyChangeListener(mKeyListener);
         getJam().removeOnBeatChangeListener(mBeatListener);
+        getJam().removeOnMixerChangeListener(mMixerListener);
     }
 }
 

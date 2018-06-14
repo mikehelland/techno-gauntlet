@@ -35,10 +35,15 @@ public class TrackWarpFragment extends OMGFragment {
             container.addView(controls);
 
             SampleSpeedView mixerView = (SampleSpeedView) controls.findViewById(R.id.levels_view);
-            mixerView.setJam(track.getName(), track.getSpeed(), new SampleSpeedView.LevelViewController() {
+            mixerView.setJam(track.getName(), new SampleSpeedView.LevelViewController() {
                 @Override
                 void onLevelChange(float level) {
                     getJam().setPartTrackWarp(part, track, level);
+                }
+
+                @Override
+                float onGetLevel() {
+                    return track.getSpeed();
                 }
             });
         }
