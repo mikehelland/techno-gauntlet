@@ -137,6 +137,7 @@ public class Main extends FragmentActivity {
         super.onDestroy();
         jam.finish();
         //todo mBtf.cleanUp();
+        bluetoothManager.cleanUp();
         mDatabase.close();
     }
 

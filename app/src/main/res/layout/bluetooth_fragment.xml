@@ -12,13 +12,6 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/bt_be_a_remote"
-            android:drawableLeft="@android:drawable/ic_menu_agenda"
-            android:text="Be a Remote Control"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
-
-        <Button
             android:id="@+id/bt_add_device"
             android:drawableLeft="@android:drawable/ic_menu_add"
             android:text="Add A Paired Device"

@@ -37,7 +37,7 @@ public class ConnectToHostFragment extends OMGFragment {
         mImageView = (ImageView)mView.findViewById(R.id.remote_logo);
 
         //todo test to see if we're already connected, and wait five seconds and go back
-        /*if (jamConnection != null && jamConnection.getConnection() != null && !jamConnection.getConnection().isDisconnected()) {
+        /*if (jamConnection != null && jamConnection.getCommandProcessor() != null && !jamConnection.getCommandProcessor().isDisconnected()) {
             mStatusText.setText(R.string.connected);
             mImageView.setImageResource(R.drawable.device_blue);
             showRemoteControlFragmentAfterDelay(500);

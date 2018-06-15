@@ -22,6 +22,9 @@ public class CommandProcessor extends BluetoothDataCallback {
     final static String JAMINFO_SCALE = "JAMINFO_SCALE";
     private final static String CHANNEL_SET_ARPNOTES = "CHANNEL_SET_ARPNOTES";
 
+    final static String GET_JAM = "GET_JAM";
+    final static String JAM_JSON = "JAM_JSON";
+
     final static String SET_PLAY = "SET_PLAY";
     final static String SET_STOP = "SET_STOP";
     final static String SET_CHORDS = "SET_CHORDS";
@@ -105,7 +108,7 @@ public class CommandProcessor extends BluetoothDataCallback {
                 }
                 return;
 
-            case "GET_JAM_JSON":
+            case GET_JAM:
                 sendJamJSON();
                 return;
             case "GET_SAVED_JAMS":
@@ -222,9 +225,10 @@ public class CommandProcessor extends BluetoothDataCallback {
             case "JAMINFO_CHANNELS":
                 //onSetParts(value);
                 return;
-            case "JAM_JSON":
-                //onSetParts(value);
-                mJam.loadFromJSON(value);
+            case JAM_JSON:
+                if (mSync) {
+                    mJam.loadFromJSON(value);
+                }
                 return;
         }
 
@@ -279,7 +283,7 @@ public class CommandProcessor extends BluetoothDataCallback {
 
 
     private void sendJamJSON() {
-        mConnection.sendNameValuePair("JAM_JSON", mJam.getData());
+        mConnection.sendNameValuePair(CommandProcessor.JAM_JSON, mJam.getData());
 
         //todo send when we started, or at least do the on new loop regular updates
         mConnection.sendCommand(mJam.isPlaying() ? SET_PLAY : SET_STOP);

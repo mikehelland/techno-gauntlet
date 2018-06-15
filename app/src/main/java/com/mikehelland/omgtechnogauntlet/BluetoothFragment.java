@@ -65,13 +65,6 @@ public class BluetoothFragment extends OMGFragment {
     }
 
     private void setupMainButtons() {
-        Button remoteButton = (Button) mView.findViewById(R.id.bt_be_a_remote);
-        remoteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                chooseHost();
-            }
-        });
 
         Button addButton = (Button) mView.findViewById(R.id.bt_add_device);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -128,25 +121,21 @@ public class BluetoothFragment extends OMGFragment {
 
     private CommandProcessor setupDataCallBackForConnection(BluetoothConnection connection) {
 
-        //todo what's going on here? Do we need this?
-        /* CommandProcessor cp = (CommandProcessor) connection.getDataCallback();
-        if (cp == null) {
-            Activity activity = getActivity();
-            if (activity == null) {
-                return null;
-            }
-            cp = new CommandProcessor(activity);
-            cp.setup(connection, getPeerJam(), null);
-            connection.setDataCallback(cp);
+        Activity activity = getActivity();
+        if (activity == null) {
+            return null;
         }
+        CommandProcessor cp = new CommandProcessor(activity);
+        //cp.setup(connection, getPeerJam(), null);
+        cp.setup(connection, getJam(), null);
+        connection.setDataCallback(cp);
 
         BtRelativeLayout controls = mViewMap.get(connection.getDevice().getAddress());
         if (controls != null) {
-            cp.setOnPeerChangeListener(makeOnChangeListener(controls));
+            //cp.setOnPeerChangeListener(makeOnChangeListener(controls));
         }
 
-        return cp;*/
-        return null;
+        return cp;
     }
 
     private void addDevice(BluetoothDevice device) {
@@ -170,22 +159,50 @@ public class BluetoothFragment extends OMGFragment {
 
         ((TextView)controls.findViewById(R.id.bt_device_name)).setText(device.getName());
 
+        // check to see if this device is already connected and setup the panel
         CommandProcessor cp;
-        for (BluetoothConnection connection : bluetoothManager.getConnections()) {
-            if (connection.getDevice().getAddress().equals(device.getAddress())) {
+        BluetoothConnection connection = getConnectionFromDevice(device);
 
-                if (!connection.isDisconnected()) {
-                    //todo
-                    /*cp = (CommandProcessor)connection.getDataCallback();
-                    if (cp != null && cp.getPeerJam() != null) {
-                        cp.setOnPeerChangeListener(makeOnChangeListener(controls));
-                        onPanelConnected(controls, cp);
-                        setPanelInfo(controls, cp.getPeerJam());
-                        connection.addConnectedCallback(makeConnectCallback(null));
-                    }*/
+        if (connection != null && !connection.isDisconnected()) {
+            onPanelConnected(controls);
+            connection.addConnectedCallback(new BluetoothConnectCallback() {
+                @Override
+                public void newStatus(String status) {
+
                 }
-            }
+
+                @Override
+                public void onConnected(BluetoothConnection connection) {
+
+                }
+
+                @Override
+                public void onDisconnected(BluetoothConnection connection) {
+                    if (mViewMap.containsKey(connection.getDevice().getAddress())) {
+                        final BtRelativeLayout view = mViewMap.get(connection.getDevice().getAddress());
+                        Activity activity = getActivity();
+                        if (activity != null) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    resetPanel(view);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+
+            //todo
+            /*cp = (CommandProcessor)connection.getDataCallback();
+            if (cp != null && cp.getPeerJam() != null) {
+                //cp.setOnPeerChangeListener(makeOnChangeListener(controls));
+                onPanelConnected(controls, cp);
+                setPanelInfo(controls, cp.getPeerJam());
+                //connection.addConnectedCallback(makeConnectCallback(null));
+            }*/
         }
+
 
         controls.findViewById(R.id.bt_brain_connect_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,6 +216,20 @@ public class BluetoothFragment extends OMGFragment {
                 removeDevice(device);
                 container.removeView(controls);
                 return true;
+            }
+        });
+
+        controls.findViewById(R.id.remote_control_button).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                BluetoothConnection connection = getConnectionFromDevice(device);
+                ((CommandProcessor)connection.getDataCallback()).setSync(true);
+                jam.addOnJamChangeListener(new BluetoothRemoteJamListener(connection));
+                jam.addOnKeyChangeListener(new BluetoothRemoteKeyListener(connection));
+                jam.addOnBeatChangeListener(new BluetoothRemoteBeatListener(connection));
+                jam.addOnMixerChangeListener(new BluetoothRemoteMixerListener(connection));
+                RemoteControlBluetoothHelper.setupRemote(connection);
             }
         });
 
@@ -220,8 +251,9 @@ public class BluetoothFragment extends OMGFragment {
                 }
             }
                     @Override
-            public void onConnected(BluetoothConnection connection) {
+            public void onConnected(final BluetoothConnection connection) {
                 final CommandProcessor cp = setupDataCallBackForConnection(connection);
+                RemoteControlBluetoothHelper.getJam(connection);
                 if (mViewMap.containsKey(connection.getDevice().getAddress())) {
                     final View freshView = mViewMap.get(connection.getDevice().getAddress());
                     Activity activity = getActivity();
@@ -229,7 +261,8 @@ public class BluetoothFragment extends OMGFragment {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                //todo onPanelConnected(freshView, cp);
+                                //onPanelConnected(freshView, cp);
+                                onPanelConnected((BtRelativeLayout)freshView);
                             }
                         });
                     }
@@ -244,13 +277,27 @@ public class BluetoothFragment extends OMGFragment {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                //todo resetPanel(view);
+                                resetPanel(view);
                             }
                         });
                     }
                 }
             }
         };
+    }
+
+    private void onPanelConnected(BtRelativeLayout controls) {
+        if (!controls.getShowDetails()) {
+            controls.setShowDetails(true);
+            ((TextView)controls.findViewById(R.id.bt_device_status)).setText(R.string.connected);
+            controls.findViewById(R.id.bt_brain_connect_button).setVisibility(View.GONE);
+            ((ImageView)controls.findViewById(R.id.img_device)).setImageResource(R.drawable.device_blue);
+            controls.findViewById(R.id.remote_control_button).setVisibility(View.VISIBLE);
+            //controls.findViewById(R.id.peer_jam_controls).setVisibility(View.VISIBLE);
+            //controls.findViewById(R.id.sync_button).setVisibility(View.VISIBLE);
+            //controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.VISIBLE);
+        }
+
     }
 
     /*private CommandProcessor.OnPeerChangeListener makeOnChangeListener(final BtRelativeLayout controls) {
@@ -345,28 +392,22 @@ public class BluetoothFragment extends OMGFragment {
                 redLight.setPadding(5, 5, 5, 5);
             }
         });
+
+        setPanelInfo((BtRelativeLayout)controls, null);
     }
 
     private void setPanelInfo(BtRelativeLayout controls, Jam jam) {
 
-        if (jam == null || controls == null) {
+        //if (jam == null || controls == null) {
+        if (controls == null) {
             return;
         }
 
-        if (!controls.getShowDetails()) {
-            controls.setShowDetails(true);
-            ((TextView)controls.findViewById(R.id.bt_device_status)).setText(R.string.connected);
-            controls.findViewById(R.id.bt_brain_connect_button).setVisibility(View.GONE);
-            ((ImageView)controls.findViewById(R.id.img_device)).setImageResource(R.drawable.device_blue);
-            controls.findViewById(R.id.peer_jam_controls).setVisibility(View.VISIBLE);
-            controls.findViewById(R.id.sync_button).setVisibility(View.VISIBLE);
-            controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.VISIBLE);
-        }
-
-        ((Button)controls.findViewById(R.id.tempo_button)).
+        /*((Button)controls.findViewById(R.id.tempo_button)).
                 setText(String.format("%s bpm", Integer.toString(jam.getBPM())));
         ((Button)controls.findViewById(R.id.key_button)).
                 setText(jam.getKeyName());
+                */
     }
 
     private void resetPanel(BtRelativeLayout controls) {
@@ -376,6 +417,7 @@ public class BluetoothFragment extends OMGFragment {
         controls.findViewById(R.id.bt_brain_connect_button).setVisibility(View.VISIBLE);
         controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
         controls.findViewById(R.id.sync_button).setVisibility(View.GONE);
+        controls.findViewById(R.id.remote_control_button).setVisibility(View.GONE);
     }
 
     private void chooseHost() {
@@ -392,4 +434,12 @@ public class BluetoothFragment extends OMGFragment {
         animateFragment(f, 1);
     }
 
+    private BluetoothConnection getConnectionFromDevice(BluetoothDevice device) {
+        for (BluetoothConnection connection : bluetoothManager.getConnections()) {
+            if (connection.getDevice().getAddress().equals(device.getAddress())) {
+                return connection;
+            }
+        }
+        return null;
+    }
 }

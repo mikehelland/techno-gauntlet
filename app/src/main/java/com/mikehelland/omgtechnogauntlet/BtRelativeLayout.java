@@ -16,6 +16,14 @@ public class BtRelativeLayout extends RelativeLayout {
         mShowDetails = showDetails;
     }
 
+    private CommandProcessor commandProcessor;
+    CommandProcessor getCommandProcessor() {
+        return commandProcessor;
+    }
+    void setCommandProcessor(CommandProcessor commandProcessor) {
+        this.commandProcessor = commandProcessor;
+    }
+
     public BtRelativeLayout(Context context) {
         super(context);
     }

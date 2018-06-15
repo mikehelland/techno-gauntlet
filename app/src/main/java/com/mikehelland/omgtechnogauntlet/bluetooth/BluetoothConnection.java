@@ -135,10 +135,10 @@ public class BluetoothConnection extends Thread {
         mDataCallback = callback;
     }
 
-    BluetoothDataCallback getDataCallback() {
+    public BluetoothDataCallback getDataCallback() {
         return mDataCallback;
     }
-    void addConnectedCallback(BluetoothConnectCallback callback) {
+    public void addConnectedCallback(BluetoothConnectCallback callback) {
         mConnectedCallbacks.add(callback);
     }
 
