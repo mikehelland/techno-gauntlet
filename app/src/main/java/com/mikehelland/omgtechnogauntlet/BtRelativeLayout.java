@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
+import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
+
 /**
  * Created by m on 1/25/18.
  */

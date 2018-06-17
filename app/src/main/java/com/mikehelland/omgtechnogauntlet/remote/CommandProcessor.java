@@ -1,14 +1,14 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.remote;
 
 import android.content.Context;
 import android.util.Log;
 
+import com.mikehelland.omgtechnogauntlet.Main;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothDataCallback;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
-import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
 /**
  * Created by m on 7/31/16.
@@ -58,19 +58,52 @@ public class CommandProcessor extends BluetoothDataCallback {
     private Jam mPeerJam;
     //private OnPeerChangeListener mOnPeerChangeListener;
 
-    final private DatabaseContainer mDatabase;
+    //final private DatabaseContainer mDatabase;
     final private Main mContext;
 
     private boolean mSync = false;
 
-    CommandProcessor(Context context) {
+    public CommandProcessor(Context context) {
         //todo storing the context because I need to load the jam
         //maybe this should be done somehow else
         mContext = (Main)context;
-        mDatabase = mContext.getDatabase();
+        //mDatabase = mContext.getDatabase();
     }
 
-    void setup(BluetoothConnection connection, Jam jam, JamPart channel) {
+    static String getNewPartCommand(JamPart jamPart) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("NEW_CHANNEL=");
+        getPartInfo(sb, jamPart);
+        return sb.toString();
+    }
+
+    static void getPartInfo(StringBuilder sb, JamPart jamPart) {
+
+        String surfaceURL = jamPart.getSurfaceURL();
+        String surface = "0";
+        if ("PRESET_SEQUENCER".equals(surfaceURL))
+            surface = "0";
+        if ("PRESET_VERTICAL".equals(surfaceURL))
+            surface = "1";
+        if ("PRESET_FRETBOARD".equals(surfaceURL))
+            surface = "2";
+
+        sb.append(jamPart.getId());
+        sb.append(",");
+        sb.append(jamPart.getMute() ? "0," : "1,");
+        sb.append(jamPart.getSoundSet().isChromatic() ? "1," : "0,");
+        sb.append(surface);
+        sb.append(",");
+        sb.append(jamPart.getName());
+        sb.append(",");
+        sb.append(jamPart.getVolume());
+        sb.append(",");
+        sb.append(jamPart.getPan());
+        sb.append(",");
+        sb.append(jamPart.getSpeed());
+    }
+
+    public void setup(BluetoothConnection connection, Jam jam, JamPart channel) {
         mJam = jam;
         mConnection = connection;
 
@@ -81,7 +114,7 @@ public class CommandProcessor extends BluetoothDataCallback {
         // sendJamInfo();
     }
 
-    Jam getPeerJam() {
+    public Jam getPeerJam() {
         return mPeerJam;
     }
 
@@ -294,7 +327,7 @@ public class CommandProcessor extends BluetoothDataCallback {
         for (int i = 0; i < jam.getParts().size(); i++) {
             JamPart channel = jam.getParts().get(i);
 
-            CommandHelper.getPartInfo(setParts, channel);
+            getPartInfo(setParts, channel);
 
             if (i < jam.getParts().size() - 1) {
                 setParts.append("|");
@@ -433,14 +466,14 @@ public class CommandProcessor extends BluetoothDataCallback {
 
     private void addPart(long soundSetId) {
 
-        SoundSet soundSet = mDatabase.getSoundSetData().getSoundSetById(soundSetId);
+        /*SoundSet soundSet = mDatabase.getSoundSetData().getSoundSetById(soundSetId);
         if (soundSet != null) {
             mJam.newPart(soundSet);
-        }
+        }*/
     }
 
     private void loadJam(long jamId) {
-        SavedDataOpenHelper dataHelper = mDatabase.getSavedData();
+        //SavedDataOpenHelper dataHelper = mDatabase.getSavedData();
         //todo mContext.loadJam(dataHelper.getJamJson(jamId));
     }
 
@@ -512,7 +545,7 @@ public class CommandProcessor extends BluetoothDataCallback {
         }
     }
 
-    void setSync(boolean sync) {
+    public void setSync(boolean sync) {
         mSync = sync;
     }
 

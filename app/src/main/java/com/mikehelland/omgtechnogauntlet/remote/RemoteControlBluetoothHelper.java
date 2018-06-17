@@ -1,4 +1,4 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.remote;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
@@ -7,7 +7,7 @@ import com.mikehelland.omgtechnogauntlet.jam.Note;
  * Created by m on 4/14/18.
  */
 
-class RemoteControlBluetoothHelper {
+public class RemoteControlBluetoothHelper {
     static void sendNewSubbeatLength(BluetoothConnection connection, int subbeatLength) {
         connection.sendNameValuePair(CommandProcessor.SET_SUBBEATLENGTH, "" + subbeatLength);
     }
@@ -50,11 +50,11 @@ class RemoteControlBluetoothHelper {
 
     }
 
-    static void setupRemote(BluetoothConnection connection) {
+    public static void setupRemote(BluetoothConnection connection) {
         connection.sendCommand(CommandProcessor.REMOTE_CONTROL);
     }
 
-    static void getJam(BluetoothConnection connection) {
+    public static void requestJam(BluetoothConnection connection) {
         connection.sendCommand(CommandProcessor.GET_JAM);
     }
 
@@ -89,4 +89,5 @@ class RemoteControlBluetoothHelper {
     static void clearChannel(BluetoothConnection connection, String channelID) {
         connection.sendNameValuePair("CLEAR_CHANNEL", channelID + "");
     }
+
 }

@@ -15,6 +15,9 @@ import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothReadyCallback;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
+import com.mikehelland.omgtechnogauntlet.remote.JamListenersHelper;
+import com.mikehelland.omgtechnogauntlet.remote.RemoteControlBluetoothHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -225,10 +228,8 @@ public class BluetoothFragment extends OMGFragment {
             public void onClick(View view) {
                 BluetoothConnection connection = getConnectionFromDevice(device);
                 ((CommandProcessor)connection.getDataCallback()).setSync(true);
-                jam.addOnJamChangeListener(new BluetoothRemoteJamListener(connection));
-                jam.addOnKeyChangeListener(new BluetoothRemoteKeyListener(connection));
-                jam.addOnBeatChangeListener(new BluetoothRemoteBeatListener(connection));
-                jam.addOnMixerChangeListener(new BluetoothRemoteMixerListener(connection));
+                JamListenersHelper.setJamListenersForRemote(jam, connection);
+
                 RemoteControlBluetoothHelper.setupRemote(connection);
             }
         });
@@ -253,7 +254,7 @@ public class BluetoothFragment extends OMGFragment {
                     @Override
             public void onConnected(final BluetoothConnection connection) {
                 final CommandProcessor cp = setupDataCallBackForConnection(connection);
-                RemoteControlBluetoothHelper.getJam(connection);
+                RemoteControlBluetoothHelper.requestJam(connection);
                 if (mViewMap.containsKey(connection.getDevice().getAddress())) {
                     final View freshView = mViewMap.get(connection.getDevice().getAddress());
                     Activity activity = getActivity();

@@ -18,6 +18,8 @@ import com.mikehelland.omgtechnogauntlet.jam.OnSoundLoadedListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 import com.mikehelland.omgtechnogauntlet.jam.SoundManager;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
+import com.mikehelland.omgtechnogauntlet.remote.JamListenersHelper;
 
 public class Main extends FragmentActivity {
 
@@ -156,10 +158,7 @@ public class Main extends FragmentActivity {
         bluetoothManager = new BluetoothManager(this);
         if (bluetoothManager.isBlueToothOn()) {
             bluetoothManager.startAccepting(makeConnectCallback());
-            jam.addOnJamChangeListener(new BluetoothHostJamListener(bluetoothManager));
-            jam.addOnKeyChangeListener(new BluetoothHostKeyListener(bluetoothManager));
-            jam.addOnBeatChangeListener(new BluetoothHostBeatListener(bluetoothManager));
-            jam.addOnMixerChangeListener(new BluetoothHostMixerListener(bluetoothManager));
+            JamListenersHelper.setJamListenersForHost(jam, bluetoothManager);
         }
     }
 

@@ -1,9 +1,6 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.remote;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
-import com.mikehelland.omgtechnogauntlet.jam.JamPart;
-import com.mikehelland.omgtechnogauntlet.jam.Note;
-import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnKeyChangeListener;
 
 /**

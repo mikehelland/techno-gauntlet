@@ -1,4 +1,4 @@
-package com.mikehelland.omgtechnogauntlet;
+package com.mikehelland.omgtechnogauntlet.remote;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
@@ -32,7 +32,7 @@ public class BluetoothHostJamListener extends OnJamChangeListener {
 
     @Override
     public void onNewPart(JamPart part) {
-        bluetoothManager.sendCommandToDevices(CommandHelper.getNewPartCommand(part), null);
+        bluetoothManager.sendCommandToDevices(CommandProcessor.getNewPartCommand(part), null);
     }
 
     @Override

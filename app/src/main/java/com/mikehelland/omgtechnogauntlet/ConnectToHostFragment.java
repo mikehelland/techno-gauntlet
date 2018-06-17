@@ -15,6 +15,9 @@ import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothReadyCallback;
+import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
+import com.mikehelland.omgtechnogauntlet.remote.JamListenersHelper;
+//import com.mikehelland.omgtechnogauntlet.remote.RemoteControlBluetoothHelper;
 
 
 public class ConnectToHostFragment extends OMGFragment {
@@ -141,10 +144,7 @@ public class ConnectToHostFragment extends OMGFragment {
                 connection.setDataCallback(cp);
 
                 //send any changes to this jam to the host
-                jam.addOnJamChangeListener(new BluetoothRemoteJamListener(connection));
-                jam.addOnKeyChangeListener(new BluetoothRemoteKeyListener(connection));
-                jam.addOnBeatChangeListener(new BluetoothRemoteBeatListener(connection));
-                jam.addOnMixerChangeListener(new BluetoothRemoteMixerListener(connection));
+                JamListenersHelper.setJamListenersForRemote(jam, connection);
 
 
                 activity.runOnUiThread(new Runnable() {
@@ -152,7 +152,7 @@ public class ConnectToHostFragment extends OMGFragment {
                     public void run() {
                         mStatusText.setText(R.string.getting_jam_info);
                         mImageView.setImageResource(R.drawable.device_blue);
-                        RemoteControlBluetoothHelper.setupRemote(connection);
+                        //todo RemoteControlBluetoothHelper.setupRemote(connection);
 
                         //todo get the jam as json from the host
                         //load it, and show the main fragment
