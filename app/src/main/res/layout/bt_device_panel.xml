@@ -41,12 +41,22 @@
         android:text="Press to Connect"
         android:id="@+id/bt_brain_connect_button"/>
 
-    <Button
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connected as a Remote Control"
+        android:id="@+id/bt_device_is_a_remote"
+        android:layout_below="@id/img_device"
+        android:visibility="gone"
+        />
+
+    <ToggleButton
         android:layout_below="@id/img_device"
         android:id="@+id/remote_control_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Remote Control"
+        android:textOff="Remote Control OFF"
+        android:textOn="Remote Control ON"
         android:singleLine="true"
         android:visibility="gone"/>
 

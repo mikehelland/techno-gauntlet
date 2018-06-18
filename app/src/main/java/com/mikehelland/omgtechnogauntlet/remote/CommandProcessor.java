@@ -62,6 +62,8 @@ public class CommandProcessor extends BluetoothDataCallback {
     final private Main mContext;
 
     private boolean mSync = false;
+    private boolean localIsARemote = false;
+    private boolean hostIsARemote = false;
 
     public CommandProcessor(Context context) {
         //todo storing the context because I need to load the jam
@@ -125,11 +127,6 @@ public class CommandProcessor extends BluetoothDataCallback {
         Log.d("MGH BT newdata", name + (value != null ? ("=" + value) : ""));
 
         switch (name) {
-            case REMOTE_CONTROL:
-                mSync = true;
-                sendJamJSON();
-                return;
-
             case SET_PLAY:
                 if (mSync) {
                     mJam.play(getAddress());
@@ -160,6 +157,10 @@ public class CommandProcessor extends BluetoothDataCallback {
             return;
 
         switch (name) {
+            case REMOTE_CONTROL:
+                setHostIsARemote(value.equals("TRUE"));
+                return;
+
             case SET_SUBBEATLENGTH:
                 if (mSync) {
                     mJam.setSubbeatLength(Integer.parseInt(value), getAddress());
@@ -286,7 +287,7 @@ public class CommandProcessor extends BluetoothDataCallback {
         }
     }
 
-    //old way, old remote
+    //old way, old localIsARemote
     private void channelSetPattern(String value) {
         String[] params = value.split(",");
         int track = Integer.parseInt(params[0]);
@@ -299,7 +300,7 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void channelPlayNote(String value) {
-        //todo for old omg-remote
+        //todo for old omg-localIsARemote
         /*Note note = new Note();
         String[] noteInfo = value.split(",");
         int basicNoteNumber = Integer.parseInt(noteInfo[0]);
@@ -682,5 +683,32 @@ public class CommandProcessor extends BluetoothDataCallback {
             chords[i] = Integer.parseInt(valueSplit[i]);
         }
         mJam.setProgression(chords, getAddress());
+    }
+
+    public boolean isLocalARemote() {
+        return localIsARemote;
+    }
+
+    public void setLocalIsARemote(boolean localIsARemote) {
+        this.localIsARemote = localIsARemote;
+        mSync = localIsARemote;
+
+        //todo save the listeners here so they can be removed
+        if (localIsARemote) {
+            JamListenersHelper.setJamListenersForRemote(mJam, mConnection);
+        }
+
+        mConnection.sendNameValuePair(CommandProcessor.REMOTE_CONTROL, localIsARemote ? "TRUE" : "FALSE");
+
+    }
+
+    public boolean isHostARemote() {
+        return hostIsARemote;
+    }
+
+    void setHostIsARemote(boolean hostIsARemote) {
+        this.hostIsARemote = hostIsARemote;
+        mSync = hostIsARemote;
+
     }
 }

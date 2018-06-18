@@ -50,10 +50,6 @@ public class RemoteControlBluetoothHelper {
 
     }
 
-    public static void setupRemote(BluetoothConnection connection) {
-        connection.sendCommand(CommandProcessor.REMOTE_CONTROL);
-    }
-
     public static void requestJam(BluetoothConnection connection) {
         connection.sendCommand(CommandProcessor.GET_JAM);
     }
