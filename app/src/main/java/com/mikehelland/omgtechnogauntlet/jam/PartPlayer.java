@@ -110,7 +110,22 @@ class PartPlayer {
             }
         }
 
-        if (nextNote == null) {
+        if (nextNoteIndex == -1) {
+            nextBeat = 0f;
+            for (int i = 0; i < part.notes.size(); i++) {
+                nextNote = part.notes.get(i);
+                nextBeat += nextNote.getBeats();
+
+                if (nextBeat >= subbeat / (float)beatParameters.subbeats) {
+                    nextNoteIndex = i + 1;
+                    nextNote = nextNoteIndex < part.notes.size() ?
+                            part.notes.get(nextNoteIndex) : null;
+                    break;
+                }
+            }
+        }
+
+        if (nextNoteIndex == -1 || nextNote == null) {
             return;
         }
 

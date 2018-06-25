@@ -513,9 +513,9 @@ public class Jam {
             player.stopPartLiveNote(jamPart.part, jamPart.part.liveNotes[0]);
         }
         jamPart.part.liveNotes = null;
-
         jamPart.live = false;
         jamPart.liveNote = null;
+        jamPart.partPlayer.nextNoteIndex = -1;
 
         for (OnJamChangeListener listener : onJamChangeListeners) {
             listener.onPartEndLiveNotes(jamPart, source);
