@@ -73,4 +73,9 @@ public class BluetoothHostJamListener extends OnJamChangeListener {
     public void onPartEndLiveNotes(JamPart jamPart, String source) {
         //todo broad cast new notes
     }
+
+    @Override
+    public void onPartClear(JamPart jamPart, String source) {
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.PART_CLEAR, jamPart.getId(), source);
+    }
 }

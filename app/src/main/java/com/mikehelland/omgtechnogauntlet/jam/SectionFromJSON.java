@@ -83,7 +83,7 @@ class SectionFromJSON {
                 trackName = trackJSON.getString("name");
             }
 
-            track = new SequencerTrack(trackName);
+            track = new SequencerTrack(trackName, i);
             track.audioParameters = loadAudioParameters(trackJSON);
             part.sequencerPattern.getTracks().add(track);
             pattern[i] = track.getData();

@@ -16,7 +16,7 @@ public class SequencerPattern {
         ArrayList<SequencerTrack> newTracks = new ArrayList<>();
         int i = 0;
         for (SoundSet.Sound sound : sounds) {
-            SequencerTrack track = new SequencerTrack(sound.getName());
+            SequencerTrack track = new SequencerTrack(sound.getName(), i);
             newTracks.add(track);
 
             if (i < mTracks.size()) {

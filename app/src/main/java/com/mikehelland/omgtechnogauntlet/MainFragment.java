@@ -124,7 +124,7 @@ public class MainFragment extends OMGFragment {
         muteButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                getJam().clearPart(part);
+                getJam().clearPart(part, null);
                 return true;
             }
         });
@@ -440,6 +440,7 @@ public class MainFragment extends OMGFragment {
             @Override public void onPartUpdateLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source) { }
             @Override public void onPartRemoveLiveNotes(JamPart jamPart, Note note, Note[] notes, String source) { }
             @Override public void onPartEndLiveNotes(JamPart jamPart, String source) { }
+            @Override public void onPartClear(JamPart jamPart, String source) { }
 
         };
 

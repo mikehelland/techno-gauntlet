@@ -306,7 +306,7 @@ public class DrumView extends View {
         long now = System.currentTimeMillis();
         if (now - mLastClickTime < 200) {
             mJam.setPartTrackMute(part, part.getSequencerPattern().getTrack(y),
-                    !part.getSequencerPattern().getTrack(y).isMuted());
+                    !part.getSequencerPattern().getTrack(y).isMuted(), null);
         }
 
         mLastClickTime = now;

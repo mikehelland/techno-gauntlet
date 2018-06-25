@@ -294,20 +294,32 @@ public class Jam {
         }
     }
 
-    public void setPartTrackMute(JamPart jamPart, SequencerTrack track, boolean mute) {
+    public void setPartTrackMute(JamPart jamPart, SequencerTrack track, boolean mute, String source) {
         track.audioParameters.mute = mute;
+        for (OnMixerChangeListener listener : onMixerChangeListeners) {
+            listener.onPartTrackMuteChanged(jamPart, track.getIndex(), mute, source);
+        }
     }
 
-    public void setPartTrackVolume(JamPart jamPart, SequencerTrack track, float volume) {
+    public void setPartTrackVolume(JamPart jamPart, SequencerTrack track, float volume, String source) {
         track.audioParameters.volume = volume;
+        for (OnMixerChangeListener listener : onMixerChangeListeners) {
+            listener.onPartTrackVolumeChanged(jamPart, track.getIndex(), volume, source);
+        }
     }
 
-    public void setPartTrackPan(JamPart jamPart, SequencerTrack track, float pan) {
+    public void setPartTrackPan(JamPart jamPart, SequencerTrack track, float pan, String source) {
         track.audioParameters.pan = pan;
+        for (OnMixerChangeListener listener : onMixerChangeListeners) {
+            listener.onPartTrackPanChanged(jamPart, track.getIndex(), pan, source);
+        }
     }
 
-    public void setPartTrackWarp(JamPart jamPart, SequencerTrack track, float warp) {
+    public void setPartTrackWarp(JamPart jamPart, SequencerTrack track, float warp, String source) {
         track.audioParameters.speed = warp;
+        for (OnMixerChangeListener listener : onMixerChangeListeners) {
+            listener.onPartTrackWarpChanged(jamPart, track.getIndex(), warp, source);
+        }
     }
 
 
@@ -381,8 +393,11 @@ public class Jam {
 
     }
 
-    public void clearPart(JamPart jamPart) {
+    public void clearPart(JamPart jamPart, String source) {
         jamPart.clear();
+        for (OnJamChangeListener listener : onJamChangeListeners) {
+            listener.onPartClear(jamPart, source);
+        }
     }
 
     public void copyPart(JamPart jamPart) {
@@ -598,7 +613,7 @@ public class Jam {
         jamPart.part.pattern = new boolean[jamPart.part.soundSet.getSounds().size()][];
         int i = 0;
         for (SoundSet.Sound sound : jamPart.part.soundSet.getSounds()) {
-            jamPart.getTracks().add(new SequencerTrack(sound.getName()));
+            jamPart.getTracks().add(new SequencerTrack(sound.getName(), i));
             jamPart.part.pattern[i] = jamPart.getTracks().get(i).getData();
             i++;
         }

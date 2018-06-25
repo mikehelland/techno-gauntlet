@@ -45,27 +45,27 @@ public class BluetoothRemoteMixerListener extends OnMixerChangeListener {
     public void onPartTrackMuteChanged(JamPart part, int track, boolean mute, String source) {
         if (source != null) return;
         connection.sendNameValuePair(CommandProcessor.SET_PART_TRACK_MUTE,
-                part.getId() + "," + (mute ? "1" : "0"));
+                part.getId() + "," + track + "," + (mute ? "1" : "0"));
     }
 
     @Override
     public void onPartTrackVolumeChanged(JamPart part, int track, float volume, String source) {
         if (source != null) return;
         connection.sendNameValuePair(CommandProcessor.SET_PART_TRACK_VOLUME,
-                part.getId() + "," + volume);
+                part.getId() + "," + track + "," + volume);
     }
 
     @Override
     public void onPartTrackPanChanged(JamPart part, int track, float pan, String source) {
         if (source != null) return;
         connection.sendNameValuePair(CommandProcessor.SET_PART_TRACK_PAN,
-                part.getId() + "," + pan);
+                part.getId() + "," + track + "," + pan);
     }
 
     @Override
     public void onPartTrackWarpChanged(JamPart part, int track, float speed, String source) {
         if (source != null) return;
         connection.sendNameValuePair(CommandProcessor.SET_PART_TRACK_WARP,
-                part.getId() + "," + speed);
+                part.getId() + "," + track + "," + speed);
     }
 }

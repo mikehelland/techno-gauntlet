@@ -48,7 +48,7 @@ public class PartOptionsFragment extends OMGFragment {
         mView.findViewById(R.id.clear_channel_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getJam().clearPart(part);
+                getJam().clearPart(part, null);
                 finish();
             }
         });

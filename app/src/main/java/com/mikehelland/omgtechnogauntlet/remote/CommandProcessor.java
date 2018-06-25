@@ -9,6 +9,7 @@ import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothDataCallback;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.SequencerTrack;
 
 /**
  * Created by m on 7/31/16.
@@ -50,6 +51,8 @@ public class CommandProcessor extends BluetoothDataCallback {
     final static String SET_PART_TRACK_MUTE = "SET_PART_TRACK_MUTE";
     final static String SET_PART_TRACK_WARP = "SET_PART_TRACK_vWARP";
     final static String SET_PART_TRACK_VOLUME = "SET_PART_TRACK_VOLUME";
+
+    final static String PART_CLEAR = "PART_CLEAR";
 
     private BluetoothConnection mConnection;
     private Jam mJam;
@@ -251,8 +254,20 @@ public class CommandProcessor extends BluetoothDataCallback {
             case SET_PART_WARP:
                 setPartWarp(value);
                 return;
+            case SET_PART_TRACK_VOLUME:
+                setPartTrackVolume(value);
+                return;
+            case SET_PART_TRACK_PAN:
+                setPartTrackPan(value);
+                return;
+            case SET_PART_TRACK_MUTE:
+                setPartTrackMute(value);
+                return;
+            case SET_PART_TRACK_WARP:
+                setPartTrackWarp(value);
+                return;
 
-            case "CLEAR_CHANNEL":
+            case PART_CLEAR:
                 clearPart(value);
                 return;
 
@@ -546,6 +561,57 @@ public class CommandProcessor extends BluetoothDataCallback {
         }
     }
 
+    private void setPartTrackVolume(String params) {
+        try {
+            String[] data = params.split(",");
+            float volume = Float.parseFloat(data[2]);
+            int trackI = Integer.parseInt(data[1]);
+            SequencerTrack track = mJam.getPart(data[0]).getTracks().get(trackI);
+            mJam.setPartTrackVolume(mJam.getPart(data[0]), track, volume, getAddress());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void setPartTrackPan(String params) {
+        try {
+            String[] data = params.split(",");
+            float pan = Float.parseFloat(data[2]);
+            int trackI = Integer.parseInt(data[1]);
+            SequencerTrack track = mJam.getPart(data[0]).getTracks().get(trackI);
+            mJam.setPartTrackPan(mJam.getPart(data[0]), track, pan, getAddress());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void setPartTrackMute(String params) {
+        try {
+            String[] data = params.split(",");
+            boolean on = !data[2].equals("0");
+            int trackI = Integer.parseInt(data[1]);
+            SequencerTrack track = mJam.getPart(data[0]).getTracks().get(trackI);
+            mJam.setPartTrackMute(mJam.getPart(data[0]), track, on, getAddress());
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void setPartTrackWarp(String params) {
+        try {
+            String[] data = params.split(",");
+            float speed = Float.parseFloat(data[2]);
+            int trackI = Integer.parseInt(data[1]);
+            SequencerTrack track = mJam.getPart(data[0]).getTracks().get(trackI);
+            mJam.setPartTrackWarp(mJam.getPart(data[0]), track, speed, getAddress());
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setSync(boolean sync) {
         mSync = sync;
     }
@@ -583,11 +649,7 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void clearPart(String value) {
-        /*Part channel = mJam.getPartByID(value);
-        if (channel != null) {
-            channel.clearNotes();
-        }*/
-
+        mJam.clearPart(mJam.getPart(value), getAddress());
     }
 
     private String getAddress() {
@@ -710,5 +772,6 @@ public class CommandProcessor extends BluetoothDataCallback {
         this.hostIsARemote = hostIsARemote;
         mSync = hostIsARemote;
 
+        sendJamJSON();
     }
 }

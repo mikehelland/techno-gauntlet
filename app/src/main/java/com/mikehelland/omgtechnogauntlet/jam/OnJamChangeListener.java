@@ -18,5 +18,6 @@ public abstract class OnJamChangeListener {
     public abstract void onPartUpdateLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source);
     public abstract void onPartRemoveLiveNotes(JamPart jamPart, Note note, Note[] notes, String source);
     public abstract void onPartEndLiveNotes(JamPart jamPart, String source);
+    public abstract void onPartClear(JamPart jamPart, String source);
 
 }

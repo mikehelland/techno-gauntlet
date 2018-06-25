@@ -5,6 +5,9 @@ package com.mikehelland.omgtechnogauntlet.jam;
  */
 
 public class SequencerTrack {
+
+    private int index = 0;
+
     private String name = "";
     AudioParameters audioParameters = new AudioParameters();
     private boolean[] data = new boolean[512];
@@ -14,8 +17,9 @@ public class SequencerTrack {
     public boolean isMuted() {return audioParameters.mute;}
     boolean[] getData() {return data;}
 
-    SequencerTrack(String name) {
+    SequencerTrack(String name, int index) {
         this.name = name;
+        this.index = index;
     }
 
     void setData(boolean[] data) {
@@ -38,5 +42,9 @@ public class SequencerTrack {
 
     public float getSpeed() {
         return audioParameters.speed;
+    }
+
+    public int getIndex() {
+        return index;
     }
 }
