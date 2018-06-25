@@ -3,7 +3,6 @@ package com.mikehelland.omgtechnogauntlet;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,9 +98,7 @@ public class AddTagsFragment extends OMGFragment {
         OMGHelper omgHelper = new OMGHelper(activity, getJam());
         omgHelper.submit(shareAfter);
 
-        FragmentManager fm = getFragmentManager();
-        if (fm != null)
-            fm.popBackStack();
+        popBackStack();
 
     }
 

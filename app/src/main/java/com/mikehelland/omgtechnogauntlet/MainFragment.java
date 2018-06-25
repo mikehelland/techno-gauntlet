@@ -202,8 +202,7 @@ public class MainFragment extends OMGFragment {
         mView.findViewById(R.id.add_channel_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (BuildConfig.FLAVOR.equals("demo") && getJam().getParts().size() >= 4) {
-                    if (ActivityManager.isUserAMonkey()) return;
+                if (BuildConfig.FLAVOR.equals("demo") && getJam().getParts().size() >= 4 && !ActivityManager.isUserAMonkey()) {
                     animateFragment(new UpgradeFragment(), 0);
                     return;
                 }

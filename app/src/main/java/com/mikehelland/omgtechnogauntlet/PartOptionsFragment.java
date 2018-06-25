@@ -1,7 +1,6 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -123,9 +122,6 @@ public class PartOptionsFragment extends OMGFragment {
                 animateFragment(f, 0);
             }
         });
-        if (!surfaceURL.equals(Surface.PRESET_VERTICAL)) {
-            zoomButton.setVisibility(View.GONE);
-        }
 
         View subMixerButton = mView.findViewById(R.id.track_sub_mixer_button);
         subMixerButton.setOnClickListener(new View.OnClickListener() {
@@ -150,15 +146,16 @@ public class PartOptionsFragment extends OMGFragment {
         });
         if (!surfaceURL.equals(Surface.PRESET_SEQUENCER)) {
             subMixerButton.setVisibility(View.GONE);
+            warpTracksButton.setVisibility(View.GONE);
+        }
+        if (!surfaceURL.equals(Surface.PRESET_VERTICAL)) {
+            zoomButton.setVisibility(View.GONE);
         }
 
     }
 
     private void finish() {
-        FragmentManager fm = getFragmentManager();
-        if (fm == null)
-            return;
-        fm.popBackStack();
+        popBackStack();
     }
 
     private void setPartSurface(JamPart part, Surface surface) {

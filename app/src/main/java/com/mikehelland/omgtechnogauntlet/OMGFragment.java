@@ -20,6 +20,8 @@ public class OMGFragment extends Fragment {
         this.part = part;
     }
 
+    private boolean finished = false;
+
     protected void animateFragment(OMGFragment f, int direction) {
         f.jam = jam;
         try {
@@ -54,5 +56,16 @@ public class OMGFragment extends Fragment {
                 ft.commit();
             }
         } catch (Exception ignore) {}
+    }
+
+    protected void popBackStack() {
+        if (finished) return;
+
+        FragmentManager fm = getFragmentManager();
+        if (fm != null && fm.getBackStackEntryCount() > 1) {
+            fm.popBackStack();
+        }
+
+        finished = true;
     }
 }

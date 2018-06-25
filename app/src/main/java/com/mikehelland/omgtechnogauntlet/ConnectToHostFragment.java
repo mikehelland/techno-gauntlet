@@ -119,7 +119,7 @@ public class ConnectToHostFragment extends OMGFragment {
                             if (fm != null) {
                                 int stackCount = fm.getBackStackEntryCount();
                                 for (int i = 0; i < stackCount; i++) {
-                                    fm.popBackStack();
+                                    popBackStack();
                                 }
                             }
                         }

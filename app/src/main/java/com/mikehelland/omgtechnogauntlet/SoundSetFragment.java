@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -123,9 +122,7 @@ public class SoundSetFragment extends OMGFragment {
                 if (mCallback != null)
                     mCallback.onChoice(new SoundSet(mCursor));
 
-                FragmentManager fm = getFragmentManager();
-                if (fm != null)
-                    fm.popBackStack();
+                popBackStack();
 
             }
         });
@@ -274,9 +271,7 @@ public class SoundSetFragment extends OMGFragment {
         if (mCallback != null)
             mCallback.onChoice(soundSet);
 
-        FragmentManager fm = getFragmentManager();
-        if (fm != null)
-            fm.popBackStack();
+        popBackStack();
 
     }
 
