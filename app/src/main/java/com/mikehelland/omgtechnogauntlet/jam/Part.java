@@ -28,13 +28,6 @@ class Part {
     float leftVolume = 0.75f;
     float rightVolume = 0.75f;
 
-    Note[] liveNotes = null;
-    int autoBeat = 0;
-    int[] liveNoteHandles;
-    int arpeggiate = 0;
-    int nextArpNote = 0;
-    int arpNotesCount = 0;
-
     Part(Section section) {
         uuid = UUID.randomUUID().toString();
 

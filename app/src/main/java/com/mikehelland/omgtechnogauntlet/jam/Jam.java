@@ -15,6 +15,8 @@ public class Jam {
     private Player player;
     private SoundManager soundManager;
 
+    private boolean isPlaying = false;
+
     private CopyOnWriteArrayList<OnJamChangeListener> onJamChangeListeners = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<OnKeyChangeListener> onKeyChangeListeners = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<OnBeatChangeListener> onBeatChangeListeners = new CopyOnWriteArrayList<>();
@@ -103,7 +105,8 @@ public class Jam {
     }
 
     public boolean isPlaying() {
-        return player.isPlaying();
+        return isPlaying;
+        //return player.isPlaying();
     }
 
     public void play() {
@@ -111,10 +114,13 @@ public class Jam {
     }
 
     public void play(String source) {
-        player.play(currentSection, jamParts);
+        if (!isPlaying) {
+            isPlaying = true;
+            player.play(currentSection, jamParts);
 
-        for (OnJamChangeListener listener : onJamChangeListeners) {
-            listener.onPlay(source);
+            for (OnJamChangeListener listener : onJamChangeListeners) {
+                listener.onPlay(source);
+            }
         }
     }
 
@@ -123,12 +129,13 @@ public class Jam {
     }
 
     public void stop(String source) {
-        if (player.isPlaying()) {
+        if (isPlaying) {
+            isPlaying = false;
             player.stop();
-        }
 
-        for (OnJamChangeListener listener : onJamChangeListeners) {
-            listener.onStop(source);
+            for (OnJamChangeListener listener : onJamChangeListeners) {
+                listener.onStop(source);
+            }
         }
     }
 
@@ -453,20 +460,18 @@ public class Jam {
     }
     public void startPartLiveNotes(JamPart jamPart, Note  note, int autoBeat, String source) {
         jamPart.stopPlayingSounds();
-        jamPart.live = true;
-        jamPart.liveNote = note;
+
+        jamPart.liveNotes = new LiveNotes(autoBeat, new Note[] {note});
 
         if (!player.isPlaying() || autoBeat == 0) {
             player.playPartLiveNote(jamPart.part, note);
             note.setBeats(1.0f / currentSection.beatParameters.subbeats);
-            if (player.isPlaying() && !jamPart.getMute()) {
-                jamPart.liveNote = NoteWriter.addNote(note, Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
+            if (isPlaying && !jamPart.getMute()) {
+                jamPart.liveNotes.liveNote = NoteWriter.addNote(note, Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
             }
         }
 
         note.setBeats(1.0f / currentSection.beatParameters.subbeats);
-        jamPart.part.liveNotes =  new Note[] {note};
-        jamPart.part.autoBeat = autoBeat;
 
         for (OnJamChangeListener listener : onJamChangeListeners) {
             listener.onPartStartLiveNotes(jamPart, note, autoBeat, source);
@@ -478,15 +483,15 @@ public class Jam {
     }
     public void updatePartLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source) {
         Log.d("MGH updatelive note", "" + notes[0].getBeats());
-        jamPart.part.liveNotes =  notes;
+        jamPart.liveNotes.notes =  notes;
         if (!player.isPlaying() || autoBeat == 0) {
             notes[0].setBeats(1.0f / currentSection.beatParameters.subbeats);
             player.playPartLiveNotes(jamPart.part, notes);
-            if (!jamPart.getMute()) {
-                jamPart.liveNote = NoteWriter.addNote(notes[0], Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
+            if (isPlaying && !jamPart.getMute()) {
+                jamPart.liveNotes.liveNote = NoteWriter.addNote(notes[0], Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
             }
         }
-        jamPart.part.autoBeat = autoBeat;
+        jamPart.liveNotes.autoBeat = autoBeat;
 
         for (OnJamChangeListener listener : onJamChangeListeners) {
             listener.onPartUpdateLiveNotes(jamPart, notes, autoBeat, source);
@@ -497,7 +502,7 @@ public class Jam {
         removeFromPartLiveNotes(jamPart, note, notes, null);
     }
     public void removeFromPartLiveNotes(JamPart jamPart, Note note, Note[] notes, String source) {
-        jamPart.part.liveNotes =  notes;
+        jamPart.liveNotes.notes =  notes;
         player.stopPartLiveNote(jamPart.part, note);
 
         for (OnJamChangeListener listener : onJamChangeListeners) {
@@ -509,12 +514,11 @@ public class Jam {
         endPartLiveNotes(jamPart, null);
     }
     public void endPartLiveNotes(JamPart jamPart, String source) {
-        if (jamPart.part.liveNotes.length > 0) {
-            player.stopPartLiveNote(jamPart.part, jamPart.part.liveNotes[0]);
+        if (jamPart.liveNotes.notes.length > 0) {
+            player.stopPartLiveNote(jamPart.part, jamPart.liveNotes.notes[0]);
         }
-        jamPart.part.liveNotes = null;
-        jamPart.live = false;
-        jamPart.liveNote = null;
+        jamPart.liveNotes = null;
+
         jamPart.partPlayer.nextNoteIndex = -1;
 
         for (OnJamChangeListener listener : onJamChangeListeners) {

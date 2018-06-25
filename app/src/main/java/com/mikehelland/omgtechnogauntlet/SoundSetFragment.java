@@ -274,9 +274,9 @@ public class SoundSetFragment extends OMGFragment {
         if (mCallback != null)
             mCallback.onChoice(soundSet);
 
-        Activity activity = getActivity();
-        if (activity != null)
-            activity.getFragmentManager().popBackStack();
+        FragmentManager fm = getFragmentManager();
+        if (fm != null)
+            fm.popBackStack();
 
     }
 

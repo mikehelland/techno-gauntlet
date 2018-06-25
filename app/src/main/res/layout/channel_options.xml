@@ -17,27 +17,12 @@
             android:textAlignment="center"/>
 
         <Button
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Choose a different SoundSet"
             android:id="@+id/choose_a_soundset"/>
 
-        <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sample Playback Speed:"/>
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="100%"
-            android:id="@+id/reset_sample_speed"/>
-
-        <SeekBar
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/channel_speed_seekbar"
-        />
 
         <Space
             android:layout_width="match_parent"

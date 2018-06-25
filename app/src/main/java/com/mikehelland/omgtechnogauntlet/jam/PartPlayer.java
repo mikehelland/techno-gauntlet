@@ -50,29 +50,30 @@ class PartPlayer {
         if (jamPart.useSequencer()) {
             getDrumbeatSounds(commands, subbeat);
         } else {
-            if (part.liveNotes == null || part.liveNotes.length == 0) {
+            LiveNotes liveNotes = jamPart.liveNotes;
+            if (liveNotes == null || liveNotes.notes.length == 0) {
                 getNoteSounds(commands, subbeat, chord);
             }
-            else if (part.autoBeat > 0 && (subbeat % part.autoBeat) == 0) {
-                if (nextLiveNoteI >= part.liveNotes.length) {
+            else if (liveNotes.autoBeat > 0 && (subbeat % liveNotes.autoBeat) == 0) {
+                if (nextLiveNoteI >= liveNotes.notes.length) {
                     nextLiveNoteI = 0;
                 }
                 if (lastLiveNote != null) {
                     //lastLiveNote.playingHandle
                 }
-                jamPart.liveNote = part.liveNotes[nextLiveNoteI].cloneNote();
-                jamPart.liveNote.setBeats(part.autoBeat / (float)beatParameters.subbeats);
+                liveNotes.liveNote = liveNotes.notes[nextLiveNoteI].cloneNote();
+                liveNotes.liveNote.setBeats(liveNotes.autoBeat / (float)beatParameters.subbeats);
                 //jamPart.liveNote.setBeats(1.0f / section.beatParameters.subbeats);
                 if (!jamPart.getMute()) {
-                    jamPart.liveNote = NoteWriter.addNote(jamPart.liveNote, subbeat, jamPart.getNotes(), beatParameters);
+                    liveNotes.liveNote = NoteWriter.addNote(liveNotes.liveNote, subbeat, jamPart.getNotes(), beatParameters);
                 }
-                commands.add(new PlaySoundCommand(part, jamPart.liveNote));
-                lastLiveNote = part.liveNotes[nextLiveNoteI];
+                commands.add(new PlaySoundCommand(part, liveNotes.liveNote));
+                lastLiveNote = liveNotes.notes[nextLiveNoteI];
                 nextLiveNoteI++;
             }
-            else if (jamPart.live && jamPart.liveNote != null && part.autoBeat == 0) {
+            else if (liveNotes.liveNote != null && liveNotes.autoBeat == 0) {
                 if (!jamPart.getMute()) {
-                    NoteWriter.extendNote(jamPart.liveNote, jamPart.part.notes, beatParameters);
+                    NoteWriter.extendNote(liveNotes.liveNote, jamPart.part.notes, beatParameters);
                 }
             }
         }

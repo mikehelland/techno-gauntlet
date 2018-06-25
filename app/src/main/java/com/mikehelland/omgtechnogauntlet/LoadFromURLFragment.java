@@ -3,6 +3,7 @@ package com.mikehelland.omgtechnogauntlet;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -110,7 +111,10 @@ public class LoadFromURLFragment extends OMGFragment {
                 break;
         }
 
-        activity.getFragmentManager().popBackStack();
+        FragmentManager fm = getFragmentManager();
+        if (fm != null) {
+            fm.popBackStack();
+        }
     }
 
     private String getTypeFromJSON(String json) {

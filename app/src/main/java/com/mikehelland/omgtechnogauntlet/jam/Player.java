@@ -13,7 +13,7 @@ class Player {
     final static int STATE_STOPPING = 3;
     final static int STATE_FINISHED = 4;
 
-    private int state = 0;
+    private volatile int state = 0;
 
     CopyOnWriteArrayList<OnSubbeatListener> onSubbeatListeners = new CopyOnWriteArrayList<>();
 
@@ -51,11 +51,10 @@ class Player {
         this.jamParts = jamParts;
 
         if (state != STATE_PLAYING) {
+            state = STATE_PLAYING;
             playbackThread = new PlaybackThread();
             playbackThread.start();
         }
-
-        state = STATE_PLAYING;
 
         //todo call onStart()
     }

@@ -8,9 +8,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class JamPart {
 
-    //this is true when a user is playing the part live, not a recorded part
-    boolean live = false;
-    Note liveNote = null;
+    //this for holding data about live input from the user
+    LiveNotes liveNotes = null;
 
     Part part;
     PartPlayer partPlayer = null;

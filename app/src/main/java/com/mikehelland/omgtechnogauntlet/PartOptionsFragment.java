@@ -1,13 +1,11 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.SeekBar;
 
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
@@ -100,40 +98,6 @@ public class PartOptionsFragment extends OMGFragment {
         });
         rbFretboard.setVisibility(View.GONE);
 
-        final Button resetButton = (Button)mView.findViewById(R.id.reset_sample_speed);
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetButton.setText("100%");
-                getJam().setPartWarp(part, 1, null);
-            }
-        });
-
-        SeekBar speedBar = (SeekBar)mView.findViewById(R.id.channel_speed_seekbar);
-        speedBar.setMax(200);
-        float speed = 100 * part.getSpeed();
-        speedBar.setProgress((int)speed);
-        resetButton.setText(Math.round(part.getSpeed() * 100) + "% - Press to Reset");
-
-        speedBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (b) {
-                    float newSpeed = i / 100.0f;
-                    resetButton.setText(Math.round(newSpeed * 100) + "% - Press to Reset");
-                    if (newSpeed > 0) {
-                        getJam().setPartWarp(part, newSpeed, null);
-                    }
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) { }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) { }
-        });
-
         mView.findViewById(R.id.choose_a_soundset).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -191,10 +155,10 @@ public class PartOptionsFragment extends OMGFragment {
     }
 
     private void finish() {
-        Activity activity = getActivity();
-        if (activity == null)
+        FragmentManager fm = getFragmentManager();
+        if (fm == null)
             return;
-        activity.getFragmentManager().popBackStack();
+        fm.popBackStack();
     }
 
     private void setPartSurface(JamPart part, Surface surface) {
