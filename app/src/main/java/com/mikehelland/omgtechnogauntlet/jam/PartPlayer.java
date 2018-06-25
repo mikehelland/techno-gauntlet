@@ -83,7 +83,7 @@ class PartPlayer {
         if (!part.audioParameters.mute) {
             int i = 0;
             for (SequencerTrack track : part.sequencerPattern.getTracks()) {
-                if (track.getData()[subbeat] && !track.isMuted()) {
+                if (track.getData()[subbeat] && !track.isMuted() && part.poolIds != null) {
                     commands.add(new PlaySoundCommand(i < part.poolIds.length ? part.poolIds[i] : -1,
                             -1, -1,
                             track.audioParameters.volume * part.audioParameters.volume,
