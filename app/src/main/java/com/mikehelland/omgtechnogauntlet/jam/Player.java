@@ -122,10 +122,12 @@ class Player {
     }
 
     void stop() {
+        Log.d("MGH stop1 playback", "" + Thread.currentThread().getId());
         state = STATE_STOPPING;
 
         if (playbackThread != null) {
             playbackThread.cancel = true;
+            Log.d("MGH stop2 playback", "" + playbackThread.getId());
         }
 
         if (section != null) {

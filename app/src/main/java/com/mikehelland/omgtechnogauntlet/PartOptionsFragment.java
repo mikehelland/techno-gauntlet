@@ -116,10 +116,12 @@ public class PartOptionsFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 //ZoomFragment f = new ZoomFragment();
-                GuitarFragment f = new GuitarFragment();
-                f.setPart(getPart());
-                f.setZoomModeOn();
-                animateFragment(f, 0);
+                if (!part.useSequencer()) {
+                    GuitarFragment f = new GuitarFragment();
+                    f.setPart(getPart());
+                    f.setZoomModeOn();
+                    animateFragment(f, 0);
+                }
             }
         });
 
@@ -127,9 +129,11 @@ public class PartOptionsFragment extends OMGFragment {
         subMixerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TrackSubMixerFragment f = new TrackSubMixerFragment();
-                f.setPart(part);
-                animateFragment(f, 0);
+                if (part.useSequencer()) {
+                    TrackSubMixerFragment f = new TrackSubMixerFragment();
+                    f.setPart(part);
+                    animateFragment(f, 0);
+                }
             }
         });
         if (!surfaceURL.equals(Surface.PRESET_SEQUENCER)) {
@@ -139,9 +143,11 @@ public class PartOptionsFragment extends OMGFragment {
         warpTracksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TrackWarpFragment f = new TrackWarpFragment();
-                f.setPart(part);
-                animateFragment(f, 0);
+                if (part.useSequencer()) {
+                    TrackWarpFragment f = new TrackWarpFragment();
+                    f.setPart(part);
+                    animateFragment(f, 0);
+                }
             }
         });
         if (!surfaceURL.equals(Surface.PRESET_SEQUENCER)) {
