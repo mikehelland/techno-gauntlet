@@ -68,7 +68,8 @@ class PartPlayer {
                     liveNotes.liveNote = NoteWriter.addNote(liveNotes.liveNote, subbeat, jamPart.getNotes(), beatParameters);
                 }
                 commands.add(new PlaySoundCommand(part, liveNotes.liveNote));
-                lastLiveNote = liveNotes.notes[nextLiveNoteI];
+                //this caused an arrayindexoutofbounds, probably because the array was shortened by the ui thread
+                // lastLiveNote = liveNotes.notes[nextLiveNoteI];
                 nextLiveNoteI++;
             }
             else if (liveNotes.liveNote != null && liveNotes.autoBeat == 0) {

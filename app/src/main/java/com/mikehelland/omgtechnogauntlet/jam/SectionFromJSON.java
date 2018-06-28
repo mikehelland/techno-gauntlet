@@ -149,9 +149,9 @@ class SectionFromJSON {
 
             surface.setName(surfaceJSONObject.getString("name"));
             surface.setURL(surfaceJSONObject.getString("url"));
-            if (jsonData.has("skipBottom") && jsonData.has("skipTop")) {
-                surface.setSkipBottomAndTop(jsonData.getInt("skipBottom"),
-                        jsonData.getInt("skipTop"));
+            if (surfaceJSONObject.has("skipBottom") && surfaceJSONObject.has("skipTop")) {
+                surface.setSkipBottomAndTop(surfaceJSONObject.getInt("skipBottom"),
+                        surfaceJSONObject.getInt("skipTop"));
             }
         }
         else if (jsonData.has("surfaceURL")) { //the old way

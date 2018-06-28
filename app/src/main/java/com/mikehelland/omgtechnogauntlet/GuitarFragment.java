@@ -15,6 +15,7 @@ import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
  */
 public class GuitarFragment extends OMGFragment {
 
+    private VerticalView guitarView;
     private OnSubbeatListener onSubbeatListener;
 
     private boolean mZoomMode = false;
@@ -25,29 +26,9 @@ public class GuitarFragment extends OMGFragment {
         View view = inflater.inflate(R.layout.guitar_fragment,
                 container, false);
 
-        final VerticalView guitarView = (VerticalView) view.findViewById(R.id.guitarfrets);
+        guitarView = (VerticalView) view.findViewById(R.id.guitarfrets);
 
-        VerticalView.OnGestureListener onGestureListener = new VerticalView.OnGestureListener() {
-            @Override
-            void onStart(Note note, int autoBeat) {
-                getJam().startPartLiveNotes(getPart(), note, autoBeat);
-            }
-
-            @Override
-            void onUpdate(Note[] notes, int autoBeat) {
-                getJam().updatePartLiveNotes(getPart(), notes, autoBeat);
-            }
-
-            @Override
-            void onRemove(Note note, Note[] notes) {
-                getJam().removeFromPartLiveNotes(getPart(), note, notes);
-            }
-
-            @Override
-            void onEnd() {
-                getJam().endPartLiveNotes(getPart());
-            }
-        };
+        VerticalView.OnGestureListener onGestureListener = makeOnGestureListener();
 
         guitarView.setJam(getJam(), getPart(), onGestureListener);
 
@@ -60,7 +41,54 @@ public class GuitarFragment extends OMGFragment {
 
         getJam().addOnSubbeatListener(onSubbeatListener);
 
+        if (mZoomMode) {
+            guitarView.setZoomModeOn();
+        }
+
         return view;
+    }
+
+    private VerticalView.OnGestureListener makeOnGestureListener() {
+        if (!mZoomMode) {
+            return new VerticalView.OnGestureListener() {
+                @Override
+                void onStart(Note note, int autoBeat) {
+                    getJam().startPartLiveNotes(getPart(), note, autoBeat);
+                }
+
+                @Override
+                void onUpdate(Note[] notes, int autoBeat) {
+                    getJam().updatePartLiveNotes(getPart(), notes, autoBeat);
+                }
+
+                @Override
+                void onRemove(Note note, Note[] notes) {
+                    getJam().removeFromPartLiveNotes(getPart(), note, notes);
+                }
+
+                @Override
+                void onEnd() {
+                    getJam().endPartLiveNotes(getPart());
+                }
+            };
+        }
+        else {
+            return new VerticalView.OnGestureListener() {
+                @Override
+                void onStart(Note note, int autoBeat) { }
+
+                @Override
+                void onUpdate(Note[] notes, int autoBeat) { }
+
+                @Override
+                void onRemove(Note note, Note[] notes) { }
+
+                @Override
+                void onEnd() {
+                    getJam().setPartZoom(getPart(), guitarView.getSkipBottom(), guitarView.getSkipTop());
+                }
+            };
+        }
     }
 
     void setZoomModeOn() {

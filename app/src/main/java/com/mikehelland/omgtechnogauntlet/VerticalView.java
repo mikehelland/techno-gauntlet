@@ -433,8 +433,9 @@ public class VerticalView extends View {
                 zoomingSkipTop = 0;
                 zoomingSkipBottom = 0;
 
-                //todo thru the jam you say?
-                // mPart.getSurface().setSkipBottomAndTop(skipBottom, skipTop);
+                if (onGestureListener != null) {
+                    onGestureListener.onEnd();
+                }
 
                 break;
             }
@@ -611,6 +612,14 @@ public class VerticalView extends View {
             notes[i] = touches.get(i).note;
         }
         return notes;
+    }
+
+    int getSkipTop() {
+        return skipTop;
+    }
+
+    int getSkipBottom() {
+        return skipBottom;
     }
 
     abstract static class OnGestureListener {

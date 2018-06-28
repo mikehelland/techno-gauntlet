@@ -622,4 +622,8 @@ public class Jam {
             i++;
         }
     }
+
+    public void setPartZoom(JamPart part, int skipBottom, int skipTop) {
+        part.getSurface().setSkipBottomAndTop(skipBottom, skipTop);
+    }
 }
