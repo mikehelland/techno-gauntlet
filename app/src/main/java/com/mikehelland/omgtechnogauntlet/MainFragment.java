@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnBeatChangeListener;
@@ -66,6 +67,9 @@ public class MainFragment extends OMGFragment {
     private void setupPanels() {
 
         mContainer = (ViewGroup) mView.findViewById(R.id.channel_list);
+        while (mContainer.getChildCount() > 1) {
+            mContainer.removeViewAt(0);
+        }
         //View controls;
         for (JamPart channel : getJam().getParts()) {
             setupPanel(channel);
@@ -420,13 +424,28 @@ public class MainFragment extends OMGFragment {
                         }
                     });
             }
+
             @Override
-            public void onNewPart(final JamPart channel) {
+            public void onNewJam(Jam jam, String source) {
+                if (source != null) {
+                    Activity activity = getActivity(); if (activity == null)  return;
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setupPanels();
+                            updateUI();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onNewPart(final JamPart part, String source) {
                 Activity activity = getActivity(); if (activity == null)  return;
                 activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            setupPanel(channel);
+                            setupPanel(part);
                         }
                     });
             }

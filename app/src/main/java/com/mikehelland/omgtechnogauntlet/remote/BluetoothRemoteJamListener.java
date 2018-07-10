@@ -1,6 +1,7 @@
 package com.mikehelland.omgtechnogauntlet.remote;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
@@ -90,7 +91,12 @@ public class BluetoothRemoteJamListener extends OnJamChangeListener {
     }
 
     @Override
-    public void onNewPart(JamPart part) {
+    public void onNewJam(Jam jam, String source) {
+
+    }
+
+    @Override
+    public void onNewPart(JamPart part, String source) {
         //bluetoothManager.sendCommandToDevices(CommandHelper.getNewPartCommand(part), null);
     }
 

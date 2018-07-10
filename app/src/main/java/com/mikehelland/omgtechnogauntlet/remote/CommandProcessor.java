@@ -276,7 +276,7 @@ public class CommandProcessor extends BluetoothDataCallback {
                 return;
             case JAM_JSON:
                 if (mSync) {
-                    mJam.loadFromJSON(value);
+                    mJam.loadFromJSON(value, getAddress());
                 }
                 return;
         }
@@ -649,7 +649,12 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void clearPart(String value) {
-        mJam.clearPart(mJam.getPart(value), getAddress());
+        JamPart jamPart = mJam.getPart(value);
+        if (jamPart == null) {
+            return;
+        }
+
+        mJam.clearPart(jamPart, getAddress());
     }
 
     private String getAddress() {
@@ -662,6 +667,10 @@ public class CommandProcessor extends BluetoothDataCallback {
         String[] params = value.split(",");
         JamPart jamPart = mJam.getPart(params[0]);
 
+        if (jamPart == null) {
+            return;
+        }
+
         int track = Integer.parseInt(params[1]);
         int subbeat = Integer.parseInt(params[2]);
         boolean patternValue = !params[3].equals("0");
@@ -673,18 +682,29 @@ public class CommandProcessor extends BluetoothDataCallback {
     private void onPartLiveStart(String value) {
 
         String[] noteInfo = value.split(",");
+
+        JamPart jamPart = mJam.getPart(noteInfo[0]);
+        if (jamPart == null) {
+            return;
+        }
+
         int autoBeat = Integer.parseInt(noteInfo[1]);
         int basicNoteNumber = Integer.parseInt(noteInfo[2]);
         int instrumentNoteNumber = Integer.parseInt(noteInfo[3]);
 
         Note note = new Note(false, basicNoteNumber, 0, instrumentNoteNumber, -1);
 
-        mJam.startPartLiveNotes(mJam.getPart(noteInfo[0]), note, autoBeat, getAddress());
+        mJam.startPartLiveNotes(jamPart, note, autoBeat, getAddress());
     }
 
     private void onPartLiveUpdate(String value) {
 
         String[] noteInfo = value.split(",");
+        JamPart jamPart = mJam.getPart(noteInfo[0]);
+        if (jamPart == null) {
+            return;
+        }
+
         int autoBeat = Integer.parseInt(noteInfo[1]);
 
         int i = 2;
@@ -699,12 +719,17 @@ public class CommandProcessor extends BluetoothDataCallback {
                     basicNote, 0, instrumentNote, -1);
         }
 
-        mJam.updatePartLiveNotes(mJam.getPart(noteInfo[0]), notes, autoBeat, getAddress());
+        mJam.updatePartLiveNotes(jamPart, notes, autoBeat, getAddress());
     }
 
     private void onPartLiveRemove(String value) {
 
         String[] noteInfo = value.split(",");
+        JamPart jamPart = mJam.getPart(noteInfo[0]);
+        if (jamPart == null) {
+            return;
+        }
+
         int basicNoteNumber = Integer.parseInt(noteInfo[1]);
         int instrumentNoteNumber = Integer.parseInt(noteInfo[2]);
 
@@ -722,11 +747,16 @@ public class CommandProcessor extends BluetoothDataCallback {
                     basicNote, 0, instrumentNote, -1);
         }
 
-        mJam.removeFromPartLiveNotes(mJam.getPart(noteInfo[0]), note, notes, getAddress());
+        mJam.removeFromPartLiveNotes(jamPart, note, notes, getAddress());
     }
 
     private void onPartLiveEnd(String value) {
-        mJam.endPartLiveNotes(mJam.getPart(value), getAddress());
+        JamPart jamPart = mJam.getPart(value);
+        if (jamPart == null) {
+            return;
+        }
+
+        mJam.endPartLiveNotes(jamPart, getAddress());
     }
 
     private void setScale(String value) {

@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
@@ -108,7 +109,12 @@ public class ChordsFragment extends OMGFragment {
             mChordsView.postInvalidate();
         }
 
-        @Override public void onNewPart(JamPart part) { }
+        @Override
+        public void onNewJam(Jam jam, String source) {
+            popBackStack();
+        }
+
+        @Override public void onNewPart(JamPart part, String source) { }
         @Override public void onPlay(String source) { }
         @Override public void onStop(String source) { }
         @Override public void onNewLoop(String source) { }

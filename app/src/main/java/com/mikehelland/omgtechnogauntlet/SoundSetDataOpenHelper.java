@@ -271,17 +271,19 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         final SQLiteDatabase db = mDB;
         Cursor existing = db.rawQuery(
                 "SELECT _id FROM soundsets WHERE url='" + data.getAsString("url") + "'", null);
+        long id;
         if (existing.getCount() > 0) {
             existing.moveToFirst();
-            long id = existing.getLong(0);
+            id = existing.getLong(0);
             db.update("soundsets", data, "_id=" + id, null);
             data.put("_id", id);
         }
         else {
-            data.put("_id", db.insert("soundsets", null, data));
+            id = db.insert("soundsets", null, data);
+            data.put("_id", id);
         }
         existing.close();
-        return new SoundSet(data);
+        return new SoundSet(data.getAsString("url"), id, data.getAsString("data"));
     }
 
     private SoundSet getSoundSetByQuery(String where) {
@@ -296,8 +298,11 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         }
         else {
             cursor.moveToFirst();
-            //todo this cursor thing can't be right
-            soundset = new SoundSet(cursor);
+            String url = cursor.getString(cursor.getColumnIndex("url"));
+            long id = cursor.getLong(cursor.getColumnIndex("_id"));
+            String json = cursor.getString(cursor.getColumnIndex("data"));
+            soundset = new SoundSet(url, id, json);
+
             if (!soundset.isValid()) {
                 cErrorMessage = "Not a valid soundset";
                 soundset = null;

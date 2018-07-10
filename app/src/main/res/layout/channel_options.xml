@@ -91,7 +91,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Remove Part"
-            android:id="@+id/remove_channel_button"/>
+            android:id="@+id/remove_channel_button"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

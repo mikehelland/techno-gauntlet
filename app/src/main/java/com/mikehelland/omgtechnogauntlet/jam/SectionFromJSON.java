@@ -175,6 +175,10 @@ class SectionFromJSON {
             if (jsonObject.has("url")) {
                 soundSet.setURL(jsonObject.getString("url"));
             }
+
+            if (jsonObject.has("data")) {
+                soundSet.load(jsonObject);
+            }
         }
         else { // the old way
             if (jsonData.has("soundsetURL")) { //the old way

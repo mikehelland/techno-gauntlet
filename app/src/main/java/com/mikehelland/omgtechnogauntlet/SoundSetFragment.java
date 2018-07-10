@@ -118,9 +118,13 @@ public class SoundSetFragment extends OMGFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 mCursor.moveToPosition(i);
+                String url = mCursor.getString(mCursor.getColumnIndex("url"));
+                long id = mCursor.getLong(mCursor.getColumnIndex("_id"));
+                String json = mCursor.getString(mCursor.getColumnIndex("data"));
+                SoundSet soundSet = new SoundSet(url, id, json);
 
                 if (mCallback != null)
-                    mCallback.onChoice(new SoundSet(mCursor));
+                    mCallback.onChoice(soundSet);
 
                 popBackStack();
 

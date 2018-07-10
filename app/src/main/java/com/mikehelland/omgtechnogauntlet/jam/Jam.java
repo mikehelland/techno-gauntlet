@@ -39,6 +39,10 @@ public class Jam {
     }
 
     public String loadFromJSON(String json) {
+        return loadFromJSON(json, null);
+    }
+
+    public String loadFromJSON(String json, String source) {
 
         String errorMessage = loadJSON(json);
         if (errorMessage != null) {
@@ -66,6 +70,10 @@ public class Jam {
                 }
             }
         }).start();
+
+        for (OnJamChangeListener listener : onJamChangeListeners) {
+            listener.onNewJam(this, source);
+        }
 
         return null; //all seems good, no error message and the jam is loading
     }
@@ -502,6 +510,9 @@ public class Jam {
         removeFromPartLiveNotes(jamPart, note, notes, null);
     }
     public void removeFromPartLiveNotes(JamPart jamPart, Note note, Note[] notes, String source) {
+        if (jamPart.liveNotes == null) {
+            return;
+        }
         jamPart.liveNotes.notes =  notes;
         player.stopPartLiveNote(jamPart.part, note);
 
@@ -514,6 +525,9 @@ public class Jam {
         endPartLiveNotes(jamPart, null);
     }
     public void endPartLiveNotes(JamPart jamPart, String source) {
+        if (jamPart.liveNotes == null) {
+            return;
+        }
         if (jamPart.liveNotes.notes.length > 0) {
             player.stopPartLiveNote(jamPart.part, jamPart.liveNotes.notes[0]);
         }
@@ -530,10 +544,18 @@ public class Jam {
         setPartTrackValue(jamPart, track, subbeat, value, null);
     }
     public void setPartTrackValue(JamPart jamPart, int track, int subbeat, boolean value, String source) {
-        jamPart.getPattern()[track][subbeat] = value;
+        boolean good = false;
+        try {
+            jamPart.getPattern()[track][subbeat] = value;
+            good = true;
+        }
+        catch (NullPointerException ignore) { }
+        catch (ArrayIndexOutOfBoundsException ignore) { }
 
-        for (OnJamChangeListener listener : onJamChangeListeners) {
-            listener.onPartTrackValueChange(jamPart, track, subbeat, value, source);
+        if (good) {
+            for (OnJamChangeListener listener : onJamChangeListeners) {
+                listener.onPartTrackValueChange(jamPart, track, subbeat, value, source);
+            }
         }
     }
 
@@ -574,8 +596,11 @@ public class Jam {
         }
     }
 
-
     public void newPart(SoundSet soundSet) {
+        newPart(soundSet, null);
+    }
+
+    public void newPart(SoundSet soundSet, String source) {
         Part part = new Part(currentSection);
         part.soundSet = soundSet;
         currentSection.parts.add(part);
@@ -592,6 +617,10 @@ public class Jam {
 
         prepareSoundSetForPart(part);
         loadSounds();
+
+        for (OnJamChangeListener listener : onJamChangeListeners) {
+            listener.onNewPart(jamPart, source);
+        }
     }
 
     private void loadSounds() {

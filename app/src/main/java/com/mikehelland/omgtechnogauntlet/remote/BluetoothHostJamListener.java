@@ -1,6 +1,7 @@
 package com.mikehelland.omgtechnogauntlet.remote;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
@@ -10,12 +11,14 @@ import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
  *
  */
 
-public class BluetoothHostJamListener extends OnJamChangeListener {
+public class BluetoothHostJamListener extends   OnJamChangeListener {
     
     private BluetoothManager bluetoothManager;
+    private Jam jam;
 
-    BluetoothHostJamListener(BluetoothManager bluetoothManager) {
+    BluetoothHostJamListener(Jam jam, BluetoothManager bluetoothManager) {
         this.bluetoothManager = bluetoothManager;
+        this.jam = jam;
     }
 
     @Override
@@ -31,8 +34,14 @@ public class BluetoothHostJamListener extends OnJamChangeListener {
     }
 
     @Override
-    public void onNewPart(JamPart part) {
-        bluetoothManager.sendCommandToDevices(CommandProcessor.getNewPartCommand(part), null);
+    public void onNewJam(Jam jam, String source) {
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAM_JSON, jam.getData(), source);
+    }
+
+    @Override
+    public void onNewPart(JamPart part, String source) {
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAM_JSON, jam.getData(), source);
+        //bluetoothManager.sendCommandToDevices(CommandProcessor.getNewPartCommand(part), null);
     }
 
     @Override

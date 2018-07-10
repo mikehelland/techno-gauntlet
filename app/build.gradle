@@ -29,8 +29,8 @@ android {
         applicationId "com.mikehelland.omgtechnogauntlet"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 20
-        versionName "5.0"
+        versionCode 60
+        versionName "6.0"
     }
     buildTypes {
         release {

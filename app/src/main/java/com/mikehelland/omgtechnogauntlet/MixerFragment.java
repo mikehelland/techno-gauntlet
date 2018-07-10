@@ -1,11 +1,15 @@
 package com.mikehelland.omgtechnogauntlet;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnMixerChangeListener;
 
 import java.util.HashMap;
@@ -17,9 +21,10 @@ public class MixerFragment extends OMGFragment {
     private HashMap<String, View> mPanels = new HashMap<>();
 
     private OnMixerChangeListener onMixerChangeListener;
+    private OnJamChangeListener onJamChangeListener;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         mView = inflater.inflate(R.layout.mixer_fragment,
@@ -65,14 +70,44 @@ public class MixerFragment extends OMGFragment {
             }
         };
 
+        onJamChangeListener = new OnJamChangeListener() {
+
+            @Override
+            public void onNewJam(Jam jam, String source) {
+                Activity activity = getActivity();
+                if (activity == null) return;
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setupPanels(inflater);
+                    }
+                });
+            }
+
+            @Override public void onChordProgressionChange(int[] chords, String source) { }
+            @Override public void onNewPart(JamPart part, String source) { }
+            @Override public void onPlay(String source) { }
+            @Override public void onStop(String source) { }
+            @Override public void onNewLoop(String source) { }
+            @Override public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) { }
+            @Override public void onPartStartLiveNotes(JamPart jamPart, Note note, int autoBeat, String source) { }
+            @Override public void onPartUpdateLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source) { }
+            @Override public void onPartRemoveLiveNotes(JamPart jamPart, Note note, Note[] notes, String source) { }
+            @Override public void onPartEndLiveNotes(JamPart jamPart, String source) { }
+            @Override public void onPartClear(JamPart jamPart, String source) { }
+        };
+
         getJam().addOnMixerChangeListener(onMixerChangeListener);
+        getJam().addOnJamChangeListener(onJamChangeListener);
 
         return mView;
     }
 
     void setupPanels(LayoutInflater inflater) {
 
+        mPanels.clear();
         ViewGroup container = (ViewGroup)mView.findViewById(R.id.channel_list);
+        container.removeAllViews();
         View controls;
         for (final JamPart part : getJam().getParts()) {
 
@@ -124,6 +159,7 @@ public class MixerFragment extends OMGFragment {
     public void onPause() {
         super.onPause();
         getJam().removeOnMixerChangeListener(onMixerChangeListener);
+        getJam().removeOnJamChangeListener(onJamChangeListener);
     }
 
 }

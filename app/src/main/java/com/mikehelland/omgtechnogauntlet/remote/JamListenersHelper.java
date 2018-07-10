@@ -7,7 +7,7 @@ import com.mikehelland.omgtechnogauntlet.jam.Jam;
 public class JamListenersHelper {
 
     public static void setJamListenersForHost(Jam jam, BluetoothManager bluetoothManager) {
-        jam.addOnJamChangeListener(new BluetoothHostJamListener(bluetoothManager));
+        jam.addOnJamChangeListener(new BluetoothHostJamListener(jam, bluetoothManager));
         jam.addOnKeyChangeListener(new BluetoothHostKeyListener(bluetoothManager));
         jam.addOnBeatChangeListener(new BluetoothHostBeatListener(bluetoothManager));
         jam.addOnMixerChangeListener(new BluetoothHostMixerListener(bluetoothManager));

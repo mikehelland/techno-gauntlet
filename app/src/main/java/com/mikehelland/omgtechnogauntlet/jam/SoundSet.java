@@ -1,7 +1,5 @@
 package com.mikehelland.omgtechnogauntlet.jam;
 
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -12,8 +10,8 @@ import java.util.ArrayList;
 
 public class SoundSet {
 
-    private String mName;
-    private String mURL;
+    private String mName = "";
+    private String mURL = "";
     private long mID;
     private ArrayList<Sound> mSounds = new ArrayList<>();
 
@@ -38,108 +36,107 @@ public class SoundSet {
 
     SoundSet() {}
 
-    //todo Cursor!?!
-    public SoundSet(Cursor cursor) {
-        mName = cursor.getString(cursor.getColumnIndex("name"));
-        mURL = cursor.getString(cursor.getColumnIndex("url"));
-        mID = cursor.getLong(cursor.getColumnIndex("_id"));
+    public SoundSet(String url, long id, String json) {
+        mURL = url;
+        mID = id;
 
-        mIsValid = loadFromJSON(cursor.getString(cursor.getColumnIndex("data")));
-    }
-
-    public SoundSet(ContentValues data) {
-        mName = (String)data.get("name");
-        mURL = (String)data.get("url");
-        mID = (long)data.get("_id");
-
-        mIsValid = loadFromJSON((String)data.get("data"));
-    }
-
-    SoundSet(SoundSet soundSet) {
-        mName = soundSet.getName();
-        mURL = soundSet.getURL();
-        mID = soundSet.getID();
-
-        mIsValid = loadFromJSON(soundSet.mJSON);
+        mIsValid = loadFromJSON(json);
     }
 
     public boolean isValid() {
         return mIsValid;
     }
 
-    private boolean loadFromJSON(String json) {
+
+    boolean load(JSONObject soundSet) throws JSONException {
+        mIsValid = false;
+
+        if (soundSet.has("url") && mURL.length() == 0) {
+            mURL = soundSet.getString("url");
+        }
+        if (!soundSet.has("url") && mURL.length() > 0) {
+            soundSet.put("url", mURL);
+        }
+
+        mJSON = soundSet.toString();
+
+        String type = soundSet.getString("type");
+        if (!"SOUNDSET".equals(type)) {
+            Log.e("MGH", "soundset not type=SOUNDSET");
+            return false;
+        }
+
+        mName = soundSet.getString("name");
+        mIsSoundFont = soundSet.has("soundFont") && soundSet.getBoolean("soundFont");
+
+        mChromatic = soundSet.has("chromatic") && soundSet.getBoolean("chromatic");
+        if (soundSet.has("lowNote")) {
+            mLowNote = soundSet.getInt("lowNote");
+        }
+        if (soundSet.has("highNote")) {
+            mHighNote = soundSet.getInt("highNote");
+        }
+
+        if (soundSet.has("defaultSurface")) {
+            mDefaultSurface = soundSet.getString("defaultSurface");
+        }
+
+        //todo should probably have an osc settings instead of read the url
+        mIsOscillator = mURL != null && mURL.startsWith("PRESET_OSC_");
+        if (mIsOscillator) {
+            mOscillator = new Oscillator(new OscillatorSettings(mURL));
+            return true;
+        }
+
+        JSONArray data = soundSet.getJSONArray("data");
+
+        if (soundSet.has("prefix")) {
+            mPrefix = soundSet.getString("prefix");
+        }
+        if (soundSet.has("postfix")) {
+            mPostfix = soundSet.getString("postfix");
+        }
+
+        if (!mChromatic) {
+            mLowNote = 0;
+            mHighNote = data.length() - 1;
+        }
+        else if (!soundSet.has("highNote")) {
+            mHighNote = mLowNote + data.length() - 1;
+        }
+
+        JSONObject soundJSON;
+        Sound sound;
+
+        for (int i = 0; i < data.length(); i++) {
+            sound = new Sound();
+            soundJSON = data.getJSONObject(i);
+
+            sound.setSoundSetId(mID);
+            sound.setSoundSetIndex(i);
+
+            if (soundJSON.has("name")) {
+                sound.setName(soundJSON.getString("name"));
+            }
+
+            sound.setURL(mPrefix + soundJSON.getString("url") + mPostfix);
+
+            if (soundJSON.has("preset_id")) {
+                sound.setPresetId((soundJSON.getInt("preset_id")));
+            }
+
+            mSounds.add(sound);
+        }
+
+        mIsValid = true;
+        return true;
+    }
+
+    boolean loadFromJSON(String json) {
         mJSON = json;
         try {
             JSONObject soundSet = new JSONObject(json);
-
-            String type = soundSet.getString("type");
-            if (!"SOUNDSET".equals(type)) {
-                Log.e("MGH", "soundset not type=SOUNDSET");
-                mIsValid = false;
-                return false;
-            }
-
-            mName = soundSet.getString("name");
-            mIsSoundFont = soundSet.has("soundFont") && soundSet.getBoolean("soundFont");
-
-            mChromatic = soundSet.has("chromatic") && soundSet.getBoolean("chromatic");
-            if (soundSet.has("lowNote")) {
-                mLowNote = soundSet.getInt("lowNote");
-            }
-            if (soundSet.has("highNote")) {
-                mHighNote = soundSet.getInt("highNote");
-            }
-
-            if (soundSet.has("defaultSurface")) {
-                mDefaultSurface = soundSet.getString("defaultSurface");
-            }
-
-            mIsOscillator = mURL.startsWith("PRESET_OSC_");
-            if (mIsOscillator) {
-                mOscillator = new Oscillator(new OscillatorSettings(mURL));
-                return true;
-            }
-
-            JSONArray data = soundSet.getJSONArray("data");
-
-            if (soundSet.has("prefix")) {
-                mPrefix = soundSet.getString("prefix");
-            }
-            if (soundSet.has("postfix")) {
-                mPostfix = soundSet.getString("postfix");
-            }
-
-            if (!mChromatic) {
-                mLowNote = 0;
-                mHighNote = data.length() - 1;
-            }
-            else if (!soundSet.has("highNote")) {
-                mHighNote = mLowNote + data.length() - 1;
-            }
-
-            JSONObject soundJSON;
-            Sound sound;
-
-            for (int i = 0; i < data.length(); i++) {
-                sound = new Sound();
-                soundJSON = data.getJSONObject(i);
-
-                sound.setSoundSetId(mID);
-                sound.setSoundSetIndex(i);
-
-                if (soundJSON.has("name")) {
-                    sound.setName(soundJSON.getString("name"));
-                }
-
-                sound.setURL(mPrefix + soundJSON.getString("url") + mPostfix);
-
-                if (soundJSON.has("preset_id")) {
-                    sound.setPresetId((soundJSON.getInt("preset_id")));
-                }
-
-                mSounds.add(sound);
-            }
-
+            mIsValid = load(soundSet);
         }
         catch (JSONException exp) {
             Log.e("MGH", exp.getMessage());
@@ -266,12 +263,15 @@ public class SoundSet {
     }
 
     void getData(StringBuilder sb) {
-        sb.append("{\"url\": \"");
+        sb.append(mJSON);
+        /*sb.append("{\"url\": \"");
         sb.append(mURL);
         sb.append("\", \"name\": \"");
         sb.append(mName);
         sb.append("\", \"soundFont\": ");
         sb.append(mIsSoundFont);
-        sb.append("}");
+        sb.append(", \"data\": ");
+        sb.append(mJSON);
+        sb.append("}");*/
     }
 }
