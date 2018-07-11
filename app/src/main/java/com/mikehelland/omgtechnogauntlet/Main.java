@@ -1,6 +1,7 @@
 package com.mikehelland.omgtechnogauntlet;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -34,6 +35,8 @@ public class Main extends FragmentActivity {
 
     private ImageLoader mImages;
 
+    boolean isRemote = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +50,13 @@ public class Main extends FragmentActivity {
 
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
 
+        if (hasDefaultHost()) {
+            connectToDefaultHost();
+            return;
+        }
+
         mDatabase = new DatabaseContainer(Main.this);
+
         OnGetSoundSetListener getSoundSetFromDatabase = new OnGetSoundSetListener() {
             @Override
             public SoundSet onGetSoundSet(String url) {
@@ -101,6 +110,8 @@ public class Main extends FragmentActivity {
             }
         });
 
+        mImages = new ImageLoader(this);
+
         setupBluetooth();
 
         new Thread(new Runnable() {
@@ -118,7 +129,6 @@ public class Main extends FragmentActivity {
             }
         }).start();
 
-        mImages = new ImageLoader(this);
     }
 
 
@@ -129,7 +139,7 @@ public class Main extends FragmentActivity {
         //todo relocate
         // if (!mPool.isLoaded())
         //    mPool.cancelLoading();
-        if (jam.isPlaying()) {
+        if (jam.isPlaying() && !isRemote) {
             jam.stop();
         }
     }
@@ -179,4 +189,57 @@ public class Main extends FragmentActivity {
 
     DatabaseContainer getDatabase() {return mDatabase;}
     ImageLoader getImages() {return mImages;}
+
+    private boolean hasDefaultHost() {
+        final String address = PreferenceManager.
+                getDefaultSharedPreferences(this).getString("default_host", "");
+
+        return address.length() > 0;
+    }
+
+    private void connectToDefaultHost() {
+
+        remoteSetup();
+
+        OMGFragment f = new ConnectToHostFragment();
+        f.jam = jam;
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.main_layout, f);
+        ft.commit();
+    }
+
+    private void remoteSetup() {
+        isRemote = true;
+        mDatabase = new DatabaseContainer(Main.this);
+
+        jam = new Jam(null, null);
+
+
+        //todo does beatView even have to know about Jam?
+        mBeatView.setJam(jam);
+
+        jam.addOnSubbeatListener(new OnSubbeatListener() {
+            @Override
+            public void onSubbeat(int subbeat) {
+                mBeatView.postInvalidate();
+            }
+        });
+
+        mBeatView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (jam.isPlaying()) {
+                    jam.stop();
+                }
+                else {
+                    jam.play();
+                }
+                //mBeatView.postInvalidate();
+            }
+        });
+
+        mImages = new ImageLoader(this);
+
+    }
 }

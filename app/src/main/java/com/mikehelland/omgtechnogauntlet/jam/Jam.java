@@ -51,26 +51,27 @@ public class Jam {
 
         updateKeyName();
 
-        for (Section section : currentSong.sections) {
-            for (Part part : section.parts) {
-                prepareSoundSetForPart(part);
-            }
-        }
-
-        //load them off the UI thread
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                soundManager.loadSounds();
-
-                for (Section section : currentSong.sections) {
-                    for (Part part : section.parts) {
-                        setPoolIdsForPart(part);
-                    }
+        if (soundManager != null) {
+            for (Section section : currentSong.sections) {
+                for (Part part : section.parts) {
+                    prepareSoundSetForPart(part);
                 }
             }
-        }).start();
 
+            //load them off the UI thread
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    soundManager.loadSounds();
+
+                    for (Section section : currentSong.sections) {
+                        for (Part part : section.parts) {
+                            setPoolIdsForPart(part);
+                        }
+                    }
+                }
+            }).start();
+        }
         for (OnJamChangeListener listener : onJamChangeListeners) {
             listener.onNewJam(this, source);
         }
@@ -472,7 +473,9 @@ public class Jam {
         jamPart.liveNotes = new LiveNotes(autoBeat, new Note[] {note});
 
         if (!player.isPlaying() || autoBeat == 0) {
-            player.playPartLiveNote(jamPart.part, note);
+            if (soundManager != null) {
+                player.playPartLiveNote(jamPart.part, note);
+            }
             note.setBeats(1.0f / currentSection.beatParameters.subbeats);
             if (isPlaying && !jamPart.getMute()) {
                 jamPart.liveNotes.liveNote = NoteWriter.addNote(note, Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
@@ -615,8 +618,10 @@ public class Jam {
             setupSequencerPatternForPart(jamPart);
         }
 
-        prepareSoundSetForPart(part);
-        loadSounds();
+        if (soundManager != null) {
+            prepareSoundSetForPart(part);
+            loadSounds();
+        }
 
         for (OnJamChangeListener listener : onJamChangeListeners) {
             listener.onNewPart(jamPart, source);

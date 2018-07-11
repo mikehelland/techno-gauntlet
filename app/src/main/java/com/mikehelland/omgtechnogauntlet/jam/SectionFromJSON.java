@@ -166,6 +166,7 @@ class SectionFromJSON {
         final SoundSet soundSet = new SoundSet();
 
         JSONObject jsonObject = jsonData;
+        String url = "";
         if (jsonData.has("soundSet")) {
             jsonObject = jsonData.getJSONObject("soundSet");
 
@@ -173,10 +174,11 @@ class SectionFromJSON {
                 soundSet.setName(jsonObject.getString("name"));
             }
             if (jsonObject.has("url")) {
-                soundSet.setURL(jsonObject.getString("url"));
+                url = jsonObject.getString("url");
+                soundSet.setURL(url);
             }
 
-            if (jsonObject.has("data")) {
+            if (jsonObject.has("data") || url.startsWith("PRESET_OSC_")) {
                 soundSet.load(jsonObject);
             }
         }

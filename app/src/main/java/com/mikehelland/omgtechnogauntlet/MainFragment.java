@@ -211,6 +211,11 @@ public class MainFragment extends OMGFragment {
                     return;
                 }
 
+                Main activity = (Main)getActivity();
+                if (activity != null && activity.isRemote) {
+                    animateFragment(new SoundSetRemoteFragment(), 0);
+                }
+
                 SoundSetFragment f = new SoundSetFragment();
                 f.setCallback(new SoundSetFragment.ChoiceCallback() {
                     void onChoice(SoundSet soundSet) {

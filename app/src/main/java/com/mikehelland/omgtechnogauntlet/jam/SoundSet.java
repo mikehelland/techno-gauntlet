@@ -85,6 +85,7 @@ public class SoundSet {
         mIsOscillator = mURL != null && mURL.startsWith("PRESET_OSC_");
         if (mIsOscillator) {
             mOscillator = new Oscillator(new OscillatorSettings(mURL));
+            mIsValid = true;
             return true;
         }
 

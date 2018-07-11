@@ -171,6 +171,9 @@ class Player {
     }
 
     void playPartLiveNotes(Part part, Note[] notes) {
+        if (soundManager == null) {
+            return;
+        }
         for (Note note : notes) {
             if (note.playingHandle == -1) {
                 playPartLiveNote(part, note);
@@ -248,7 +251,9 @@ class Player {
         //Log.d("MGH playback", "doTheThing " + isubbeat + "/" + totalSubbeats);
         if (isubbeat < totalSubbeats) {
             timeOfLastBeatPlayed += section.beatParameters.subbeatLength;
-            playBeatSampler(isubbeat);
+            if (soundManager != null) {
+                playBeatSampler(isubbeat);
+            }
         }
 
         for (OnSubbeatListener subbeatListener : onSubbeatListeners) {

@@ -2,13 +2,16 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
@@ -195,7 +198,7 @@ public class BluetoothFragment extends OMGFragment {
                 //connection.addConnectedCallback(makeConnectCallback(null));
             }*/
 
-            onPanelConnected(controls, cp);
+            onPanelConnected(connection, controls, cp);
         }
 
         controls.findViewById(R.id.bt_brain_connect_button).setOnClickListener(new View.OnClickListener() {
@@ -241,7 +244,7 @@ public class BluetoothFragment extends OMGFragment {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                onPanelConnected((BtRelativeLayout)freshView, cp);
+                                onPanelConnected(connection, (BtRelativeLayout)freshView, cp);
                             }
                         });
                     }
@@ -265,7 +268,7 @@ public class BluetoothFragment extends OMGFragment {
         };
     }
 
-    private void onPanelConnected(BtRelativeLayout controls, CommandProcessor cp) {
+    private void onPanelConnected(BluetoothConnection connection, BtRelativeLayout controls, CommandProcessor cp) {
 
         if (!controls.getShowDetails()) {
             controls.setShowDetails(true);
@@ -279,7 +282,7 @@ public class BluetoothFragment extends OMGFragment {
 
         }
 
-        setupPanelClicks(controls, cp);
+        setupPanelClicks(connection, controls, cp);
 
         setPanelInfo(controls, null);
         refreshPanel(controls, cp);    }
@@ -304,7 +307,7 @@ public class BluetoothFragment extends OMGFragment {
 
     }*/
 
-    private void setupPanelClicks(final BtRelativeLayout controls, final CommandProcessor cp) {
+    private void setupPanelClicks(final BluetoothConnection connection, final BtRelativeLayout controls, final CommandProcessor cp) {
 
         controls.findViewById(R.id.remote_control_button).setOnClickListener(new View.OnClickListener() {
 
@@ -319,6 +322,14 @@ public class BluetoothFragment extends OMGFragment {
                 refreshPanel(controls, cp);
             }
         });
+        controls.findViewById(R.id.remote_control_button).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                setDefaultHostPreferences(connection.getDevice());
+                return true;
+            }
+        });
+
 
         controls.findViewById(R.id.tempo_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -458,5 +469,19 @@ public class BluetoothFragment extends OMGFragment {
             }
         }
         return null;
+    }
+
+    private void setDefaultHostPreferences(BluetoothDevice device) {
+
+        Activity activity = getActivity(); if (activity == null) return;
+
+        SharedPreferences.Editor prefEditor = PreferenceManager.
+                getDefaultSharedPreferences(activity).edit();
+
+        prefEditor.putString("default_host", device.getAddress());
+        prefEditor.putString("default_host_name", device.getName());
+        prefEditor.apply();
+
+        Toast.makeText(activity, "App is now configured to Auto Connect to " + device.getName(), Toast.LENGTH_SHORT).show();
     }
 }

@@ -17,7 +17,7 @@ import com.mikehelland.omgtechnogauntlet.jam.SequencerTrack;
  */
 public class CommandProcessor extends BluetoothDataCallback {
 
-    final static String REMOTE_CONTROL = "REMOTE_CONTROL";
+    public final static String REMOTE_CONTROL = "REMOTE_CONTROL";
 
     final static String JAMINFO_KEY = "JAMINFO_KEY";
     final static String JAMINFO_SCALE = "JAMINFO_SCALE";

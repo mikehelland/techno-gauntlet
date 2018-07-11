@@ -3,6 +3,7 @@ package com.mikehelland.omgtechnogauntlet;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,10 @@ import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothReadyCallback;
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
 import com.mikehelland.omgtechnogauntlet.remote.JamListenersHelper;
 //import com.mikehelland.omgtechnogauntlet.remote.RemoteControlBluetoothHelper;
@@ -33,6 +38,7 @@ public class ConnectToHostFragment extends OMGFragment {
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.bluetooth_remote,
                 container, false);
+
 
         mBT = new BluetoothManager(getActivity()); //activity.mBT;
 
@@ -66,39 +72,44 @@ public class ConnectToHostFragment extends OMGFragment {
         mImageView.startAnimation(turnin);
 
 
-        /*final String address = PreferenceManager.
+        final String address = PreferenceManager.
                 getDefaultSharedPreferences(activity).getString("default_host", "");
-        String name = PreferenceManager.
+        final String name = PreferenceManager.
                 getDefaultSharedPreferences(activity).getString("default_host_name", "");
 
-        String device = "(No Device Chosen)";
         if (address.length() > 0) {
-            device = name;
-            connectToHost(address);
+            connectToHost(address, name);
         }
-        */
-        connectToHost(bluetoothDevice);
-        ((TextView)mView.findViewById(R.id.bt_host)).setText(bluetoothDevice.getName());
+
+        ((TextView)mView.findViewById(R.id.bt_host)).setText(name);
 
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                connectToHost(bluetoothDevice);
+                connectToHost(address, name);
+            }
+        });
+        mImageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                PreferenceManager.
+                        getDefaultSharedPreferences(activity).edit().putString("default_host", "").apply();
+                return true;
             }
         });
     }
 
-    private void connectToHost(BluetoothDevice device) {
+    private void connectToHost(String address, String name) {
 
-        /*BluetoothDevice device = null;
+        BluetoothDevice device = null;
         for (BluetoothDevice bd : mBT.getPairedDevices()) {
             if (bd.getAddress().equals(address)) {
                 device = bd;
             }
-        }*/
+        }
 
         if (device == null) {
-            mStatusText.setText(String.format(getString(R.string.device_not_paired), device.getName()));
+            mStatusText.setText(String.format(getString(R.string.device_not_paired), name));
             return;
         }
 
@@ -135,7 +146,7 @@ public class ConnectToHostFragment extends OMGFragment {
             @Override
             public void onConnected(final BluetoothConnection connection) {
 
-                Activity activity = getActivity(); if (activity == null) return;
+                final Activity activity = getActivity(); if (activity == null) return;
 
                 //process any incoming messages from this connection
                 final CommandProcessor cp = new CommandProcessor(activity);
@@ -146,13 +157,36 @@ public class ConnectToHostFragment extends OMGFragment {
                 //send any changes to this jam to the host
                 JamListenersHelper.setJamListenersForRemote(jam, connection);
 
+                jam.addOnJamChangeListener(new OnJamChangeListener() {
+                    @Override public void onChordProgressionChange(int[] chords, String source) { }
+
+                    @Override
+                    public void onNewJam(Jam jam, String source) {
+                        jam.removeOnJamChangeListener(this);
+                        OMGFragment f = new MainFragment();
+                        animateFragment(f, 0);
+                    }
+
+                    @Override public void onNewPart(JamPart part, String source) { }
+                    @Override public void onPlay(String source) { }
+                    @Override public void onStop(String source) { }
+                    @Override public void onNewLoop(String source) { }
+                    @Override public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) { }
+                    @Override public void onPartStartLiveNotes(JamPart jamPart, Note note, int autoBeat, String source) { }
+                    @Override public void onPartUpdateLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source) { }
+                    @Override public void onPartRemoveLiveNotes(JamPart jamPart, Note note, Note[] notes, String source) { }
+                    @Override public void onPartEndLiveNotes(JamPart jamPart, String source) { }
+                    @Override public void onPartClear(JamPart jamPart, String source) { }
+                });
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         mStatusText.setText(R.string.getting_jam_info);
                         mImageView.setImageResource(R.drawable.device_blue);
-                        //todo RemoteControlBluetoothHelper.setupRemote(connection);
+                        //RemoteControlBluetoothHelper.requestJam(connection);
+                        connection.sendNameValuePair(CommandProcessor.REMOTE_CONTROL, "TRUE");
+
 
                         //todo get the jam as json from the host
                         //load it, and show the main fragment
