@@ -35,12 +35,12 @@ public class BluetoothHostJamListener extends   OnJamChangeListener {
 
     @Override
     public void onNewJam(Jam jam, String source) {
-        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAM_JSON, jam.getData(), source);
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAM_JSON, jam.getData(), null);
     }
 
     @Override
     public void onNewPart(JamPart part, String source) {
-        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAM_JSON, jam.getData(), source);
+        bluetoothManager.sendNameValuePairToDevices(CommandProcessor.JAM_JSON, jam.getData(), null);
         //bluetoothManager.sendCommandToDevices(CommandProcessor.getNewPartCommand(part), null);
     }
 

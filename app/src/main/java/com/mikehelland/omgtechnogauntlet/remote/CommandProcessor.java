@@ -1,15 +1,16 @@
 package com.mikehelland.omgtechnogauntlet.remote;
 
-import android.content.Context;
 import android.util.Log;
 
-import com.mikehelland.omgtechnogauntlet.Main;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothDataCallback;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.SequencerTrack;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+
+import java.util.ArrayList;
 
 /**
  * Created by m on 7/31/16.
@@ -25,6 +26,9 @@ public class CommandProcessor extends BluetoothDataCallback {
 
     final static String GET_JAM = "GET_JAM";
     final static String JAM_JSON = "JAM_JSON";
+    final static String GET_SOUNDSETS = "GET_SOUNDSETS";
+    final static String SOUNDSETS = "SOUNDSETS";
+    public final static String ADD_PART = "ADD_PART";
 
     final static String SET_PLAY = "SET_PLAY";
     final static String SET_STOP = "SET_STOP";
@@ -62,17 +66,16 @@ public class CommandProcessor extends BluetoothDataCallback {
     //private OnPeerChangeListener mOnPeerChangeListener;
 
     //final private DatabaseContainer mDatabase;
-    final private Main mContext;
 
     private boolean mSync = false;
     private boolean localIsARemote = false;
     private boolean hostIsARemote = false;
 
-    public CommandProcessor(Context context) {
-        //todo storing the context because I need to load the jam
-        //maybe this should be done somehow else
-        mContext = (Main)context;
-        //mDatabase = mContext.getDatabase();
+    private OnGetSoundSetsListener onGetSoundSetsListener;
+    private OnReceiveSoundSetsListener onReceiveSoundSetsListener;
+
+    public CommandProcessor(OnGetSoundSetsListener onGetSoundSetsListener) {
+        this.onGetSoundSetsListener = onGetSoundSetsListener;
     }
 
     static String getNewPartCommand(JamPart jamPart) {
@@ -147,7 +150,7 @@ public class CommandProcessor extends BluetoothDataCallback {
             case "GET_SAVED_JAMS":
                 sendSavedJams();
                 return;
-            case "GET_SOUNDSETS":
+            case GET_SOUNDSETS:
                 sendSoundSets();
                 return;
             case "ON_NEW_LOOP":
@@ -162,6 +165,10 @@ public class CommandProcessor extends BluetoothDataCallback {
         switch (name) {
             case REMOTE_CONTROL:
                 setHostIsARemote(value.equals("TRUE"));
+                return;
+
+            case SOUNDSETS:
+                onReceiveSoundSets(value);
                 return;
 
             case SET_SUBBEATLENGTH:
@@ -226,7 +233,7 @@ public class CommandProcessor extends BluetoothDataCallback {
                 }
                 return;
 
-            case "ADD_CHANNEL":
+            case ADD_PART:
                 addPart(Long.parseLong(value));
                 return;
             case "LOAD_JAM":
@@ -464,28 +471,36 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void sendSoundSets() {
-        /*Cursor cursor = mDatabase.getSoundSetData().getCursor();
         StringBuilder value = new StringBuilder();
-        int idColumn = cursor.getColumnIndex("_id");
-        int nameColumn = cursor.getColumnIndex("name");
-        while (cursor.moveToNext()) {
-            value.append(cursor.getString(idColumn));
+        ArrayList<SoundSet> soundSets = getSoundSets();
+        for (int i = 0; i < soundSets.size(); i++) {
+            SoundSet soundSet = soundSets.get(i);
+            value.append(soundSet.getID());
             value.append(":");
-            value.append(cursor.getString(nameColumn));
-            if (!cursor.isLast()) {
+            value.append(soundSet.getName());
+            if (i < soundSets.size() - 1) {
                 value.append("|");
             }
         }
-        cursor.close();
-        mConnection.sendNameValuePair("SOUNDSETS", value.toString());*/
+
+        mConnection.sendNameValuePair(SOUNDSETS, value.toString());
+    }
+
+    private ArrayList<SoundSet> getSoundSets() {
+        if (onGetSoundSetsListener != null) {
+            return onGetSoundSetsListener.getSoundSets();
+        }
+        else {
+            return new ArrayList<>();
+        }
     }
 
     private void addPart(long soundSetId) {
 
-        /*SoundSet soundSet = mDatabase.getSoundSetData().getSoundSetById(soundSetId);
+        SoundSet soundSet = onGetSoundSetsListener.getSoundSet(soundSetId);
         if (soundSet != null) {
-            mJam.newPart(soundSet);
-        }*/
+            mJam.newPart(soundSet, getAddress());
+        }
     }
 
     private void loadJam(long jamId) {
@@ -803,5 +818,24 @@ public class CommandProcessor extends BluetoothDataCallback {
         mSync = hostIsARemote;
 
         sendJamJSON();
+    }
+
+    public void setOnReceiveSoundSetsListener(OnReceiveSoundSetsListener onReceiveSoundSetsListener) {
+        this.onReceiveSoundSetsListener = onReceiveSoundSetsListener;
+    }
+
+    private void onReceiveSoundSets(String values) {
+        if (onReceiveSoundSetsListener != null) {
+
+            ArrayList<SoundSet> soundSets = new ArrayList<>();
+            String[] valuesSplit = values.split("\\|");
+            String[] soundSetInfo;
+            for (String value : valuesSplit) {
+                soundSetInfo = value.split(":");
+                soundSets.add(new SoundSet(Long.parseLong(soundSetInfo[0]), soundSetInfo[1]));
+            }
+
+            onReceiveSoundSetsListener.onReceiveSoundSets(soundSets);
+        }
     }
 }

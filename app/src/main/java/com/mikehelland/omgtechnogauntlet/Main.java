@@ -21,6 +21,9 @@ import com.mikehelland.omgtechnogauntlet.jam.SoundManager;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
 import com.mikehelland.omgtechnogauntlet.remote.JamListenersHelper;
+import com.mikehelland.omgtechnogauntlet.remote.OnGetSoundSetsListener;
+
+import java.util.ArrayList;
 
 public class Main extends FragmentActivity {
 
@@ -36,6 +39,8 @@ public class Main extends FragmentActivity {
     private ImageLoader mImages;
 
     boolean isRemote = false;
+    BluetoothConnection remoteConnection;
+    public OnGetSoundSetsListener onGetSoundSetsListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +61,18 @@ public class Main extends FragmentActivity {
         }
 
         mDatabase = new DatabaseContainer(Main.this);
+
+        onGetSoundSetsListener = new OnGetSoundSetsListener() {
+            @Override
+            public ArrayList<SoundSet> getSoundSets() {
+                return mDatabase.getSoundSetData().getList();
+            }
+
+            @Override
+            public SoundSet getSoundSet(long id) {
+                return mDatabase.getSoundSetData().getSoundSetById(id);
+            }
+        };
 
         OnGetSoundSetListener getSoundSetFromDatabase = new OnGetSoundSetListener() {
             @Override
@@ -84,7 +101,7 @@ public class Main extends FragmentActivity {
         SoundManager soundManager = new SoundManager(this, updateBeatViewWithLoadProgress);
         jam = new Jam(soundManager, getSoundSetFromDatabase);
 
-        int defaultJam = BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
+        int defaultJam =  BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
         jam.loadFromJSON(getResources().getString(defaultJam));
 
         //todo does beatView even have to know about Jam?
@@ -178,7 +195,7 @@ public class Main extends FragmentActivity {
             public void newStatus(final String status) {}
             @Override
             public void onConnected(BluetoothConnection connection) {
-                final CommandProcessor cp = new CommandProcessor(Main.this);
+                final CommandProcessor cp = new CommandProcessor(Main.this.onGetSoundSetsListener);
                 cp.setup(connection, jam, null);
                 connection.setDataCallback(cp);
             }
@@ -210,7 +227,6 @@ public class Main extends FragmentActivity {
     }
 
     private void remoteSetup() {
-        isRemote = true;
         mDatabase = new DatabaseContainer(Main.this);
 
         jam = new Jam(null, null);

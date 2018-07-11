@@ -43,6 +43,11 @@ public class SoundSet {
         mIsValid = loadFromJSON(json);
     }
 
+    public SoundSet(long id, String name) {
+        mName = name;
+        mID = id;
+    }
+
     public boolean isValid() {
         return mIsValid;
     }
@@ -158,7 +163,7 @@ public class SoundSet {
         return mLowNote;
     }
 
-    String getName() {
+    public String getName() {
         return mName;
     }
     String getURL() {

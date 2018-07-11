@@ -146,10 +146,13 @@ public class ConnectToHostFragment extends OMGFragment {
             @Override
             public void onConnected(final BluetoothConnection connection) {
 
-                final Activity activity = getActivity(); if (activity == null) return;
+                final Main activity = (Main)getActivity(); if (activity == null) return;
+
+                activity.isRemote = true;
+                activity.remoteConnection = connection;
 
                 //process any incoming messages from this connection
-                final CommandProcessor cp = new CommandProcessor(activity);
+                final CommandProcessor cp = new CommandProcessor(activity.onGetSoundSetsListener);
                 cp.setSync(true); 
                 cp.setup(connection, jam, null);
                 connection.setDataCallback(cp);

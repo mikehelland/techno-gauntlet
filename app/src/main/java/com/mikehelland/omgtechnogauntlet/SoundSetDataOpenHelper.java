@@ -11,6 +11,8 @@ import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     private String cErrorMessage = "";
@@ -252,6 +254,21 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     Cursor getCursor() {
         SQLiteDatabase db = mDB;
         return db.rawQuery("SELECT * FROM soundsets WHERE downloaded = 1 ORDER BY _id DESC", null);
+    }
+
+    ArrayList<SoundSet> getList() {
+        ArrayList<SoundSet> soundSets = new ArrayList<>();
+        Cursor cursor = getCursor();
+        int idColumn = cursor.getColumnIndex("_id");
+        int nameColumn = cursor.getColumnIndex("name");
+        int urlColumn = cursor.getColumnIndex("url");
+        SoundSet soundSet;
+        while (cursor.moveToNext()) {
+            //using the id here, why not the url?
+            soundSets.add(new SoundSet(cursor.getLong(idColumn), cursor.getString(nameColumn)));
+        }
+        cursor.close();
+        return  soundSets;
     }
 
     /*public String getLastSaved() {

@@ -53,6 +53,9 @@ public class RemoteControlBluetoothHelper {
     public static void requestJam(BluetoothConnection connection) {
         connection.sendCommand(CommandProcessor.GET_JAM);
     }
+    public static void requestSoundSets(BluetoothConnection connection) {
+        connection.sendCommand(CommandProcessor.GET_SOUNDSETS);
+    }
 
     static void setPlay(BluetoothConnection connection) {
         connection.sendCommand("SET_PLAY");
