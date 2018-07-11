@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
@@ -17,12 +19,16 @@ import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothReadyCallback;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamHeader;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
 import com.mikehelland.omgtechnogauntlet.remote.JamListenersHelper;
-//import com.mikehelland.omgtechnogauntlet.remote.RemoteControlBluetoothHelper;
+import com.mikehelland.omgtechnogauntlet.remote.OnReceiveSavedJamsListener;
+import com.mikehelland.omgtechnogauntlet.remote.RemoteControlBluetoothHelper;
+
+import java.util.ArrayList;
 
 
 public class ConnectToHostFragment extends OMGFragment {
@@ -39,25 +45,27 @@ public class ConnectToHostFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.bluetooth_remote,
                 container, false);
 
+        Main activity = ((Main)getActivity());
 
-        mBT = new BluetoothManager(getActivity()); //activity.mBT;
+        mBT = activity.bluetoothManager;
 
         mStatusText = (TextView)mView.findViewById(R.id.bt_status);
         mImageView = (ImageView)mView.findViewById(R.id.remote_logo);
 
-        //todo test to see if we're already connected, and wait five seconds and go back
-        /*if (jamConnection != null && jamConnection.getCommandProcessor() != null && !jamConnection.getCommandProcessor().isDisconnected()) {
+        if (activity.isRemote && activity.remoteConnection != null && !activity.remoteConnection.isDisconnected()) {
             mStatusText.setText(R.string.connected);
             mImageView.setImageResource(R.drawable.device_blue);
-            showRemoteControlFragmentAfterDelay(500);
-        }*/
 
-        mBT.whenReady(new BluetoothReadyCallback() {
-            @Override
-            public void onReady() {
-                setup();
-            }
-        });
+            setupSavedJames(activity.remoteConnection);
+        }
+        else {
+            mBT.whenReady(new BluetoothReadyCallback() {
+                @Override
+                public void onReady() {
+                    setup();
+                }
+            });
+        }
 
         return mView;
     }
@@ -152,7 +160,8 @@ public class ConnectToHostFragment extends OMGFragment {
                 activity.remoteConnection = connection;
 
                 //process any incoming messages from this connection
-                final CommandProcessor cp = new CommandProcessor(activity.onGetSoundSetsListener);
+                final CommandProcessor cp = new CommandProcessor(activity.onGetSoundSetsListener,
+                        activity.jamsProvider);
                 cp.setSync(true); 
                 cp.setup(connection, jam, null);
                 connection.setDataCallback(cp);
@@ -228,5 +237,55 @@ public class ConnectToHostFragment extends OMGFragment {
 
     public void setDevice(BluetoothDevice device) {
         bluetoothDevice = device;
+    }
+
+    private void setupSavedJames(BluetoothConnection connection) {
+
+        mView.findViewById(R.id.back_to_jam_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OMGFragment f = new MainFragment();
+                animateFragment(f, 0);
+            }
+        });
+
+        RemoteControlBluetoothHelper.requestSavedJams(connection);
+
+        ((CommandProcessor)connection.getDataCallback()).setOnReceiveSavedJamsListener(new OnReceiveSavedJamsListener() {
+            @Override
+            public void onReceiveSavedJams(ArrayList<JamHeader> jams) {
+                setupSavedJamsList(jams);
+            }
+        });
+    }
+
+    private void setupSavedJamsList(final ArrayList<JamHeader> jams) {
+
+        Activity activity = getActivity(); if (activity == null) return;
+
+        final ListView list = (ListView)mView.findViewById(R.id.saved_list);
+        final SavedJamsAdapter adapter = new SavedJamsAdapter(activity, R.layout.chordoption,
+                jams);
+
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                list.setAdapter(adapter);
+            }
+        });
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Main activity = (Main)getActivity();
+                if (activity == null || activity.remoteConnection == null) {
+                    return;
+                }
+
+                activity.remoteConnection.sendNameValuePair(CommandProcessor.LOAD_JAM, "" + jams.get(i).id);
+                popBackStack();
+            }
+        });
+
     }
 }

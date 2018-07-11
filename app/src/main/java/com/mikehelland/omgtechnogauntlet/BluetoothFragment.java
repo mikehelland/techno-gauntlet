@@ -129,7 +129,8 @@ public class BluetoothFragment extends OMGFragment {
         if (activity == null) {
             return null;
         }
-        CommandProcessor cp = new CommandProcessor(activity.onGetSoundSetsListener);
+        CommandProcessor cp = new CommandProcessor(activity.onGetSoundSetsListener,
+                activity.jamsProvider);
         //cp.setup(connection, getPeerJam(), null);
         cp.setup(connection, getJam(), null);
         connection.setDataCallback(cp);

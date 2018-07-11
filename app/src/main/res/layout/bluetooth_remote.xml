@@ -5,7 +5,14 @@
     android:layout_height="fill_parent"
     >
 
-        <TextView
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Back To Jam >>"
+        android:id="@+id/back_to_jam_button"
+        />
+
+    <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/bt_host"
@@ -27,18 +34,28 @@
 
 
         <ImageView
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="10dip"
             android:src="@drawable/device"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:id="@+id/remote_logo"/>
-
-        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Choose a Host Device"
-            android:id="@+id/choose_host_button"
-            android:layout_alignParentBottom="true"/>
+            android:layout_below="@+id/bt_status"
+            android:id="@+id/remote_logo"/>
+
+
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choose a Host Device"
+                android:id="@+id/choose_host_button"
+                android:layout_alignParentBottom="true"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/remote_logo"
+            android:layout_above="@id/choose_host_button"
+            android:id="@+id/saved_list"></ListView>
 
 </RelativeLayout>

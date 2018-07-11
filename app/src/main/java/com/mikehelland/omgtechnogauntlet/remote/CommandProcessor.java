@@ -5,6 +5,7 @@ import android.util.Log;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothDataCallback;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamHeader;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.SequencerTrack;
@@ -29,6 +30,10 @@ public class CommandProcessor extends BluetoothDataCallback {
     final static String GET_SOUNDSETS = "GET_SOUNDSETS";
     final static String SOUNDSETS = "SOUNDSETS";
     public final static String ADD_PART = "ADD_PART";
+
+    final static String GET_SAVED_JAMS = "GET_SAVED_JAMS";
+    final static String SAVED_JAMS = "SAVED_JAMS";
+    public final static String LOAD_JAM = "LOAD_JAM";
 
     final static String SET_PLAY = "SET_PLAY";
     final static String SET_STOP = "SET_STOP";
@@ -74,8 +79,12 @@ public class CommandProcessor extends BluetoothDataCallback {
     private OnGetSoundSetsListener onGetSoundSetsListener;
     private OnReceiveSoundSetsListener onReceiveSoundSetsListener;
 
-    public CommandProcessor(OnGetSoundSetsListener onGetSoundSetsListener) {
+    private OnReceiveSavedJamsListener onReceiveSavedJamsListener;
+    private JamsProvider jamsProvider;
+
+    public CommandProcessor(OnGetSoundSetsListener onGetSoundSetsListener, JamsProvider jamsProvider) {
         this.onGetSoundSetsListener = onGetSoundSetsListener;
+        this.jamsProvider = jamsProvider;
     }
 
     static String getNewPartCommand(JamPart jamPart) {
@@ -147,7 +156,7 @@ public class CommandProcessor extends BluetoothDataCallback {
             case GET_JAM:
                 sendJamJSON();
                 return;
-            case "GET_SAVED_JAMS":
+            case GET_SAVED_JAMS:
                 sendSavedJams();
                 return;
             case GET_SOUNDSETS:
@@ -169,6 +178,10 @@ public class CommandProcessor extends BluetoothDataCallback {
 
             case SOUNDSETS:
                 onReceiveSoundSets(value);
+                return;
+
+            case SAVED_JAMS:
+                onReceiveSavedJams(value);
                 return;
 
             case SET_SUBBEATLENGTH:
@@ -236,7 +249,7 @@ public class CommandProcessor extends BluetoothDataCallback {
             case ADD_PART:
                 addPart(Long.parseLong(value));
                 return;
-            case "LOAD_JAM":
+            case LOAD_JAM:
                 loadJam(Long.parseLong(value));
                 return;
             case "SET_CHANNEL":
@@ -456,18 +469,22 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void sendSavedJams() {
-        /*Cursor cursor = mDatabase.getSavedData().getSavedCursor();
+        if (jamsProvider == null) {
+            return;
+        }
+
+        ArrayList<JamHeader> jams = jamsProvider.getJams();
         StringBuilder value = new StringBuilder();
-        while (cursor.moveToNext()) {
-            value.append(cursor.getString(cursor.getColumnIndex("_id")));
+        for (int i = 0; i < jams.size(); i++) {
+            JamHeader jam = jams.get(i);
+            value.append(jam.id); //todo i dunno, JamInfo?
             value.append(":");
-            value.append(cursor.getString(cursor.getColumnIndex("tags")));
-            if (!cursor.isLast()) {
+            value.append(jam.name);
+            if (i < jams.size() - 1) {
                 value.append("|");
             }
         }
-        cursor.close();
-        mConnection.sendNameValuePair("SAVED_JAMS", value.toString());*/
+        mConnection.sendNameValuePair(SAVED_JAMS, value.toString());
     }
 
     private void sendSoundSets() {
@@ -504,8 +521,13 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void loadJam(long jamId) {
-        //SavedDataOpenHelper dataHelper = mDatabase.getSavedData();
-        //todo mContext.loadJam(dataHelper.getJamJson(jamId));
+        if (jamsProvider == null) {
+            return;
+        }
+
+        String json = jamsProvider.getJamJson(jamId);
+
+        mJam.loadFromJSON(json, getAddress());
     }
 
     private String getCaptions() {
@@ -836,6 +858,27 @@ public class CommandProcessor extends BluetoothDataCallback {
             }
 
             onReceiveSoundSetsListener.onReceiveSoundSets(soundSets);
+        }
+    }
+
+    public void setOnReceiveSavedJamsListener(OnReceiveSavedJamsListener onReceiveSavedJamsListener) {
+        this.onReceiveSavedJamsListener = onReceiveSavedJamsListener;
+    }
+
+    private void onReceiveSavedJams(String values) {
+        if (onReceiveSavedJamsListener != null) {
+
+            ArrayList<JamHeader> savedJams = new ArrayList<>();
+            String[] valuesSplit = values.split("\\|");
+            String[] soundSetInfo;
+            String name;
+            for (String value : valuesSplit) {
+                soundSetInfo = value.split(":");
+                name = soundSetInfo.length > 1 ? soundSetInfo[1] : "";
+                savedJams.add(new JamHeader(Long.parseLong(soundSetInfo[0]), name));
+            }
+
+            onReceiveSavedJamsListener.onReceiveSavedJams(savedJams);
         }
     }
 }

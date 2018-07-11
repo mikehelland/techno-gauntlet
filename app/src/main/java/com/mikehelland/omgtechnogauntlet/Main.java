@@ -14,6 +14,7 @@ import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamHeader;
 import com.mikehelland.omgtechnogauntlet.jam.OnGetSoundSetListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSoundLoadedListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
@@ -21,6 +22,7 @@ import com.mikehelland.omgtechnogauntlet.jam.SoundManager;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
 import com.mikehelland.omgtechnogauntlet.remote.JamListenersHelper;
+import com.mikehelland.omgtechnogauntlet.remote.JamsProvider;
 import com.mikehelland.omgtechnogauntlet.remote.OnGetSoundSetsListener;
 
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ public class Main extends FragmentActivity {
     boolean isRemote = false;
     BluetoothConnection remoteConnection;
     public OnGetSoundSetsListener onGetSoundSetsListener;
+    public JamsProvider jamsProvider;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,7 @@ public class Main extends FragmentActivity {
         setContentView(R.layout.main);
 
         mBeatView = (BeatView)findViewById(R.id.main_beatview);
+        bluetoothManager = new BluetoothManager(this);
 
         if (hasDefaultHost()) {
             connectToDefaultHost();
@@ -71,6 +75,17 @@ public class Main extends FragmentActivity {
             @Override
             public SoundSet getSoundSet(long id) {
                 return mDatabase.getSoundSetData().getSoundSetById(id);
+            }
+        };
+        jamsProvider = new JamsProvider() {
+            @Override
+            public ArrayList<JamHeader> getJams() {
+                return mDatabase.getSavedData().getList();
+            }
+
+            @Override
+            public String getJamJson(long id) {
+                return mDatabase.getSavedData().getJamJson(id);
             }
         };
 
@@ -182,7 +197,6 @@ public class Main extends FragmentActivity {
     }
 
     private void setupBluetooth() {
-        bluetoothManager = new BluetoothManager(this);
         if (bluetoothManager.isBlueToothOn()) {
             bluetoothManager.startAccepting(makeConnectCallback());
             JamListenersHelper.setJamListenersForHost(jam, bluetoothManager);
@@ -195,7 +209,8 @@ public class Main extends FragmentActivity {
             public void newStatus(final String status) {}
             @Override
             public void onConnected(BluetoothConnection connection) {
-                final CommandProcessor cp = new CommandProcessor(Main.this.onGetSoundSetsListener);
+                final CommandProcessor cp = new CommandProcessor(Main.this.onGetSoundSetsListener,
+                        Main.this.jamsProvider);
                 cp.setup(connection, jam, null);
                 connection.setDataCallback(cp);
             }

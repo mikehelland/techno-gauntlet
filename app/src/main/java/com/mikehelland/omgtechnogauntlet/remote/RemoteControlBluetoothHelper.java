@@ -53,6 +53,9 @@ public class RemoteControlBluetoothHelper {
     public static void requestJam(BluetoothConnection connection) {
         connection.sendCommand(CommandProcessor.GET_JAM);
     }
+    public static void requestSavedJams(BluetoothConnection connection) {
+        connection.sendCommand(CommandProcessor.GET_SAVED_JAMS);
+    }
     public static void requestSoundSets(BluetoothConnection connection) {
         connection.sendCommand(CommandProcessor.GET_SOUNDSETS);
     }
@@ -64,12 +67,6 @@ public class RemoteControlBluetoothHelper {
         connection.sendCommand("SET_STOP");
     }
 
-    static void getSavedJams(BluetoothConnection connection) {
-        connection.sendCommand("GET_SAVED_JAMS");
-    }
-    static void getSoundSets(BluetoothConnection connection) {
-        connection.sendCommand("GET_SOUNDSETS");
-    }
 
     static void setArpeggiator(BluetoothConnection connection, int arpeggiate) {
         connection.sendNameValuePair("CHANNEL_SET_ARPEGGIATOR", Integer.toString(arpeggiate));
