@@ -89,6 +89,9 @@ public class JamPart {
     }
 
     private void clearPattern() {
+        if (part.pattern == null) {
+            return;
+        }
         for (int i = 0; i < part.pattern.length; i++) {
             for (int j = 0; j < part.pattern[i].length; j++) {
                 part.pattern[i][j] = false;

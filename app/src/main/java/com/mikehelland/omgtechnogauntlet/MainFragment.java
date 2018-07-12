@@ -212,7 +212,7 @@ public class MainFragment extends OMGFragment {
                 }
 
                 Main activity = (Main)getActivity();
-                if (activity != null && activity.isRemote) {
+                if (activity != null && activity.isRemote()) {
                     animateFragment(new SoundSetRemoteFragment(), 0);
                     return;
                 }

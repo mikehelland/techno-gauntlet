@@ -20,8 +20,8 @@ import com.mikehelland.omgtechnogauntlet.jam.OnSoundLoadedListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 import com.mikehelland.omgtechnogauntlet.jam.SoundManager;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+import com.mikehelland.omgtechnogauntlet.remote.BluetoothJamStatus;
 import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
-import com.mikehelland.omgtechnogauntlet.remote.JamListenersHelper;
 import com.mikehelland.omgtechnogauntlet.remote.JamsProvider;
 import com.mikehelland.omgtechnogauntlet.remote.OnGetSoundSetsListener;
 
@@ -40,10 +40,10 @@ public class Main extends FragmentActivity {
 
     private ImageLoader mImages;
 
-    boolean isRemote = false;
-    BluetoothConnection remoteConnection;
     public OnGetSoundSetsListener onGetSoundSetsListener;
     public JamsProvider jamsProvider;
+
+    BluetoothJamStatus bluetoothJamStatus;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,9 +115,10 @@ public class Main extends FragmentActivity {
 
         SoundManager soundManager = new SoundManager(this, updateBeatViewWithLoadProgress);
         jam = new Jam(soundManager, getSoundSetFromDatabase);
+        bluetoothJamStatus = new BluetoothJamStatus(jam, bluetoothManager);
 
-        int defaultJam =  BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
-        jam.loadFromJSON(getResources().getString(defaultJam));
+        //final int defaultJam = R.string.blank_jam;
+        final int defaultJam =  BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
 
         //todo does beatView even have to know about Jam?
         mBeatView.setJam(jam);
@@ -152,6 +153,9 @@ public class Main extends FragmentActivity {
                 if (mWelcomeFragment == null) {
                     mWelcomeFragment = new WelcomeFragment();
                     mWelcomeFragment.setJam(jam);
+
+                    jam.loadFromJSON(getResources().getString(defaultJam));
+
                 }
                 try {
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -171,7 +175,7 @@ public class Main extends FragmentActivity {
         //todo relocate
         // if (!mPool.isLoaded())
         //    mPool.cancelLoading();
-        if (jam.isPlaying() && !isRemote) {
+        if (jam.isPlaying() && !isRemote()) {
             jam.stop();
         }
     }
@@ -199,7 +203,7 @@ public class Main extends FragmentActivity {
     private void setupBluetooth() {
         if (bluetoothManager.isBlueToothOn()) {
             bluetoothManager.startAccepting(makeConnectCallback());
-            JamListenersHelper.setJamListenersForHost(jam, bluetoothManager);
+
         }
     }
 
@@ -211,7 +215,7 @@ public class Main extends FragmentActivity {
             public void onConnected(BluetoothConnection connection) {
                 final CommandProcessor cp = new CommandProcessor(Main.this.onGetSoundSetsListener,
                         Main.this.jamsProvider);
-                cp.setup(connection, jam, null);
+                cp.setup(bluetoothJamStatus, connection, jam, null);
                 connection.setDataCallback(cp);
             }
 
@@ -245,10 +249,13 @@ public class Main extends FragmentActivity {
         mDatabase = new DatabaseContainer(Main.this);
 
         jam = new Jam(null, null);
+        bluetoothJamStatus = new BluetoothJamStatus(jam, bluetoothManager);
 
+        jam.loadFromJSON(getResources().getString(R.string.blank_jam));
 
         //todo does beatView even have to know about Jam?
         mBeatView.setJam(jam);
+        mBeatView.postInvalidate();
 
         jam.addOnSubbeatListener(new OnSubbeatListener() {
             @Override
@@ -272,5 +279,9 @@ public class Main extends FragmentActivity {
 
         mImages = new ImageLoader(this);
 
+    }
+
+    boolean isRemote() {
+        return bluetoothJamStatus != null && bluetoothJamStatus.isRemote();
     }
 }

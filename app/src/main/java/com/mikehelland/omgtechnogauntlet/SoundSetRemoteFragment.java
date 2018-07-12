@@ -27,11 +27,11 @@ public class SoundSetRemoteFragment extends OMGFragment {
                 container, false);
 
         Main activity = (Main)getActivity();
-        if (activity == null || activity.remoteConnection == null) {
+        if (activity == null || !activity.isRemote()) {
             return mView;
         }
 
-        final CommandProcessor cp =(CommandProcessor)activity.remoteConnection.getDataCallback();
+        final CommandProcessor cp =(CommandProcessor)activity.bluetoothJamStatus.getConnectionToHost().getDataCallback();
 
         cp.setOnReceiveSoundSetsListener(new OnReceiveSoundSetsListener() {
             @Override
@@ -41,7 +41,7 @@ public class SoundSetRemoteFragment extends OMGFragment {
             }
         });
 
-        requestSoundSetsFromHost(activity.remoteConnection);
+        requestSoundSetsFromHost(activity.bluetoothJamStatus.getConnectionToHost());
 
         return mView;
     }
@@ -70,11 +70,11 @@ public class SoundSetRemoteFragment extends OMGFragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Main activity = (Main)getActivity();
-                if (activity == null || activity.remoteConnection == null) {
+                if (activity == null || activity.bluetoothJamStatus == null || !activity.bluetoothJamStatus.isRemote()) {
                     return;
                 }
 
-                activity.remoteConnection.sendNameValuePair(CommandProcessor.ADD_PART, "" + soundSets.get(i).getID());
+                activity.bluetoothJamStatus.getConnectionToHost().sendNameValuePair(CommandProcessor.ADD_PART, "" + soundSets.get(i).getID());
                 popBackStack();
             }
         });

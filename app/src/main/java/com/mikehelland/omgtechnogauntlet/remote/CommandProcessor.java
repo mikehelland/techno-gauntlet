@@ -66,7 +66,7 @@ public class CommandProcessor extends BluetoothDataCallback {
     private BluetoothConnection mConnection;
     private Jam mJam;
     private JamPart mPart = null;
-
+    private BluetoothJamStatus mStatus;
     private Jam mPeerJam;
     //private OnPeerChangeListener mOnPeerChangeListener;
 
@@ -120,7 +120,9 @@ public class CommandProcessor extends BluetoothDataCallback {
         sb.append(jamPart.getSpeed());
     }
 
-    public void setup(BluetoothConnection connection, Jam jam, JamPart channel) {
+    public void setup(BluetoothJamStatus bluetoothJamStatus, BluetoothConnection connection,
+                      Jam jam, JamPart channel) {
+        mStatus = bluetoothJamStatus;
         mJam = jam;
         mConnection = connection;
 
@@ -154,7 +156,9 @@ public class CommandProcessor extends BluetoothDataCallback {
                 return;
 
             case GET_JAM:
-                sendJamJSON();
+                if (!mStatus.isRemote()) {
+                    sendJamJSON();
+                }
                 return;
             case GET_SAVED_JAMS:
                 sendSavedJams();
@@ -840,6 +844,10 @@ public class CommandProcessor extends BluetoothDataCallback {
         mSync = hostIsARemote;
 
         sendJamJSON();
+
+        if (!mStatus.isHost) {
+            mStatus.setupJamAsHost();
+        }
     }
 
     public void setOnReceiveSoundSetsListener(OnReceiveSoundSetsListener onReceiveSoundSetsListener) {

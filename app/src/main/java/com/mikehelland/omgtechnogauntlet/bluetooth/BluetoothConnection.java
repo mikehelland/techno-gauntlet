@@ -72,7 +72,7 @@ public class BluetoothConnection extends Thread {
 
             if (hasData)  {
 
-                final String data = new String(buffer).substring(0, bytes);
+                final String data = new String(buffer, 0, bytes); //new String(buffer).substring(0, bytes);
 
                 if (mDataCallback != null)
                     bluetoothFactory.newData(mDataCallback, data);

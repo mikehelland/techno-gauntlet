@@ -132,7 +132,7 @@ public class BluetoothFragment extends OMGFragment {
         CommandProcessor cp = new CommandProcessor(activity.onGetSoundSetsListener,
                 activity.jamsProvider);
         //cp.setup(connection, getPeerJam(), null);
-        cp.setup(connection, getJam(), null);
+        cp.setup(activity.bluetoothJamStatus, connection, getJam(), null);
         connection.setDataCallback(cp);
 
         BtRelativeLayout controls = mViewMap.get(connection.getDevice().getAddress());

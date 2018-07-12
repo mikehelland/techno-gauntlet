@@ -151,7 +151,9 @@ class Player {
                 //part.finish();
             }
         }
-        soundManager.cleanUp();
+        if (soundManager != null) {
+            soundManager.cleanUp();
+        }
         state = STATE_FINISHED;
     }
 

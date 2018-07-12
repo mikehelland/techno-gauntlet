@@ -5,57 +5,62 @@
     android:layout_height="fill_parent"
     >
 
-    <Button
-        android:layout_width="match_parent"
+    <ImageView
+        android:src="@drawable/device"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Back To Jam >>"
-        android:id="@+id/back_to_jam_button"
+        android:layout_alignParentTop="true"
+        android:id="@+id/remote_logo"
+        android:padding="8dp"/>
+
+    <TextView
+        android:text="HOST"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/bt_host"
+        android:textColor="#4fa5d5"
+        android:layout_marginTop="32dip"
+        android:textSize="28sp"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/remote_logo"
         />
 
     <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/bt_host"
-            android:textColor="#4fa5d5"
-            android:gravity="center"
-            android:textSize="28sp"
-            android:layout_marginTop="10dip"
-            android:layout_alignParentTop="true"/>
-
-        <TextView
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/bt_status"
+            android:text="STATUS"
             android:textColor="#4fa5d5"
-            android:gravity="center"
-            android:textSize="28sp"
-            android:layout_marginTop="10dip"
-            android:layout_below="@id/bt_host"/>
-
-
-        <ImageView
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dip"
-            android:src="@drawable/device"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/bt_status"
-            android:id="@+id/remote_logo"/>
+            android:textSize="22sp"
+            android:layout_below="@id/bt_host"
+            android:layout_toRightOf="@id/remote_logo"
+        />
 
 
 
-        <Button
+
+    <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Choose a Host Device"
-                android:id="@+id/choose_host_button"
+                android:text="Long Press To Exit Remote Control Mode"
+                android:id="@+id/exit_remote"
                 android:layout_alignParentBottom="true"/>
 
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/remote_logo"
-            android:layout_above="@id/choose_host_button"
-            android:id="@+id/saved_list"></ListView>
+            android:layout_above="@id/exit_remote"
+            android:id="@+id/saved_list"/>
 
+    <Button android:text="@string/return_to_jam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableRight="@android:drawable/ic_media_ff"
+        android:id="@+id/back_to_jam_button"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_alignParentRight="true"
+        android:layout_above="@id/saved_list"
+        android:layout_alignParentTop="true"
+        />
 </RelativeLayout>

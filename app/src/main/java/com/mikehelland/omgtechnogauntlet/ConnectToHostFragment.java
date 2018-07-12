@@ -45,18 +45,31 @@ public class ConnectToHostFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.bluetooth_remote,
                 container, false);
 
-        Main activity = ((Main)getActivity());
+        final Main activity = ((Main)getActivity());
 
         mBT = activity.bluetoothManager;
 
         mStatusText = (TextView)mView.findViewById(R.id.bt_status);
         mImageView = (ImageView)mView.findViewById(R.id.remote_logo);
 
-        if (activity.isRemote && activity.remoteConnection != null && !activity.remoteConnection.isDisconnected()) {
+        mView.findViewById(R.id.exit_remote).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Activity a = getActivity();
+                if (a != null) {
+                    a.finish();
+                }
+                return true;
+            }
+        });
+
+        if (activity.isRemote() && !activity.bluetoothJamStatus.getConnectionToHost().isDisconnected()) {
             mStatusText.setText(R.string.connected);
             mImageView.setImageResource(R.drawable.device_blue);
+            ((TextView)mView.findViewById(R.id.bt_host)).setText(
+                    activity.bluetoothJamStatus.getConnectionToHost().getDevice().getName());
 
-            setupSavedJames(activity.remoteConnection);
+            setupSavedJames(activity.bluetoothJamStatus.getConnectionToHost());
         }
         else {
             mBT.whenReady(new BluetoothReadyCallback() {
@@ -156,14 +169,13 @@ public class ConnectToHostFragment extends OMGFragment {
 
                 final Main activity = (Main)getActivity(); if (activity == null) return;
 
-                activity.isRemote = true;
-                activity.remoteConnection = connection;
+                activity.bluetoothJamStatus.setupRemote(connection);
 
                 //process any incoming messages from this connection
                 final CommandProcessor cp = new CommandProcessor(activity.onGetSoundSetsListener,
                         activity.jamsProvider);
                 cp.setSync(true); 
-                cp.setup(connection, jam, null);
+                cp.setup(activity.bluetoothJamStatus, connection, jam, null);
                 connection.setDataCallback(cp);
 
                 //send any changes to this jam to the host
@@ -278,11 +290,11 @@ public class ConnectToHostFragment extends OMGFragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Main activity = (Main)getActivity();
-                if (activity == null || activity.remoteConnection == null) {
+                if (activity == null || !activity.isRemote()) {
                     return;
                 }
 
-                activity.remoteConnection.sendNameValuePair(CommandProcessor.LOAD_JAM, "" + jams.get(i).id);
+                activity.bluetoothJamStatus.getConnectionToHost().sendNameValuePair(CommandProcessor.LOAD_JAM, "" + jams.get(i).id);
                 popBackStack();
             }
         });

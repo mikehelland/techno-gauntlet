@@ -494,15 +494,20 @@ public class Jam {
     }
     public void updatePartLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source) {
         Log.d("MGH updatelive note", "" + notes[0].getBeats());
-        jamPart.liveNotes.notes =  notes;
+        LiveNotes liveNotes = jamPart.liveNotes;
+        if (liveNotes == null) {
+            return;
+        }
+
+        liveNotes.notes =  notes;
         if (!player.isPlaying() || autoBeat == 0) {
             notes[0].setBeats(1.0f / currentSection.beatParameters.subbeats);
             player.playPartLiveNotes(jamPart.part, notes);
             if (isPlaying && !jamPart.getMute()) {
-                jamPart.liveNotes.liveNote = NoteWriter.addNote(notes[0], Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
+                liveNotes.liveNote = NoteWriter.addNote(notes[0], Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
             }
         }
-        jamPart.liveNotes.autoBeat = autoBeat;
+        liveNotes.autoBeat = autoBeat;
 
         for (OnJamChangeListener listener : onJamChangeListeners) {
             listener.onPartUpdateLiveNotes(jamPart, notes, autoBeat, source);
@@ -513,10 +518,12 @@ public class Jam {
         removeFromPartLiveNotes(jamPart, note, notes, null);
     }
     public void removeFromPartLiveNotes(JamPart jamPart, Note note, Note[] notes, String source) {
-        if (jamPart.liveNotes == null) {
+        LiveNotes liveNotes = jamPart.liveNotes;
+        if (liveNotes == null) {
             return;
         }
-        jamPart.liveNotes.notes =  notes;
+
+        liveNotes.notes =  notes;
         player.stopPartLiveNote(jamPart.part, note);
 
         for (OnJamChangeListener listener : onJamChangeListeners) {
