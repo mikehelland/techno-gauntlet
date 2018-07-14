@@ -174,7 +174,7 @@ public class CommandProcessor extends BluetoothDataCallback {
         }
 
         // the rest of the cases need a value
-        if (value == null)
+        if (value == null || value.length() < 1)
             return;
 
         switch (name) {
@@ -803,21 +803,28 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void setScale(String value) {
-        String[] ints = value.split(",");
-        int[] scale = new int[ints.length];
-        for (int i = 0; i < ints.length; i++) {
-            scale[i] = Integer.parseInt(ints[i]);
+        try {
+            String[] ints = value.split(",");
+            int[] scale = new int[ints.length];
+            for (int i = 0; i < ints.length; i++) {
+                scale[i] = Integer.parseInt(ints[i]);
+            }
+            mJam.setScale(scale, getAddress());
         }
-        mJam.setScale(scale, getAddress());
+        catch (NumberFormatException ignore) {}
     }
 
     private void onChordsChange(String value) {
-        String[] valueSplit = value.split(",");
-        int[] chords = new int[valueSplit.length];
-        for (int i = 0; i < valueSplit.length; i++) {
-            chords[i] = Integer.parseInt(valueSplit[i]);
+        try {
+            String[] valueSplit = value.split(",");
+            int[] chords = new int[valueSplit.length];
+            for (int i = 0; i < valueSplit.length; i++) {
+                chords[i] = Integer.parseInt(valueSplit[i]);
+            }
+            mJam.setProgression(chords, getAddress());
         }
-        mJam.setProgression(chords, getAddress());
+        catch (NumberFormatException ignore) {}
+
     }
 
     public boolean isLocalARemote() {
