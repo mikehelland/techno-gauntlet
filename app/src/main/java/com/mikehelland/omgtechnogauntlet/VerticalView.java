@@ -35,7 +35,7 @@ public class VerticalView extends View {
     private int width = -1;
     private int height = -1;
 
-    private int boxWidth;
+    private float boxWidth;
     private float boxHeight;
     private float boxHeightHalf;
 
@@ -64,7 +64,7 @@ public class VerticalView extends View {
     private Note draw_note;
     private float draw_x;
     private Bitmap draw_noteImage;
-    private int draw_boxwidth;
+    private float draw_boxwidth;
 
     private Bitmap images[][];
 
@@ -238,13 +238,13 @@ public class VerticalView extends View {
         }
 
         //if (height != getHeight()) {
-        draw_debugBeatWidth = getWidth() - draw_leftOffset;
-        draw_beatWidth = draw_debugBeatWidth / (float) (mJam.getSubbeats() * mJam.getTotalBeats());
         width = getWidth();
         height = getHeight();
+        draw_debugBeatWidth = width; //getWidth() - draw_leftOffset;
+        draw_beatWidth = draw_debugBeatWidth / (float) (mJam.getSubbeats() * mJam.getTotalBeats());
         boxHeight = (float) height / showingFrets;
         boxHeightHalf = boxHeight / 2;
-        boxWidth = width / strings;
+        boxWidth = (float)width / strings;
         paint.setTextSize(boxHeightHalf);
         //}
 
@@ -292,7 +292,7 @@ public class VerticalView extends View {
 
         //float middle = getHeight() / 2.0f;
         float draw_y;
-        draw_boxwidth = Math.min(images[0][0].getWidth(), getWidth() / (list.size() + 1));
+        draw_boxwidth = Math.min(images[0][0].getWidth(), (float)getWidth() / (list.size() + 1));
 
         double beatsUsed = 0.0d;
 

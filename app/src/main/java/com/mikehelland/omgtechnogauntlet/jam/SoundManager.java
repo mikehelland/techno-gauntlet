@@ -182,8 +182,9 @@ public class SoundManager {
         if (command.osc != null) {
             command.osc.mute();
         }
-        else if (command.note != null) {
+        else if (command.note != null && command.note.playingHandle > -1) {
             soundPool.stop(command.note.playingHandle);
+            command.note.playingHandle = -1;
         }
     }
 
