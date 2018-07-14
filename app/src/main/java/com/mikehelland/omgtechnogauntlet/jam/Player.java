@@ -189,8 +189,8 @@ class Player {
         }
         if (note.playingHandle > -1) {
             soundManager.stopSound(note.playingHandle);
-            note.playingHandle = -1;
         }
+        note.playingHandle = -1;
         if (isPlaying() && !part.audioParameters.mute) {
             //note.setBeats(Math.max(1, 1 + isubbeat - note.startedPlayingAtSubbeat) /
             //        (double)section.beatParameters.subbeats);

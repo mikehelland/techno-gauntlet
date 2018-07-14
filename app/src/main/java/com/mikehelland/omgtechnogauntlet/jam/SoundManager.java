@@ -181,6 +181,9 @@ public class SoundManager {
     void stopSound(PlaySoundCommand command) {
         if (command.osc != null) {
             command.osc.mute();
+            if (command.note != null) {
+                command.note.playingHandle = -1;
+            }
         }
         else if (command.note != null && command.note.playingHandle > -1) {
             soundPool.stop(command.note.playingHandle);

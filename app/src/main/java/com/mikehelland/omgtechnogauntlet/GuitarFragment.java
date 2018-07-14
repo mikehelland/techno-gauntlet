@@ -53,12 +53,12 @@ public class GuitarFragment extends OMGFragment {
             return new VerticalView.OnGestureListener() {
                 @Override
                 void onStart(Note note, int autoBeat) {
-                    getJam().startPartLiveNotes(getPart(), note, autoBeat);
+                    getJam().startPartLiveNotes(getPart(), note, getAutoBeat(autoBeat));
                 }
 
                 @Override
                 void onUpdate(Note[] notes, int autoBeat) {
-                    getJam().updatePartLiveNotes(getPart(), notes, autoBeat);
+                    getJam().updatePartLiveNotes(getPart(), notes, getAutoBeat(autoBeat));
                 }
 
                 @Override
@@ -121,5 +121,16 @@ public class GuitarFragment extends OMGFragment {
     public void onPause() {
         super.onPause();
         getJam().removeOnSubbeatListener(onSubbeatListener);
+    }
+
+    private int getAutoBeat(int column) {
+        if (column == 3) {
+            return 1;
+        }
+        if (column == 1) {
+            return 4;
+        }
+
+        return column;
     }
 }

@@ -95,7 +95,7 @@ public class VerticalView extends View {
 
     private OnGestureListener onGestureListener;
 
-    private int autoBeat = 0;
+    private int touchingColumn = -1;
 
     public VerticalView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -130,7 +130,7 @@ public class VerticalView extends View {
 
 
         topPanelPaint = new Paint();
-        topPanelPaint.setARGB(255, 192, 192, 255);
+        topPanelPaint.setARGB(96, 192, 192, 255);
 
         setBackgroundColor(Color.BLACK);
 
@@ -248,6 +248,18 @@ public class VerticalView extends View {
         paint.setTextSize(boxHeightHalf);
         //}
 
+        for (Touch touch : touches) {
+            canvas.drawRect(0, height - (touch.onFret - skipBottom + 1) * boxHeight,
+                    width, height - (touch.onFret - skipBottom) * boxHeight,
+                    topPanelPaint);
+        }
+
+        if (touchingColumn > -1) {
+            canvas.drawRect(touchingColumn * boxWidth, 0,
+                    (touchingColumn + 1) * boxWidth, height,
+                    topPanelPaint);
+        }
+
         int noteNumber;
         int index;
         for (int fret = 1; fret <= showingFrets; fret++) {
@@ -276,12 +288,6 @@ public class VerticalView extends View {
 
         canvas.drawLine(0, height - 1, width,
                 height - 1, paint);
-
-        for (Touch touch : touches) {
-            canvas.drawRect(0, height - (touch.onFret - skipBottom + 1) * boxHeight,
-                    width, height - (touch.onFret - skipBottom) * boxHeight,
-                    topPanelPaint);
-        }
 
         drawColumns(canvas);
         drawNotes(canvas, mPart.getNotes());
@@ -343,10 +349,11 @@ public class VerticalView extends View {
             }
 
             if (draw_noteImage != null) {
-                canvas.drawBitmap(draw_noteImage, draw_x, draw_y, null);
+                canvas.drawBitmap(draw_noteImage, draw_x,
+                        draw_y + boxHeight - draw_noteImage.getHeight(), null);
             } else {
                 canvas.drawText(Double.toString(draw_note.getBeats()),
-                        draw_x, draw_y + 50,
+                        draw_x, draw_y + boxHeightHalf,
                         paint);
             }
 
@@ -380,15 +387,7 @@ public class VerticalView extends View {
     }
 
     private int getTouchingString(float x) {
-        int touchingString = (int) Math.floor(x / boxWidth);
-        if (touchingString == 3) {
-            return 1;
-        }
-        if (touchingString == 1) {
-            return 4;
-        }
-
-        return touchingString;
+        return (int) Math.floor(x / boxWidth);
     }
 
     private int getTouchingFret(float y) {
@@ -530,6 +529,7 @@ public class VerticalView extends View {
 
     private void onUp(MotionEvent event) {
         touches.clear();
+        touchingColumn = -1;
 
         if (onGestureListener != null)
             onGestureListener.onEnd();
@@ -561,7 +561,7 @@ public class VerticalView extends View {
     private void onMove(MotionEvent event) {
         boolean update = false;
         int id;
-        autoBeat = 0;
+        touchingColumn = 0;
         for (int ip = 0; ip < event.getPointerCount(); ip++) {
             id = event.getPointerId(ip);
             for (Touch touch : touches) {
@@ -576,8 +576,8 @@ public class VerticalView extends View {
                     touch.onFret = getTouchingFret(touch.y);
                     touch.onString = getTouchingString(touch.x);
 
-                    if (touch.onString > 0 && (autoBeat == 0 || touch.onString < autoBeat))
-                        autoBeat = touch.onString;
+                    if (touchingColumn < touch.onString)
+                        touchingColumn = touch.onString;
 
                     if (touch.lastFret != touch.onFret || touch.lastString != touch.onString) {
                         onGestureListener.onRemove(touch.note, getNoteArrayFromTouches());
@@ -589,7 +589,7 @@ public class VerticalView extends View {
             }
         }
         if (update) {
-            onGestureListener.onUpdate(getNoteArrayFromTouches(), autoBeat);
+            onGestureListener.onUpdate(getNoteArrayFromTouches(), touchingColumn);
         }
     }
 
