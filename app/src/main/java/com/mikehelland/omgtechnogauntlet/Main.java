@@ -15,15 +15,14 @@ import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
 import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamHeader;
-import com.mikehelland.omgtechnogauntlet.jam.OnGetSoundSetListener;
+import com.mikehelland.omgtechnogauntlet.jam.JamsProvider;
 import com.mikehelland.omgtechnogauntlet.jam.OnSoundLoadedListener;
 import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
 import com.mikehelland.omgtechnogauntlet.jam.SoundManager;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSetsProvider;
 import com.mikehelland.omgtechnogauntlet.remote.BluetoothJamStatus;
 import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
-import com.mikehelland.omgtechnogauntlet.remote.JamsProvider;
-import com.mikehelland.omgtechnogauntlet.remote.OnGetSoundSetsListener;
 
 import java.util.ArrayList;
 
@@ -40,7 +39,7 @@ public class Main extends FragmentActivity {
 
     private ImageLoader mImages;
 
-    public OnGetSoundSetsListener onGetSoundSetsListener;
+    public SoundSetsProvider soundSetsProvider;
     public JamsProvider jamsProvider;
 
     BluetoothJamStatus bluetoothJamStatus;
@@ -56,118 +55,43 @@ public class Main extends FragmentActivity {
 
         setContentView(R.layout.main);
 
-        mBeatView = (BeatView)findViewById(R.id.main_beatview);
-        bluetoothManager = new BluetoothManager(this);
+        bluetoothManager = new BluetoothManager(Main.this);
+
+        mImages = new ImageLoader(Main.this);
 
         if (hasDefaultHost()) {
             connectToDefaultHost();
             return;
         }
 
-        mDatabase = new DatabaseContainer(Main.this);
+        setupDatabase();
 
-        onGetSoundSetsListener = new OnGetSoundSetsListener() {
-            @Override
-            public ArrayList<SoundSet> getSoundSets() {
-                return mDatabase.getSoundSetData().getList();
-            }
-
-            @Override
-            public SoundSet getSoundSet(long id) {
-                return mDatabase.getSoundSetData().getSoundSetById(id);
-            }
-        };
-        jamsProvider = new JamsProvider() {
-            @Override
-            public ArrayList<JamHeader> getJams() {
-                return mDatabase.getSavedData().getList();
-            }
-
-            @Override
-            public String getJamJson(long id) {
-                return mDatabase.getSavedData().getJamJson(id);
-            }
-        };
-
-        OnGetSoundSetListener getSoundSetFromDatabase = new OnGetSoundSetListener() {
-            @Override
-            public SoundSet onGetSoundSet(String url) {
-                //todo what if it's not in the database? go online? gonna need a callback
-                //although, it should only really affect external jam's loaded by URL (so download them then?)
-                return mDatabase.getSoundSetData().getSoundSetByURL(url);
-            }
-        };
-
-        OnSoundLoadedListener updateBeatViewWithLoadProgress = new OnSoundLoadedListener() {
-            @Override
-            public void onSoundLoaded(int howManyLoaded, int howManyTotal) {
-                mBeatView.setLoadingStatus(howManyLoaded, howManyTotal);
-
-                if (howManyLoaded >= howManyTotal) {
-                    jam.play();
-                    FragmentManager fm = getSupportFragmentManager();
-                    if (fm != null && fm.getBackStackEntryCount() == 0) {
-                        mWelcomeFragment.animateFragment(new MainFragment(), 1);
-                    }
-                }
-            }
-        };
-
-        SoundManager soundManager = new SoundManager(this, updateBeatViewWithLoadProgress);
-        jam = new Jam(soundManager, getSoundSetFromDatabase);
+        SoundManager soundManager = new SoundManager(Main.this, onSoundLoadedListener);
+        jam = new Jam(soundManager, soundSetsProvider);
         bluetoothJamStatus = new BluetoothJamStatus(jam, bluetoothManager);
 
-        //final int defaultJam = R.string.blank_jam;
-        final int defaultJam =  BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
+        setupBeatView();
 
-        //todo does beatView even have to know about Jam?
-        mBeatView.setJam(jam);
+        if (bluetoothManager.isBlueToothOn()) {
+            bluetoothManager.startAccepting(makeConnectCallback());
+        }
 
-        jam.addOnSubbeatListener(new OnSubbeatListener() {
-            @Override
-            public void onSubbeat(int subbeat) {
-                mBeatView.postInvalidate();
-            }
-        });
 
-        mBeatView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (jam.isPlaying()) {
-                    jam.stop();
-                }
-                else {
-                    jam.play();
-                }
-                //mBeatView.postInvalidate();
-            }
-        });
+        if (mWelcomeFragment == null) {
+            mWelcomeFragment = new WelcomeFragment();
+            mWelcomeFragment.setJam(jam);
 
-        mImages = new ImageLoader(this);
+            final int defaultJam =  BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
+            jam.loadFromJSON(getResources().getString(defaultJam));
 
-        setupBluetooth();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (mWelcomeFragment == null) {
-                    mWelcomeFragment = new WelcomeFragment();
-                    mWelcomeFragment.setJam(jam);
-
-                    jam.loadFromJSON(getResources().getString(defaultJam));
-
-                }
-                try {
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.add(R.id.main_layout, mWelcomeFragment);
-                    ft.commit();
-                } catch (Exception ignore) { }
-            }
-        }).start();
+        }
+        try {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.main_layout, mWelcomeFragment);
+            ft.commit();
+        } catch (Exception ignore) { }
 
     }
-
-
 
     @Override
     public void onPause() {
@@ -186,7 +110,9 @@ public class Main extends FragmentActivity {
         jam.finish();
         //todo mBtf.cleanUp();
         bluetoothManager.cleanUp();
-        mDatabase.close();
+        if (mDatabase != null) {
+            mDatabase.close();
+        }
     }
 
     @Override
@@ -200,20 +126,13 @@ public class Main extends FragmentActivity {
 
     }
 
-    private void setupBluetooth() {
-        if (bluetoothManager.isBlueToothOn()) {
-            bluetoothManager.startAccepting(makeConnectCallback());
-
-        }
-    }
-
     BluetoothConnectCallback makeConnectCallback() {
         return new BluetoothConnectCallback() {
             @Override
             public void newStatus(final String status) {}
             @Override
             public void onConnected(BluetoothConnection connection) {
-                final CommandProcessor cp = new CommandProcessor(Main.this.onGetSoundSetsListener,
+                final CommandProcessor cp = new CommandProcessor(Main.this.soundSetsProvider,
                         Main.this.jamsProvider);
                 cp.setup(bluetoothJamStatus, connection, jam, null);
                 connection.setDataCallback(cp);
@@ -246,16 +165,71 @@ public class Main extends FragmentActivity {
     }
 
     private void remoteSetup() {
-        mDatabase = new DatabaseContainer(Main.this);
 
         jam = new Jam(null, null);
         bluetoothJamStatus = new BluetoothJamStatus(jam, bluetoothManager);
 
         jam.loadFromJSON(getResources().getString(R.string.blank_jam));
 
-        //todo does beatView even have to know about Jam?
+        setupBeatView();
+
+    }
+
+    boolean isRemote() {
+        return bluetoothJamStatus != null && bluetoothJamStatus.isRemote();
+    }
+
+    private void setupDatabase() {
+        mDatabase = new DatabaseContainer(Main.this);
+
+        soundSetsProvider = new SoundSetsProvider() {
+            @Override
+            public ArrayList<SoundSet> getSoundSets() {
+                return mDatabase.getSoundSetData().getList();
+            }
+
+            @Override
+            public SoundSet getSoundSetById(long id) {
+                return mDatabase.getSoundSetData().getSoundSetById(id);
+            }
+
+            @Override
+            public SoundSet getSoundSetByURL(String url) {
+                return mDatabase.getSoundSetData().getSoundSetByURL(url);
+            }
+        };
+        jamsProvider = new JamsProvider() {
+            @Override
+            public ArrayList<JamHeader> getJams() {
+                return mDatabase.getSavedData().getList();
+            }
+
+            @Override
+            public String getJamJson(long id) {
+                return mDatabase.getSavedData().getJamJson(id);
+            }
+        };
+    }
+
+    private OnSoundLoadedListener onSoundLoadedListener = new OnSoundLoadedListener() {
+        @Override
+        public void onSoundLoaded(int howManyLoaded, int howManyTotal) {
+            mBeatView.setLoadingStatus(howManyLoaded, howManyTotal);
+
+            if (howManyLoaded >= howManyTotal) {
+                jam.play();
+                FragmentManager fm = getSupportFragmentManager();
+                if (fm != null && fm.getBackStackEntryCount() == 0) {
+                    mWelcomeFragment.animateFragment(new MainFragment(), 1);
+                }
+            }
+        }
+    };
+
+    private void setupBeatView() {
+        mBeatView = (BeatView)findViewById(R.id.main_beatview);
+
         mBeatView.setJam(jam);
-        mBeatView.postInvalidate();
 
         jam.addOnSubbeatListener(new OnSubbeatListener() {
             @Override
@@ -276,12 +250,6 @@ public class Main extends FragmentActivity {
                 //mBeatView.postInvalidate();
             }
         });
-
-        mImages = new ImageLoader(this);
-
     }
 
-    boolean isRemote() {
-        return bluetoothJamStatus != null && bluetoothJamStatus.isRemote();
-    }
 }

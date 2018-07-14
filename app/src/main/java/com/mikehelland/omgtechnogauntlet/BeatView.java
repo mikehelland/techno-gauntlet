@@ -54,23 +54,24 @@ public class BeatView extends View {
     }
 
     public void onDraw(Canvas canvas) {
-        if (jam == null || !jam.isReady())
-            return;
 
         if (!mIsHeightSet) {
             paintWhite.setTextSize(getHeight() * 0.80f);
             mIsHeightSet = true;
         }
 
-        beats = jam.getBeats();
-        float boxWidth = ((float)getWidth()) / jam.getTotalBeats();
-        for (int i = 1; i < jam.getTotalBeats(); i++) {
-            canvas.drawLine(i * boxWidth, 0, i * boxWidth, getHeight(),
-                    i % beats == 0 ? paintWhite : paintGrey);
-        }
         canvas.drawLine(0, getHeight() - 2, getWidth(), getHeight() - 2, paintWhite);
 
-        if (mShowingLoadProgress) {
+        if (jam != null && jam.isReady()) {
+            beats = jam.getBeats();
+            float boxWidth = ((float)getWidth()) / jam.getTotalBeats();
+            for (int i = 1; i < jam.getTotalBeats(); i++) {
+                canvas.drawLine(i * boxWidth, 0, i * boxWidth, getHeight(),
+                        i % beats == 0 ? paintWhite : paintGrey);
+            }
+        }
+
+        if (mShowingLoadProgress || jam == null) {
             canvas.drawRect(0, 0, getWidth() * ((float)mProgressI / mProgressMax), getHeight(), paintBlue);
             mText = "Loading Sounds...";
         }
@@ -78,7 +79,7 @@ public class BeatView extends View {
             canvas.drawRect(0, 0, getWidth(), getHeight(), paintRed);
             mText = "Play";
         }
-        if (jam.isPlaying()) {
+        if (jam != null && jam.isPlaying()) {
             float beatBoxWidth = ((float)getWidth()) / jam.getTotalBeats();
             float beatBoxStart = jam.getCurrentSubbeat() / jam.getSubbeats() * beatBoxWidth;
 

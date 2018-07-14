@@ -282,9 +282,9 @@ public class FretboardView extends View {
             key = 0;
             rootNote = 0;
             lowNote = 0;
-            highNote = mPart.getSoundSet().getSounds().size() - 1;
+            highNote = mPart.getSoundSetById().getSounds().size() - 1;
 
-            soundsetCaptions = mPart.getSoundSet().getSoundNames();
+            soundsetCaptions = mPart.getSoundSetById().getSoundNames();
 
         }
         else {

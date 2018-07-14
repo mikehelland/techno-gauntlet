@@ -1,6 +1,4 @@
-package com.mikehelland.omgtechnogauntlet.remote;
-
-import com.mikehelland.omgtechnogauntlet.jam.JamHeader;
+package com.mikehelland.omgtechnogauntlet.jam;
 
 import java.util.ArrayList;
 

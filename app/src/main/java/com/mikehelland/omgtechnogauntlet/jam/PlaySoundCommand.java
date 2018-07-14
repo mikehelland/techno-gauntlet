@@ -25,7 +25,8 @@ class PlaySoundCommand {
             osc = part.soundSet.getOscillator();
         }
         else {
-            if (part.poolIds != null && part.poolIds.length > note.getInstrumentNote()) {
+            if (part.poolIds != null && part.poolIds.length > note.getInstrumentNote() &&
+                    note.getInstrumentNote() > -1) {
                 poolId = part.poolIds[note.getInstrumentNote()];
             }
             else {

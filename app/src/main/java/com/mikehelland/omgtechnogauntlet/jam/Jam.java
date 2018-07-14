@@ -21,15 +21,15 @@ public class Jam {
     private CopyOnWriteArrayList<OnKeyChangeListener> onKeyChangeListeners = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<OnBeatChangeListener> onBeatChangeListeners = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<OnMixerChangeListener> onMixerChangeListeners = new CopyOnWriteArrayList<>();
-    private OnGetSoundSetListener onGetSoundSetListener;
+    private SoundSetsProvider soundSetsProvider;
 
     private String keyName = "";
 
     private CopyOnWriteArrayList<JamPart> jamParts = new CopyOnWriteArrayList<>();
 
-    public Jam(SoundManager soundManager, OnGetSoundSetListener onGetSoundSetListener) {
+    public Jam(SoundManager soundManager, SoundSetsProvider soundSetsProvider) {
         this.soundManager = soundManager;
-        this.onGetSoundSetListener = onGetSoundSetListener;
+        this.soundSetsProvider = soundSetsProvider;
         this.player = new Player(soundManager);
     }
 
@@ -470,7 +470,8 @@ public class Jam {
     public void startPartLiveNotes(JamPart jamPart, Note  note, int autoBeat, String source) {
         jamPart.stopPlayingSounds();
 
-        jamPart.liveNotes = new LiveNotes(autoBeat, new Note[] {note});
+        LiveNotes liveNotes = new LiveNotes(autoBeat, new Note[] {note});
+        jamPart.liveNotes = liveNotes;
 
         if (!player.isPlaying() || autoBeat == 0) {
             if (soundManager != null) {
@@ -478,7 +479,7 @@ public class Jam {
             }
             note.setBeats(1.0f / currentSection.beatParameters.subbeats);
             if (isPlaying && !jamPart.getMute()) {
-                jamPart.liveNotes.liveNote = NoteWriter.addNote(note, Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
+                liveNotes.liveNote = NoteWriter.addNote(note, Math.max(0, player.isubbeat - 1), jamPart.getNotes(), currentSection.beatParameters);
             }
         }
 
@@ -575,11 +576,11 @@ public class Jam {
     private void prepareSoundSetForPart(Part part) {
         //todo maybe an isloaded instead of isvalid here
         if (!part.soundSet.isValid()) {
-            if (onGetSoundSetListener == null) {
+            if (soundSetsProvider == null) {
                 return;
             }
 
-            SoundSet soundSet = onGetSoundSetListener.onGetSoundSet(part.soundSet.getURL());
+            SoundSet soundSet = soundSetsProvider.getSoundSetByURL(part.soundSet.getURL());
             if (soundSet == null) {
                 return;
             }

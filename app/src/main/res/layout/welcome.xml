@@ -58,13 +58,16 @@
 
     <TextView
         android:text="@string/or_load_a_saved_jam"
+        android:background="#808080"
+        android:textColor="@android:color/black"
         android:layout_alignParentRight="true"
         android:layout_alignParentLeft="true"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:textSize="20sp"
-        android:padding="2dp"
-        android:gravity="center"
+        android:padding="4dp"
+        android:paddingLeft="10dp"
+
         android:layout_below="@id/welcome_buttons"
         android:id="@+id/load_jam_caption"
         android:layout_alignParentEnd="true"
@@ -76,7 +79,7 @@
         android:drawableLeft="@android:drawable/ic_media_rew"
         android:id="@+id/exit_button"
         android:layout_alignParentBottom="true"
-        android:background="?android:attr/selectableItemBackground"/>
+        />
 
 
     <ListView android:id="@+id/saved_list"

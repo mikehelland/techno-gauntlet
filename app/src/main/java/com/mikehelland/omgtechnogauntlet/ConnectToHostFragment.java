@@ -172,7 +172,7 @@ public class ConnectToHostFragment extends OMGFragment {
                 activity.bluetoothJamStatus.setupRemote(connection);
 
                 //process any incoming messages from this connection
-                final CommandProcessor cp = new CommandProcessor(activity.onGetSoundSetsListener,
+                final CommandProcessor cp = new CommandProcessor(activity.soundSetsProvider,
                         activity.jamsProvider);
                 cp.setSync(true); 
                 cp.setup(activity.bluetoothJamStatus, connection, jam, null);

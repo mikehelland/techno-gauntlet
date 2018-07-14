@@ -7,9 +7,11 @@ import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothDataCallback;
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamHeader;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.JamsProvider;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.SequencerTrack;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSetsProvider;
 
 import java.util.ArrayList;
 
@@ -76,14 +78,14 @@ public class CommandProcessor extends BluetoothDataCallback {
     private boolean localIsARemote = false;
     private boolean hostIsARemote = false;
 
-    private OnGetSoundSetsListener onGetSoundSetsListener;
+    private SoundSetsProvider soundSetsProvider;
     private OnReceiveSoundSetsListener onReceiveSoundSetsListener;
 
     private OnReceiveSavedJamsListener onReceiveSavedJamsListener;
     private JamsProvider jamsProvider;
 
-    public CommandProcessor(OnGetSoundSetsListener onGetSoundSetsListener, JamsProvider jamsProvider) {
-        this.onGetSoundSetsListener = onGetSoundSetsListener;
+    public CommandProcessor(SoundSetsProvider soundSetsProvider, JamsProvider jamsProvider) {
+        this.soundSetsProvider = soundSetsProvider;
         this.jamsProvider = jamsProvider;
     }
 
@@ -508,8 +510,8 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     private ArrayList<SoundSet> getSoundSets() {
-        if (onGetSoundSetsListener != null) {
-            return onGetSoundSetsListener.getSoundSets();
+        if (soundSetsProvider != null) {
+            return soundSetsProvider.getSoundSets();
         }
         else {
             return new ArrayList<>();
@@ -518,7 +520,7 @@ public class CommandProcessor extends BluetoothDataCallback {
 
     private void addPart(long soundSetId) {
 
-        SoundSet soundSet = onGetSoundSetsListener.getSoundSet(soundSetId);
+        SoundSet soundSet = soundSetsProvider.getSoundSetById(soundSetId);
         if (soundSet != null) {
             mJam.newPart(soundSet, getAddress());
         }
