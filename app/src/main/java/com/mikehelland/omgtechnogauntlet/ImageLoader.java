@@ -20,14 +20,14 @@ class ImageLoader {
             @Override
             public void run() {
                 mChordImages = new Bitmap[8];
-                mChordImages[0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_one);
-                mChordImages[1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_two);
-                mChordImages[2] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_three);
-                mChordImages[3] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_four);
-                mChordImages[4] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_flatfive);
-                mChordImages[5] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_five);
-                mChordImages[6] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_six);
-                mChordImages[7] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_seven);
+                mChordImages[0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_one_w);
+                mChordImages[1] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_two_w);
+                mChordImages[2] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_three_w);
+                mChordImages[3] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_four_w);
+                mChordImages[4] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_flatfive_w);
+                mChordImages[5] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_five_w);
+                mChordImages[6] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_six_w);
+                mChordImages[7] = BitmapFactory.decodeResource(context.getResources(), R.drawable.chord_seven_w);
 
                 mNoteImages = new Bitmap[8][2];
                 mNoteImages[0][0] = BitmapFactory.decodeResource(context.getResources(), R.drawable.w_note_half);

@@ -9,6 +9,12 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
+import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
+
 /**
  * User: m
  * Date: 5/6/14
@@ -16,12 +22,20 @@ import android.widget.ListView;
  */
 public class ChordsFragment extends OMGFragment {
 
-    private Jam mJam;
     private View mView;
 
     ChordsView mChordsView;
 
     private boolean recordChords = false;
+
+    private OnSubbeatListener onSubbeatListener = new OnSubbeatListener() {
+        @Override
+        public void onSubbeat(int subbeat) {
+            if (mChordsView != null && subbeat == 0) {
+                mChordsView.postInvalidate();
+            }
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,17 +43,9 @@ public class ChordsFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.choosechords,
                 container, false);
 
-        if (mJam != null)
-            setup();
+        setup();
 
         return mView;
-    }
-
-    public void setJam(Jam jam) {
-        mJam = jam;
-
-        if (mView != null)
-            setup();
     }
 
     public void setup() {
@@ -60,7 +66,7 @@ public class ChordsFragment extends OMGFragment {
         mView.findViewById(R.id.clear_chords_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mJam.setChordProgression(new int[]{0});
+                getJam().setProgression(new int[]{0});
                 mChordsView.invalidate();
             }
         });
@@ -69,7 +75,7 @@ public class ChordsFragment extends OMGFragment {
 
         ListView chordsList = (ListView)mView.findViewById(R.id.chords_list);
         ChordsAdapter soundSetsAdapter = new ChordsAdapter(activity, R.layout.chordoption,
-                                            chords, mJam.getScale());
+                                            chords, getJam().getScale());
         chordsList.setAdapter(soundSetsAdapter);
 
         chordsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -77,20 +83,53 @@ public class ChordsFragment extends OMGFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 int[] chords = ((ChordsView)view.findViewById(R.id.chords_option)).getChords();
                 if (recordChords) {
-                    int[] newProgression = new int[mJam.getChordProgression().length + 1];
-                    System.arraycopy(mJam.getChordProgression(), 0,
-                            newProgression, 0, mJam.getChordProgression().length);
+                    int[] newProgression = new int[getJam().getProgression().length + 1];
+                    System.arraycopy(getJam().getProgression(), 0,
+                            newProgression, 0, getJam().getProgression().length);
                     newProgression[newProgression.length - 1] = chords[0];
-                    mJam.setChordProgression(newProgression);
+                    getJam().setProgression(newProgression);
                 }
                 else {
-                    mJam.setChordProgression(chords);
+                    getJam().setProgression(chords);
                 }
                 mChordsView.invalidate();
             }
         });
 
         mChordsView = (ChordsView)mView.findViewById(R.id.chords_view);
-        mChordsView.setJam(mJam);
+        mChordsView.setJam(getJam());
+
+        getJam().addOnSubbeatListener(onSubbeatListener);
+        getJam().addOnJamChangeListener(onJamChangeListener);
+    }
+
+    private OnJamChangeListener onJamChangeListener = new OnJamChangeListener() {
+        @Override
+        public void onChordProgressionChange(int[] chords, String source) {
+            mChordsView.postInvalidate();
+        }
+
+        @Override
+        public void onNewJam(Jam jam, String source) {
+            popBackStack();
+        }
+
+        @Override public void onNewPart(JamPart part, String source) { }
+        @Override public void onPlay(String source) { }
+        @Override public void onStop(String source) { }
+        @Override public void onNewLoop(String source) { }
+        @Override public void onPartTrackValueChange(JamPart jamPart, int track, int subbeat, boolean value, String source) { }
+        @Override public void onPartStartLiveNotes(JamPart jamPart, Note note, int autoBeat, String source) { }
+        @Override public void onPartUpdateLiveNotes(JamPart jamPart, Note[] notes, int autoBeat, String source) { }
+        @Override public void onPartRemoveLiveNotes(JamPart jamPart, Note note, Note[] notes, String source) { }
+        @Override public void onPartEndLiveNotes(JamPart jamPart, String source) { }
+        @Override public void onPartClear(JamPart jamPart, String source) { }
+    };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getJam().removeOnSubbeatListener(onSubbeatListener);
+        getJam().removeOnJamChangeListener(onJamChangeListener);
     }
 }

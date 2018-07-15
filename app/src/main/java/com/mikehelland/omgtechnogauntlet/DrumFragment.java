@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
+
 /**
  * User: m
  * Date: 5/6/14
@@ -12,11 +14,8 @@ import android.view.ViewGroup;
  */
 public class DrumFragment extends OMGFragment {
 
-    private Jam mJam;
-    //private DrumChannel mChannel;
-    private Channel mChannel;
     private DrumView drumMachine;
-    //private DrumDownBeatView drumMachine;
+    private OnSubbeatListener onSubbeatListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -25,23 +24,23 @@ public class DrumFragment extends OMGFragment {
                 container, false);
 
         drumMachine = (DrumView)view.findViewById(R.id.drummachine);
-        //drumMachine = (DrumDownBeatView)view.findViewById(R.id.drummachine);
-        if (mJam != null)
-            drumMachine.setJam(mJam, mChannel);
+
+        drumMachine.setJam(getJam(), getPart());
+
+        onSubbeatListener = new OnSubbeatListener() {
+            @Override
+            public void onSubbeat(int subbeat) {
+                drumMachine.postInvalidate();
+            }
+        };
+
+        getJam().addOnSubbeatListener(onSubbeatListener);
 
         return view;
     }
 
-    public void setJam(Jam jam, Channel channel) {
-        mJam = jam;
-        mChannel = channel;
-
-        if (drumMachine != null)
-            drumMachine.setJam(mJam, channel);
-    }
-
     public void onPause() {
         super.onPause();
-        mJam.removeInvalidateOnBeatListener(drumMachine);
+        getJam().removeOnSubbeatListener(onSubbeatListener);
     }
 }

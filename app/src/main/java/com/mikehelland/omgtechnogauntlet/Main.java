@@ -1,22 +1,36 @@
 package com.mikehelland.omgtechnogauntlet;
 
-import android.app.Activity;
-import android.app.FragmentTransaction;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Bundle;
-import android.util.Log;
+import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-public class Main extends Activity {
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnectCallback;
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothConnection;
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamHeader;
+import com.mikehelland.omgtechnogauntlet.jam.JamsProvider;
+import com.mikehelland.omgtechnogauntlet.jam.OnSoundLoadedListener;
+import com.mikehelland.omgtechnogauntlet.jam.OnSubbeatListener;
+import com.mikehelland.omgtechnogauntlet.jam.SoundManager;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSetsProvider;
+import com.mikehelland.omgtechnogauntlet.remote.BluetoothJamStatus;
+import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
 
-    Jam mJam;
-    OMGSoundPool mPool;
-    BluetoothManager mBtf;
-    Jam.StateChangeCallback mJamCallback;
+import java.util.ArrayList;
+
+public class Main extends FragmentActivity {
+
+    Jam jam;
+
+    BluetoothManager bluetoothManager;
     DatabaseContainer mDatabase;
 
     private WelcomeFragment mWelcomeFragment;
@@ -24,6 +38,11 @@ public class Main extends Activity {
     private BeatView mBeatView;
 
     private ImageLoader mImages;
+
+    public SoundSetsProvider soundSetsProvider;
+    public JamsProvider jamsProvider;
+
+    BluetoothJamStatus bluetoothJamStatus;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,166 +53,76 @@ public class Main extends Activity {
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN|WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-
         setContentView(R.layout.main);
 
-        mPool =  new OMGSoundPool(getApplicationContext(), 32, AudioManager.STREAM_MUSIC, 100);
-        mJam = new Jam(new MelodyMaker(getApplicationContext()), mPool, "");
+        bluetoothManager = new BluetoothManager(Main.this);
 
-        mBeatView = (BeatView)findViewById(R.id.main_beatview);
-        mBeatView.setJam(mJam);
-        mJam.addInvalidateOnBeatListener(mBeatView);
-        mBeatView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mJam.isPlaying()) {
-                    mJam.pause();
-                }
-                else {
-                    mJam.kickIt();
-                }
-            }
-        });
+        mImages = new ImageLoader(Main.this);
 
-        setupBluetooth();
+        if (hasDefaultHost()) {
+            connectToDefaultHost();
+            return;
+        }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mDatabase = new DatabaseContainer(Main.this);
-                if (mWelcomeFragment == null) {
-                    mWelcomeFragment = new WelcomeFragment();
-                }
-                try {
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    ft.add(R.id.main_layout, mWelcomeFragment);
-                    ft.commit();
-                } catch (Exception ignore) { }
-            }
-        }).start();
+        setupDatabase();
 
-        mPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int i, int i1) {
-                if (!mBeatView.isShowingLoadProgress()) {
-                    mBeatView.showLoadProgress(mPool.soundsToLoad);
-                }
-                mBeatView.incrementProgress();
+        SoundManager soundManager = new SoundManager(Main.this, onSoundLoadedListener);
+        jam = new Jam(soundManager, soundSetsProvider);
+        bluetoothJamStatus = new BluetoothJamStatus(jam, bluetoothManager);
 
-                mPool.soundsToLoad--;
-                if (mPool.soundsToLoad <= 0) {
+        setupBeatView();
 
-                    mPool.setLoaded();
+        if (bluetoothManager.isBlueToothOn()) {
+            bluetoothManager.startAccepting(makeConnectCallback());
+        }
 
-                    if (!mPool.isCanceled() && mPool.onAllLoadsFinishedCallback != null)
-                        mPool.onAllLoadsFinishedCallback.run();
-                }
-            }
-        });
 
-        Toast.makeText(this, "Press the MONKEY for random changes!", Toast.LENGTH_SHORT).show();
+        if (mWelcomeFragment == null) {
+            mWelcomeFragment = new WelcomeFragment();
+            mWelcomeFragment.setJam(jam);
 
-        mImages = new ImageLoader(this);
+            final int defaultJam =  BuildConfig.FLAVOR.equals("demo") ? R.string.demo_jam : R.string.default_jam;
+            jam.loadFromJSON(getResources().getString(defaultJam));
+
+        }
+        try {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.main_layout, mWelcomeFragment);
+            ft.commit();
+        } catch (Exception ignore) { }
+
     }
-
-
 
     @Override
     public void onPause() {
         super.onPause();
-        if (!mPool.isLoaded())
-            mPool.cancelLoading();
-        mJam.pause();
+        //todo relocate
+        // if (!mPool.isLoaded())
+        //    mPool.cancelLoading();
+        if (jam.isPlaying() && !isRemote()) {
+            jam.stop();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mJam.finish();
-        mBtf.cleanUp();
-        mDatabase.close();
-        mPool.cleanUp();
+        jam.finish();
+        //todo mBtf.cleanUp();
+        bluetoothManager.cleanUp();
+        if (mDatabase != null) {
+            mDatabase.close();
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() == 0) {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
             Toast.makeText(this, "Can't back out now! \nHit the 'EXIT' button.", Toast.LENGTH_SHORT).show();
 
         } else {
             super.onBackPressed();
         }
-
-    }
-
-    private void setupBluetooth() {
-        mBtf = new BluetoothManager(this);
-        if (mBtf.isBlueToothOn()) {
-            mBtf.startAccepting(makeConnectCallback());
-
-            setupBluetoothJamCallback();
-        }
-    }
-
-    private void setupBluetoothJamCallback() {
-
-        mJamCallback = new Jam.StateChangeCallback() {
-
-            @Override
-            void newState(String state, Object... args) {
-                if (state.equals("PLAY") || state.equals("STOP"))
-                    mBtf.sendCommandToDevices(state, null);
-
-                if (state.equals("ON_NEW_LOOP"))
-                    mBtf.sendCommandToDevices(state, null);
-            }
-
-            @Override
-            void onSubbeatLengthChange(int length, String source) {
-                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SUBBEATLENGTH,
-                        Integer.toString(length), source);
-            }
-
-            @Override
-            void onKeyChange(int key, String source) {
-                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_KEY,
-                        Integer.toString(key), source);
-            }
-
-            @Override
-            void onScaleChange(String scale, String source) {
-                mBtf.sendNameValuePairToDevices(CommandProcessor.JAMINFO_SCALE,
-                        scale, source);
-            }
-
-            @Override
-            void onChordProgressionChange(int[] chords) {
-
-            }
-
-            @Override
-            void onNewChannel(Channel channel) {
-                mBtf.sendCommandToDevices(CommandProcessor.getNewChannelCommand(channel), null);
-            }
-            @Override
-            void onChannelEnabledChanged(Channel channel, boolean enabled, String source) {
-                mBtf.sendCommandToDevices(
-                        CommandProcessor.getChannelEnabledCommand(channel.getID(), enabled), source);
-            }
-
-            @Override
-            void onChannelVolumeChanged(Channel channel, float volume, String source) {
-                mBtf.sendCommandToDevices(
-                        CommandProcessor.getChannelVolumeCommand(channel.getID(), volume), source);
-            }
-
-            @Override
-            void onChannelPanChanged(Channel channel, float pan, String source) {
-                mBtf.sendCommandToDevices(
-                        CommandProcessor.getChannelPanCommand(channel.getID(), pan), source);
-            }
-        };
-        mJam.addStateChangeListener(mJamCallback);
 
     }
 
@@ -203,8 +132,9 @@ public class Main extends Activity {
             public void newStatus(final String status) {}
             @Override
             public void onConnected(BluetoothConnection connection) {
-                final CommandProcessor cp = new CommandProcessor(Main.this);
-                cp.setup(connection, mJam, null);
+                final CommandProcessor cp = new CommandProcessor(Main.this.soundSetsProvider,
+                        Main.this.jamsProvider);
+                cp.setup(bluetoothJamStatus, connection, jam, null);
                 connection.setDataCallback(cp);
             }
 
@@ -212,84 +142,114 @@ public class Main extends Activity {
         };
     }
 
-    Jam loadJam(String json) {
-
-        boolean allGood = true;
-        int backstack = getFragmentManager().getBackStackEntryCount();
-        while (backstack > 0) {
-            try {
-                getFragmentManager().popBackStack();
-            } catch (Exception e) {
-                e.printStackTrace(); //happens maybe as we're backing out
-                allGood = false;
-            }
-            backstack--;
-        }
-
-        if (!allGood) return null;
-
-        Jam tjam = null;
-        try {
-            Log.e("MGH load json", json);
-            tjam = JamLoader.load(json, this);
-        } catch (final Exception e) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            });
-            e.printStackTrace();
-        }
-        if (tjam == null) {
-            return null;
-        }
-
-        final Jam jam = tjam;
-
-        if (mJamCallback != null)
-            jam.addStateChangeListener(mJamCallback);
-
-        final Runnable callback = new Runnable() {
-            @Override
-            public void run() {
-
-                Jam oldJam = mJam;
-                mJam = jam;
-                mJam.addInvalidateOnBeatListener(mBeatView);
-                mBeatView.setJam(mJam);
-
-                mPool.loadSounds();
-                jam.loadSoundSets();
-
-                //pretty lousy spot for this
-                CommandProcessor cp;
-                for (BluetoothConnection connection : mBtf.getConnections()) {
-                    cp = (CommandProcessor)connection.getDataCallback();
-                    if (cp == null) {
-                        cp = new CommandProcessor(Main.this);
-                        cp.setup(connection, jam, null);
-                        connection.setDataCallback(cp);
-                    }
-                    else {
-                        cp.setup(connection, jam, null);
-                    }
-                }
-                oldJam.pause();
-                oldJam.finish();
-                mJam.kickIt();
-            }
-        };
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                callback.run();
-            }
-        }).start();
-        return jam;
-    }
-
     DatabaseContainer getDatabase() {return mDatabase;}
     ImageLoader getImages() {return mImages;}
+
+    private boolean hasDefaultHost() {
+        final String address = PreferenceManager.
+                getDefaultSharedPreferences(this).getString("default_host", "");
+
+        return address.length() > 0;
+    }
+
+    private void connectToDefaultHost() {
+
+        remoteSetup();
+
+        OMGFragment f = new ConnectToHostFragment();
+        f.jam = jam;
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.main_layout, f);
+        ft.commit();
+    }
+
+    private void remoteSetup() {
+
+        jam = new Jam(null, null);
+        bluetoothJamStatus = new BluetoothJamStatus(jam, bluetoothManager);
+
+        jam.loadFromJSON(getResources().getString(R.string.blank_jam));
+
+        setupBeatView();
+
+    }
+
+    boolean isRemote() {
+        return bluetoothJamStatus != null && bluetoothJamStatus.isRemote();
+    }
+
+    private void setupDatabase() {
+        mDatabase = new DatabaseContainer(Main.this);
+
+        soundSetsProvider = new SoundSetsProvider() {
+            @Override
+            public ArrayList<SoundSet> getSoundSets() {
+                return mDatabase.getSoundSetData().getList();
+            }
+
+            @Override
+            public SoundSet getSoundSetById(long id) {
+                return mDatabase.getSoundSetData().getSoundSetById(id);
+            }
+
+            @Override
+            public SoundSet getSoundSetByURL(String url) {
+                return mDatabase.getSoundSetData().getSoundSetByURL(url);
+            }
+        };
+        jamsProvider = new JamsProvider() {
+            @Override
+            public ArrayList<JamHeader> getJams() {
+                return mDatabase.getSavedData().getList();
+            }
+
+            @Override
+            public String getJamJson(long id) {
+                return mDatabase.getSavedData().getJamJson(id);
+            }
+        };
+    }
+
+    private OnSoundLoadedListener onSoundLoadedListener = new OnSoundLoadedListener() {
+        @Override
+        public void onSoundLoaded(int howManyLoaded, int howManyTotal) {
+            mBeatView.setLoadingStatus(howManyLoaded, howManyTotal);
+
+            if (howManyLoaded >= howManyTotal) {
+                jam.play();
+                FragmentManager fm = getSupportFragmentManager();
+                if (fm != null && fm.getBackStackEntryCount() == 0) {
+                    mWelcomeFragment.animateFragment(new MainFragment(), 1);
+                }
+            }
+        }
+    };
+
+    private void setupBeatView() {
+        mBeatView = (BeatView)findViewById(R.id.main_beatview);
+
+        mBeatView.setJam(jam);
+
+        jam.addOnSubbeatListener(new OnSubbeatListener() {
+            @Override
+            public void onSubbeat(int subbeat) {
+                mBeatView.postInvalidate();
+            }
+        });
+
+        mBeatView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (jam.isPlaying()) {
+                    jam.stop();
+                }
+                else {
+                    jam.play();
+                }
+                //mBeatView.postInvalidate();
+            }
+        });
+    }
+
 }

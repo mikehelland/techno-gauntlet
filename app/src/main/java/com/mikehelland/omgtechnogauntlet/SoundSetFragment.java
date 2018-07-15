@@ -19,6 +19,8 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+
 /**
  * User: m
  * Date: 5/6/14
@@ -27,7 +29,6 @@ import android.widget.Toast;
 public class SoundSetFragment extends OMGFragment {
 
     private View mView;
-    private Channel mChannel;
     private ChoiceCallback mCallback = null;
 
     private boolean mDownloadedFromOMG = false;
@@ -87,19 +88,9 @@ public class SoundSetFragment extends OMGFragment {
             }
         });
 
-        getActivityMembers();
-        if (mChannel != null)
-            setup();
+        setup();
 
         return mView;
-    }
-
-    public void setJam(Jam jam, Channel channel) {
-        mJam = jam;
-        mChannel = channel;
-
-        if (mView != null)
-            setup();
     }
 
     private void setup() {
@@ -108,8 +99,6 @@ public class SoundSetFragment extends OMGFragment {
         if (context == null) {
             return;
         }
-
-        setupOptionsButton();
 
         SoundSetDataOpenHelper openHelper = ((Main)context).getDatabase().getSoundSetData();
         mCursor = openHelper.getCursor();
@@ -129,22 +118,16 @@ public class SoundSetFragment extends OMGFragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 mCursor.moveToPosition(i);
+                String url = mCursor.getString(mCursor.getColumnIndex("url"));
+                long id = mCursor.getLong(mCursor.getColumnIndex("_id"));
+                String json = mCursor.getString(mCursor.getColumnIndex("data"));
+                SoundSet soundSet = new SoundSet(url, id, json);
 
-                mChannel.prepareSoundSet(new SoundSet(mCursor));
                 if (mCallback != null)
-                    mCallback.onChoice(mChannel.getSoundSet());
+                    mCallback.onChoice(soundSet);
 
-                Activity activity = getActivity();
-                if (activity != null)
-                    activity.getFragmentManager().popBackStack();
+                popBackStack();
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mPool.loadSounds();
-                        mChannel.loadSoundSetIds();
-                    }
-                }).start();
             }
         });
 
@@ -289,32 +272,11 @@ public class SoundSetFragment extends OMGFragment {
             return;
         }
 
-        mChannel.prepareSoundSet(soundSet);
         if (mCallback != null)
-            mCallback.onChoice(mChannel.getSoundSet());
+            mCallback.onChoice(soundSet);
 
-        Activity activity = getActivity();
-        if (activity != null)
-            activity.getFragmentManager().popBackStack();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mPool.loadSounds();
-                mChannel.loadSoundSetIds();
-            }
-        }).start();
+        popBackStack();
 
     }
 
-    private void setupOptionsButton() {
-        mView.findViewById(R.id.more_channel_options_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ChannelOptionsFragment f = new ChannelOptionsFragment();
-                f.setJam(mJam, mChannel);
-                animateFragment(f, 0);
-            }
-        });
-    }
 }

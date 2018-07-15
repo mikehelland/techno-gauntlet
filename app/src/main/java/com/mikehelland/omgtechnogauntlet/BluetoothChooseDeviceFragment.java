@@ -10,6 +10,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothManager;
+import com.mikehelland.omgtechnogauntlet.bluetooth.BluetoothReadyCallback;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,46 +22,57 @@ public class BluetoothChooseDeviceFragment extends OMGFragment {
     private Callback mCallback;
     private List<BluetoothDevice> mPairedList;
 
+    private BluetoothManager bluetoothManager = null;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.bluetooth_devices,
                 container, false);
 
-        getActivityMembers();
-
-        mBtf.whenReady(new BluetoothReadyCallback() {
-            @Override
-            public void onReady() {
-                Activity activity = getActivity(); if (activity == null)  return;
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setup();
-                    }
-                });
-            }
-        });
+        if (bluetoothManager != null) {
+            bluetoothManager.whenReady(new BluetoothReadyCallback() {
+                @Override
+                public void onReady() {
+                    Activity activity = getActivity();
+                    if (activity == null) return;
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setup();
+                        }
+                    });
+                }
+            });
+        }
 
         return mView;
     }
 
-    void setCallback(Callback callback) {
+    void setCallback(BluetoothManager bluetoothManager, Callback callback) {
+        this.bluetoothManager = bluetoothManager;
         mCallback = callback;
     }
 
     private void setup() {
 
+//        Activity activity = getActivity(); if (activity == null)  return;
+
+        ///BluetoothManager bluetoothManager = ((Main)activity).bluetoothManager;
+        if (bluetoothManager == null || !bluetoothManager.isBlueToothOn()) {
+            //this should only be called if bluetooth is on
+            return;
+        }
+
         ListView list = (ListView)mView.findViewById(R.id.paired_device_list);
         ArrayList<String> names = new ArrayList<>();
-        mPairedList = mBtf.getPairedDevices();
+        mPairedList = bluetoothManager.getPairedDevices();
         for (BluetoothDevice device : mPairedList) {
             names.add(device.getName());
         }
 
-        Activity activity = getActivity(); if (activity == null)  return;
 
-        ArrayAdapter adapter = new ArrayAdapter<>(activity,
+        ArrayAdapter adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_list_item_1, names);
         list.setAdapter(adapter);
 
@@ -74,10 +88,7 @@ public class BluetoothChooseDeviceFragment extends OMGFragment {
 
         if (mCallback != null) {
             mCallback.run(mPairedList.get(i));
-            Activity activity = getActivity();
-            if (activity != null) {
-                activity.getFragmentManager().popBackStack();
-            }
+            popBackStack();
         }
     }
 

@@ -6,8 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
@@ -19,8 +23,8 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     SoundSetDataOpenHelper(Context context) {
         super(context, "OMG_TECHNO_GAUNTLET", null, 2);
 
-        slapBass = BassSamplerChannel.getSlapSoundSetJSON(context.getResources());
-        bass = BassSamplerChannel.getDefaultSoundSetJSON(context.getResources());
+        slapBass = BassSampler.getSlapSoundSetJSON(context.getResources());
+        bass = BassSampler.getDefaultSoundSetJSON(context.getResources());
 
         mDB = getWritableDatabase();
     }
@@ -62,7 +66,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     }
 
     private void setupSamplerSoundSet(SQLiteDatabase db) {
-        String json = SamplerChannel.getDefaultSoundSetJson();
+        String json = PercussionSampler.getDefaultSoundSetJson();
 
         ContentValues data = new ContentValues();
         data.put("name", "Percussion Sampler");
@@ -89,7 +93,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     }
 
     private void setupRockDrumsSoundSet(SQLiteDatabase db) {
-        String json = RockDrumChannel.getDefaultSoundSetJson();
+        String json = RockDrumSampler.getDefaultSoundSetJson();
 
         ContentValues data = new ContentValues();
         data.put("name", "Rock Drum Kit");
@@ -116,7 +120,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
     }
 
     private void setupHipHopDrumsSoundSet(SQLiteDatabase db) {
-        String json = HipDrumChannel.getDefaultSoundSetJson();
+        String json = HipDrumSampler.getDefaultSoundSetJson();
 
         ContentValues data = new ContentValues();
         data.put("name", "Hip Hop Drum Kit");
@@ -196,7 +200,7 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
 
     private void setupOscillatorSoundSet(SQLiteDatabase db) {
 
-        String proto = "\"type\" : \"SOUNDSET\", \"cshromatic\": true, " +
+        String proto = "\"type\" : \"SOUNDSET\", \"chromatic\": true, " +
                 "\"defaultSurface\": \"PRESET_VERTICAL\", " +
                 "\"highNote\": 108, \"lowNote\": 0, \"octave\": 5}";
 
@@ -252,6 +256,21 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         return db.rawQuery("SELECT * FROM soundsets WHERE downloaded = 1 ORDER BY _id DESC", null);
     }
 
+    ArrayList<SoundSet> getList() {
+        ArrayList<SoundSet> soundSets = new ArrayList<>();
+        Cursor cursor = getCursor();
+        int idColumn = cursor.getColumnIndex("_id");
+        int nameColumn = cursor.getColumnIndex("name");
+        int urlColumn = cursor.getColumnIndex("url");
+        SoundSet soundSet;
+        while (cursor.moveToNext()) {
+            //using the id here, why not the url?
+            soundSets.add(new SoundSet(cursor.getLong(idColumn), cursor.getString(nameColumn)));
+        }
+        cursor.close();
+        return  soundSets;
+    }
+
     /*public String getLastSaved() {
         String ret = "";
         SQLiteDatabase db = mDB;
@@ -269,17 +288,19 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         final SQLiteDatabase db = mDB;
         Cursor existing = db.rawQuery(
                 "SELECT _id FROM soundsets WHERE url='" + data.getAsString("url") + "'", null);
+        long id;
         if (existing.getCount() > 0) {
             existing.moveToFirst();
-            long id = existing.getLong(0);
+            id = existing.getLong(0);
             db.update("soundsets", data, "_id=" + id, null);
             data.put("_id", id);
         }
         else {
-            data.put("_id", db.insert("soundsets", null, data));
+            id = db.insert("soundsets", null, data);
+            data.put("_id", id);
         }
         existing.close();
-        return new SoundSet(data);
+        return new SoundSet(data.getAsString("url"), id, data.getAsString("data"));
     }
 
     private SoundSet getSoundSetByQuery(String where) {
@@ -294,7 +315,11 @@ class SoundSetDataOpenHelper extends SQLiteOpenHelper {
         }
         else {
             cursor.moveToFirst();
-            soundset = new SoundSet(cursor);
+            String url = cursor.getString(cursor.getColumnIndex("url"));
+            long id = cursor.getLong(cursor.getColumnIndex("_id"));
+            String json = cursor.getString(cursor.getColumnIndex("data"));
+            soundset = new SoundSet(url, id, json);
+
             if (!soundset.isValid()) {
                 cErrorMessage = "Not a valid soundset";
                 soundset = null;

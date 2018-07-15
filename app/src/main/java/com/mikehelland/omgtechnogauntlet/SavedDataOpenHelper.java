@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.mikehelland.omgtechnogauntlet.jam.JamHeader;
+
+import java.util.ArrayList;
+
 class SavedDataOpenHelper extends SQLiteOpenHelper {
 
     private SQLiteDatabase mDB;
@@ -97,4 +101,19 @@ class SavedDataOpenHelper extends SQLiteOpenHelper {
 
         mDB.insert("saves", null, data);
     }
+
+    public ArrayList<JamHeader> getList() {
+        ArrayList<JamHeader> result = new ArrayList<>();
+        Cursor cursor = getSavedCursor();
+        int idColumn = cursor.getColumnIndex("_id");
+        int nameColumn = cursor.getColumnIndex("tags");
+        int urlColumn = cursor.getColumnIndex("url");
+        while (cursor.moveToNext()) {
+            //using the id here, why not the url?
+            result.add(new JamHeader(cursor.getLong(idColumn), cursor.getString(nameColumn)));
+        }
+        cursor.close();
+        return result;
+    }
+
 }

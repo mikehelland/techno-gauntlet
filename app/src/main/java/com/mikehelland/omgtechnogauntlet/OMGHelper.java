@@ -3,6 +3,8 @@ package com.mikehelland.omgtechnogauntlet;
 import android.content.Context;
 import android.content.Intent;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+
 class OMGHelper {
 
     private static String mSubmitUrl = "data/";

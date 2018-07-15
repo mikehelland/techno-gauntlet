@@ -3,14 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button android:text="@string/more_channel_options"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/more_channel_options_button"/>
-
     <TabHost
-        android:layout_above="@id/more_channel_options_button"
         android:id="@+id/soundset_tab_host"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

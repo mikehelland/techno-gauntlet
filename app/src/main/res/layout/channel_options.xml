@@ -11,32 +11,22 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Channel Options"
-            android:textSize="32sp"
-            android:padding="8dp"
-            android:layout_marginTop="20dp"
+            android:text="Part Options"
+            android:textSize="30sp"
+            android:padding="6dp"
             android:textAlignment="center"/>
 
-        <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sample Playback Speed:"/>
-
         <Button
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="100%"
-            android:id="@+id/reset_sample_speed"/>
+            android:text="Choose a different SoundSet"
+            android:id="@+id/choose_a_soundset"/>
 
-        <SeekBar
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/channel_speed_seekbar"
-        />
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="40dp" />
+            android:layout_height="10dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -74,12 +64,17 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Copy Channel"
+            android:text="Warp Tracks"
+            android:id="@+id/track_warp_button"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Copy Part"
             android:id="@+id/copy_channel_button"/>
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="30dp" />
+            android:layout_height="10dp" />
 
 
         <TextView
@@ -89,14 +84,15 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Clear Channel Data"
+            android:text="Clear Part Data"
             android:id="@+id/clear_channel_button"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Remove Channel"
-            android:id="@+id/remove_channel_button"/>
+            android:text="Remove Part"
+            android:id="@+id/remove_channel_button"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

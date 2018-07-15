@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.mikehelland.omgtechnogauntlet.SlidingFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical">
+
+    <TextView android:layout_height="wrap_content"
+              android:layout_width="wrap_content"
+              android:text="Choose a SoundSet:"
+              android:textSize="24sp"
+              android:padding="4dip"
+              android:id="@+id/header_caption"
+        />
+
+    <ListView android:id="@+id/soundset_list"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:choiceMode="singleChoice"
+              android:listSelector="#6666FF"
+              android:layout_below="@id/header_caption"
+              />
+
+
+</com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>

@@ -3,10 +3,11 @@ package com.mikehelland.omgtechnogauntlet;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
 
 /**
  * User: m
@@ -14,6 +15,8 @@ import android.view.View;
  * Time: 11:01 PM
  */
 public class ChordsView extends View {
+
+    private Paint paintBackground;
 
     private Paint paint;
     private Paint paintCurrentBeat;
@@ -46,9 +49,15 @@ public class ChordsView extends View {
         paintCurrentBeat.setShadowLayer(4, 0, 0, 0xFFFFFFFF);
         paintCurrentBeat.setStyle(Paint.Style.FILL_AND_STROKE);
 
+        paintBackground = new Paint();
+        //paintBackground.setARGB(255, 255, 255, 255);
+        paintBackground.setARGB(0, 0, 0, 0);
+        paintBackground.setStyle(Paint.Style.FILL);
+
+
         images = ((Main)context).getImages().getChordImages();
 
-        setBackgroundColor(Color.WHITE);
+        //setBackgroundColor(Color.WHITE);
     }
 
     public void onDraw(Canvas canvas) {
@@ -60,6 +69,9 @@ public class ChordsView extends View {
             boxWidth = images[0].getWidth();
             marginY = (height - boxHeight) / 2;
         }
+
+        //canvas.drawRect(0, 0, width, height, paintBackground);
+        canvas.drawRect(0, 0, width, height, paintBackground);
 
         int chordInProgression = -1;
 
@@ -80,11 +92,6 @@ public class ChordsView extends View {
 
             at = startAt + boxWidth * i;
 
-            scalei = chords[i] % scale.length;
-            if (scalei < 0)
-                scalei += scale.length;
-            drawChord(canvas, scale[scalei], at);
-
             if (chordInProgression == i) {
                 canvas.drawRect(at, marginY,
                         at + boxWidth,
@@ -92,6 +99,11 @@ public class ChordsView extends View {
                         paintCurrentBeat);
 
             }
+
+            scalei = chords[i] % scale.length;
+            if (scalei < 0)
+                scalei += scale.length;
+            drawChord(canvas, scale[scalei], at);
         }
     }
 

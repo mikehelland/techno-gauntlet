@@ -15,15 +15,14 @@ import android.view.View;
  */
 public class SampleSpeedView extends View {
 
+    private LevelViewController controller;
+
     private Paint paint;
     private Paint paintOrange;
 
     private int width = -1;
     private int width2 = -1;
     private int height = -1;
-
-    private Jam mJam;
-    private Channel mChannel;
 
     private Paint topPanelPaint;
     private Paint paintText;
@@ -35,7 +34,6 @@ public class SampleSpeedView extends View {
     private int touchingArea = TOUCHING_AREA_NONE;
 
     private String channelName = "";
-    private float channelNameWidth2;
 
     private int labelTextSize = 48;
 
@@ -44,7 +42,8 @@ public class SampleSpeedView extends View {
     private float controlMargin = 5;
     private float speedWidth = -1;
 
-    private int channelNumber = 0;
+    //private float speed = 1;
+    private float lastSpeed = 1;
 
     public SampleSpeedView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -66,14 +65,12 @@ public class SampleSpeedView extends View {
 
         setBackgroundColor(Color.BLACK);
 
-        setChannelName("Test Trackname");
+        setPartName("Test Trackname");
 
     }
 
-    public void setChannelName(String newChannelName) {
-        channelName = newChannelName;
-        channelNameWidth2 = paintText.measureText(channelName) / 2;
-
+    public void setPartName(String newPartName) {
+        channelName = newPartName;
     }
 
     public void onDraw(Canvas canvas) {
@@ -88,13 +85,11 @@ public class SampleSpeedView extends View {
             speedWidth = (width - speedStart) - 2 * controlMargin;
         }
 
-        float speed = mChannel.getSampleSpeed();
-
         float height2 = height / 2;
+        float speed = controller.onGetLevel();
 
         canvas.drawRect(0, 0, resetButtonWidth, height, paintOrange);
         canvas.drawText(" Reset ", 0, height2, paintText);
-
 
         canvas.drawLine(speedStart + controlMargin, height2, speedStart + speedWidth - controlMargin,
                 height2, paint);
@@ -111,13 +106,23 @@ public class SampleSpeedView extends View {
 
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
+        float speed = controller.onGetLevel();
 
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
 
             if (x <= resetButtonWidth) {
-                mChannel.setSampleSpeed(1);
+                if (speed == 1) {
+                    speed = lastSpeed;
+                }
+                else {
+                    lastSpeed = speed;
+                    speed = 1;
+                }
                 touchingArea = TOUCHING_AREA_RESET;
+                if (controller != null) {
+                    controller.onLevelChange(speed);
+                }
             }
             else if (x <= speedStart + speedWidth) {
                 touchingArea = TOUCHING_AREA_SPEED;
@@ -140,25 +145,25 @@ public class SampleSpeedView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Channel channel, String name, int channelNumber) {
-        mJam = jam;
-        mChannel = channel;
-        this.channelNumber = channelNumber;
+    public void setJam(String name, LevelViewController controller) {
+        this.controller = controller;
 
-        setChannelName(name);
+
+        setPartName(name);
 
     }
 
     private void performTouch(float x) {
         if (touchingArea == TOUCHING_AREA_SPEED) {
-            float volume = Math.max(0, Math.min(1, (x - speedStart) / speedWidth));
-
             float speed = Math.max(0, Math.min(2.0f, ((x - speedStart) / speedWidth) * 2));
-
-            //the reason this should be done through the jam is for forwarding bluetooth messages
-            //mJam.setChannelVolume(channelNumber, volume, null);
-
-            mChannel.setSampleSpeed(speed);
+            if (controller != null) {
+                controller.onLevelChange(speed);
+            }
         }
+    }
+
+    abstract static class LevelViewController {
+        abstract void onLevelChange(float level);
+        abstract float onGetLevel();
     }
 }

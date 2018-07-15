@@ -4,7 +4,7 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
 
-    <com.mikehelland.omgtechnogauntlet.GuitarView
+    <com.mikehelland.omgtechnogauntlet.VerticalView
         android:id="@+id/guitarfrets"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"/>

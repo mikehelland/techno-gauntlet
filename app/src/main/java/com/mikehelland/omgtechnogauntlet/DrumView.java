@@ -1,12 +1,16 @@
 package com.mikehelland.omgtechnogauntlet;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 
 import java.util.ArrayList;
 
@@ -57,7 +61,7 @@ public class DrumView extends View {
     private int lastX = -1;
     private int lastY = -1;
 
-    private Channel mChannel;
+    private JamPart part;
 
     private long mLastClickTime = 0;
 
@@ -99,7 +103,7 @@ public class DrumView extends View {
     }
 
     public void onDraw(Canvas canvas) {
-        if (mJam == null || mChannel == null || tall == 0 || wide == -1) {
+        if (mJam == null || part == null || tall == 0 || wide == -1) {
             return;
         }
 
@@ -125,7 +129,8 @@ public class DrumView extends View {
                 boxWidth, height,
                 topPanelPaint);
 
-        if (mChannel.isEnabled())
+        //todo um, is this effecient? Why not create a paintRed and paintGreen
+        if (!part.getMute())
             paintBeat.setARGB(255, 0, 255, 0);
         else
             paintBeat.setARGB(255, 255, 0, 0);
@@ -133,7 +138,7 @@ public class DrumView extends View {
 
         boolean on;
 
-        if (mJam != null && !mJam.isPaused()) {
+        if (mJam != null && mJam.isPlaying()) {
             if (firstRowButton > -1) {
                 int i = 1 + (mJam.getCurrentSubbeat() % wide);
                 int j = mJam.getCurrentSubbeat() / wide ;
@@ -154,7 +159,7 @@ public class DrumView extends View {
             for (int j = 0; j < captions.length; j++) {
                 if (j < captions.length) {
 
-                    if (mChannel.getPatternInfo().getTrack(j).isMuted()) {
+                    if (part.getSequencerPattern().getTrack(j).isMuted()) {
                         canvas.drawRect(marginX, j * captionHeight + marginY,
                                 boxWidth - marginX, j * captionHeight + captionHeight - marginY,
                                 paintMute);
@@ -217,7 +222,7 @@ public class DrumView extends View {
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
 
-        if (mJam == null || mChannel == null || boxHeight == 0 || boxWidth == 0 || captionHeight == 0) {
+        if (mJam == null || part == null || boxHeight == 0 || boxWidth == 0 || captionHeight == 0) {
             return true;
         }
 
@@ -261,67 +266,55 @@ public class DrumView extends View {
     }
 
     private void handleTouch(int x, int y) {
-        //todo
-        //((Main)getContext()).onModify();
 
+        //todo this hits the data directly. Should be going through jam
         if (firstRowButton == -1) {
             x = x * mJam.getSubbeats();
 
             if (y > -1 && y < data.length && x > -1 && x < data[y].length) {
-                data[y][x] = !data[y][x];
+                mJam.setPartTrackValue(part, y, x, !data[y][x]);
+                //data[y][x] = !data[y][x];
             }
         }
         else {
             int i = x % wide + y * wide;
 
             if (i >= 0 && firstRowButton < data.length && i < data[firstRowButton].length) {
-                data[firstRowButton][i] = !data[firstRowButton][i];
+                mJam.setPartTrackValue(part, firstRowButton, i, !data[firstRowButton][i]);
+                //data[firstRowButton][i] = !data[firstRowButton][i];
             }
         }
     }
 
-    public void setJam(Jam jam, Channel channel) {
+    public void setJam(Jam jam, JamPart channel) {
         mJam = jam;
+        part = channel;
+
+        //todo what if there are more sounds in the soundset than the track listing, hmm?
+        tall = part.getSoundSet().getSounds().size();
         wide = mJam.getTotalBeats();
 
-        setChannel(channel);
-
-        mJam.addInvalidateOnBeatListener(this);
-    }
-
-    void setChannel(Channel channel) {
-        mChannel = channel;
-        tall = mChannel.getSoundSet().getSounds().size();
-
-        data = mChannel.pattern; //new boolean[tall][wide];
-        int subbeats = mJam.getSubbeats();
-
-        /*for (int i = 0; i < tall; i++) {
-            for (int j = 0; j < wide; j++) {
-                if (i < mChannel.pattern.length &&
-                        j * subbeats < mChannel.pattern[i].length)
-                    data[i][j] = mChannel.pattern[i][j * subbeats];
-            }
-        }*/
+        data = part.getPattern();
     }
 
 
     void handleFirstColumn(int y)  {
-        if (mChannel == null || mChannel.pattern == null || y < 0 || y >= captions.length) {
+        if (part == null || data == null || y < 0 || y >= captions.length) {
             return;
         }
 
         long now = System.currentTimeMillis();
         if (now - mLastClickTime < 200) {
-            mChannel.getPatternInfo().getTrack(y).toggleMute();
+            mJam.setPartTrackMute(part, part.getSequencerPattern().getTrack(y),
+                    !part.getSequencerPattern().getTrack(y).isMuted(), null);
         }
-        Log.d("MGH", "lastclick =  " + (now - mLastClickTime));
+
         mLastClickTime = now;
 
         if (firstRowButton == y) {
             firstRowButton = -1;
             wide = mJam.getTotalBeats();
-            tall = mChannel.pattern.length;
+            tall = data.length;
         }
         else {
             firstRowButton = y;
@@ -335,7 +328,7 @@ public class DrumView extends View {
 
     public void setCaptions() {
 
-        ArrayList<SoundSet.Sound> sounds = mChannel.getSoundSet().getSounds();
+        ArrayList<SoundSet.Sound> sounds = part.getSoundSet().getSounds();
         captionWidths = new float[sounds.size()][];
         captions = new String[sounds.size()][];
 

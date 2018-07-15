@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +31,6 @@ public class LoadFromURLFragment extends OMGFragment {
         mView = inflater.inflate(R.layout.load_from_url,
                 container, false);
 
-        getActivityMembers();
         setup();
 
         return mView;
@@ -100,14 +101,16 @@ public class LoadFromURLFragment extends OMGFragment {
                 new SoundSetDownloader(activity, "", null).installSoundSet(result);
                 break;
             case "SECTION":
-                Jam jam = activity.loadJam(result);
+                getJam().loadFromJSON(result);
+                //todo see if this works and SAVE IT!
+                /*Jam jam = activity.loadJam(result);
                 if (jam != null) {
                     activity.getDatabase().getSavedData().insert(0, jam.getTags(), result);
-                }
+                }*/
                 break;
         }
 
-        activity.getFragmentManager().popBackStack();
+        popBackStack();
     }
 
     private String getTypeFromJSON(String json) {

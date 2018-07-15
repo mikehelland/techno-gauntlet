@@ -11,8 +11,12 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.NoteList;
+
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: m
@@ -31,12 +35,12 @@ public class VerticalView extends View {
     private int width = -1;
     private int height = -1;
 
-    private int boxWidth;
+    private float boxWidth;
     private float boxHeight;
     private float boxHeightHalf;
 
     private Jam mJam;
-    private Channel mChannel;
+    private JamPart mPart;
 
     private Paint topPanelPaint;
     private Paint paintText;
@@ -60,7 +64,7 @@ public class VerticalView extends View {
     private Note draw_note;
     private float draw_x;
     private Bitmap draw_noteImage;
-    private int draw_boxwidth;
+    private float draw_boxwidth;
 
     private Bitmap images[][];
 
@@ -72,9 +76,8 @@ public class VerticalView extends View {
     private int rootFret = 0;
 
     private float draw_leftOffset = 20;
+    private float draw_debugBeatWidth;
     private float draw_beatWidth;
-
-    private Fretboard mFretboard = null;
 
     private float zoomboxHeight = -1;
     private float zoomTop = -1;
@@ -88,7 +91,11 @@ public class VerticalView extends View {
 
     private boolean mZoomMode = false;
 
-    private List<Touch> touches = new ArrayList<>();
+    private ArrayList<Touch> touches = new ArrayList<>();
+
+    private OnGestureListener onGestureListener;
+
+    private int touchingColumn = -1;
 
     public VerticalView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -101,7 +108,7 @@ public class VerticalView extends View {
         paintText.setARGB(255, 255, 255, 255);
         paintText.setTextSize(24);
 
-        paintBeat =  new Paint();
+        paintBeat = new Paint();
         paintBeat.setARGB(255, 255, 0, 0);
 
         paintOff = new Paint();
@@ -123,11 +130,11 @@ public class VerticalView extends View {
 
 
         topPanelPaint = new Paint();
-        topPanelPaint.setARGB(255, 192, 192, 255);
+        topPanelPaint.setARGB(96, 192, 192, 255);
 
         setBackgroundColor(Color.BLACK);
 
-        images = ((Main)context).getImages().getNoteImages();
+        images = ((Main) context).getImages().getNoteImages();
 
         paintCurrentBeat = new Paint();
         paintCurrentBeat.setARGB(128, 0, 255, 0);
@@ -140,39 +147,122 @@ public class VerticalView extends View {
 
     }
 
+    public void setJam(Jam jam, JamPart channel, OnGestureListener onGestureListener) {
+        mJam = jam;
+        mPart = channel;
+        this.onGestureListener = onGestureListener;
+
+        setScaleInfo();
+
+        int[] skipBottomAndTop = mPart.getSurface().getSkipBottomAndTop();
+        skipBottom = skipBottomAndTop[0];
+        skipTop = skipBottomAndTop[1];
+        showingFrets = Math.max(1, frets - skipTop - skipBottom);
+
+    }
+
+    public void setScaleInfo() {
+
+        int rootNote;
+
+        key = mJam.getKey();
+        scale = mJam.getScale();
+        frets = 0;
+
+        useScale = mPart.getSoundSet().isChromatic();
+
+        int highNote;
+        if (!useScale) {
+            key = 0;
+            rootNote = 0;
+            lowNote = 0;
+            highNote = mPart.getSoundSet().getSounds().size() - 1;
+
+            soundsetCaptions = mPart.getSoundSet().getSoundNames();
+
+        } else {
+            lowNote = mPart.getSoundSet().getLowNote();
+            highNote = mPart.getSoundSet().getHighNote();
+            rootNote = key + mPart.getOctave() * 12;
+            while (rootNote < lowNote) {
+                rootNote += 12;
+            }
+        }
+
+        int[] allFrets = new int[highNote - lowNote + 1];
+        noteMapping = new int[highNote - lowNote + 1];
+
+        int s;
+        boolean isInScale;
+        for (int i = lowNote; i <= highNote; i++) {
+            isInScale = false;
+
+            for (s = 0; s < scale.length; s++) {
+                if (!useScale || scale[s] == ((i - key) % 12)) {
+                    isInScale = true;
+                    break;
+                }
+
+            }
+
+            if (isInScale) {
+                if (i == rootNote) {
+                    rootFret = frets;
+                }
+
+                noteMapping[i - lowNote] = frets;
+                allFrets[frets++] = i;
+
+            }
+
+        }
+
+        fretMapping = new int[frets];
+        System.arraycopy(allFrets, 0, fretMapping, 0, frets);
+
+        showingFrets = frets;
+    }
+
+
     public void onDraw(Canvas canvas) {
 
-        if (frets == 0 || mJam == null || mChannel == null || fretMapping == null || fretMapping.length == 0) {
+        if (frets == 0 || mJam == null || mPart == null || fretMapping == null || fretMapping.length == 0) {
             return;
         }
 
         if (mJam.isPlaying()) {
-            float beatBoxWidth = ((float)getWidth()) / mJam.getTotalBeats();
+            float beatBoxWidth = ((float) getWidth()) / mJam.getTotalBeats();
             float beatBoxStart = mJam.getCurrentSubbeat() / mJam.getSubbeats() * beatBoxWidth;
 
             canvas.drawRect(beatBoxStart, 0, beatBoxStart + beatBoxWidth, getHeight(), paintYellow);
         }
 
-        //if (height != getHeight()) {;
-        draw_beatWidth = (getWidth() - draw_leftOffset) / (float)(mJam.getSubbeats() * mJam.getTotalBeats());
+        //if (height != getHeight()) {
         width = getWidth();
         height = getHeight();
-        boxHeight = (float)height / showingFrets;
+        draw_debugBeatWidth = width; //getWidth() - draw_leftOffset;
+        draw_beatWidth = draw_debugBeatWidth / (float) (mJam.getSubbeats() * mJam.getTotalBeats());
+        boxHeight = (float) height / showingFrets;
         boxHeightHalf = boxHeight / 2;
-        boxWidth = width / strings;
+        boxWidth = (float)width / strings;
         paint.setTextSize(boxHeightHalf);
         //}
 
-        if (mFretboard != null) {
-            mFretboard.onDraw(canvas, width, height);
+        for (Touch touch : touches) {
+            canvas.drawRect(0, height - (touch.onFret - skipBottom + 1) * boxHeight,
+                    width, height - (touch.onFret - skipBottom) * boxHeight,
+                    topPanelPaint);
+        }
 
-            drawNotes(canvas, mChannel.getNotes());
-            return;
+        if (touchingColumn > -1) {
+            canvas.drawRect(touchingColumn * boxWidth, 0,
+                    (touchingColumn + 1) * boxWidth, height,
+                    topPanelPaint);
         }
 
         int noteNumber;
         int index;
-        for (int fret = 1 ; fret <= showingFrets; fret++) {
+        for (int fret = 1; fret <= showingFrets; fret++) {
             index = fret - 1 + skipBottom + zoomingSkipBottom;
             if (index < 0 || index >= fretMapping.length) {
                 Log.e("MGH GuitarView onDraw", "Invalid note Index: " +
@@ -199,21 +289,16 @@ public class VerticalView extends View {
         canvas.drawLine(0, height - 1, width,
                 height - 1, paint);
 
-        for (Touch touch : touches) {
-            canvas.drawRect(0, height - (touch.onFret - skipBottom + 1) * boxHeight,
-                    width, height - (touch.onFret  - skipBottom) * boxHeight,
-                    topPanelPaint);
-        }
-
         drawColumns(canvas);
-        drawNotes(canvas, mChannel.getNotes());
+        drawNotes(canvas, mPart.getNotes());
+
     }
 
     public void drawNotes(Canvas canvas, NoteList list) {
 
         //float middle = getHeight() / 2.0f;
         float draw_y;
-        draw_boxwidth = Math.min(images[0][0].getWidth(), getWidth() / (list.size() + 1));
+        draw_boxwidth = Math.min(images[0][0].getWidth(), (float)getWidth() / (list.size() + 1));
 
         double beatsUsed = 0.0d;
 
@@ -254,21 +339,21 @@ public class VerticalView extends View {
                 }
             }
 
-            draw_x = draw_beatWidth * (float)beatsUsed * 4.0f;
+            draw_x = draw_beatWidth * (float) beatsUsed * 4.0f;
 
             if (draw_note.isPlaying()) {
                 canvas.drawRect(draw_x, draw_y,
                         draw_x + draw_boxwidth,
                         draw_y + boxHeight,
-                        draw_note.isRest() ? paintCurrentBeatRest: paintCurrentBeat);
+                        draw_note.isRest() ? paintCurrentBeatRest : paintCurrentBeat);
             }
 
             if (draw_noteImage != null) {
-                canvas.drawBitmap(draw_noteImage, draw_x , draw_y, null);
-            }
-            else {
+                canvas.drawBitmap(draw_noteImage, draw_x,
+                        draw_y + boxHeight - draw_noteImage.getHeight(), null);
+            } else {
                 canvas.drawText(Double.toString(draw_note.getBeats()),
-                        draw_x, draw_y + 50,
+                        draw_x, draw_y + boxHeightHalf,
                         paint);
             }
 
@@ -283,26 +368,17 @@ public class VerticalView extends View {
         }
     }
 
-
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if (mJam == null || mChannel == null || fretMapping == null || fretMapping.length == 0) {
+        if (mJam == null || mPart == null || fretMapping == null || fretMapping.length == 0) {
             return true;
-        }
-
-        if (mFretboard != null) {
-            boolean result = mFretboard.onTouchEvent(event);
-            invalidate();
-            return result;
         }
 
         if (mZoomMode) {
             onMultiTouchEventForZoom(event);
-        }
-        else {
+        } else {
             onMultiTouchEvent(event);
         }
 
@@ -310,98 +386,12 @@ public class VerticalView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Channel channel, Fretboard fretboard) {
-        mJam = jam;
-        mChannel = channel;
-
-        mFretboard = fretboard;
-
-        setScaleInfo();
-
-        int[] skipBottomAndTop = mChannel.getSurface().getSkipBottomAndTop();
-        skipBottom = skipBottomAndTop[0];
-        skipTop = skipBottomAndTop[1];
-        showingFrets = Math.max(1, frets - skipTop - skipBottom);
-
-        mJam.addInvalidateOnBeatListener(this);
-    }
-
-    public void setScaleInfo() {
-
-        int rootNote;
-
-        key = mJam.getKey();
-        scale = mJam.getScale();
-        frets = 0;
-
-        useScale = mChannel.isAScale();
-
-        int highNote;
-        if (!useScale) {
-            key = 0;
-            rootNote = 0;
-            lowNote = 0;
-            highNote = mChannel.getSoundSet().getSounds().size() - 1;
-
-            soundsetCaptions = mChannel.getSoundSet().getSoundNames();
-
-        }
-        else {
-            lowNote = mChannel.getLowNote();
-            highNote = mChannel.getHighNote();
-            rootNote = key + mChannel.getOctave() * 12;
-            while (rootNote < lowNote) {
-                rootNote += 12;
-            }
-        }
-
-        int[] allFrets = new int[highNote - lowNote + 1];
-        noteMapping = new int[highNote - lowNote + 1];
-
-        int s;
-        boolean isInScale;
-        for (int i = lowNote; i <= highNote; i++) {
-            isInScale = false;
-
-            for (s = 0; s < scale.length; s++) {
-                if (!useScale || scale[s] == ((i - key) % 12)) {
-                    isInScale = true;
-                    break;
-                }
-
-            }
-
-            if (isInScale) {
-                if (i == rootNote) {
-                    rootFret = frets;
-                }
-
-                noteMapping[i - lowNote] = frets;
-                allFrets[frets++] = i;
-
-            }
-
-        }
-
-        fretMapping = new int[frets];
-        System.arraycopy(allFrets, 0, fretMapping, 0, frets);
-
-        showingFrets = frets;
-    }
-
     private int getTouchingString(float x) {
-        int touchingString = (int)Math.floor(x / boxWidth);
-        if (touchingString == 3) {
-            return 1;
-        }
-        if (touchingString == 1) {
-            return 4;
-        }
-
-        return touchingString;
+        return (int) Math.floor(x / boxWidth);
     }
+
     private int getTouchingFret(float y) {
-        int fret = (int)Math.floor(y / boxHeight);
+        int fret = (int) Math.floor(y / boxHeight);
         fret = Math.max(0, Math.min(showingFrets - 1, fret));
         fret = showingFrets - fret - 1;
         fret = fret + skipBottom;
@@ -442,7 +432,9 @@ public class VerticalView extends View {
                 zoomingSkipTop = 0;
                 zoomingSkipBottom = 0;
 
-                mChannel.getSurface().setSkipBottomAndTop(skipBottom, skipTop);
+                if (onGestureListener != null) {
+                    onGestureListener.onEnd();
+                }
 
                 break;
             }
@@ -473,8 +465,8 @@ public class VerticalView extends View {
         float topDiff = zoomTop - top;
         float bottomDiff = bottom - zoomBottom;
 
-        zoomingSkipTop = Math.max(skipTop * -1, (int)Math.floor(topDiff / zoomboxHeight));
-        zoomingSkipBottom = Math.max(skipBottom * -1, (int)Math.floor(bottomDiff / zoomboxHeight));
+        zoomingSkipTop = Math.max(skipTop * -1, (int) Math.floor(topDiff / zoomboxHeight));
+        zoomingSkipBottom = Math.max(skipBottom * -1, (int) Math.floor(bottomDiff / zoomboxHeight));
 
         showingFrets = Math.max(1, frets - skipTop - skipBottom - zoomingSkipBottom - zoomingSkipTop);
 
@@ -491,23 +483,23 @@ public class VerticalView extends View {
 
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN: {
-                onDown(event, 0);
+                onDown(event);
                 break;
             }
             case MotionEvent.ACTION_UP: {
-                onUp(event, -1);
+                onUp(event);
                 break;
             }
             case MotionEvent.ACTION_POINTER_DOWN: {
                 final int index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
                         >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                onDown(event, index);
+                onPointerDown(event, index);
                 break;
             }
             case MotionEvent.ACTION_POINTER_UP: {
                 final int index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
                         >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                onUp(event, index);
+                onPointerUp(event, index);
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
@@ -522,45 +514,59 @@ public class VerticalView extends View {
         Touch t = new Touch(event.getX(index), event.getY(index), event.getPointerId(index));
         t.onString = getTouchingString(event.getX(index));
         t.onFret = getTouchingFret(event.getY(index));
+        makeNote(t);
 
         return t;
     }
 
-    private void onDown(MotionEvent event, int index) {
+    private void onDown(MotionEvent event) {
+        Touch touch = makeTouch(event, 0);
+        touches.add(touch);
+
+        if (onGestureListener != null)
+            onGestureListener.onStart(touch.note, touch.onString);
+    }
+
+    private void onUp(MotionEvent event) {
+        touches.clear();
+        touchingColumn = -1;
+
+        if (onGestureListener != null)
+            onGestureListener.onEnd();
+    }
+
+    private void onPointerDown(MotionEvent event, int index) {
         Touch touch = makeTouch(event, index);
         touches.add(touch);
 
-        playNote(touch);
+        if (onGestureListener != null)
+            onGestureListener.onUpdate(getNoteArrayFromTouches(), touch.onString);
     }
 
-    private void onUp(MotionEvent event, int index) {
-        if (index > -1) {
-            final int id = event.getPointerId(index);
-            for (Touch touch : touches) {
-                if (id == touch.id) {
-                    touches.remove(touch);
-                    mChannel.stopWithHandle(touch.playingHandle);
-                    break;
-                }
-            }
-        }
-        else {
-            mChannel.stopWithHandle(touches.get(0).playingHandle);
-            touches.clear();
+    private void onPointerUp(MotionEvent event, int index) {
 
-            Note restNote = new Note();
-            restNote.setRest(true);
-            mChannel.playLiveNote(restNote, true);
+        final int id = event.getPointerId(index);
+        for (final Touch touch : touches) {
+            if (id == touch.id) {
+                touches.remove(touch);
+
+                if (onGestureListener != null)
+                    onGestureListener.onRemove(touch.note, getNoteArrayFromTouches());
+
+                break;
+            }
         }
     }
 
     private void onMove(MotionEvent event) {
-
+        boolean update = false;
         int id;
+        touchingColumn = 0;
         for (int ip = 0; ip < event.getPointerCount(); ip++) {
             id = event.getPointerId(ip);
             for (Touch touch : touches) {
                 if (id == touch.id) {
+
 
                     touch.lastFret = touch.onFret;
                     touch.lastString = touch.onString;
@@ -570,47 +576,56 @@ public class VerticalView extends View {
                     touch.onFret = getTouchingFret(touch.y);
                     touch.onString = getTouchingString(touch.x);
 
+                    if (touchingColumn < touch.onString)
+                        touchingColumn = touch.onString;
+
                     if (touch.lastFret != touch.onFret || touch.lastString != touch.onString) {
-                        playNote(touch);
+                        onGestureListener.onRemove(touch.note, getNoteArrayFromTouches());
+                        makeNote(touch);
+                        update = true;
                     }
                     break;
                 }
             }
         }
-
-    }
-
-    private void playNote(Touch touch) {
-
-        if (touch.onFret > -1 && touch.onFret < fretMapping.length) {
-
-            Note note = new Note();
-            note.setBasicNote(touch.onFret - rootFret);
-            note.setScaledNote(fretMapping[touch.onFret]);
-            note.setInstrumentNote(fretMapping[touch.onFret] - lowNote);
-
-            mChannel.setArpeggiator(touch.onString);
-            if (!touch.isPlaying || !mJam.isPlaying() || touch.onString == 0 || touch.lastString == 0) {
-                mChannel.playLiveNote(note);
-                touch.isPlaying = true;
-                touch.note = note;
-            }
-            else {
-                touch.note.setBasicNote(note.getBasicNote());
-                touch.note.setScaledNote(note.getScaledNote());
-                touch.note.setInstrumentNote(note.getInstrumentNote());
-                //mChannel.updateLiveNote(touch.note);
-            }
-        } else {
-            Log.e("MGH GuitarView playnote", "Invalid fretmapping. skipBottom: " +
-                    skipBottom + ", touchingFret: " + touch.onFret + ", fretMapping.length: " +
-                    fretMapping.length + " in soundset: " + mChannel.getSoundSetName());
+        if (update) {
+            onGestureListener.onUpdate(getNoteArrayFromTouches(), touchingColumn);
         }
     }
 
-    abstract static class GestureListener {
-        abstract void onGestureStart(Touch touch);
-        abstract void onGestureEnd();
-        abstract void onGestureUpdate(MotionEvent event);
+    private void makeNote(Touch touch) {
+
+        touch.note = new Note(false,
+                touch.onFret -rootFret,
+                fretMapping[touch.onFret],
+                fretMapping[touch.onFret]-lowNote,
+                -1
+        );
+
+        //todo auto touch, auto beat needs a more accurate name I think
+        // mPart.setArpeggiator(touch.onString);
+    }
+
+    private Note[] getNoteArrayFromTouches() {
+        Note[] notes = new Note[touches.size()];
+        for (int i = 0; i < notes.length; i++) {
+            notes[i] = touches.get(i).note;
+        }
+        return notes;
+    }
+
+    int getSkipTop() {
+        return skipTop;
+    }
+
+    int getSkipBottom() {
+        return skipBottom;
+    }
+
+    abstract static class OnGestureListener {
+        abstract void onStart(Note note, int autoBeat);
+        abstract void onUpdate(Note[] notes, int autoBeat);
+        abstract void onRemove(Note note, Note[] notes);
+        abstract void onEnd();
     }
 }

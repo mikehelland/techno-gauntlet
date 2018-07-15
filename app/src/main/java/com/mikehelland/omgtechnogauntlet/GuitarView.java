@@ -11,6 +11,11 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.mikehelland.omgtechnogauntlet.jam.Jam;
+import com.mikehelland.omgtechnogauntlet.jam.JamPart;
+import com.mikehelland.omgtechnogauntlet.jam.Note;
+import com.mikehelland.omgtechnogauntlet.jam.NoteList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +41,7 @@ public class GuitarView extends View {
     private float boxHeightHalf;
 
     private Jam mJam;
-    private Channel mChannel;
+    private JamPart mPart;
 
     private Paint topPanelPaint;
     private Paint paintText;
@@ -74,8 +79,6 @@ public class GuitarView extends View {
     private float draw_leftOffset = 20;
     private float draw_debugBeatWidth;
     private float draw_beatWidth;
-
-    private Fretboard mFretboard = null;
 
     private float zoomboxHeight = -1;
     private float zoomTop = -1;
@@ -143,7 +146,7 @@ public class GuitarView extends View {
 
     public void onDraw(Canvas canvas) {
 
-        if (frets == 0 || mJam == null || mChannel == null || fretMapping == null || fretMapping.length == 0) {
+        if (frets == 0 || mJam == null || mPart == null || fretMapping == null || fretMapping.length == 0) {
             return;
         }
 
@@ -164,13 +167,6 @@ public class GuitarView extends View {
         boxWidth = width / strings;
         paint.setTextSize(boxHeightHalf);
         //}
-
-        if (mFretboard != null) {
-            mFretboard.onDraw(canvas, width, height);
-
-            drawNotes(canvas, mChannel.getNotes());
-            return;
-        }
 
         int noteNumber;
         int index;
@@ -208,17 +204,17 @@ public class GuitarView extends View {
         }
 
         drawColumns(canvas);
-        drawNotes(canvas, mChannel.getNotes());
+        drawNotes(canvas, mPart.getNotes());
 
-        if (mChannel.debugTouchData.size() > 0) {
+        /*if (mPart.debugTouchData.size() > 0) {
             for (int isubbeat = 0; isubbeat <= mJam.getTotalSubbeats(); isubbeat++) {
                 canvas.drawLine(draw_leftOffset + isubbeat * draw_beatWidth, height - 50,
                         draw_leftOffset + isubbeat * draw_beatWidth, height, paint);
             }
 
             DebugTouch debugTouch;
-            for (int idebug = 0; idebug < mChannel.debugTouchData.size(); idebug++) {
-                debugTouch = mChannel.debugTouchData.get(idebug);
+            for (int idebug = 0; idebug < mPart.debugTouchData.size(); idebug++) {
+                debugTouch = mPart.debugTouchData.get(idebug);
 
                 canvas.drawCircle(draw_leftOffset + draw_debugBeatWidth *
                                 (float)debugTouch.dbeat / 8.0f, height - 40, 5,
@@ -229,7 +225,7 @@ public class GuitarView extends View {
                         debugTouch.mode.equals("START") ? paintGreen : paintRed);
 
             }
-        }
+        }*/
     }
 
 
@@ -237,14 +233,8 @@ public class GuitarView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if (mJam == null || mChannel == null || fretMapping == null || fretMapping.length == 0) {
+        if (mJam == null || mPart == null || fretMapping == null || fretMapping.length == 0) {
             return true;
-        }
-
-        if (mFretboard != null) {
-            boolean result = mFretboard.onTouchEvent(event);
-            invalidate();
-            return result;
         }
 
         if (mZoomMode) {
@@ -258,25 +248,20 @@ public class GuitarView extends View {
         return true;
     }
 
-    public void setJam(Jam jam, Channel channel, Fretboard fretboard) {
+    public void setJam(Jam jam, JamPart channel) {
         mJam = jam;
-        mChannel = channel;
-
-        mFretboard = fretboard;
+        mPart = channel;
 
         setScaleInfo();
 
-        int[] skipBottomAndTop = mChannel.getSurface().getSkipBottomAndTop();
+        int[] skipBottomAndTop = mPart.getSurface().getSkipBottomAndTop();
         skipBottom = skipBottomAndTop[0];
         skipTop = skipBottomAndTop[1];
         showingFrets = Math.max(1, frets - skipTop - skipBottom);
 
-        mJam.addInvalidateOnBeatListener(this);
     }
 
     public void setScaleInfo() {
-
-        mChannel.debugTouchData.clear();
 
         int rootNote;
 
@@ -284,22 +269,22 @@ public class GuitarView extends View {
         scale = mJam.getScale();
         frets = 0;
 
-        useScale = mChannel.isAScale();
+        useScale = mPart.getSoundSet().isChromatic();
 
         int highNote;
         if (!useScale) {
             key = 0;
             rootNote = 0;
             lowNote = 0;
-            highNote = mChannel.getSoundSet().getSounds().size() - 1;
+            highNote = mPart.getSoundSet().getSounds().size() - 1;
 
-            soundsetCaptions = mChannel.getSoundSet().getSoundNames();
+            soundsetCaptions = mPart.getSoundSet().getSoundNames();
 
         }
         else {
-            lowNote = mChannel.getLowNote();
-            highNote = mChannel.getHighNote();
-            rootNote = key + mChannel.getOctave() * 12;
+            lowNote = mPart.getSoundSet().getLowNote();
+            highNote = mPart.getSoundSet().getHighNote();
+            rootNote = key + mPart.getOctave() * 12;
             while (rootNote < lowNote) {
                 rootNote += 12;
             }
@@ -466,7 +451,8 @@ public class GuitarView extends View {
                 zoomingSkipTop = 0;
                 zoomingSkipBottom = 0;
 
-                mChannel.getSurface().setSkipBottomAndTop(skipBottom, skipTop);
+                //todo thru the jam you say?
+                // mPart.getSurface().setSkipBottomAndTop(skipBottom, skipTop);
 
                 break;
             }
@@ -563,18 +549,18 @@ public class GuitarView extends View {
             for (Touch touch : touches) {
                 if (id == touch.id) {
                     touches.remove(touch);
-                    mChannel.stopWithHandle(touch.playingHandle);
+                    //todo mPart.stopWithHandle(touch.playingHandle);
                     break;
                 }
             }
         }
         else {
-            mChannel.stopWithHandle(touches.get(0).playingHandle);
+            //todo mPart.stopWithHandle(touches.get(0).playingHandle);
             touches.clear();
 
-            Note restNote = new Note();
-            restNote.setRest(true);
-            mChannel.playLiveNote(restNote, true);
+            //Note restNote = new Note();
+            //restNote.setRest(true);
+            //todo mPart.playLiveNote(restNote, true);
         }
     }
 
@@ -608,14 +594,15 @@ public class GuitarView extends View {
 
         if (touch.onFret > -1 && touch.onFret < fretMapping.length) {
 
-            Note note = new Note();
+            //todo
+            /*Note note = new Note();
             note.setBasicNote(touch.onFret - rootFret);
             note.setScaledNote(fretMapping[touch.onFret]);
             note.setInstrumentNote(fretMapping[touch.onFret] - lowNote);
 
-            mChannel.setArpeggiator(touch.onString);
+            mPart.setArpeggiator(touch.onString);
             if (!touch.isPlaying || !mJam.isPlaying() || touch.onString == 0 || touch.lastString == 0) {
-                mChannel.playLiveNote(note);
+                mPart.playLiveNote(note);
                 touch.isPlaying = true;
                 touch.note = note;
             }
@@ -623,12 +610,12 @@ public class GuitarView extends View {
                 touch.note.setBasicNote(note.getBasicNote());
                 touch.note.setScaledNote(note.getScaledNote());
                 touch.note.setInstrumentNote(note.getInstrumentNote());
-                //mChannel.updateLiveNote(touch.note);
-            }
+                //mPart.updateLiveNote(touch.note);
+            }*/
         } else {
             Log.e("MGH GuitarView playnote", "Invalid fretmapping. skipBottom: " +
                     skipBottom + ", touchingFret: " + touch.onFret + ", fretMapping.length: " +
-                    fretMapping.length + " in soundset: " + mChannel.getSoundSetName());
+                    fretMapping.length + " in soundset: " + mPart.getName());
         }
     }
 }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
+import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
+
 /**
  * Created by m on 1/25/18.
  */
@@ -14,6 +16,14 @@ public class BtRelativeLayout extends RelativeLayout {
     boolean getShowDetails() {return mShowDetails;}
     void setShowDetails(boolean showDetails) {
         mShowDetails = showDetails;
+    }
+
+    private CommandProcessor commandProcessor;
+    CommandProcessor getCommandProcessor() {
+        return commandProcessor;
+    }
+    void setCommandProcessor(CommandProcessor commandProcessor) {
+        this.commandProcessor = commandProcessor;
     }
 
     public BtRelativeLayout(Context context) {
