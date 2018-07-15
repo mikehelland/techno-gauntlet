@@ -277,9 +277,9 @@ public class BluetoothFragment extends OMGFragment {
             controls.findViewById(R.id.bt_brain_connect_button).setVisibility(View.GONE);
             ((ImageView)controls.findViewById(R.id.img_device)).setImageResource(R.drawable.device_blue);
             controls.findViewById(R.id.remote_control_button).setVisibility(View.VISIBLE);
-            controls.findViewById(R.id.peer_jam_controls).setVisibility(View.VISIBLE);
+            //controls.findViewById(R.id.peer_jam_controls).setVisibility(View.VISIBLE);
             controls.findViewById(R.id.sync_button).setVisibility(View.VISIBLE);
-            controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.VISIBLE);
+            //controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.VISIBLE);
 
         }
 
@@ -320,36 +320,27 @@ public class BluetoothFragment extends OMGFragment {
                 else {
                     cp.setLocalIsARemote(true);
                 }
+                Main activity = (Main)getActivity();
+                if (activity != null) {
+                    activity.setRemoteControlConnection(cp.isLocalARemote() ? connection : null);
+                }
                 refreshPanel(controls, cp);
             }
         });
         controls.findViewById(R.id.remote_control_button).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                setDefaultHostPreferences(connection.getDevice());
+                String defaultHost = getDefaultHost();
+                if (!defaultHost.equals(connection.getDevice().getAddress())) {
+                    setDefaultHostPreferences(connection.getDevice());
+                }
+                else {
+                    setDefaultHostPreferences(null);
+                }
                 return true;
             }
         });
 
-
-        controls.findViewById(R.id.tempo_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (cp != null && cp.getPeerJam() != null) {
-                    getJam().setSubbeatLength(cp.getPeerJam().getSubbeatLength(), null);
-                }
-            }
-        });
-
-        controls.findViewById(R.id.key_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (cp != null && cp.getPeerJam() != null) {
-                    getJam().setKey(cp.getPeerJam().getKey(), null);
-                    getJam().setScale(cp.getPeerJam().getScale(), null);
-                }
-            }
-        });
 
         final Button syncButton = (Button)controls.findViewById(R.id.sync_button);
         syncButton.setOnClickListener(new View.OnClickListener() {
@@ -429,9 +420,9 @@ public class BluetoothFragment extends OMGFragment {
             remoteControlButton.setVisibility(View.GONE);
             isHostARemoteText.setVisibility(View.VISIBLE);
 
-            controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
+            //controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
             controls.findViewById(R.id.sync_button).setVisibility(View.GONE);
-            controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.GONE);
+            //controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.GONE);
         }
         else {
             remoteControlButton.setVisibility(View.VISIBLE);
@@ -439,14 +430,14 @@ public class BluetoothFragment extends OMGFragment {
         }
 
         if (cp.isLocalARemote() || cp.isHostARemote()) {
-            controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
+            //controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
             controls.findViewById(R.id.sync_button).setVisibility(View.GONE);
-            controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.GONE);
+            //controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.GONE);
         }
         else {
-            controls.findViewById(R.id.peer_jam_controls).setVisibility(View.VISIBLE);
+            //controls.findViewById(R.id.peer_jam_controls).setVisibility(View.VISIBLE);
             controls.findViewById(R.id.sync_button).setVisibility(View.VISIBLE);
-            controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.VISIBLE);
+            //controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.VISIBLE);
         }
     }
 
@@ -455,7 +446,7 @@ public class BluetoothFragment extends OMGFragment {
         ((TextView)controls.findViewById(R.id.bt_device_status)).setText(R.string.disconnected);
         ((ImageView)controls.findViewById(R.id.img_device)).setImageResource(R.drawable.device);
         controls.findViewById(R.id.bt_brain_connect_button).setVisibility(View.VISIBLE);
-        controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
+        //controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
         controls.findViewById(R.id.sync_button).setVisibility(View.GONE);
         controls.findViewById(R.id.remote_control_button).setVisibility(View.GONE);
         controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.GONE);
@@ -479,10 +470,19 @@ public class BluetoothFragment extends OMGFragment {
         SharedPreferences.Editor prefEditor = PreferenceManager.
                 getDefaultSharedPreferences(activity).edit();
 
-        prefEditor.putString("default_host", device.getAddress());
-        prefEditor.putString("default_host_name", device.getName());
+        prefEditor.putString("default_host", device == null ? "" : device.getAddress());
+        prefEditor.putString("default_host_name", device == null ? "" : device.getName());
         prefEditor.apply();
 
-        Toast.makeText(activity, "App is now configured to Auto Connect to " + device.getName(), Toast.LENGTH_SHORT).show();
+        String toastText = device == null ? "Auto Connect has been disabled!" :
+                "App is now configured to Auto Connect to " + device.getName();
+        Toast.makeText(activity, toastText, Toast.LENGTH_SHORT).show();
     }
+
+    private String getDefaultHost() {
+        Activity activity = getActivity(); if (activity == null) return "";
+
+        return PreferenceManager.getDefaultSharedPreferences(activity).getString("default_host", "");
+    }
+
 }

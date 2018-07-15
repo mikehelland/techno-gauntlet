@@ -59,12 +59,12 @@ public class Main extends FragmentActivity {
 
         mImages = new ImageLoader(Main.this);
 
+        setupDatabase();
+
         if (hasDefaultHost()) {
             connectToDefaultHost();
             return;
         }
-
-        setupDatabase();
 
         SoundManager soundManager = new SoundManager(Main.this, onSoundLoadedListener);
         jam = new Jam(soundManager, soundSetsProvider);
@@ -252,4 +252,11 @@ public class Main extends FragmentActivity {
         });
     }
 
+    public void setRemoteControlConnection(BluetoothConnection connection) {
+        if (bluetoothJamStatus == null) {
+            return;
+        }
+
+        bluetoothJamStatus.setupRemote(connection);
+    }
 }

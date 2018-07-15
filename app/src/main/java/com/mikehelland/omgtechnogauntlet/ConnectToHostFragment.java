@@ -2,6 +2,7 @@ package com.mikehelland.omgtechnogauntlet;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -24,7 +25,6 @@ import com.mikehelland.omgtechnogauntlet.jam.JamPart;
 import com.mikehelland.omgtechnogauntlet.jam.Note;
 import com.mikehelland.omgtechnogauntlet.jam.OnJamChangeListener;
 import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
-import com.mikehelland.omgtechnogauntlet.remote.JamListenersHelper;
 import com.mikehelland.omgtechnogauntlet.remote.OnReceiveSavedJamsListener;
 import com.mikehelland.omgtechnogauntlet.remote.RemoteControlBluetoothHelper;
 
@@ -58,6 +58,22 @@ public class ConnectToHostFragment extends OMGFragment {
                 Activity a = getActivity();
                 if (a != null) {
                     a.finish();
+                }
+                return true;
+            }
+        });
+
+        mView.findViewById(R.id.disable_autoconnect).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Activity a = getActivity();
+                if (a != null) {
+                    Intent intent = a.getIntent();
+                    PreferenceManager.
+                            getDefaultSharedPreferences(a).edit().putString("default_host", "").apply();
+
+                    a.finish();
+                    a.startActivity(intent);
                 }
                 return true;
             }
@@ -108,14 +124,6 @@ public class ConnectToHostFragment extends OMGFragment {
             @Override
             public void onClick(View view) {
                 connectToHost(address, name);
-            }
-        });
-        mImageView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                PreferenceManager.
-                        getDefaultSharedPreferences(activity).edit().putString("default_host", "").apply();
-                return true;
             }
         });
     }
@@ -174,12 +182,8 @@ public class ConnectToHostFragment extends OMGFragment {
                 //process any incoming messages from this connection
                 final CommandProcessor cp = new CommandProcessor(activity.soundSetsProvider,
                         activity.jamsProvider);
-                cp.setSync(true); 
                 cp.setup(activity.bluetoothJamStatus, connection, jam, null);
                 connection.setDataCallback(cp);
-
-                //send any changes to this jam to the host
-                JamListenersHelper.setJamListenersForRemote(jam, connection);
 
                 jam.addOnJamChangeListener(new OnJamChangeListener() {
                     @Override public void onChordProgressionChange(int[] chords, String source) { }
@@ -208,13 +212,7 @@ public class ConnectToHostFragment extends OMGFragment {
                     public void run() {
                         mStatusText.setText(R.string.getting_jam_info);
                         mImageView.setImageResource(R.drawable.device_blue);
-                        //RemoteControlBluetoothHelper.requestJam(connection);
-                        connection.sendNameValuePair(CommandProcessor.REMOTE_CONTROL, "TRUE");
-
-
-                        //todo get the jam as json from the host
-                        //load it, and show the main fragment
-
+                        cp.setLocalIsARemote(true);
                     }
                 });
             }

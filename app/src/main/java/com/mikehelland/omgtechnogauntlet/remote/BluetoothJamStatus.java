@@ -59,5 +59,9 @@ public class BluetoothJamStatus {
             isRemote = true;
             connectionToHost = connection;
         }
+        else {
+            isRemote = false;
+            connectionToHost = null;
+        }
     }
 }
