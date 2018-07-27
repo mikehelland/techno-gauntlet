@@ -714,9 +714,17 @@ public class CommandProcessor extends BluetoothDataCallback {
             return;
         }
 
-        int track = Integer.parseInt(params[1]);
-        int subbeat = Integer.parseInt(params[2]);
-        boolean patternValue = !params[3].equals("0");
+        int track;
+        int subbeat;
+        boolean patternValue;
+
+        try {
+            track = Integer.parseInt(params[1]);
+            subbeat = Integer.parseInt(params[2]);
+            patternValue = !params[3].equals("0");
+        }
+        catch (NumberFormatException e) {return;}
+        catch (ArrayIndexOutOfBoundsException e) { return; }
 
         if (mSync) {
             mJam.setPartTrackValue(jamPart, track, subbeat, patternValue, getAddress());
@@ -731,9 +739,17 @@ public class CommandProcessor extends BluetoothDataCallback {
             return;
         }
 
-        int autoBeat = Integer.parseInt(noteInfo[1]);
-        int basicNoteNumber = Integer.parseInt(noteInfo[2]);
-        int instrumentNoteNumber = Integer.parseInt(noteInfo[3]);
+        int autoBeat;
+        int basicNoteNumber;
+        int instrumentNoteNumber;
+
+        try {
+            autoBeat = Integer.parseInt(noteInfo[1]);
+            basicNoteNumber = Integer.parseInt(noteInfo[2]);
+            instrumentNoteNumber = Integer.parseInt(noteInfo[3]);
+        }
+        catch (NumberFormatException e) { return; }
+        catch (ArrayIndexOutOfBoundsException e) { return; }
 
         Note note = new Note(false, basicNoteNumber, 0, instrumentNoteNumber, -1);
 
@@ -748,7 +764,14 @@ public class CommandProcessor extends BluetoothDataCallback {
             return;
         }
 
-        int autoBeat = Integer.parseInt(noteInfo[1]);
+        int autoBeat;
+        try {
+            autoBeat = Integer.parseInt(noteInfo[1]);
+        }
+        catch (NumberFormatException e) {
+            return;
+        }
+
 
         int i = 2;
         int noteI = 0;
@@ -756,10 +779,18 @@ public class CommandProcessor extends BluetoothDataCallback {
         int instrumentNote;
         Note[] notes = new Note[(noteInfo.length - 2) / 2];
         while (i < noteInfo.length) {
-            basicNote = Integer.parseInt(noteInfo[i++]);
-            instrumentNote = Integer.parseInt(noteInfo[i++]);
-            notes[noteI++] = new Note(false,
-                    basicNote, 0, instrumentNote, -1);
+            try {
+                basicNote = Integer.parseInt(noteInfo[i++]);
+                instrumentNote = Integer.parseInt(noteInfo[i++]);
+                notes[noteI++] = new Note(false,
+                        basicNote, 0, instrumentNote, -1);
+            }
+            catch (NumberFormatException e) {
+                return;
+            }
+            catch (ArrayIndexOutOfBoundsException e) {
+                return;
+            }
         }
 
         mJam.updatePartLiveNotes(jamPart, notes, autoBeat, getAddress());
@@ -773,8 +804,19 @@ public class CommandProcessor extends BluetoothDataCallback {
             return;
         }
 
-        int basicNoteNumber = Integer.parseInt(noteInfo[1]);
-        int instrumentNoteNumber = Integer.parseInt(noteInfo[2]);
+        int basicNoteNumber;
+        int instrumentNoteNumber;
+
+        try {
+            basicNoteNumber = Integer.parseInt(noteInfo[1]);
+            instrumentNoteNumber = Integer.parseInt(noteInfo[2]);
+        }
+        catch (NumberFormatException e) {
+            return;
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+            return;
+        }
 
         Note note = new Note(false, basicNoteNumber, 0, instrumentNoteNumber, -1);
 
@@ -784,10 +826,18 @@ public class CommandProcessor extends BluetoothDataCallback {
         int instrumentNote;
         Note[] notes = new Note[(noteInfo.length - 3) / 2];
         while (i < noteInfo.length) {
-            basicNote = Integer.parseInt(noteInfo[i++]);
-            instrumentNote = Integer.parseInt(noteInfo[i++]);
-            notes[noteI++] = new Note(false,
-                    basicNote, 0, instrumentNote, -1);
+            try {
+                basicNote = Integer.parseInt(noteInfo[i++]);
+                instrumentNote = Integer.parseInt(noteInfo[i++]);
+                notes[noteI++] = new Note(false,
+                        basicNote, 0, instrumentNote, -1);
+            }
+            catch (NumberFormatException e) {
+                return;
+            }
+            catch (ArrayIndexOutOfBoundsException e) {
+                return;
+            }
         }
 
         mJam.removeFromPartLiveNotes(jamPart, note, notes, getAddress());
