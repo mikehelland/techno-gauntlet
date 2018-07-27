@@ -83,6 +83,48 @@
             android:layout_below="@id/bpm_seekbar"
             />-->
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/shuffle_seekbar">
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:text="-10 ms"
+            android:id="@+id/add_ms_minus_10"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:text="-5 ms"
+            android:id="@+id/add_ms_minus_5"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:text="-1 ms"
+            android:id="@+id/add_ms_minus_1"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:text="+1 ms"
+            android:id="@+id/add_ms_plus_1"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:text="+5 ms"
+            android:id="@+id/add_ms_plus_5"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:text="+10 ms"
+            android:id="@+id/add_ms_plus_10"/>
 
+    </LinearLayout>
 
 </com.mikehelland.omgtechnogauntlet.SlidingFrameLayout>

@@ -668,4 +668,8 @@ public class Jam {
     public void setPartZoom(JamPart part, int skipBottom, int skipTop) {
         part.getSurface().setSkipBottomAndTop(skipBottom, skipTop);
     }
+
+    public void nudgePlayer(int i) {
+        player.nudge(i);
+    }
 }

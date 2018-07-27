@@ -295,4 +295,8 @@ class Player {
         }
         //} catch (Exception ignore) {}
     }
+
+    void nudge(int millis) {
+        timeOfLastBeatPlayed += millis;
+    }
 }

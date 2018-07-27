@@ -45,14 +45,16 @@ public class BeatsFragment extends OMGFragment {
         beatsText = (TextView)view.findViewById(R.id.timesig);
         beatsSeekBar = (SeekBar)view.findViewById(R.id.beats_seekbar);
 
-        setup();
+        setup(view);
         refresh();
         setupListener();
 
         return view;
     }
 
-    private void setup() {
+    private void setup(View view) {
+
+        setupNudgeButtons(view);
 
         bpmSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -143,6 +145,45 @@ public class BeatsFragment extends OMGFragment {
             }
         });
 
+    }
+
+    private void setupNudgeButtons(View view) {
+        view.findViewById(R.id.add_ms_minus_10).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getJam().nudgePlayer(-10);
+            }
+        });
+        view.findViewById(R.id.add_ms_minus_5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getJam().nudgePlayer(-5);
+            }
+        });
+        view.findViewById(R.id.add_ms_minus_1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getJam().nudgePlayer(-1);
+            }
+        });
+        view.findViewById(R.id.add_ms_plus_1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getJam().nudgePlayer(1);
+            }
+        });
+        view.findViewById(R.id.add_ms_plus_5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getJam().nudgePlayer(5);
+            }
+        });
+        view.findViewById(R.id.add_ms_plus_10).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getJam().nudgePlayer(10);
+            }
+        });
     }
 
     private void refresh() {

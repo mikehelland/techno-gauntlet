@@ -70,7 +70,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Copy Part"
-            android:id="@+id/copy_channel_button"/>
+            android:id="@+id/copy_channel_button"
+            android:visibility="gone"/>
 
         <Space
             android:layout_width="match_parent"

@@ -29,7 +29,7 @@ android {
         applicationId "com.mikehelland.omgtechnogauntlet"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 70
+        versionCode 71
         versionName "7.0"
     }
     buildTypes {
