@@ -349,11 +349,9 @@ public class BluetoothFragment extends OMGFragment {
             public void onClick(View view) {
                 if (cp.isSynced()) {
                     cp.setSync(false);
-                    syncButton.setText(R.string.syncbeats);
                 }
                 else {
                     cp.setSync(true);
-                    syncButton.setText(R.string.unsyncbeats);
                 }
             }
         });
@@ -414,6 +412,10 @@ public class BluetoothFragment extends OMGFragment {
     private void refreshPanel(BtRelativeLayout controls, CommandProcessor cp) {
         ToggleButton remoteControlButton = (ToggleButton)controls.findViewById(R.id.remote_control_button);
         View isHostARemoteText = controls.findViewById(R.id.bt_device_is_a_remote);
+
+        ToggleButton syncButton = (ToggleButton)controls.findViewById(R.id.sync_button);
+        syncButton.setChecked(cp.isSynced());
+
         if (cp.isLocalARemote()) {
             remoteControlButton.setChecked(true);
         }
@@ -421,8 +423,7 @@ public class BluetoothFragment extends OMGFragment {
             remoteControlButton.setVisibility(View.GONE);
             isHostARemoteText.setVisibility(View.VISIBLE);
 
-            //controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
-            controls.findViewById(R.id.sync_button).setVisibility(View.GONE);
+            syncButton.setVisibility(View.GONE);
             //controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.GONE);
         }
         else {
@@ -431,13 +432,11 @@ public class BluetoothFragment extends OMGFragment {
         }
 
         if (cp.isLocalARemote() || cp.isHostARemote()) {
-            //controls.findViewById(R.id.peer_jam_controls).setVisibility(View.GONE);
-            controls.findViewById(R.id.sync_button).setVisibility(View.GONE);
-            //controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.GONE);
+            syncButton.setVisibility(View.GONE);
         }
         else {
+            syncButton.setVisibility(View.VISIBLE);
             //controls.findViewById(R.id.peer_jam_controls).setVisibility(View.VISIBLE);
-            controls.findViewById(R.id.sync_button).setVisibility(View.VISIBLE);
             //controls.findViewById(R.id.peer_jam_stoplight).setVisibility(View.VISIBLE);
         }
     }

@@ -73,6 +73,8 @@ public class CommandProcessor extends BluetoothDataCallback {
     private JamPart mPart = null;
     private BluetoothJamStatus mStatus;
     private Jam mPeerJam;
+
+    private boolean restartOnNewLoop = false;
     //private OnPeerChangeListener mOnPeerChangeListener;
 
     //final private DatabaseContainer mDatabase;
@@ -150,12 +152,12 @@ public class CommandProcessor extends BluetoothDataCallback {
 
         switch (name) {
             case SET_PLAY:
-                if (mSync) {
+                if (isHostARemote() || isLocalARemote()) {
                     mJam.play(getAddress());
                 }
                 return;
             case SET_STOP:
-                if (mSync) {
+                if (isHostARemote() || isLocalARemote()) {
                     mJam.stop(getAddress());
                 }
                 return;
@@ -223,27 +225,27 @@ public class CommandProcessor extends BluetoothDataCallback {
                 return;
 
             case SET_PART_TRACK_VALUE:
-                if (mSync) {
+                if (isHostARemote() || isLocalARemote()) {
                     setPartTrackValue(value);
                 }
                 return;
             case SET_PART_LIVE_START:
-                if (mSync) {
+                if (isHostARemote() || isLocalARemote()) {
                     onPartLiveStart(value);
                 }
                 return;
             case SET_PART_LIVE_UPDATE:
-                if (mSync) {
+                if (isHostARemote() || isLocalARemote()) {
                     onPartLiveUpdate(value);
                 }
                 return;
             case SET_PART_LIVE_REMOVE:
-                if (mSync) {
+                if (isHostARemote() || isLocalARemote()) {
                     onPartLiveRemove(value);
                 }
                 return;
             case SET_PART_LIVE_END:
-                if (mSync) {
+                if (isHostARemote() || isLocalARemote()) {
                     onPartLiveEnd(value);
                 }
                 return;
@@ -333,12 +335,11 @@ public class CommandProcessor extends BluetoothDataCallback {
 
     //old way, old localIsARemote
     private void channelSetPattern(String value) {
-        String[] params = value.split(",");
-        int track = Integer.parseInt(params[0]);
-        int subbeat = Integer.parseInt(params[1]);
-        boolean patternValue = params[2].equals("true");
-
-        if (mSync) {
+        if (isHostARemote() || isLocalARemote()) {
+            String[] params = value.split(",");
+            int track = Integer.parseInt(params[0]);
+            int subbeat = Integer.parseInt(params[1]);
+            boolean patternValue = params[2].equals("true");
             mJam.setPartTrackValue(mPart, track, subbeat, patternValue, getAddress());
         }
     }
@@ -665,6 +666,7 @@ public class CommandProcessor extends BluetoothDataCallback {
         mSync = sync;
 
         if (sync) {
+            restartOnNewLoop = true;
             mJam.setSubbeatLength(mPeerJam.getSubbeatLength(), null);
             mJam.setKey(mPeerJam.getKey(), null);
             mJam.setScale(mPeerJam.getScale(), null);
@@ -693,9 +695,9 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     private void onNewLoop() {
-        if (mSync) {
+        if (restartOnNewLoop) {
             mJam.restart();
-            mSync = false;
+            restartOnNewLoop = false;
         }
     }
 
@@ -715,6 +717,10 @@ public class CommandProcessor extends BluetoothDataCallback {
 
 
     private void setPartTrackValue(String value) {
+        if (!hostIsARemote && !localIsARemote) {
+            return;
+        }
+
         String[] params = value.split(",");
         JamPart jamPart = mJam.getPart(params[0]);
 
@@ -734,10 +740,9 @@ public class CommandProcessor extends BluetoothDataCallback {
         catch (NumberFormatException e) {return;}
         catch (ArrayIndexOutOfBoundsException e) { return; }
 
-        if (mSync) {
-            mJam.setPartTrackValue(jamPart, track, subbeat, patternValue, getAddress());
-        }
+        mJam.setPartTrackValue(jamPart, track, subbeat, patternValue, getAddress());
     }
+
     private void onPartLiveStart(String value) {
 
         String[] noteInfo = value.split(",");
