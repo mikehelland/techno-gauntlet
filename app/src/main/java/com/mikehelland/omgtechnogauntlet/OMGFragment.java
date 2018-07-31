@@ -3,6 +3,7 @@ package com.mikehelland.omgtechnogauntlet;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 
 import com.mikehelland.omgtechnogauntlet.jam.Jam;
 import com.mikehelland.omgtechnogauntlet.jam.JamPart;
@@ -52,7 +53,8 @@ public class OMGFragment extends Fragment {
                 }*/
                 ft.replace(R.id.main_layout, f);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                ft.addToBackStack(null);
+                Log.d("MGH classname", f.getClass().getName());
+                ft.addToBackStack(f.getClass().getName());
                 ft.commit();
             }
         } catch (Exception ignore) {}

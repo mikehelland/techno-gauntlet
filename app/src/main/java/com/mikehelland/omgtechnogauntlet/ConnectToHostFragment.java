@@ -142,6 +142,8 @@ public class ConnectToHostFragment extends OMGFragment {
             return;
         }
 
+        final Activity activity = getActivity();
+
         mBT.connectTo(device, new BluetoothConnectCallback() {
             @Override
             public void newStatus(final String status) {
@@ -151,21 +153,6 @@ public class ConnectToHostFragment extends OMGFragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //todo wouldn't this be on disconnected?
-                        /*if (status.equals(BluetoothManager.STATUS_IO_CONNECTED_THREAD)) {
-                            mImageView.setImageResource(R.drawable.device);
-                            mStatusText.setText(R.string.accepting_connections);
-                            FragmentManager fm = getFragmentManager();
-                            if (fm != null) {
-                                int stackCount = fm.getBackStackEntryCount();
-                                for (int i = 0; i < stackCount; i++) {
-                                    popBackStack();
-                                }
-                            }
-                        }
-                        else {
-                            mStatusText.setText(status);
-                        }*/
                         mStatusText.setText(status);
 
                     }
@@ -220,6 +207,19 @@ public class ConnectToHostFragment extends OMGFragment {
             @Override
             public void onDisconnected(BluetoothConnection connection) {
                 //todo remove the listeners, at least
+
+                if (activity == null) {
+                    return;
+                }
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = activity.getIntent();
+                        activity.finish();
+                        activity.startActivity(intent);
+                    }
+                });
             }
         });
     }
