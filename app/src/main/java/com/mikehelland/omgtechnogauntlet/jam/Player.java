@@ -41,7 +41,10 @@ class Player {
 
     private ArrayList<PlaySoundCommand> commands = new ArrayList<>();
 
-    Player(SoundManager soundManager) {
+    private Jam jam;
+
+    Player(Jam jam, SoundManager soundManager) {
+        this.jam = jam;
         this.soundManager = soundManager;
     }
 
@@ -119,6 +122,8 @@ class Player {
             progressionI = 0;
         }
         currentChord = section.progression[progressionI];
+
+        jam.onNewLoop();
     }
 
     void stop() {
@@ -196,6 +201,11 @@ class Player {
             //        (double)section.beatParameters.subbeats);
             //part.notes.overwrite(note);
         }
+    }
+
+    public void restart() {
+        isubbeat = 0;
+        timeOfLastBeatPlayed = System.currentTimeMillis();
     }
 
     private class PlaybackThread extends Thread {

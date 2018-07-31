@@ -38,6 +38,13 @@ public class BluetoothJamStatus {
 
     }
 
+    public void setupJamSync() {
+        if (hostJamListener == null) {
+            hostJamListener = new BluetoothHostJamListener(jam, bluetoothManager);
+            jam.addOnJamChangeListener(hostJamListener);
+        }
+    }
+
     public static void setJamListenersForRemote(Jam jam, BluetoothConnection connection) {
         jam.addOnJamChangeListener(new BluetoothRemoteJamListener(connection));
         jam.addOnKeyChangeListener(new BluetoothRemoteKeyListener(connection));

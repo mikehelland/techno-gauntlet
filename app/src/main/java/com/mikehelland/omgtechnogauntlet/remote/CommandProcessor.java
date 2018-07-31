@@ -41,6 +41,9 @@ public class CommandProcessor extends BluetoothDataCallback {
     final static String SET_STOP = "SET_STOP";
     final static String SET_CHORDS = "SET_CHORDS";
 
+    final static String ON_NEW_LOOP = "ON_NEW_LOOP";
+    final static String REQUEST_SYNC = "REQUEST_SYNC";
+
     public final static String SET_SUBBEATLENGTH = "SET_SUBBEATLENGTH";
     public final static String SET_BEATS = "SET_BEATS";
     public final static String SET_MEASURES = "SET_MEASURES";
@@ -168,8 +171,12 @@ public class CommandProcessor extends BluetoothDataCallback {
             case GET_SOUNDSETS:
                 sendSoundSets();
                 return;
-            case "ON_NEW_LOOP":
+            case ON_NEW_LOOP:
                 onNewLoop();
+                return;
+
+            case REQUEST_SYNC:
+                requestSyncFromLocal();
                 return;
         }
 
@@ -191,9 +198,7 @@ public class CommandProcessor extends BluetoothDataCallback {
                 return;
 
             case SET_SUBBEATLENGTH:
-                if (mSync) {
-                    mJam.setSubbeatLength(Integer.parseInt(value), getAddress());
-                }
+                setSubbeatLength(value);
                 return;
             case SET_BEATS:
                 if (mSync) {
@@ -211,14 +216,10 @@ public class CommandProcessor extends BluetoothDataCallback {
                 }
                 return;
             case SET_KEY:
-                if (mSync) {
-                    mJam.setKey(Integer.parseInt(value), getAddress());
-                }
+                setKey(value);
                 return;
             case SET_SCALE:
-                if (mSync) {
-                    setScale(value);
-                }
+                setScale(value);
                 return;
 
             case SET_PART_TRACK_VALUE:
@@ -301,9 +302,11 @@ public class CommandProcessor extends BluetoothDataCallback {
                 //onSetParts(value);
                 return;
             case JAM_JSON:
-                if (mSync) {
+                if (localIsARemote) {
                     mJam.loadFromJSON(value, getAddress());
                 }
+                mPeerJam = new Jam(null, null);
+                mPeerJam.loadFromJSON(value);
                 return;
         }
 
@@ -357,7 +360,7 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
 
-    private void sendJamJSON() {
+    public void sendJamJSON() {
         mConnection.sendNameValuePair(CommandProcessor.JAM_JSON, mJam.getData());
 
         //todo send when we started, or at least do the on new loop regular updates
@@ -470,7 +473,7 @@ public class CommandProcessor extends BluetoothDataCallback {
         // }
     }
 
-    boolean isSynced() {
+    public boolean isSynced() {
         return mSync;
     }
 
@@ -656,7 +659,17 @@ public class CommandProcessor extends BluetoothDataCallback {
     }
 
     public void setSync(boolean sync) {
+        if (mPeerJam == null) {
+            return;
+        }
         mSync = sync;
+
+        if (sync) {
+            mJam.setSubbeatLength(mPeerJam.getSubbeatLength(), null);
+            mJam.setKey(mPeerJam.getKey(), null);
+            mJam.setScale(mPeerJam.getScale(), null);
+            mConnection.sendCommand(REQUEST_SYNC);
+        }
     }
 
     private void onSetArpNotes(String value) {
@@ -681,12 +694,7 @@ public class CommandProcessor extends BluetoothDataCallback {
 
     private void onNewLoop() {
         if (mSync) {
-            /*mJam.setSubbeatLength(mPeerJam.getSubbeatLength());
-            if (mJam.isPaused()) {
-                mJam.kickIt();
-            } else {
-                mJam.syncNow();
-            }*/
+            mJam.restart();
             mSync = false;
         }
     }
@@ -859,7 +867,12 @@ public class CommandProcessor extends BluetoothDataCallback {
             for (int i = 0; i < ints.length; i++) {
                 scale[i] = Integer.parseInt(ints[i]);
             }
-            mJam.setScale(scale, getAddress());
+            if (mSync) {
+                mJam.setScale(scale, getAddress());
+            }
+            if (mPeerJam != null) {
+                mPeerJam.setScale(scale, getAddress());
+            }
         }
         catch (NumberFormatException ignore) {}
     }
@@ -904,9 +917,13 @@ public class CommandProcessor extends BluetoothDataCallback {
 
         sendJamJSON();
 
-        if (!mStatus.isHost) {
-            mStatus.setupJamAsHost();
-        }
+        //if (!mStatus.isHost) {
+        //    mStatus.setupJamAsHost();
+        //}
+    }
+
+    void requestSyncFromLocal() {
+        //mStatus.setupJamAsHost();
     }
 
     public void setOnReceiveSoundSetsListener(OnReceiveSoundSetsListener onReceiveSoundSetsListener) {
@@ -946,6 +963,37 @@ public class CommandProcessor extends BluetoothDataCallback {
             }
 
             onReceiveSavedJamsListener.onReceiveSavedJams(savedJams);
+        }
+    }
+
+    private void setSubbeatLength(String value) {
+        int subbeatLength;
+        try {
+            subbeatLength = Integer.parseInt(value);
+        }
+        catch (NumberFormatException e) {
+            return;
+        }
+        if (mSync) {
+            mJam.setSubbeatLength(subbeatLength, getAddress());
+        }
+        if (mPeerJam != null) {
+            mPeerJam.setSubbeatLength(subbeatLength, getAddress());
+        }
+    }
+    private void setKey(String value) {
+        int i;
+        try {
+            i = Integer.parseInt(value);
+        }
+        catch (NumberFormatException e) {
+            return;
+        }
+        if (mSync) {
+            mJam.setKey(i, getAddress());
+        }
+        if (mPeerJam != null) {
+            mPeerJam.setKey(i, getAddress());
         }
     }
 }

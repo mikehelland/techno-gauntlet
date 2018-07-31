@@ -23,6 +23,7 @@ import com.mikehelland.omgtechnogauntlet.jam.SoundSet;
 import com.mikehelland.omgtechnogauntlet.jam.SoundSetsProvider;
 import com.mikehelland.omgtechnogauntlet.remote.BluetoothJamStatus;
 import com.mikehelland.omgtechnogauntlet.remote.CommandProcessor;
+import com.mikehelland.omgtechnogauntlet.remote.JamListenersHelper;
 
 import java.util.ArrayList;
 
@@ -69,6 +70,7 @@ public class Main extends FragmentActivity {
         SoundManager soundManager = new SoundManager(Main.this, onSoundLoadedListener);
         jam = new Jam(soundManager, soundSetsProvider);
         bluetoothJamStatus = new BluetoothJamStatus(jam, bluetoothManager);
+        JamListenersHelper.setJamListenersForHost(jam, bluetoothManager);
 
         setupBeatView();
 

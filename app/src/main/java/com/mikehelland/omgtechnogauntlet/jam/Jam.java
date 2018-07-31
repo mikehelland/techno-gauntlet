@@ -30,7 +30,7 @@ public class Jam {
     public Jam(SoundManager soundManager, SoundSetsProvider soundSetsProvider) {
         this.soundManager = soundManager;
         this.soundSetsProvider = soundSetsProvider;
-        this.player = new Player(soundManager);
+        this.player = new Player(this, soundManager);
     }
 
     public String loadRemoteFromJSON(String json) {
@@ -671,5 +671,21 @@ public class Jam {
 
     public void nudgePlayer(int i) {
         player.nudge(i);
+    }
+
+    public void restart() {
+        Log.d("MGH", "restarting player");
+        if (isPlaying()) {
+            player.restart();
+        }
+        else {
+            play();
+        }
+    }
+
+    void onNewLoop() {
+        for (OnJamChangeListener listener : onJamChangeListeners) {
+            listener.onNewLoop(null);
+        }
     }
 }

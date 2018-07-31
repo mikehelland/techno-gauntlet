@@ -242,6 +242,7 @@ public class BluetoothFragment extends OMGFragment {
                     final View freshView = mViewMap.get(connection.getDevice().getAddress());
                     Activity activity = getActivity();
                     if (cp != null && activity != null) {
+                        cp.sendJamJSON();
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -346,14 +347,14 @@ public class BluetoothFragment extends OMGFragment {
         syncButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*if (cp.isSynced()) {
+                if (cp.isSynced()) {
                     cp.setSync(false);
                     syncButton.setText(R.string.syncbeats);
                 }
                 else {
                     cp.setSync(true);
                     syncButton.setText(R.string.unsyncbeats);
-                }*/
+                }
             }
         });
 
