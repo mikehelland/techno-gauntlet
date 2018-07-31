@@ -304,11 +304,7 @@ public class CommandProcessor extends BluetoothDataCallback {
                 //onSetParts(value);
                 return;
             case JAM_JSON:
-                if (localIsARemote) {
-                    mJam.loadFromJSON(value, getAddress());
-                }
-                mPeerJam = new Jam(null, null);
-                mPeerJam.loadFromJSON(value);
+                loadJSON(value);
                 return;
         }
 
@@ -999,6 +995,20 @@ public class CommandProcessor extends BluetoothDataCallback {
         }
         if (mPeerJam != null) {
             mPeerJam.setKey(i, getAddress());
+        }
+    }
+
+    private void loadJSON(String value) {
+        mPeerJam = new Jam(null, null);
+        String error = mPeerJam.loadFromJSON(value);
+        if (error == null) {
+            if (localIsARemote) {
+                mJam.loadFromJSON(value, getAddress());
+            } else if (mSync) {
+                mJam.setSubbeatLength(mPeerJam.getSubbeatLength(), getAddress());
+                mJam.setKey(mPeerJam.getKey(), getAddress());
+                mJam.setScale(mPeerJam.getScale(), getAddress());
+            }
         }
     }
 }

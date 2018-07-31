@@ -23,12 +23,17 @@ public class SectionToJSON {
 
         sb.append(", \"parts\" : [");
 
+        boolean first = true;
         for (Part part : section.parts) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append(",");
+            }
             getPartData(sb, part, section);
-            sb.append(",");
         }
 
-        sb.delete(sb.length() - 1, sb.length());
         sb.append("]}");
 
         Log.d("MGH getData", sb.toString());
