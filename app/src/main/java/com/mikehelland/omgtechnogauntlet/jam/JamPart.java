@@ -107,4 +107,18 @@ public class JamPart {
             part.notes.clear();
         }
     }
+
+    public Note findLiveNote(int basicNoteNumber, int instrumentNoteNumber) {
+        try {
+            for (Note note : liveNotes.notes) {
+                if (note.getBasicNote() == basicNoteNumber) {
+                    return note;
+                }
+            }
+        }
+        catch (Exception ignore) {}
+
+        Note note = new Note(false, basicNoteNumber, 0, instrumentNoteNumber, -1);
+        return note;
+    }
 }

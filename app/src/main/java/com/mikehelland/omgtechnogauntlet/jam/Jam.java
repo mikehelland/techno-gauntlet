@@ -536,11 +536,13 @@ public class Jam {
         endPartLiveNotes(jamPart, null);
     }
     public void endPartLiveNotes(JamPart jamPart, String source) {
-        if (jamPart.liveNotes == null) {
+        LiveNotes liveNotes = jamPart.liveNotes;
+        if (liveNotes == null) {
             return;
         }
-        if (jamPart.liveNotes.notes.length > 0) {
-            player.stopPartLiveNote(jamPart.part, jamPart.liveNotes.notes[0]);
+
+        if (liveNotes.notes.length > 0) {
+            player.stopPartLiveNote(jamPart.part, liveNotes.notes[0]);
         }
         jamPart.liveNotes = null;
 

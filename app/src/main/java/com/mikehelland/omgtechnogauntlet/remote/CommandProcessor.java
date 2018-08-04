@@ -827,7 +827,8 @@ public class CommandProcessor extends BluetoothDataCallback {
             return;
         }
 
-        Note note = new Note(false, basicNoteNumber, 0, instrumentNoteNumber, -1);
+        //try and find this note
+        Note note = jamPart.findLiveNote(basicNoteNumber, instrumentNoteNumber);
 
         int i = 3;
         int noteI = 0;
